@@ -50,7 +50,7 @@ _\* Stable KiCad 7 does not yet support user-configurable footprint fields._
 
 1. Open the KiCad PCB Editor (pcbnew).
 2. In the PCB Editor, choose the menu option _Tools &rarr; External Plugins &rarr; Open Plugin Directory_.  This will open a file browser at the location of your KiCad plugin directory.
-3. Copy all files from _this repository's_ sub-directory `plugin` to that KiCad plugin directory you just opened in the previous step.  _Important:_ Do not copy the _plugin_ directory itself, but only the files inside it.
+3. Either copy all files from _this repository's_ sub-directory `plugin`, or unzip the contents of a KiVar release archive to that KiCad plugin directory you opened in the previous step.  _Important:_ If you use the _plugin_ directory, do not copy the directory itself, but only the files inside it.
 4. Switch back to the PCB Editor and choose the menu option _Tools &rarr; External Plugins &rarr; Refresh Plugins_.  Now _KiVar_ should appear in the plugin list under _Tools &rarr; External Plugins_.
 5. _Optional:_ For quick access, add the KiVar launcher button to your main toolbar under _Preferences &rarr; Preferences... &rarr; PCB Editor &rarr; Action Plugins_ by clicking the corresponding checkbox in the _Show button_ column.
 
