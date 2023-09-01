@@ -10,11 +10,9 @@ The plugin name _KiVar_ may be read as an acronym for _**Ki**Cad **V**ariation *
 
 ## Features
 
-KiVar assigns component **values** and **attributes** (such as _Do not populate_), depending on variation rules specified in symbol/footprint fields.
+KiVar assigns component **values** and **attributes** (such as _Do not populate_), depending on variation rules specified in symbol/footprint fields.  Component values and attributes are modified _in place_, allowing for immediate update of the PCB design as well as the 3D view and enabling compatibility with _any_ exporter.
 
-The process of writing and assigning rules to components (symbols/footprints) is done manually, just like writing a few lines of simple code.
-
-The KiVar plugin then offers the selection of variation choices providing an easy-to-use dialog interface and takes care of the automatic assignment of the specified component values and attributes.
+Back-propagation of modified component data to the schematic can be done in an extra step.
 
 ## Supported KiCad Versions
 
@@ -36,13 +34,14 @@ The following table provides a feature support overview.
 
 _\* Nightlies of August 8th 2023 and later._
 
-## Concept
+## Concepts
 
 The key concepts of KiVar are:
 
- * Support for multiple independent variation aspects per design.
- * Variation rules are fully contained in symbol and/or footprint\* fields (i.e., no configuration outside the native design files).
- * Variation rules use a simple and readable syntax, implicitly declaring variation aspects and their respective choices.
+ * Support for **multiple** independent variation aspects per design.
+ * Depending on the selected variation choices, component values and attributes are modified **in place**, allowing exporters to work on the actual component data.
+ * Start and operation of the variant selection process **integrates seamlessly** into KiCad and gives the impression of a native feature.
+ * Variation rules use a simple 'readable' syntax and are **fully contained** in symbol and/or footprint\* fields (i.e., zero configuration outside the native design files).
 
 _\* Stable KiCad 7 does not yet support user-configurable footprint fields._
 
@@ -57,6 +56,10 @@ _\* Stable KiCad 7 does not yet support user-configurable footprint fields._
 If the installation does not work for you this way, consider reporting your problem as an issue.
 
 ## Usage
+
+The process of writing and assigning rules to components (symbols/footprints) is done manually using simple expressions.
+
+KiVar then offers the selection of variation choices providing an easy-to-use dialog interface and takes care of the automatic assignment of the specified component values and attributes.
 
 The following sections describe the process of configuring your schematic or board and, after that, selecting the configured variation choices.
 
@@ -195,6 +198,17 @@ _Examples:_
 * To use `-12V`, (a string starting with a dash), as a value, the choice definitions `'-12V'` or `\-12V` would be appropriate.  If the dash were not escaped, `-12V` would be interpreted as an option.
 * To assign an empty component value, use an empty quoted string `''`.
 * To assign a simple one-word component value, the value does not need to be quoted.  E.g., `10mH` or `'10mH'` are equivalent.
+
+###### Spaces
+
+The use of separator _space_ characters may be subject to personal preference and does not affect the function of rules.
+
+For illustration, the following rule expressions are functionally equivalent:
+
+ * `ASPECT,VAR1 VAR2:'Value for One or Two',VAR3:'Value for Three'`
+ * `ASPECT, VAR1 VAR2: 'Value for One or Two', VAR3: 'Value for Three'`
+ * `ASPECT , VAR1 VAR2 : 'Value for One or Two' , VAR3 : 'Value for Three'`
+ * `ASPECT,   VAR1   VAR2:   'Value for One or Two',   VAR3:   'Value for Three'`
 
 ###### Closing Remarks
 
