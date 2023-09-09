@@ -290,23 +290,25 @@ If the values and attributes do not exactly match one definite choice (for a var
 
 #### Possible Error Messages
 
-In case the defined variation rules cannot be parsed without problems, an error message dialog with a list of problems will appear.  Each of these problems must then be fixed in order to successfully start the plugin.
+In case the defined variation rules cannot be parsed without problems, an error message window with a list of problems will appear.  Each of these problems must then be fixed in order to successfully start the plugin.
 
 #### Variation Choices Selection
 
 If all rules can be parsed without problems, the main dialog window appears.
 
-For the above [real-world examples](#real-world-examples), the selection dialog may look similar to the following:
+For the above [real-world examples](#real-world-examples), the selection dialog window may look similar to the following:
 
-![Variant Selection](doc-selection.png)
+![Variant Selection Dialog Without Changes](doc-selection-nochange.png)
 
 For each of the listed variation aspects a variation choice can now be selected.  If the values and attributes of the footprint(s) related to a variation aspect shall not be modified, the entry _'\<unset>'_ can be selected for that variation aspect.  In this case, the corresponding variation is skipped during the assignment stage and related footprints remain unmodified.
 
-After selecting an appropriate variation choice for each variation aspect and clicking the _OK_ button, KiVar sets the values and attributes for all relevant footprints according to the chosen configuration.
+The text section below the selection area summarizes all component value and attribute changes to be performed for each related footprint if the current variation configuration is applied.
 
-#### Change Report
+After selecting a few different variation choices, the dialog window may look like the following:
 
-The application of the configuration is completed with the display of a _Change Report_ window, summarizing all performed changes of values and attributes for each related footprint.
+![Variant Selection Dialog With Changes](doc-selection.png)
+
+When clicking the _Update PCB_ button, KiVar sets the values and attributes for all relevant footprints as previewed in the information text box.
 
 #### Visible Changes
 
