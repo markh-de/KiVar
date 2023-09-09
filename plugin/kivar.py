@@ -8,10 +8,12 @@ from os import path as os_path
 
 # TODO:
 #
-# * Use a *modal* main dialog, or add a "Refresh and preselect" button, that rebuilds the Vn dict and preselects
-#   all choices (may be also useful when checkboxes are added, because preselect criteria depend on these checkbox states).
+# * Add options panel incl. "Reset" button, that preselects all choices depending on options (because preselect
+#   criteria depend on these checkbox states).
 #
 # * After applying configuration, define board variables containing the choice for each vn, e.g. ${KIVAR.BOOT_SEL} => NAND
+#
+# * Save option settings as some object in PCB (text box?)
 
 class VariantPlugin(pcbnew.ActionPlugin):
     def defaults(self):
@@ -25,10 +27,9 @@ class VariantPlugin(pcbnew.ActionPlugin):
         board = pcbnew.GetBoard()
         vn_dict, errors = get_vn_dict(board)
         if len(errors) == 0:
-            dialog = VariantDialog(board, vn_dict)
+            ShowVariantDialog(board, vn_dict)
         else:
-            dialog = TextDialog('Errors', '\n'.join(errors))
-        dialog.Show()
+            ShowErrorDialog(errors)
 
 def wrap_HasField(fp, field):
     if pcbnew_version() >= 799:
@@ -45,8 +46,11 @@ def wrap_GetField(fp, field):
 def pcbnew_version():
     return int(pcbnew.GetMajorMinorPatchVersion().split('.')[0]) * 100 + int(pcbnew.GetMajorMinorPatchVersion().split('.')[1])
 
+def pcbnew_parent_window():
+    return wx.FindWindowByName('PcbFrame')
+
 def version():
-    return '0.0.1'
+    return '0.0.2'
 
 def variant_cfg_field_name():
     return 'KiVar.Rule'
@@ -68,6 +72,9 @@ def key_opts():
 
 def key_default():
     return '*'
+
+def bool_as_text(value):
+    return 'true' if value == True else 'false'
 
 def use_attr_dnp():
     return pcbnew_version() >= 799
@@ -174,7 +181,7 @@ def detect_current_choices(board, vn_dict):
 
     return selection
 
-def apply_choices(board, vn_dict, selection):
+def apply_choices(board, vn_dict, selection, dry_run = False):
     changes = []
 
     for ref in vn_dict:
@@ -182,23 +189,32 @@ def apply_choices(board, vn_dict, selection):
         for vn in vn_dict[ref]:
             selected_choice = selection[vn]
             if selected_choice != '':
+                vn_text = f'{vn}.{selected_choice}'
                 new_value = vn_dict[ref][vn][selected_choice][key_val()]
+                old_value = fp.GetValue()
                 new_dnp = opt_dnp() in vn_dict[ref][vn][selected_choice][key_opts()]
-                if fp.GetValue() != new_value:
-                    changes.append(f"<{vn}.{selected_choice}> {ref}: Value => '{new_value}'")
-                    fp.SetValue(new_value)
-                if use_attr_excl_from_bom():
-                    if fp.IsExcludedFromBOM() != new_dnp:
-                        changes.append(f"<{vn}.{selected_choice}> {ref}: Attribute [Exclude from bill of materials] => {new_dnp}")
-                        fp.SetExcludedFromBOM(new_dnp)
-                if use_attr_excl_from_posfiles():
-                    if fp.IsExcludedFromPosFiles() != new_dnp:
-                        changes.append(f"<{vn}.{selected_choice}> {ref}: Attribute [Exclude from position files] => {new_dnp}")
-                        fp.SetExcludedFromPosFiles(new_dnp)
+                if old_value != new_value:
+                    changes.append(f"Change {ref} value from '{old_value}' to '{new_value}' ({vn_text}).")
+                    if not dry_run:
+                        fp.SetValue(new_value)
                 if use_attr_dnp():
-                    if fp.IsDNP() != new_dnp:
-                        changes.append(f"<{vn}.{selected_choice}> {ref}: Attribute [Do not populate] => {new_dnp}")
-                        fp.SetDNP(new_dnp)
+                    old_dnp = fp.IsDNP()
+                    if old_dnp != new_dnp:
+                        changes.append(f"Change {ref} 'Do not populate' from '{bool_as_text(old_dnp)}' to '{bool_as_text(new_dnp)}' ({vn_text}).")
+                        if not dry_run:
+                            fp.SetDNP(new_dnp)
+                if use_attr_excl_from_bom():
+                    old_excl_from_bom = fp.IsExcludedFromBOM()
+                    if old_excl_from_bom != new_dnp:
+                        changes.append(f"Change {ref} 'Exclude from bill of materials' from '{bool_as_text(old_excl_from_bom)}' to '{bool_as_text(new_dnp)}' ({vn_text}).")
+                        if not dry_run:
+                            fp.SetExcludedFromBOM(new_dnp)
+                if use_attr_excl_from_posfiles():
+                    old_excl_from_posfiles = fp.IsExcludedFromPosFiles()
+                    if old_excl_from_posfiles != new_dnp:
+                        changes.append(f"Change {ref} 'Exclude from position files' from '{bool_as_text(old_excl_from_posfiles)}' to '{bool_as_text(new_dnp)}' ({vn_text}).")
+                        if not dry_run:
+                            fp.SetExcludedFromPosFiles(new_dnp)
     return changes
 
 def get_vn_dict(board):
@@ -423,29 +439,29 @@ def cook_raw_string(str):
 
     return ''.join(result)
 
+def ShowVariantDialog(board, vn_dict):
+    dlg = VariantDialog(board, vn_dict)
+    dlg.ShowModal()
+
 class VariantDialog(wx.Dialog):
     def __init__(self, board, vn_dict):
+        super(VariantDialog, self).__init__(pcbnew_parent_window(), title=f'KiVar {version()} Variant Selection', style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER)
+
         self.board = board
         self.vn_dict = vn_dict
         choice_dict = get_choice_dict(self.vn_dict)
         preselect = detect_current_choices(self.board, self.vn_dict)
 
-        # TODO can we avoid that the window border appears early?
-
-        wx.Dialog.__init__(self, None, title=f'KiVar {version()} Variant Selection', style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER)
-
         sizer = wx.BoxSizer(wx.VERTICAL)
 
-        italic = wx.Font(wx.SystemSettings.GetFont(wx.SYS_DEFAULT_GUI_FONT).GetPointSize(), wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_ITALIC, wx.FONTWEIGHT_NORMAL)
+        # Selections
+#        sel_grid = wx.GridSizer(cols=2, hgap=10, vgap=6)
+        sel_grid = wx.GridSizer(cols=1, hgap=10, vgap=6)
 
-        options_grid = wx.GridSizer(cols=2, hgap=10, vgap=6)
-
-        vn_label = wx.StaticText(self, label='Variation')
-        ch_label = wx.StaticText(self, label='Choice')
-        vn_label.SetFont(italic)
-        ch_label.SetFont(italic)
-        options_grid.Add(vn_label, 0, wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_CENTER)
-        options_grid.Add(ch_label, 0, wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_CENTER)
+        # left: variations
+        var_box = wx.StaticBox(self, label='Variation Choices')
+        var_box_sizer = wx.StaticBoxSizer(var_box)
+        var_grid = wx.GridSizer(cols=2, hgap=10, vgap=6)
 
         self.choices = {}
         for cfg in sorted(choice_dict):
@@ -458,75 +474,123 @@ class VariantDialog(wx.Dialog):
             if sel_opt != '':
                 sel_index = sorted_choices.index(sel_opt) + 1
             self.choices[cfg].SetSelection(sel_index)
+            self.choices[cfg].Bind(wx.EVT_CHOICE, self.on_change)
             
-            options_grid.Add(wx.StaticText(self, label=f'{cfg}:'), 0, wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_RIGHT)
-            options_grid.Add(self.choices[cfg], 0, wx.EXPAND)
+            var_grid.Add(wx.StaticText(self, label=f'{cfg}:'), 1, wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_RIGHT | wx.EXPAND)
+            var_grid.Add(self.choices[cfg], 0, wx.EXPAND)
 
-        sizer.Add(options_grid, 1, wx.EXPAND | wx.ALL, 10)
+        var_box_sizer.Add(var_grid, 1, wx.EXPAND | wx.ALL, 6)
+        sel_grid.Add(var_box_sizer, 1, wx.EXPAND | wx.ALL, 4)
 
-# TODO use more complex layout:        sizer = wx.GridBagSizer(hgap=5, vgap=5)
-# TODO add checkboxes that allow enabling/disabling automatic checking/setting of attribs!
+        # # right: options
+        # opt_box = wx.StaticBox(self, label='Options')
+        # reset_button = wx.Button(self, label='Reset Choices')
+        # checkbox_excl_from_bom = wx.CheckBox(self, label="DNP sets 'Exclude from bill of materials'")
+        # checkbox_excl_from_pos = wx.CheckBox(self, label="DNP sets 'Exclude from position files'")
+        # opt_box_sizer = wx.StaticBoxSizer(opt_box, wx.VERTICAL)
+        # opt_box_sizer.Add(checkbox_excl_from_bom, 0, wx.EXPAND | wx.ALL, 4)
+        # opt_box_sizer.Add(checkbox_excl_from_pos, 0, wx.EXPAND | wx.ALL, 4)
+        # opt_box_sizer.Add(wx.StaticText(self, label=''), 1, wx.EXPAND | wx.ALL)
+        # opt_box_sizer.Add(reset_button, 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALL, 4)
+        # opt_box_sizer.Add(wx.StaticText(self, label=''), 1, wx.EXPAND | wx.ALL)
+        # sel_grid.Add(opt_box_sizer, 0, wx.EXPAND | wx.ALL, 4)
 
-        self.ok_button = wx.Button(self, label='OK')
-        self.cancel_button = wx.Button(self, label='Cancel')
+        sizer.Add(sel_grid, 0, wx.EXPAND | wx.ALL, 4)
 
+        # Changes Text
+        changes_box = wx.StaticBox(self, label='Changes To Be Applied')
+        self.changes_box_sizer = wx.StaticBoxSizer(changes_box)
+        self.changes_box_sizer.SetMinSize((640, 280))
+
+        self.changes_text_win = wx.ScrolledWindow(self, wx.ID_ANY)
+        self.changes_text = wx.TextCtrl(self.changes_text_win, wx.ID_ANY, style=wx.BORDER_NONE | wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_DONTWRAP)
+        self.update_text()
+
+        text_sizer = wx.BoxSizer(wx.VERTICAL)
+        text_sizer.Add(self.changes_text, 1, wx.EXPAND | wx.ALL, 3)
+
+        self.changes_text_win.SetSizer(text_sizer)
+        self.changes_box_sizer.Add(self.changes_text_win, 1, wx.EXPAND | wx.ALL)
+
+        sizer.Add(self.changes_box_sizer, 1, wx.EXPAND | wx.ALL, 8)
+
+        # Buttons
         button_sizer = wx.BoxSizer(wx.HORIZONTAL)
-        button_sizer.Add(self.cancel_button, 0, wx.ALL, 5)
-        button_sizer.Add(self.ok_button, 0, wx.ALL, 5)
+
+        ok_button = wx.Button(self, label='Update PCB')
+#        update_button = wx.Button(self, label='Reset Choices')
+        cancel_button = wx.Button(self, label='Close')
+
+        button_sizer.Add(cancel_button, 0, wx.ALL, 8)
+#        button_sizer.Add(update_button, 0, wx.ALL, 8)
+        button_sizer.Add(ok_button, 0, wx.ALL, 8)
+
         sizer.Add(button_sizer, 0, wx.ALIGN_RIGHT)
 
         self.SetSizerAndFit(sizer)
+        # TODO avoid 50/50 split between boxes. should be dynamic!
 
-        self.ok_button.Bind(wx.EVT_BUTTON, self.on_ok)
-        self.cancel_button.Bind(wx.EVT_BUTTON, self.on_cancel)
+        self.Fit()
+        self.CenterOnParent()
 
-    def on_ok(self, event):
-        selections = {}
+        ok_button.Bind(wx.EVT_BUTTON, self.on_ok)
+#        update_button.Bind(wx.EVT_BUTTON, self.on_update)
+        cancel_button.Bind(wx.EVT_BUTTON, self.on_cancel)
 
+    def selections(self):
+        s = {}
         for choice in self.choices:
             sel_value = self.choices[choice].GetStringSelection()
             if self.choices[choice].GetSelection() < 1:
                 sel_value = '' # <unset>, do not apply to values
-            selections[choice] = sel_value
+            s[choice] = sel_value
 
-        changes = apply_choices(self.board, self.vn_dict, selections)
+        return s
+
+    def on_ok(self, event):
+        apply_choices(self.board, self.vn_dict, self.selections())
         pcbnew.Refresh()
-        
-        if len(changes) == 0:
-            changes = ['No changes.']
-
-        change_text = '\n'.join(changes)
-
-        dialog = TextDialog('Change report', change_text)
-        dialog.ShowModal()
-        dialog.Destroy()
-
         self.Destroy()
+
+    def on_change(self, event):
+        self.update_text()
+
+#    def on_update(self, event):
+#        self.update_text()
 
     def on_cancel(self, event):
         self.Destroy()
 
+    def update_text(self):
+        changes = apply_choices(self.board, self.vn_dict, self.selections(), True)
+        change_text = '\n'.join(changes)
+        self.changes_text.SetValue(change_text)
+
+def ShowErrorDialog(errors):
+    dialog = TextDialog(f'KiVar {version()} Initialization Errors', '\n'.join(errors))
+    dialog.ShowModal()
+    dialog.Destroy()
+
 class TextDialog(wx.Dialog):
     def __init__(self, title, text):
-        wx.Dialog.__init__(self, None, title=title, style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER, size=(800, 500))
+        super(TextDialog, self).__init__(pcbnew_parent_window(), title=title, style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER, size=(800, 500))
 
-        self.window = wx.ScrolledWindow(self, wx.ID_ANY)
-        self.text = wx.TextCtrl(self.window, wx.ID_ANY, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_DONTWRAP)
+        text_win = wx.ScrolledWindow(self, wx.ID_ANY)
+        self.text = wx.TextCtrl(text_win, wx.ID_ANY, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_DONTWRAP)
         self.text.SetValue(text)
 
-        sizer = wx.BoxSizer(wx.VERTICAL)
-        sizer.Add(self.text, 1, wx.EXPAND | wx.ALL, 10)
-        self.window.SetSizer(sizer)
+        scr_win_sizer = wx.BoxSizer(wx.VERTICAL)
+        scr_win_sizer.Add(self.text, 1, wx.EXPAND | wx.ALL)
+        text_win.SetSizer(scr_win_sizer)
 
-        self.ok_button = wx.Button(self, wx.ID_OK, 'OK')
+        self.ok_button = wx.Button(self, wx.ID_OK, 'Dismiss')
         button_sizer = wx.BoxSizer(wx.HORIZONTAL)
-        button_sizer.Add(self.ok_button, 0, wx.ALIGN_RIGHT | wx.ALL, 5)
+        button_sizer.Add(self.ok_button, 0, wx.ALIGN_RIGHT | wx.ALL, 8)
 
-        dialog_sizer = wx.BoxSizer(wx.VERTICAL)
-        dialog_sizer.Add(self.window, 1, wx.EXPAND | wx.ALL, 10)
-        dialog_sizer.Add(button_sizer, 0, wx.ALIGN_CENTER | wx.ALL, 10)
-
-        self.SetSizer(dialog_sizer)
+        sizer = wx.BoxSizer(wx.VERTICAL)
+        sizer.Add(text_win, 1, wx.EXPAND | wx.ALL, 8)
+        sizer.Add(button_sizer, 0, wx.ALIGN_RIGHT | wx.ALL)
+        self.SetSizer(sizer)
 
         self.ok_button.SetFocus()
 
