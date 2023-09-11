@@ -31,7 +31,7 @@ class VariantPlugin(pcbnew.ActionPlugin):
         if len(errors) == 0:
             ShowVariantDialog(board, vn_dict)
         else:
-            ShowErrorDialog(errors)
+            ShowErrorDialog('Rule errors', errors)
 
 def wrap_HasField(fp, field):
     if pcbnew_version() >= 799:
@@ -448,7 +448,7 @@ def ShowVariantDialog(board, vn_dict):
 
 class VariantDialog(wx.Dialog):
     def __init__(self, board, vn_dict):
-        super(VariantDialog, self).__init__(pcbnew_parent_window(), title=f'KiVar {version()} Variant Selection', style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER)
+        super(VariantDialog, self).__init__(pcbnew_parent_window(), title=f'KiVar {version()}: Variant Selection', style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER)
 
         self.board = board
         self.vn_dict = vn_dict
@@ -569,8 +569,8 @@ class VariantDialog(wx.Dialog):
         change_text = '\n'.join(changes)
         self.changes_text.SetValue(change_text)
 
-def ShowErrorDialog(errors):
-    dialog = TextDialog(f'KiVar {version()} Initialization Errors', '\n'.join(errors))
+def ShowErrorDialog(title, errors):
+    dialog = TextDialog(f'KiVar {version()}: {title}', '\n'.join(errors))
     dialog.ShowModal()
     dialog.Destroy()
 
