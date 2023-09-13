@@ -139,7 +139,7 @@ Default choice definitions consist of only **one part**, i.e. do _not_ contain a
 
 In a default choice definition, all arguments are treated like right of the colon (see above).  Default values and options are handled differently:
 
- * **Values** listed in a default choice definition apply to _all choices that do not contain a value assignment_.  A default choice definition _must_ contain exactly one value.  Specific (non-default) choice definitions do not require to contain a value, as they can inherit the value from the default choice and just override the options.
+ * A **Value** listed in a default choice definition applies to _all choices that do not contain a value assignment_.  That is, a specific choice without a value inherits the value of the default choice, if provided.
  * **Options** listed in a default choice definition apply to _all choices that are not defined in the current variation rule_.  That is, if a specific choice is defined, that definition _always_ overrides all options of the default choice definition.  Options specified in the default choice definition will _not_ be inherited by specific (non-default) choices that are defined in any way inside the same variation rule definition, but only by choices that are exclusively declared (and defined) by _other_ rules (i.e., rules applied to _other components_, but referring to the same variation aspect).
 
 _Example:_ Assuming a rule for symbol A: `EXAMPLE, default_a, CHOICE1 : val_a1, CHOICE2 : val_a2, CHOICE3 : -dnp` and a rule for symbol B: `EXAMPLE, default_b -dnp, CHOICE2 : val_b2, CHOICE3 : val_b3 -dnp`, the following values and options would be used for each of the resulting three choices :
@@ -150,16 +150,22 @@ _Example:_ Assuming a rule for symbol A: `EXAMPLE, default_a, CHOICE1 : val_a1, 
 |`CHOICE2`                      |`val_a2`         |`val_b2`        |
 |`CHOICE3`                      |`default_a -dnp` |`val_b3 -dnp`   |
 
-Default choice definitions can be placed anywhere in the list of choice definitions.  Two recommended ways are to place the default either at the beginning _('default' notation)_ or the end _('else' notation)_ of the choice definitions.  The effect is the same.  It depends on the user's preference how the rule is worded.  For example,
+A default choice definition can be placed anywhere in the list of choice definitions.  Two recommended ways are to place the default either at the beginning _('default' notation)_ or the end _('else' notation)_ of the choice definitions.  The effect is the same.  It depends on the user's preference how the rule is worded.  For example,
 
  * `FOO, 10k, BAR BAZ: 47k` reads like _'Usually a 10k resistor, but in the case of choice `BAR` or `BAZ`, this is a 47k resistor' ('default' notation)._
  * `FOO, BAR BAZ: 47k, 10k` reads like _'For `BAR` and `BAZ`, this is a 47k resistor. For any other choice, this is a 10k resistor' ('else' notation)._
+
+###### Optional Value Assignments
+
+Since version 0.0.3 of KiVar, assigning a value to a choice is optional.  When a component's variation rule does not define values in _any_ of its choices, the value field for that component is not changed when assigning a variation.  This feature is useful for parts that always keep the same value and whose variations only use different attributes (such as DNP).
+
+_Note:_ It is important to understand that a component's variation rule must _either_ define **one value for every choice** _or_ **no value for any choice**.  Using a mixture of choices _including_ values and _not including_ values would lead to an inconsistent state in the value field and is therefore forbidden and will raise an error.
 
 ###### Choice Definition Arguments
 
 Each choice definition may contain the following arguments:
 
- * a **value** (one at most for specific choice definitions, exactly one for default choice definitions) to be assigned to the footprint's value field when that choice is selected during the variation choice selection process, and
+ * a **value** (one at most) to be assigned to the footprint's value field when that choice is selected during the variation choice selection process, and
  * **options** (none or more) to be assigned to the applicable choice(s).
 
 All arguments starting with an _unescaped_ `-` character are considered **options**.
