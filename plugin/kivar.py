@@ -8,6 +8,8 @@ from os import path as os_path
 
 # TODO:
 #
+# * Use None where applicable (instead of empty string)
+#
 # * Add options panel incl. "Reset" button, that preselects all choices depending on options (because preselect
 #   criteria depend on these checkbox states).
 #
@@ -29,7 +31,7 @@ class VariantPlugin(pcbnew.ActionPlugin):
         if len(errors) == 0:
             ShowVariantDialog(board, vn_dict)
         else:
-            ShowErrorDialog(errors)
+            ShowErrorDialog('Rule errors', errors)
 
 def wrap_HasField(fp, field):
     if pcbnew_version() >= 799:
@@ -50,7 +52,7 @@ def pcbnew_parent_window():
     return wx.FindWindowByName('PcbFrame')
 
 def version():
-    return '0.0.2'
+    return '0.0.3'
 
 def variant_cfg_field_name():
     return 'KiVar.Rule'
@@ -63,9 +65,6 @@ def opt_dnp():
 
 def key_val():
     return 'v'
-
-def key_vals():
-    return 'vl'
 
 def key_opts():
     return 'o'
@@ -117,8 +116,9 @@ def detect_current_choices(board, vn_dict):
                 fp_choice_dnp = opt_dnp() in vn_dict[ref][vn][choice][key_opts()]
                 eliminate = False
 
-                if fp_value != fp_choice_value:
-                    eliminate = True
+                if fp_choice_value != None:
+                    if fp_value != fp_choice_value:
+                        eliminate = True
 
                 # TODO these should only be compared if their checkboxes are checked or the config requests it.
 
@@ -165,8 +165,9 @@ def detect_current_choices(board, vn_dict):
                 new_value = vn_dict[ref][vn][selected_choice][key_val()]
                 new_dnp = opt_dnp() in vn_dict[ref][vn][selected_choice][key_opts()]
                 mismatch = False
-                if fp_value != new_value:
-                    mismatch = True
+                if new_value != None:
+                    if fp_value != new_value:
+                        mismatch = True
                 if use_attr_excl_from_bom():
                     if fp_excl_bom != new_dnp:
                         mismatch = True
@@ -188,15 +189,16 @@ def apply_choices(board, vn_dict, selection, dry_run = False):
         fp = board.FindFootprintByReference(ref) # TODO error handling! can return "None"
         for vn in vn_dict[ref]:
             selected_choice = selection[vn]
-            if selected_choice != '':
+            if selected_choice != '': # None?
                 vn_text = f'{vn}.{selected_choice}'
                 new_value = vn_dict[ref][vn][selected_choice][key_val()]
-                old_value = fp.GetValue()
+                if new_value != None:
+                    old_value = fp.GetValue()
+                    if old_value != new_value:
+                        changes.append(f"Change {ref} value from '{old_value}' to '{new_value}' ({vn_text}).")
+                        if not dry_run:
+                            fp.SetValue(new_value)
                 new_dnp = opt_dnp() in vn_dict[ref][vn][selected_choice][key_opts()]
-                if old_value != new_value:
-                    changes.append(f"Change {ref} value from '{old_value}' to '{new_value}' ({vn_text}).")
-                    if not dry_run:
-                        fp.SetValue(new_value)
                 if use_attr_dnp():
                     old_dnp = fp.IsDNP()
                     if old_dnp != new_dnp:
@@ -320,19 +322,16 @@ def get_vn_dict(board):
                     if len(values) > 1:
                         errors.append(f"{ref}: More than one value assigned inside a choice definition.") # TODO add info in which choice def (index value)
                         continue
-                    elif len(parts) == 1 and len(values) < 1:
-                        errors.append(f"{ref}: Default choice does not define a value.") # TODO add info in which choice def (index value)
-                        continue
                     else:
                         for choice in choices:
                             if choice in vns[ref][vn]:
                                 if len(parts) == 1:
-                                    errors.append(f"{ref}: Default choice is defined more than once inside the rule definition.")
+                                    errors.append(f"{ref}: Rule contains more than one default choice definition.")
                                 else:
                                     errors.append(f"{ref}: Choice '{choice}' is defined more than once inside the rule definition.")
                                 continue
                             vns[ref][vn][choice] = {}
-                            vns[ref][vn][choice][key_vals()] = values
+                            vns[ref][vn][choice][key_val()] = values[0] if len(values) > 0 else None
                             vns[ref][vn][choice][key_opts()] = options
 
     if len(vns) == 0:
@@ -346,30 +345,34 @@ def get_vn_dict(board):
         choices = get_choice_dict(vns)
         for ref in vns:
             for vn in vns[ref]:
+                choices_with_value_defined = 0
                 for choice in choices[vn]:
                     if choice in vns[ref][vn]: # TODO check that each choice is contained exactly ONCE in vns!
-                        # There is a specific choice definition, but it does not contain a value.
-                        # Take the value from the default choice (if it exists), keep the options
-                        # as defined in the specific choice definition.
-                        if len(vns[ref][vn][choice][key_vals()]) > 0:
-                            vns[ref][vn][choice][key_val()] = vns[ref][vn][choice][key_vals()][0]
-                        elif key_default() in vns[ref][vn]: # default choice is guaranteed to contain one value
-                            vns[ref][vn][choice][key_val()] = vns[ref][vn][key_default()][key_vals()][0]
-                        else:
-                            errors.append(f"{ref}: No default choice definition available for missing value in definition of choice '{choice}'.")
-                            continue
+                        if vns[ref][vn][choice][key_val()] == None:
+                            # There is a specific choice definition, but it does not contain a value.
+                            # Take the value from the default choice (if it exists), keep the options
+                            # as defined in the specific choice definition.
+                            if key_default() in vns[ref][vn]:
+                                vns[ref][vn][choice][key_val()] = vns[ref][vn][key_default()][key_val()]
                     else:
                         # The specific choice definition is missing. Copy value and options from default
                         # choice definition (if it exists).
-                        if key_default() in vns[ref][vn]: # default choice is guaranteed to contain one value
+                        if key_default() in vns[ref][vn]:
                             vns[ref][vn][choice] = {}
-                            vns[ref][vn][choice][key_val()] = vns[ref][vn][key_default()][key_vals()][0]
+                            vns[ref][vn][choice][key_val()] = vns[ref][vn][key_default()][key_val()]
                             vns[ref][vn][choice][key_opts()] = vns[ref][vn][key_default()][key_opts()]
                         else:
-                            errors.append(f"{ref}: No default choice definition available for missing definition of choice '{choice}'.")
-                            continue
+                            vns[ref][vn][choice] = {}
+                            vns[ref][vn][choice][key_val()] = None
+                            vns[ref][vn][choice][key_opts()] = []
 
-                    vns[ref][vn][choice].pop(key_vals(), None) # clean-up temporary data: remove value list from choice
+                    if vns[ref][vn][choice][key_val()] != None:
+                        choices_with_value_defined += 1
+
+                if not (choices_with_value_defined == 0 or choices_with_value_defined == len(choices[vn])):
+                    errors.append(f"{ref}: Rule mixes choices with defined ({choices_with_value_defined}) and undefined ({len(choices[vn]) - choices_with_value_defined}) values (either all or none must be defined).")
+                    continue
+
                 vns[ref][vn].pop(key_default(), None) # clean-up temporary data: remove default choice data
 
     return vns, errors
@@ -445,7 +448,7 @@ def ShowVariantDialog(board, vn_dict):
 
 class VariantDialog(wx.Dialog):
     def __init__(self, board, vn_dict):
-        super(VariantDialog, self).__init__(pcbnew_parent_window(), title=f'KiVar {version()} Variant Selection', style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER)
+        super(VariantDialog, self).__init__(pcbnew_parent_window(), title=f'KiVar {version()}: Variant Selection', style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER)
 
         self.board = board
         self.vn_dict = vn_dict
@@ -566,8 +569,8 @@ class VariantDialog(wx.Dialog):
         change_text = '\n'.join(changes)
         self.changes_text.SetValue(change_text)
 
-def ShowErrorDialog(errors):
-    dialog = TextDialog(f'KiVar {version()} Initialization Errors', '\n'.join(errors))
+def ShowErrorDialog(title, errors):
+    dialog = TextDialog(f'KiVar {version()}: {title}', '\n'.join(errors))
     dialog.ShowModal()
     dialog.Destroy()
 

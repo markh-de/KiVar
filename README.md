@@ -139,7 +139,7 @@ Default choice definitions consist of only **one part**, i.e. do _not_ contain a
 
 In a default choice definition, all arguments are treated like right of the colon (see above).  Default values and options are handled differently:
 
- * **Values** listed in a default choice definition apply to _all choices that do not contain a value assignment_.  A default choice definition _must_ contain exactly one value.  Specific (non-default) choice definitions do not require to contain a value, as they can inherit the value from the default choice and just override the options.
+ * A **Value** listed in a default choice definition applies to _all choices that do not contain a value assignment_.  That is, a specific choice without a value inherits the value of the default choice, if provided.
  * **Options** listed in a default choice definition apply to _all choices that are not defined in the current variation rule_.  That is, if a specific choice is defined, that definition _always_ overrides all options of the default choice definition.  Options specified in the default choice definition will _not_ be inherited by specific (non-default) choices that are defined in any way inside the same variation rule definition, but only by choices that are exclusively declared (and defined) by _other_ rules (i.e., rules applied to _other components_, but referring to the same variation aspect).
 
 _Example:_ Assuming a rule for symbol A: `EXAMPLE, default_a, CHOICE1 : val_a1, CHOICE2 : val_a2, CHOICE3 : -dnp` and a rule for symbol B: `EXAMPLE, default_b -dnp, CHOICE2 : val_b2, CHOICE3 : val_b3 -dnp`, the following values and options would be used for each of the resulting three choices :
@@ -150,16 +150,22 @@ _Example:_ Assuming a rule for symbol A: `EXAMPLE, default_a, CHOICE1 : val_a1, 
 |`CHOICE2`                      |`val_a2`         |`val_b2`        |
 |`CHOICE3`                      |`default_a -dnp` |`val_b3 -dnp`   |
 
-Default choice definitions can be placed anywhere in the list of choice definitions.  Two recommended ways are to place the default either at the beginning _('default' notation)_ or the end _('else' notation)_ of the choice definitions.  The effect is the same.  It depends on the user's preference how the rule is worded.  For example,
+A default choice definition can be placed anywhere in the list of choice definitions.  Two recommended ways are to place the default either at the beginning _('default' notation)_ or the end _('else' notation)_ of the choice definitions.  The effect is the same.  It depends on the user's preference how the rule is worded.  For example,
 
  * `FOO, 10k, BAR BAZ: 47k` reads like _'Usually a 10k resistor, but in the case of choice `BAR` or `BAZ`, this is a 47k resistor' ('default' notation)._
  * `FOO, BAR BAZ: 47k, 10k` reads like _'For `BAR` and `BAZ`, this is a 47k resistor. For any other choice, this is a 10k resistor' ('else' notation)._
+
+###### Optional Value Assignments
+
+Since version 0.0.3 of KiVar, assigning a value to a choice is optional.  When a component's variation rule does not define values in _any_ of its choices, the value field for that component is not changed when assigning a variation.  This feature is useful for parts that always keep the same value and whose variations only use different attributes (such as DNP).
+
+_Note:_ It is important to understand that a component's variation rule must _either_ define **one value for every choice** _or_ **no value for any choice**.  Using a mixture of choices _including_ values and _not including_ values would lead to an inconsistent state of the value field's content and will therefore raise an error during the initialization stage.
 
 ###### Choice Definition Arguments
 
 Each choice definition may contain the following arguments:
 
- * a **value** (one at most for specific choice definitions, exactly one for default choice definitions) to be assigned to the footprint's value field when that choice is selected during the variation choice selection process, and
+ * a **value** (one at most) to be assigned to the footprint's value field when that choice is selected during the variation choice selection process, and
  * **options** (none or more) to be assigned to the applicable choice(s).
 
 All arguments starting with an _unescaped_ `-` character are considered **options**.
@@ -175,7 +181,7 @@ For the main example defining the `BOOT_SRC` variation aspect, the following ass
 
 Currently only one option is supported:
 
-`dnp` - Sets the following attributes for the related footprint:
+`dnp` — Sets the following attributes for the related footprint:
   * _Do not populate_ (not yet supported in KiCad 7),
   * _Exclude from position files_,
   * _Exclude from Bill of Materials_.
@@ -230,45 +236,106 @@ The following examples are taken from a real project and show a few configurable
 
 Each example is illustrated with a schematic snippet including the values of the `KiVar.Rule` field of each related symbol.
 
-###### Example 1: Boot Source Selection
+###### Example 1: I²C Device Address Selection
 
-This is used for the boot source selection for a Variscite DART-6UL SoM (NXP i.MX6ULL SoC).
-
-The variation choices provide selection between the boot sources `EMMC`, `SD` and `NAND`, as well as an extra choice `JP`, which leaves all configuration resistors DNP, so that the user can configure the board by shorting the solder bridges (JP1, JP2, JP3) manually.
-
-Relevant variation aspect is `BOOT_SRC` with currently selected choice `EMMC`.
-
-![Boot Source Selection](doc-bootsrc.png)
-
-###### Example 2: Simple I²C Device Address Selection
-
-This is used for simple address selection of an I²C device.  Address input A0 switches between device addresses 0x54 (A0=0) and 0x55 (A0=1).
-
-Relevant variation aspect is `EEPROM_ADDR` with currently selected choice `0x54`.
+This is a very simple example, used for address selection of an I²C device.  Address input A0 switches between device addresses 0x54 (A0=0) and 0x55 (A0=1).
 
 ![EEPROM Address Selection](doc-eeprom.png)
 
-###### Example 3: IC Type and Address Selection
+The device address is selected by tying the IC input A0 to either +3V3 or GND, depending on the selected choice.  Inputs A1 and A2 are tied to fixed levels.
 
-This is used for selection of an I/O expander IC type as well as its I²C address.  Different (footprint-compatible!) IC types interpret the input on address select line "A2" differently.  See the text callout in the image for details.
+How to read the rules:
 
-This example really implements two simple aspects in one variation aspect definition: The type of the IC and the address.  As both aspects depend on each other and can only be defined in a combined way, all possible combinations must be defined.  It is recommended to use the same dedicated sub-aspect separation character (_slash_ used in this example) in the variation name as well as the choice names to make it obvious to the user which sub-choice applies to which sub-aspect.
+ * Variation aspect is `EEPROM_ADDR` (with choice `0x54` currently applied in the figure).
+ * **R1**: For choice `0x55` this part will be fitted (empty definition, hence fitted), else DNP (default choice).
+ * **R2**: Similarly, for choice `0x54` this part will be fitted, else DNP.
 
-Relevant variation aspect is `IOEXP_TYPE/ADDR` (read as: sub-aspects `IOEXP_TYPE` and `IOEXP_ADDR`) with currently selected choice `9539/0x74` (read as: `9539` selected for `IOEXP_TYPE`, `0x74` selected for `IOEXP_ADDR`).
+Alternatively, the rules in this example could explicitly list _those_ choices that make the corresponding parts _DNP_.  However, with the above notation, the rules can be read more naturally.  That is, choice 0x55 is listed in the upper resistor and leads to high voltage level and choice 0x54 is listed in the lower resistor and leads to low voltage level.
 
-_Note:_ In this example, the value of the IC itself is also changed depending on the variation choice.  However, in its current state KiVar can only change part values, no other fields, such as ordering information (this may be implemented in the future).
+###### Example 2: Boot Source Selection
 
-![Device and Address Selection](doc-ioexp.png)
+This is used for the boot source device selection for a Variscite DART-6UL SoM (NXP i.MX6ULL SoC).
+
+![Boot Source Selection](doc-bootsrc.png)
+
+The variation choices provide selection between the boot sources `EMMC`, `SD` and `NAND`, as well as an extra choice `JP` (which leaves _all_ configuration resistors DNP, so that the user can configure the board by shorting the solder bridges JP1, JP2, JP3 manually).
+
+How to read the rules:
+
+ * Variation aspect is `BOOT_SRC` (with choice `EMMC` currently applied in the figure).
+ * **R9**: For choices `JP` and `EMMC` this part is DNP, else (`SD` and `NAND`) fitted.
+ * **R10**: For choices `JP`, `SD` and `EMMC` this part is DNP, else (`NAND`) fitted.
+ * **R11**: For choices `JP`, `SD` and `NAND` this part is DNP, else (`EMMC`) fitted.
+
+###### Example 3: Undervoltage Trip Points
+
+Typical usecases for variations are resistor divider networks, such as voltage regulator feedback dividers or — in this case — a voltage divider with two taps for a programmable hysteresis on an undervoltage lock-out (UVLO) circuit.
+
+![UVLO low and high voltage trip points selection](doc-uvlo.png)
+
+The used variation aspect defines all four resistors (only two of them with varying values), allowing to select the lower (cut-off) and higher (recovery) voltage limits for the supply voltage monitor IC.
+
+How to read the rules:
+
+ * Variation aspect is `UVLO_HYST` (with choice `3.15V/3.57V` currently applied in the figure).
+ * **R12**: For choice `2.41V/3.40V` the value is `0Ω`, for choice `3.15V/3.57V`, the value is `309kΩ`.
+ * **R13**: The value is always set to `1MΩ`.  It is not really required to apply a value, or to use a variation rule at all for this symbol.  However, in case more choices are added in the future, it is very likely that the value of this resistor will change.  Hence the resistor symbol has the rule entry already prepared for easy introduction of new choices.
+ * **R14**: For choice `2.41V/3.40V` the value is `309kΩ`, for choice `3.15V/3.57V`, the value is `100kΩ`.
+ * **R15**: The value is always set to `750kΩ`.  Same explanation applies as for R13.
 
 ###### Example 4: IC Variant Selection
 
-This is used for selection of peripheral parts on a boost-buck-converter IC.  There are fixed and adjustable voltage variants of that IC.  Depending on the availability of parts, this helps to quickly select between assembly options.
-
-Relevant variation aspect is `ISL91127` with currently selected choice `IRAZ`.
-
-_Note:_ In this example, the IC itself keeps its original value (IC variant).  In its current state KiVar can only change part values, no other fields, such as ordering information (this may be implemented in the future).
+This is used for selection of peripheral parts on a boost-buck-converter IC, which is available as _fixed_ (IRNZ suffix) and _adjustable_ (IRAZ suffix) voltage variants (just like many LDOs are, too).  Depending on the market availability of those IC variants, this variation aspect helps to quickly select between assembly options.
 
 ![Switching between fixed and adjustable voltage IC variant](doc-vreg.png)
+
+The fixed voltage IC variant requires a direct feedback of the output voltage to the FB pin, while the adjustable voltage IC variant requires a typical feedback resistor network, including a capacitance of 66pF for stabilization.
+
+How to read the rules:
+
+ * Variation aspect is `ISL91127` (with choice `IRAZ` currently applied in the figure).
+ * **C5**, **C6**: For choice `IRNZ` this part is DNP, else (`IRAZ`) fitted.
+ * **R16**: For choice `IRNZ` the value is `0Ω` (fixed version using direct output voltage feedback), for choice `IRAZ` the value is `1MΩ` (adjustable version using a voltage divider for feedback).
+ * **R17**: For choice `IRNZ` this part is DNP (fixed version only has direct feedback, no resistor network), else (`IRAZ`) it is fitted (adjustable version using a voltage divider for feedback).
+
+_Note:_ The rule for **R16** is the _only_ rule explicitly mentioning the choice `IRAZ`, declaring that choice name for all rules that refer to the same variation aspect (`ISL91127`).  For every aspect, you need at least one rule explicitly mentioning a choice for the choice name to be declared and selectable.
+
+_Note:_ In this example, the IC itself keeps its original value (part number without IC variant suffix).  In its current state KiVar can only change part values, no other fields (e.g. ordering information).  If you want to switch between different part types (with different symbols or ordering information) or footprints, you need to use multiple _alternate_ symbol instances with each one defining its own set of relevant fields and only one of them actually fitted (refer to next example).
+
+###### Example 5: IC Type and Address Selection
+
+This is used for selection of an I/O expander IC type (953**5** vs. 953**9**) along with its I²C address.  Different (footprint-compatible!) IC types interpret the input on pin 3 differently ("A2" vs. "/RESET").  See the text callout in the figure for details.
+
+![Device and Address Selection](doc-ioexp.png)
+
+This example really implements two simple aspects in one variation aspect definition: The type of the IC and the device address.  As both aspects depend on each other and can only be defined in a combined way, all possible combinations must be defined.  It is recommended to use the same dedicated sub-aspect separation character (`/` used in this example) in the variation name as well as the choice names to make it obvious to the user which sub-choice applies to which sub-aspect.
+
+In order to **switch the full set of ordering information or symbol and footprint library references** stored in the symbol fields, this example selects one of two alternate symbol instances, each using a slightly different symbol drawing (note the difference on pin 3).
+
+In general, this variation technique can be used to switch between symbols that refer to either the same footprint (as in this example) or a different footprint shape (e.g. SMT vs. THT, or different SMT package sizes), which can exist side by side or even overlaid in the same spot of the PCB (only the footprints, _not_ the actual components!).
+
+_Hint:_ Should you decide to use multiple overlapping footprint instances (of course, only one of them fitted with the actual component), the following custom DRC rule might become handy:
+
+    (version 1)
+
+    (rule "Allow overlapping courtyards for DNP parts"
+        (condition "A.Type == 'Footprint' && B.Type == 'Footprint' && A.Do_not_populate")
+        (constraint courtyard_clearance (min -1mm))
+    )
+
+_Note:_ If copper pads of multiple _alternate(!)_ footprints do overlap, it is important to assign the same net to all overlapping pads, in order to avoid DRC errors.  Some pads of alternate footprints will be applied the same net anyway (as in this example), but _unused_ symbol pins will be automatically applied calculated net names which will naturally conflict with each other if their copper pads overlap in the PCB.  It is then required to connect the corresponding unused pins with each other in the schematic, using wires or labels.  In this example, visually distinguishable labels were chosen for such connections that are otherwise without function.
+
+How to read the sub-aspects:
+
+This example uses variation `IOEXP_TYPE/ADDR` (read as: sub-aspects `IOEXP_TYPE` and `IOEXP_ADDR`) with choice `9539/0x74` (read as: `9539` selected for `IOEXP_TYPE`, `0x74` selected for `IOEXP_ADDR`) currently applied in the figure.
+
+How to read the rules:
+
+ * Variation aspect is `IOEXP_TYPE/ADDR` (see above).
+ * **R18**: This is DNP by default (i.e. for each choice not defined otherwise in this rule).  For choice `9535/0x24` and `9539/0x74` this part will be fitted (the empty choice definition overrides all options in the default choice, i.e. no DNP set for these specific choices).
+ * **R19**: This is DNP by default (like R18).  For choice `9535/0x20` this part will be fitted (same reason as for R18).
+ * **U4**: This rule explicitly lists all choices for which this part is set DNP: `9539/0x74`.  For other choices the part will be fitted.
+ * **U5**: This rule explicitly lists all choices for which this part is set DNP: `9535/0x20` and `9539/0x74`.  For other choices the part will be fitted.
 
 ### Rules Application
 
