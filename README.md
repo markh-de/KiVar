@@ -159,7 +159,7 @@ A default choice definition can be placed anywhere in the list of choice definit
 
 Since version 0.0.3 of KiVar, assigning a value to a choice is optional.  When a component's variation rule does not define values in _any_ of its choices, the value field for that component is not changed when assigning a variation.  This feature is useful for parts that always keep the same value and whose variations only use different attributes (such as DNP).
 
-_Note:_ It is important to understand that a component's variation rule must _either_ define **one value for every choice** _or_ **no value for any choice**.  Using a mixture of choices _including_ values and _not including_ values would lead to an inconsistent state in the value field and is therefore forbidden and will raise an error.
+_Note:_ It is important to understand that a component's variation rule must _either_ define **one value for every choice** _or_ **no value for any choice**.  Using a mixture of choices _including_ values and _not including_ values would lead to an inconsistent state of the value field's content and will therefore raise an error during the initialization stage.
 
 ###### Choice Definition Arguments
 
@@ -181,7 +181,7 @@ For the main example defining the `BOOT_SRC` variation aspect, the following ass
 
 Currently only one option is supported:
 
-`dnp` - Sets the following attributes for the related footprint:
+`dnp` — Sets the following attributes for the related footprint:
   * _Do not populate_ (not yet supported in KiCad 7),
   * _Exclude from position files_,
   * _Exclude from Bill of Materials_.
@@ -240,27 +240,25 @@ Each example is illustrated with a schematic snippet including the values of the
 
 This is a very simple example, used for address selection of an I²C device.  Address input A0 switches between device addresses 0x54 (A0=0) and 0x55 (A0=1).
 
+![EEPROM Address Selection](doc-eeprom.png)
+
 The device address is selected by tying the IC input A0 to either +3V3 or GND, depending on the selected choice.  Inputs A1 and A2 are tied to fixed levels.
 
 How to read the rules:
 
  * Variation aspect is `EEPROM_ADDR` (with choice `0x54` currently applied in the figure).
  * **R1**: For choice `0x55` this part will be fitted (empty definition, hence fitted), else DNP (default choice).
- * **R2**: For choice `0x54` this part will be fitted (empty definition, hence fitted), else DNP (default choice).
+ * **R2**: Similarly, for choice `0x54` this part will be fitted, else DNP.
 
-This could also be written with the choices listed that make the parts DNP.  But with the above notation, the rules can be read more natually.  That is, choice 0x55 is listed in the upper resistor and leads to high voltage level and choice 0x54 is listed in the lower resistor and leads to low voltage level.
-
-Relevant variation aspect is `EEPROM_ADDR` with currently selected choice `0x54`.
-
-![EEPROM Address Selection](doc-eeprom.png)
-
-The example uses variation `EEPROM_ADDR` with choice `0x54` currently applied in above the figure.
+Alternatively, the rules in this example could explicitly list _those_ choices that make the corresponding parts _DNP_.  However, with the above notation, the rules can be read more naturally.  That is, choice 0x55 is listed in the upper resistor and leads to high voltage level and choice 0x54 is listed in the lower resistor and leads to low voltage level.
 
 ###### Example 2: Boot Source Selection
 
-This is used for the boot source selection for a Variscite DART-6UL SoM (NXP i.MX6ULL SoC).
+This is used for the boot source device selection for a Variscite DART-6UL SoM (NXP i.MX6ULL SoC).
 
-The variation choices provide selection between the boot sources `EMMC`, `SD` and `NAND`, as well as an extra choice `JP`, which leaves all configuration resistors DNP, so that the user can configure the board by shorting the solder bridges (JP1, JP2, JP3) manually.
+![Boot Source Selection](doc-bootsrc.png)
+
+The variation choices provide selection between the boot sources `EMMC`, `SD` and `NAND`, as well as an extra choice `JP` (which leaves _all_ configuration resistors DNP, so that the user can configure the board by shorting the solder bridges JP1, JP2, JP3 manually).
 
 How to read the rules:
 
@@ -269,50 +267,54 @@ How to read the rules:
  * **R10**: For choices `JP`, `SD` and `EMMC` this part is DNP, else (`NAND`) fitted.
  * **R11**: For choices `JP`, `SD` and `NAND` this part is DNP, else (`EMMC`) fitted.
 
-![Boot Source Selection](doc-bootsrc.png)
-
 ###### Example 3: Undervoltage Trip Points
 
-Typical usecases for variations are resistor divider networks, such as voltage regulator feedback dividers or - in this case - a voltage divider with two taps for a programmable hysteresis on an undervoltage lock-out (UVLO) circuit.
+Typical usecases for variations are resistor divider networks, such as voltage regulator feedback dividers or — in this case — a voltage divider with two taps for a programmable hysteresis on an undervoltage lock-out (UVLO) circuit.
 
-The variation defines all four resistors (only two of them with varying values), selecting the lower (cut-off) and higher (recovery) voltage limit for the supply voltage monitor IC.
+![UVLO low and high voltage trip points selection](doc-uvlo.png)
+
+The used variation aspect defines all four resistors (only two of them with varying values), allowing to select the lower (cut-off) and higher (recovery) voltage limits for the supply voltage monitor IC.
 
 How to read the rules:
 
  * Variation aspect is `UVLO_HYST` (with choice `3.15V/3.57V` currently applied in the figure).
  * **R12**: For choice `2.41V/3.40V` the value is `0Ω`, for choice `3.15V/3.57V`, the value is `309kΩ`.
- * **R13**: The value is always set to `1MΩ`.  It is not required to use a rule here or to define any value.  However, in case more choices are added in the future, it is very likely that the value of this resistor will change.  Hence the resistor symbol has the rule entry already prepared.
+ * **R13**: The value is always set to `1MΩ`.  It is not really required to apply a value, or to use a variation rule at all for this symbol.  However, in case more choices are added in the future, it is very likely that the value of this resistor will change.  Hence the resistor symbol has the rule entry already prepared for easy introduction of new choices.
  * **R14**: For choice `2.41V/3.40V` the value is `309kΩ`, for choice `3.15V/3.57V`, the value is `100kΩ`.
- * **R15**: Same as R13.
-
-![UVLO low and high voltage trip points selection](doc-uvlo.png)
+ * **R15**: The value is always set to `750kΩ`.  Same explanation applies as for R13.
 
 ###### Example 4: IC Variant Selection
 
-This is used for selection of peripheral parts on a boost-buck-converter IC, which is available as _fixed_ (IRNZ suffix) and _adjustable_ (IRAZ suffix) voltage variants (just like many simple LDOs are, too).  Depending on the availability of parts, this helps to quickly select between assembly options.
+This is used for selection of peripheral parts on a boost-buck-converter IC, which is available as _fixed_ (IRNZ suffix) and _adjustable_ (IRAZ suffix) voltage variants (just like many LDOs are, too).  Depending on the market availability of those IC variants, this variation aspect helps to quickly select between assembly options.
+
+![Switching between fixed and adjustable voltage IC variant](doc-vreg.png)
+
+The fixed voltage IC variant requires a direct feedback of the output voltage to the FB pin, while the adjustable voltage IC variant requires a typical feedback resistor network, including a capacitance of 66pF for stabilization.
 
 How to read the rules:
 
  * Variation aspect is `ISL91127` (with choice `IRAZ` currently applied in the figure).
  * **C5**, **C6**: For choice `IRNZ` this part is DNP, else (`IRAZ`) fitted.
- * **R16**: For choice `IRNZ` the value is `0Ω` (fixed version using direct output voltage feedback), for choice `IRAZ` the value is `1MΩ` (adjustable version using a voltage divider for feedback).  _Note:_ This rule explicitly names choice `IRAZ`, declaring the choice name for all rules that refer to the same variation aspect (`ISL91127`).  You need at least one rule explicitly naming a choice for the choice to be declared and selectable.
+ * **R16**: For choice `IRNZ` the value is `0Ω` (fixed version using direct output voltage feedback), for choice `IRAZ` the value is `1MΩ` (adjustable version using a voltage divider for feedback).
  * **R17**: For choice `IRNZ` this part is DNP (fixed version only has direct feedback, no resistor network), else (`IRAZ`) it is fitted (adjustable version using a voltage divider for feedback).
 
-_Note:_ In this example, the IC itself keeps its original value (part number without IC variant suffix).  In its current state KiVar can only change part values, no other fields, such as ordering information.  If you want to switch between different part types (with different symbols or ordering information) or footprints, you need to use multiple symbol instances (each one defining its own set of ordering information etc.) with only one of them actually fitted (refer to next example).
+_Note:_ The rule for **R16** is the _only_ rule explicitly mentioning the choice `IRAZ`, declaring that choice name for all rules that refer to the same variation aspect (`ISL91127`).  For every aspect, you need at least one rule explicitly mentioning a choice for the choice name to be declared and selectable.
 
-![Switching between fixed and adjustable voltage IC variant](doc-vreg.png)
+_Note:_ In this example, the IC itself keeps its original value (part number without IC variant suffix).  In its current state KiVar can only change part values, no other fields (e.g. ordering information).  If you want to switch between different part types (with different symbols or ordering information) or footprints, you need to use multiple _alternate_ symbol instances with each one defining its own set of relevant fields and only one of them actually fitted (refer to next example).
 
 ###### Example 5: IC Type and Address Selection
 
-This is used for selection of an I/O expander IC type (953**5** vs. 953**9**) along with its I²C address.  Different (footprint-compatible!) IC types interpret the input on pin 3 differently ("A2" vs. "/RESET").  See the text callout in the image for details.
+This is used for selection of an I/O expander IC type (953**5** vs. 953**9**) along with its I²C address.  Different (footprint-compatible!) IC types interpret the input on pin 3 differently ("A2" vs. "/RESET").  See the text callout in the figure for details.
 
-This example really implements two simple aspects in one variation aspect definition: The type of the IC and the address.  As both aspects depend on each other and can only be defined in a combined way, all possible combinations must be defined.  It is recommended to use the same dedicated sub-aspect separation character (_slash_ used in this example) in the variation name as well as the choice names to make it obvious to the user which sub-choice applies to which sub-aspect.
+![Device and Address Selection](doc-ioexp.png)
+
+This example really implements two simple aspects in one variation aspect definition: The type of the IC and the device address.  As both aspects depend on each other and can only be defined in a combined way, all possible combinations must be defined.  It is recommended to use the same dedicated sub-aspect separation character (`/` used in this example) in the variation name as well as the choice names to make it obvious to the user which sub-choice applies to which sub-aspect.
 
 In order to **switch the full set of ordering information or symbol and footprint library references** stored in the symbol fields, this example selects one of two alternate symbol instances, each using a slightly different symbol drawing (note the difference on pin 3).
 
 In general, this variation technique can be used to switch between symbols that refer to either the same footprint (as in this example) or a different footprint shape (e.g. SMT vs. THT, or different SMT package sizes), which can exist side by side or even overlaid in the same spot of the PCB (only the footprints, _not_ the actual components!).
 
-_Hint:_ Should you decide to use multiple footprint instances (of course, only one of them fitted with the actual component), the following custom DRC rule might become handy:
+_Hint:_ Should you decide to use multiple overlapping footprint instances (of course, only one of them fitted with the actual component), the following custom DRC rule might become handy:
 
     (version 1)
 
@@ -321,7 +323,7 @@ _Hint:_ Should you decide to use multiple footprint instances (of course, only o
         (constraint courtyard_clearance (min -1mm))
     )
 
-_Note:_ If copper pads of multiple _alternate(!)_ footprints do overlap, it is important to assign the same net to all overlapping pads, in order to avoid DRC errors.  Some pads of alternate footprints will be applied the same net anyway (as in this example), but _unused_ symbol pins will be automatically applied calculated net names which will naturally conflict with each other when their copper pads overlap in the PCB.  It is then required to connect the corresponding unused pins with each other in the schematic, using wires or labels.  In this example, visually distinguishable labels were chosen for such connections that are otherwise without function.
+_Note:_ If copper pads of multiple _alternate(!)_ footprints do overlap, it is important to assign the same net to all overlapping pads, in order to avoid DRC errors.  Some pads of alternate footprints will be applied the same net anyway (as in this example), but _unused_ symbol pins will be automatically applied calculated net names which will naturally conflict with each other if their copper pads overlap in the PCB.  It is then required to connect the corresponding unused pins with each other in the schematic, using wires or labels.  In this example, visually distinguishable labels were chosen for such connections that are otherwise without function.
 
 How to read the sub-aspects:
 
@@ -334,8 +336,6 @@ How to read the rules:
  * **R19**: This is DNP by default (like R18).  For choice `9535/0x20` this part will be fitted (same reason as for R18).
  * **U4**: This rule explicitly lists all choices for which this part is set DNP: `9539/0x74`.  For other choices the part will be fitted.
  * **U5**: This rule explicitly lists all choices for which this part is set DNP: `9535/0x20` and `9539/0x74`.  For other choices the part will be fitted.
-
-![Device and Address Selection](doc-ioexp.png)
 
 ### Rules Application
 
