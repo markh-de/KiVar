@@ -8,14 +8,14 @@ from os import path as os_path
 
 # TODO:
 #
-# * Use None where applicable (instead of empty string)
+# * Add a Setup plugin (separate button) that defines DNP->NoPos/NoBom behavior. Having this in a separate dialog (which
+#   also takes care of nonvolatile storage of the settings) removes any dynamic reload/refresh requirements.
+#   (Setup plugin shall have similar icon with wrench in the foreground.)
 #
-# * Add options panel incl. "Reset" button, that preselects all choices depending on options (because preselect
-#   criteria depend on these checkbox states).
+# * Setup plugin: Save option settings as some object in PCB (text box?)
 #
 # * After applying configuration, define board variables containing the choice for each vn, e.g. ${KIVAR.BOOT_SEL} => NAND
 #
-# * Save option settings as some object in PCB (text box?)
 
 class VariantPlugin(pcbnew.ActionPlugin):
     def defaults(self):
@@ -181,6 +181,8 @@ def detect_current_choices(board, vn_dict):
                     selection[vn] = ''
 
     return selection
+
+# TODO check each '' or "" and use None, if applicable
 
 def apply_choices(board, vn_dict, selection, dry_run = False):
     changes = []
