@@ -359,6 +359,8 @@ If the values and attributes do not exactly match one definite choice (for a var
 
 In case the defined variation rules cannot be parsed without problems, an error message window with a list of problems will appear.  Each of these problems must then be fixed in order to successfully start the plugin.
 
+In KiCad 7.99 Nightlies from around 2023-10-18, clicking an item in the error list focuses the corresponding footprint in the pcbnew canvas.
+
 #### Variation Choices Selection
 
 If all rules can be parsed without problems, the main dialog window appears.
@@ -369,7 +371,7 @@ For the above [real-world examples](#real-world-examples), the selection dialog 
 
 For each of the listed variation aspects a variation choice can now be selected.  If the values and attributes of the footprint(s) related to a variation aspect shall not be modified, the entry _'\<unset>'_ can be selected for that variation aspect.  In this case, the corresponding variation is skipped during the assignment stage and related footprints remain unmodified.
 
-The text section below the selection area summarizes all component value and attribute changes to be performed for each related footprint if the current variation configuration is applied.
+The change list section below the selection area summarizes all component value and attribute changes to be performed for each related footprint if the current variation configuration is applied.  In KiCad 7.99 Nightlies from around 2023-10-18, clicking an item in the change list focuses the corresponding footprint in the pcbnew canvas.
 
 After selecting a few different variation choices, the dialog window may look like the following:
 
