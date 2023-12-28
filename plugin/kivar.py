@@ -254,74 +254,73 @@ def get_vn_dict(board):
 
             vns[ref] = {}
             try:
-                vn_def = split_ruledef(field_value, ',', False)
+                vn_defs = split_raw_str(field_value, ' ', True)
             except Exception as e:
-                errors.append([ref, f"{ref}: Rule parser error: {str(e)}."])
+                errors.append([ref, f"{ref}: Rule splitter error: {str(e)}."])
                 continue
 
-            if len(vn_def) < 2:
+            if len(vn_defs) < 2:
                 errors.append([ref, f"{ref}: Invalid number of elements in rule definition field '{vn_field_name}'."])
                 continue
 
             section_is_vn = True
-            for section in vn_def:
+            vn = None
+            for section in vn_defs:
+                try:
+                    name, content = split_choice(section)
+                except Exception as e:
+                    errors.append([ref, f"{ref}: Section splitter error: {str(e)}."])
+                    continue
+
                 if section_is_vn:
                     # First rule section contains the Vn name only.
                     # TODO clarify rules for Vn name (forbidden characters: "*" ".")
-                    try:
-                        parts = split_ruledef(section, ' ', True)
-                    except Exception as e:
-                        errors.append([ref, f"{ref}: Variation name parser error: {str(e)}."])
+                    section_is_vn = False
+                    cooked_name = cook_raw_string(name)
+                    if cooked_name is None or cooked_name == '':
+                        errors.append([ref, f"{ref}: Variation aspect name must not be empty."])
                         continue
-                    if len(parts) != 1:
-                        errors.append([ref, f"{ref}: Variation name is not exactly one word."])
+                    if content is not None:
+                        errors.append([ref, f"{ref}: First rule section must be variation name without parenthesis."])
                         continue
-                    vn = cook_raw_string(parts[0])
+                    vn = cooked_name
                     if not vn in vns[ref]:
                         vns[ref][vn] = {}
-                    section_is_vn = False
-                else:
+                elif vn is not None:
                     # Any following rule sections are Vn Choice definitions.
-                    try:
-                        parts = split_ruledef(section, ':', False)
-                    except Exception as e:
-                        errors.append([ref, f"{ref}: Choice parser error: {str(e)}."])
+                    if name is None or name == '':
+                        errors.append([ref, f"{ref}: Variation choice name list must not be empty."])
                         continue
-
-                    if len(parts) == 0:
-                        errors.append([ref, f"{ref}: Empty choice definition."])
+                    if content is None:
+                        errors.append([ref, f"{ref}: Variation choice definition must have parenthesis."])
                         continue
-                    elif len(parts) > 2:
-                        errors.append([ref, f"{ref}: Choice definition has more than two parts."])
-                        continue
-
-                    if len(parts) == 1: # default choice definition
-                        args_part_idx = 0
-                        choice_list = [key_default()]
-                    else:
-                        args_part_idx = 1
-                        try:
-                            choice_list = split_ruledef(parts[0], ' ', True)
-                        except Exception as e:
-                            errors.append([ref, f"{ref}: Choice names parser error: {str(e)}."])
-                            continue
 
                     try:
-                        raw_args = split_ruledef(parts[args_part_idx], ' ', True)
+                        raw_names = split_raw_str(name, ',', False)
                     except Exception as e:
-                        errors.append([ref, f"{ref}: Choice arguments parser error: {str(e)}."])
+                        errors.append([ref, f"{ref}: Choice names splitter error: {str(e)}."])
+                        continue
+
+                    try:
+                        raw_args = split_raw_str(content, ' ', True)
+                    except Exception as e:
+                        errors.append([ref, f"{ref}: Choice arguments splitter error: {str(e)}."])
                         continue
 
                     choices = []
-                    for choice_name in choice_list:
-                        choices.append(cook_raw_string(choice_name))
+                    for choice_name in raw_names:
+                        cooked_name = cook_raw_string(choice_name)
+                        if cooked_name == '':
+                            errors.append([ref, f"{ref}: Variation choice name must not be empty."])
+                            continue
+                        choices.append(cooked_name)
                     
                     values = []
                     options = []
                     for raw_arg in raw_args:
                         # TODO 'try/except', or is string safe after above processing?
                         arg = cook_raw_string(raw_arg)
-                        if raw_arg.startswith('-'): # not supposed to match if arg starts with '\-' or '"-'
+                        if raw_arg.startswith('-'): # not supposed to match if arg starts with \- or '-'
                             option = arg[1:]
                             if not option in accepted_options:
                                 errors.append([ref, f"{ref}: Unknown or invalid option '{option}'."])
@@ -331,15 +330,12 @@ def get_vn_dict(board):
                             values.append(arg)
 
                     if len(values) > 1:
-                        errors.append([ref, f"{ref}: More than one value assigned inside a choice definition."]) # TODO add info in which choice def (index value)
+                        errors.append([ref, f"{ref}: More than one value provided inside a choice definition."]) # TODO add info in which choice def (index value)
                         continue
                     else:
                         for choice in choices:
                             if choice in vns[ref][vn]:
-                                if len(parts) == 1:
-                                    errors.append([ref, f"{ref}: Rule contains more than one default choice definition."])
-                                else:
-                                    errors.append([ref, f"{ref}: Choice '{choice}' is defined more than once inside the rule definition."])
+                                errors.append([ref, f"{ref}: Choice '{choice}' is defined more than once inside the rule definition."])
                                 continue
                             vns[ref][vn][choice] = {}
                             vns[ref][vn][choice][key_val()] = values[0] if len(values) > 0 else None
@@ -396,33 +392,97 @@ def get_choice_dict(vn_dict):
 
     return choices
 
-def split_ruledef(str, sep, multisep):
+def split_choice(str):
+    item = []
+    outside = None
+    inside = None
+    escaped = False
+    quoted = False
+    parens = 0
+    end_expected = False
+    for c in str:
+        if end_expected:
+            raise ValueError('String extends beyond closing parenthesis')
+        elif escaped:
+            escaped = False
+            item.append(c)
+        elif c == '\\':
+            escaped = True
+            item.append(c)
+        elif c == "'":
+            quoted = not quoted
+            item.append(c)
+        elif c == '(' and not quoted:
+            parens += 1
+            if parens == 1:
+                outside = ''.join(item)
+                inside = '' # inside: no parens -> None, empty parens -> ''
+                item = []
+            else:
+                item.append(c)
+        elif c == ')' and not quoted:
+            if parens > 0:
+                parens -= 1
+                if parens == 0:
+                    inside = ''.join(item)
+                    item = []
+                    end_expected = True
+                else:
+                    item.append(c)
+            else:
+                raise ValueError('Unmatched closing parenthesis')
+        else:
+            item.append(c)
+    if parens > 0:
+        raise ValueError('Unmatched opening parenthesis')
+    if quoted:
+        raise ValueError('Unmatched quote character in string')
+    if escaped:
+        raise ValueError('Unterminated escape sequence at end of string')
+    if len(item) > 0:
+        outside = ''.join(item)
+
+    return outside, inside
+
+def split_raw_str(str, sep, multisep):
     result = []
     item = []
     escaped = False
     quoted = False
+    parens = 0
     for c in str:
         if escaped:
-            item.append(c)
             escaped = False
+            item.append(c)
         elif c == '\\':
-            item.append(c)
             escaped = True
-        elif c == "'":
             item.append(c)
+        elif c == "'":
             quoted = not quoted
-        elif c == sep and not quoted:
+            item.append(c)
+        elif c == '(' and not quoted:
+            parens += 1
+            item.append(c)
+        elif c == ')' and not quoted:
+            if parens > 0:
+                parens -= 1
+            else:
+                raise ValueError('Unmatched closing parenthesis')
+            item.append(c)
+        elif c == sep and not quoted and parens == 0:
             if not multisep or len(item) > 0:
                 result.append(''.join(item))
                 item = []
         else:
             item.append(c)
-    if not multisep or len(item) > 0:
-        result.append(''.join(item))
+    if parens > 0:
+        raise ValueError('Unmatched opening parenthesis')
     if quoted:
         raise ValueError('Unmatched quote character in string')
     if escaped:
         raise ValueError('Unterminated escape sequence at end of string')
+    if not multisep or len(item) > 0:
+        result.append(''.join(item))
 
     return result
 
