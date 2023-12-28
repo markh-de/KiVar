@@ -246,13 +246,13 @@ def get_vn_dict(board):
                 errors.append([ref, f"{ref}: Multiple footprints with same reference containing a rule definition field '{vn_field_name}'."])
                 continue
 
-            vns[ref] = {}
             field_value = wrap_GetField(fp, vn_field_name)
             if len(field_value) < 1:
                 # field exists, but is empty. ignore it.
                 # a field containing only white-space is considered an error.
                 continue
 
+            vns[ref] = {}
             try:
                 vn_def = split_ruledef(field_value, ',', False)
             except Exception as e:
