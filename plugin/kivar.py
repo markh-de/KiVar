@@ -68,8 +68,8 @@ def variant_cfg_field_name():
 def help_url():
     return 'https://github.com/markh-de/KiVar#usage'
 
-def opt_dnp():
-    return 'dnp'
+def opt_unfit():
+    return '!'
 
 def key_val():
     return 'v'
@@ -122,7 +122,7 @@ def detect_current_choices(board, vn_dict):
             eliminate_choices = []
             for choice in choices[vn]:
                 fp_choice_value = vn_dict[ref][vn][choice][key_val()]
-                fp_choice_dnp = opt_dnp() in vn_dict[ref][vn][choice][key_opts()]
+                fp_choice_unfit = opt_unfit() in vn_dict[ref][vn][choice][key_opts()]
                 eliminate = False
 
                 if fp_choice_value is not None:
@@ -132,15 +132,15 @@ def detect_current_choices(board, vn_dict):
                 # TODO these should only be compared if their checkboxes are checked or the config requests it.
 
                 if use_attr_excl_from_bom():
-                    if fp_excl_bom != fp_choice_dnp:
+                    if fp_excl_bom != fp_choice_unfit:
                         eliminate = True
 
                 if use_attr_excl_from_posfiles():
-                    if fp_excl_pos != fp_choice_dnp:
+                    if fp_excl_pos != fp_choice_unfit:
                         eliminate = True
 
                 if use_attr_dnp():
-                    if fp_dnp != fp_choice_dnp:
+                    if fp_dnp != fp_choice_unfit:
                         eliminate = True
 
                 if eliminate: # defer elimination until after iteration
@@ -172,19 +172,19 @@ def detect_current_choices(board, vn_dict):
             selected_choice = selection[vn]
             if selected_choice != '':
                 new_value = vn_dict[ref][vn][selected_choice][key_val()]
-                new_dnp = opt_dnp() in vn_dict[ref][vn][selected_choice][key_opts()]
+                new_unfit = opt_unfit() in vn_dict[ref][vn][selected_choice][key_opts()]
                 mismatch = False
                 if new_value is not None:
                     if fp_value != new_value:
                         mismatch = True
                 if use_attr_excl_from_bom():
-                    if fp_excl_bom != new_dnp:
+                    if fp_excl_bom != new_unfit:
                         mismatch = True
                 if use_attr_excl_from_posfiles():
-                    if fp_excl_pos != new_dnp:
+                    if fp_excl_pos != new_unfit:
                         mismatch = True
                 if use_attr_dnp():
-                    if fp_dnp != new_dnp:
+                    if fp_dnp != new_unfit:
                         mismatch = True
                 if mismatch:
                     selection[vn] = ''
@@ -209,25 +209,25 @@ def apply_choices(board, vn_dict, selection, dry_run = False):
                         changes.append([ref, f"Change {ref} value from '{old_value}' to '{new_value}' ({vn_text})."])
                         if not dry_run:
                             fp.SetValue(new_value)
-                new_dnp = opt_dnp() in vn_dict[ref][vn][selected_choice][key_opts()]
+                new_unfit = opt_unfit() in vn_dict[ref][vn][selected_choice][key_opts()]
                 if use_attr_dnp():
                     old_dnp = fp.IsDNP()
-                    if old_dnp != new_dnp:
-                        changes.append([ref, f"Change {ref} 'Do not populate' from '{bool_as_text(old_dnp)}' to '{bool_as_text(new_dnp)}' ({vn_text})."])
+                    if old_dnp != new_unfit:
+                        changes.append([ref, f"Change {ref} 'Do not populate' from '{bool_as_text(old_dnp)}' to '{bool_as_text(new_unfit)}' ({vn_text})."])
                         if not dry_run:
-                            fp.SetDNP(new_dnp)
+                            fp.SetDNP(new_unfit)
                 if use_attr_excl_from_bom():
                     old_excl_from_bom = fp.IsExcludedFromBOM()
-                    if old_excl_from_bom != new_dnp:
-                        changes.append([ref, f"Change {ref} 'Exclude from bill of materials' from '{bool_as_text(old_excl_from_bom)}' to '{bool_as_text(new_dnp)}' ({vn_text})."])
+                    if old_excl_from_bom != new_unfit:
+                        changes.append([ref, f"Change {ref} 'Exclude from bill of materials' from '{bool_as_text(old_excl_from_bom)}' to '{bool_as_text(new_unfit)}' ({vn_text})."])
                         if not dry_run:
-                            fp.SetExcludedFromBOM(new_dnp)
+                            fp.SetExcludedFromBOM(new_unfit)
                 if use_attr_excl_from_posfiles():
                     old_excl_from_posfiles = fp.IsExcludedFromPosFiles()
-                    if old_excl_from_posfiles != new_dnp:
-                        changes.append([ref, f"Change {ref} 'Exclude from position files' from '{bool_as_text(old_excl_from_posfiles)}' to '{bool_as_text(new_dnp)}' ({vn_text})."])
+                    if old_excl_from_posfiles != new_unfit:
+                        changes.append([ref, f"Change {ref} 'Exclude from position files' from '{bool_as_text(old_excl_from_posfiles)}' to '{bool_as_text(new_unfit)}' ({vn_text})."])
                         if not dry_run:
-                            fp.SetExcludedFromPosFiles(new_dnp)
+                            fp.SetExcludedFromPosFiles(new_unfit)
     return changes
 
 def get_vn_dict(board):
@@ -235,7 +235,7 @@ def get_vn_dict(board):
     errors = []
     fps = board.GetFootprints()
     fps.sort(key=lambda x: x.GetReference())
-    accepted_options = [opt_dnp()]
+    accepted_options = [opt_unfit()]
 
     vn_field_name = variant_cfg_field_name()
 
