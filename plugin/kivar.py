@@ -511,31 +511,38 @@ class VariantDialog(wx.Dialog):
         self.changes_box_sizer.SetMinSize((640, 280))
 
         self.changes_list_win = wx.ScrolledWindow(self, wx.ID_ANY)
-        self.changes_list_win = wx.ScrolledWindow(self, wx.ID_ANY)
         self.changes_list = PcbItemListBox(self.changes_list_win, board)
 
         self.update_list()
 
-        text_sizer = wx.BoxSizer(wx.VERTICAL)
-        text_sizer.Add(self.changes_list, 1, wx.EXPAND | wx.ALL, 3)
+        changes_list_sizer = wx.BoxSizer(wx.VERTICAL)
+        changes_list_sizer.Add(self.changes_list, 1, wx.EXPAND | wx.ALL, 3)
 
-        self.changes_list_win.SetSizer(text_sizer)
-        self.changes_box_sizer.Add(self.changes_list_win, 1, wx.EXPAND | wx.ALL)
+        self.changes_list_win.SetSizer(changes_list_sizer)
+        self.changes_box_sizer.Add(self.changes_list_win, 1, wx.EXPAND)
 
         sizer.Add(self.changes_box_sizer, 1, wx.EXPAND | wx.ALL, 8)
 
-        # Buttons
+        # Bottom (help link and buttons)
         button_sizer = wx.BoxSizer(wx.HORIZONTAL)
+
+        link = hyperlink.HyperLinkCtrl(self, -1, 'Usage hints', URL=help_url())
+        default_color = wx.Colour()
+        link.SetColours(link=default_color, visited=default_color)
+        link.SetToolTip('Opens a web browser at ' + help_url())
+        link.EnableRollover(False)
 
         ok_button = wx.Button(self, label='Update PCB')
 #        update_button = wx.Button(self, label='Reset Choices')
         cancel_button = wx.Button(self, label='Close')
 
-        button_sizer.Add(cancel_button, 0, wx.ALL, 8)
-#        button_sizer.Add(update_button, 0, wx.ALL, 8)
-        button_sizer.Add(ok_button, 0, wx.ALL, 8)
+        button_sizer.Add(link, 0)
+        button_sizer.AddStretchSpacer(1)
+        button_sizer.Add(cancel_button, 0)
+#        button_sizer.Add(update_button, 0, wx.LEFT, 6)
+        button_sizer.Add(ok_button, 0, wx.LEFT, 6)
 
-        sizer.Add(button_sizer, 0, wx.ALIGN_RIGHT)
+        sizer.Add(button_sizer, 0, wx.EXPAND | wx.ALL, 8)
 
         self.SetSizerAndFit(sizer)
         # TODO avoid 50/50 split between boxes. should be dynamic!
@@ -603,7 +610,7 @@ class MissingRulesDialog(wx.Dialog):
         ok_button = wx.Button(self, wx.ID_OK, 'Close')
         button_sizer.Add(ok_button, 0, wx.ALIGN_CENTRE | wx.ALL, 10)
 
-        sizer.Add(button_sizer, 0, wx.ALIGN_CENTRE | wx.ALL)
+        sizer.Add(button_sizer, 0, wx.ALIGN_CENTRE)
         ok_button.SetFocus()
 
         self.SetSizerAndFit(sizer)
@@ -640,22 +647,39 @@ class PcbItemListDialog(wx.Dialog):
     def __init__(self, title, itemlist, board = None):
         super().__init__(pcbnew_parent_window(), title=title, style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER, size=(800, 500))
         self.refs = []
-
-        list_win = wx.ScrolledWindow(self, wx.ID_ANY)
-        listbox = PcbItemListBox(self, board)
-        listbox.setItemList(itemlist)
-
-        scr_win_sizer = wx.BoxSizer(wx.VERTICAL)
-        scr_win_sizer.Add(listbox, 1, wx.EXPAND | wx.ALL)
-        list_win.SetSizer(scr_win_sizer)
-
-        self.ok_button = wx.Button(self, wx.ID_OK, 'Close')
-        button_sizer = wx.BoxSizer(wx.HORIZONTAL)
-        button_sizer.Add(self.ok_button, 0, wx.ALIGN_RIGHT | wx.ALL, 8)
-
         sizer = wx.BoxSizer(wx.VERTICAL)
-        sizer.Add(list_win, 1, wx.EXPAND | wx.ALL, 8)
-        sizer.Add(button_sizer, 0, wx.ALIGN_RIGHT | wx.ALL)
+
+        # Error messages
+        errors_box = wx.StaticBox(self, label='Errors')
+        errors_box_sizer = wx.StaticBoxSizer(errors_box)
+        errors_box_sizer.SetMinSize((640, 280))
+
+        errors_list_win = wx.ScrolledWindow(self, wx.ID_ANY)
+        errors_list = PcbItemListBox(errors_list_win, board)
+        errors_list.setItemList(itemlist)
+
+        errors_list_sizer = wx.BoxSizer(wx.VERTICAL)
+        errors_list_sizer.Add(errors_list, 1, wx.EXPAND | wx.ALL, 3)
+
+        errors_list_win.SetSizer(errors_list_sizer)
+        errors_box_sizer.Add(errors_list_win, 1, wx.EXPAND)
+
+        sizer.Add(errors_box_sizer, 1, wx.EXPAND | wx.ALL, 8)
+
+        link = hyperlink.HyperLinkCtrl(self, -1, 'Rule implementation hints', URL=help_url())
+        default_color = wx.Colour()
+        link.SetColours(link=default_color, visited=default_color)
+        link.SetToolTip('Opens a web browser at ' + help_url())
+        link.EnableRollover(False)
+        self.ok_button = wx.Button(self, wx.ID_OK, 'Close')
+
+        # Bottom (help link and button)
+        button_sizer = wx.BoxSizer(wx.HORIZONTAL)
+        button_sizer.Add(link, 0)
+        button_sizer.AddStretchSpacer(1)
+        button_sizer.Add(self.ok_button, 0)
+
+        sizer.Add(button_sizer, 0, wx.EXPAND | wx.ALL, 8)
         self.SetSizer(sizer)
 
         self.ok_button.SetFocus()
