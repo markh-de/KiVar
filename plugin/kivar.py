@@ -9,6 +9,8 @@ from os import path as os_path
 
 # TODO:
 #
+# * When printing selected choices, make sure that aspect and choice name are properly quoted.
+#
 # * Add a Setup plugin (separate button) that defines DNP->NoPos/NoBom behavior. Having this in a separate dialog (which
 #   also takes care of nonvolatile storage of the settings) removes any dynamic reload/refresh requirements.
 #   (Setup plugin shall have similar icon with wrench in the foreground.)
