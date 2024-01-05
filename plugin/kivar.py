@@ -9,6 +9,8 @@ from os import path as os_path
 
 # TODO:
 #
+# * When printing selected choices, make sure that aspect and choice name are properly quoted.
+#
 # * Add a Setup plugin (separate button) that defines DNP->NoPos/NoBom behavior. Having this in a separate dialog (which
 #   also takes care of nonvolatile storage of the settings) removes any dynamic reload/refresh requirements.
 #   (Setup plugin shall have similar icon with wrench in the foreground.)
@@ -22,7 +24,7 @@ class VariantPlugin(pcbnew.ActionPlugin):
     def defaults(self):
         self.name = 'KiVar'
         self.category = 'Assembly Variants'
-        self.description = 'Switches between predefined assembly variants'
+        self.description = 'Switches predefined assembly variant choices'
         self.icon_file_name = os_path.join(os_path.dirname(__file__), 'kivar-icon-light.svg')
         self.dark_icon_file_name = os_path.join(os_path.dirname(__file__), 'kivar-icon-dark.svg')
 
@@ -60,7 +62,7 @@ def pcbnew_parent_window():
     return wx.FindWindowByName('PcbFrame')
 
 def version():
-    return '0.0.4-pre1'
+    return '0.0.4-pre2'
 
 def variant_cfg_field_name():
     return 'KiVar.Rule'
@@ -68,8 +70,8 @@ def variant_cfg_field_name():
 def help_url():
     return 'https://github.com/markh-de/KiVar#usage'
 
-def opt_dnp():
-    return 'dnp'
+def opt_unfit():
+    return '!'
 
 def key_val():
     return 'v'
@@ -122,7 +124,7 @@ def detect_current_choices(board, vn_dict):
             eliminate_choices = []
             for choice in choices[vn]:
                 fp_choice_value = vn_dict[ref][vn][choice][key_val()]
-                fp_choice_dnp = opt_dnp() in vn_dict[ref][vn][choice][key_opts()]
+                fp_choice_unfit = opt_unfit() in vn_dict[ref][vn][choice][key_opts()]
                 eliminate = False
 
                 if fp_choice_value is not None:
@@ -132,15 +134,15 @@ def detect_current_choices(board, vn_dict):
                 # TODO these should only be compared if their checkboxes are checked or the config requests it.
 
                 if use_attr_excl_from_bom():
-                    if fp_excl_bom != fp_choice_dnp:
+                    if fp_excl_bom != fp_choice_unfit:
                         eliminate = True
 
                 if use_attr_excl_from_posfiles():
-                    if fp_excl_pos != fp_choice_dnp:
+                    if fp_excl_pos != fp_choice_unfit:
                         eliminate = True
 
                 if use_attr_dnp():
-                    if fp_dnp != fp_choice_dnp:
+                    if fp_dnp != fp_choice_unfit:
                         eliminate = True
 
                 if eliminate: # defer elimination until after iteration
@@ -172,19 +174,19 @@ def detect_current_choices(board, vn_dict):
             selected_choice = selection[vn]
             if selected_choice != '':
                 new_value = vn_dict[ref][vn][selected_choice][key_val()]
-                new_dnp = opt_dnp() in vn_dict[ref][vn][selected_choice][key_opts()]
+                new_unfit = opt_unfit() in vn_dict[ref][vn][selected_choice][key_opts()]
                 mismatch = False
                 if new_value is not None:
                     if fp_value != new_value:
                         mismatch = True
                 if use_attr_excl_from_bom():
-                    if fp_excl_bom != new_dnp:
+                    if fp_excl_bom != new_unfit:
                         mismatch = True
                 if use_attr_excl_from_posfiles():
-                    if fp_excl_pos != new_dnp:
+                    if fp_excl_pos != new_unfit:
                         mismatch = True
                 if use_attr_dnp():
-                    if fp_dnp != new_dnp:
+                    if fp_dnp != new_unfit:
                         mismatch = True
                 if mismatch:
                     selection[vn] = ''
@@ -209,25 +211,25 @@ def apply_choices(board, vn_dict, selection, dry_run = False):
                         changes.append([ref, f"Change {ref} value from '{old_value}' to '{new_value}' ({vn_text})."])
                         if not dry_run:
                             fp.SetValue(new_value)
-                new_dnp = opt_dnp() in vn_dict[ref][vn][selected_choice][key_opts()]
+                new_unfit = opt_unfit() in vn_dict[ref][vn][selected_choice][key_opts()]
                 if use_attr_dnp():
                     old_dnp = fp.IsDNP()
-                    if old_dnp != new_dnp:
-                        changes.append([ref, f"Change {ref} 'Do not populate' from '{bool_as_text(old_dnp)}' to '{bool_as_text(new_dnp)}' ({vn_text})."])
+                    if old_dnp != new_unfit:
+                        changes.append([ref, f"Change {ref} 'Do not populate' from '{bool_as_text(old_dnp)}' to '{bool_as_text(new_unfit)}' ({vn_text})."])
                         if not dry_run:
-                            fp.SetDNP(new_dnp)
+                            fp.SetDNP(new_unfit)
                 if use_attr_excl_from_bom():
                     old_excl_from_bom = fp.IsExcludedFromBOM()
-                    if old_excl_from_bom != new_dnp:
-                        changes.append([ref, f"Change {ref} 'Exclude from bill of materials' from '{bool_as_text(old_excl_from_bom)}' to '{bool_as_text(new_dnp)}' ({vn_text})."])
+                    if old_excl_from_bom != new_unfit:
+                        changes.append([ref, f"Change {ref} 'Exclude from bill of materials' from '{bool_as_text(old_excl_from_bom)}' to '{bool_as_text(new_unfit)}' ({vn_text})."])
                         if not dry_run:
-                            fp.SetExcludedFromBOM(new_dnp)
+                            fp.SetExcludedFromBOM(new_unfit)
                 if use_attr_excl_from_posfiles():
                     old_excl_from_posfiles = fp.IsExcludedFromPosFiles()
-                    if old_excl_from_posfiles != new_dnp:
-                        changes.append([ref, f"Change {ref} 'Exclude from position files' from '{bool_as_text(old_excl_from_posfiles)}' to '{bool_as_text(new_dnp)}' ({vn_text})."])
+                    if old_excl_from_posfiles != new_unfit:
+                        changes.append([ref, f"Change {ref} 'Exclude from position files' from '{bool_as_text(old_excl_from_posfiles)}' to '{bool_as_text(new_unfit)}' ({vn_text})."])
                         if not dry_run:
-                            fp.SetExcludedFromPosFiles(new_dnp)
+                            fp.SetExcludedFromPosFiles(new_unfit)
     return changes
 
 def get_vn_dict(board):
@@ -235,7 +237,7 @@ def get_vn_dict(board):
     errors = []
     fps = board.GetFootprints()
     fps.sort(key=lambda x: x.GetReference())
-    accepted_options = [opt_dnp()]
+    accepted_options = [opt_unfit()]
 
     vn_field_name = variant_cfg_field_name()
 
@@ -246,82 +248,81 @@ def get_vn_dict(board):
                 errors.append([ref, f"{ref}: Multiple footprints with same reference containing a rule definition field '{vn_field_name}'."])
                 continue
 
-            vns[ref] = {}
             field_value = wrap_GetField(fp, vn_field_name)
             if len(field_value) < 1:
                 # field exists, but is empty. ignore it.
                 # a field containing only white-space is considered an error.
                 continue
 
+            vns[ref] = {}
             try:
-                vn_def = split_ruledef(field_value, ',', False)
+                vn_defs = split_raw_str(field_value, ' ', True)
             except Exception as e:
-                errors.append([ref, f"{ref}: Rule parser error: {str(e)}."])
+                errors.append([ref, f"{ref}: Rule splitter error: {str(e)}."])
                 continue
 
-            if len(vn_def) < 2:
+            if len(vn_defs) < 2:
                 errors.append([ref, f"{ref}: Invalid number of elements in rule definition field '{vn_field_name}'."])
                 continue
 
             section_is_vn = True
-            for section in vn_def:
+            vn = None
+            for section in vn_defs:
+                try:
+                    name, content = split_choice(section)
+                except Exception as e:
+                    errors.append([ref, f"{ref}: Section splitter error: {str(e)}."])
+                    continue
+
                 if section_is_vn:
                     # First rule section contains the Vn name only.
                     # TODO clarify rules for Vn name (forbidden characters: "*" ".")
-                    try:
-                        parts = split_ruledef(section, ' ', True)
-                    except Exception as e:
-                        errors.append([ref, f"{ref}: Variation name parser error: {str(e)}."])
+                    section_is_vn = False
+                    cooked_name = cook_raw_string(name)
+                    if cooked_name is None or cooked_name == '':
+                        errors.append([ref, f"{ref}: Variation aspect name must not be empty."])
                         continue
-                    if len(parts) != 1:
-                        errors.append([ref, f"{ref}: Variation name is not exactly one word."])
+                    if content is not None:
+                        errors.append([ref, f"{ref}: First rule section must be variation name without parenthesis."])
                         continue
-                    vn = cook_raw_string(parts[0])
+                    vn = cooked_name
                     if not vn in vns[ref]:
                         vns[ref][vn] = {}
-                    section_is_vn = False
-                else:
+                elif vn is not None:
                     # Any following rule sections are Vn Choice definitions.
-                    try:
-                        parts = split_ruledef(section, ':', False)
-                    except Exception as e:
-                        errors.append([ref, f"{ref}: Choice parser error: {str(e)}."])
+                    if name is None or name == '':
+                        errors.append([ref, f"{ref}: Variation choice name list must not be empty."])
                         continue
-
-                    if len(parts) == 0:
-                        errors.append([ref, f"{ref}: Empty choice definition."])
+                    if content is None:
+                        errors.append([ref, f"{ref}: Variation choice definition must have parenthesis."])
                         continue
-                    elif len(parts) > 2:
-                        errors.append([ref, f"{ref}: Choice definition has more than two parts."])
-                        continue
-
-                    if len(parts) == 1: # default choice definition
-                        args_part_idx = 0
-                        choice_list = [key_default()]
-                    else:
-                        args_part_idx = 1
-                        try:
-                            choice_list = split_ruledef(parts[0], ' ', True)
-                        except Exception as e:
-                            errors.append([ref, f"{ref}: Choice names parser error: {str(e)}."])
-                            continue
 
                     try:
-                        raw_args = split_ruledef(parts[args_part_idx], ' ', True)
+                        raw_names = split_raw_str(name, ',', False)
                     except Exception as e:
-                        errors.append([ref, f"{ref}: Choice arguments parser error: {str(e)}."])
+                        errors.append([ref, f"{ref}: Choice names splitter error: {str(e)}."])
+                        continue
+
+                    try:
+                        raw_args = split_raw_str(content, ' ', True)
+                    except Exception as e:
+                        errors.append([ref, f"{ref}: Choice arguments splitter error: {str(e)}."])
                         continue
 
                     choices = []
-                    for choice_name in choice_list:
-                        choices.append(cook_raw_string(choice_name))
+                    for choice_name in raw_names:
+                        cooked_name = cook_raw_string(choice_name)
+                        if cooked_name == '':
+                            errors.append([ref, f"{ref}: Variation choice name must not be empty."])
+                            continue
+                        choices.append(cooked_name)
                     
                     values = []
                     options = []
                     for raw_arg in raw_args:
                         # TODO 'try/except', or is string safe after above processing?
                         arg = cook_raw_string(raw_arg)
-                        if raw_arg.startswith('-'): # not supposed to match if arg starts with '\-' or '"-'
+                        if raw_arg.startswith('-'): # not supposed to match if arg starts with \- or '-'
                             option = arg[1:]
                             if not option in accepted_options:
                                 errors.append([ref, f"{ref}: Unknown or invalid option '{option}'."])
@@ -331,15 +332,12 @@ def get_vn_dict(board):
                             values.append(arg)
 
                     if len(values) > 1:
-                        errors.append([ref, f"{ref}: More than one value assigned inside a choice definition."]) # TODO add info in which choice def (index value)
+                        errors.append([ref, f"{ref}: More than one value provided inside a choice definition."]) # TODO add info in which choice def (index value)
                         continue
                     else:
                         for choice in choices:
                             if choice in vns[ref][vn]:
-                                if len(parts) == 1:
-                                    errors.append([ref, f"{ref}: Rule contains more than one default choice definition."])
-                                else:
-                                    errors.append([ref, f"{ref}: Choice '{choice}' is defined more than once inside the rule definition."])
+                                errors.append([ref, f"{ref}: Choice '{choice}' is defined more than once inside the rule definition."])
                                 continue
                             vns[ref][vn][choice] = {}
                             vns[ref][vn][choice][key_val()] = values[0] if len(values) > 0 else None
@@ -396,33 +394,97 @@ def get_choice_dict(vn_dict):
 
     return choices
 
-def split_ruledef(str, sep, multisep):
+def split_choice(str):
+    item = []
+    outside = None
+    inside = None
+    escaped = False
+    quoted = False
+    parens = 0
+    end_expected = False
+    for c in str:
+        if end_expected:
+            raise ValueError('String extends beyond closing parenthesis')
+        elif escaped:
+            escaped = False
+            item.append(c)
+        elif c == '\\':
+            escaped = True
+            item.append(c)
+        elif c == "'":
+            quoted = not quoted
+            item.append(c)
+        elif c == '(' and not quoted:
+            parens += 1
+            if parens == 1:
+                outside = ''.join(item)
+                inside = '' # inside: no parens -> None, empty parens -> ''
+                item = []
+            else:
+                item.append(c)
+        elif c == ')' and not quoted:
+            if parens > 0:
+                parens -= 1
+                if parens == 0:
+                    inside = ''.join(item)
+                    item = []
+                    end_expected = True
+                else:
+                    item.append(c)
+            else:
+                raise ValueError('Unmatched closing parenthesis')
+        else:
+            item.append(c)
+    if parens > 0:
+        raise ValueError('Unmatched opening parenthesis')
+    if quoted:
+        raise ValueError('Unmatched quote character in string')
+    if escaped:
+        raise ValueError('Unterminated escape sequence at end of string')
+    if len(item) > 0:
+        outside = ''.join(item)
+
+    return outside, inside
+
+def split_raw_str(str, sep, multisep):
     result = []
     item = []
     escaped = False
     quoted = False
+    parens = 0
     for c in str:
         if escaped:
-            item.append(c)
             escaped = False
+            item.append(c)
         elif c == '\\':
-            item.append(c)
             escaped = True
-        elif c == "'":
             item.append(c)
+        elif c == "'":
             quoted = not quoted
-        elif c == sep and not quoted:
+            item.append(c)
+        elif c == '(' and not quoted:
+            parens += 1
+            item.append(c)
+        elif c == ')' and not quoted:
+            if parens > 0:
+                parens -= 1
+            else:
+                raise ValueError('Unmatched closing parenthesis')
+            item.append(c)
+        elif c == sep and not quoted and parens == 0:
             if not multisep or len(item) > 0:
                 result.append(''.join(item))
                 item = []
         else:
             item.append(c)
-    if not multisep or len(item) > 0:
-        result.append(''.join(item))
+    if parens > 0:
+        raise ValueError('Unmatched opening parenthesis')
     if quoted:
         raise ValueError('Unmatched quote character in string')
     if escaped:
         raise ValueError('Unterminated escape sequence at end of string')
+    if not multisep or len(item) > 0:
+        result.append(''.join(item))
 
     return result
 
@@ -511,31 +573,38 @@ class VariantDialog(wx.Dialog):
         self.changes_box_sizer.SetMinSize((640, 280))
 
         self.changes_list_win = wx.ScrolledWindow(self, wx.ID_ANY)
-        self.changes_list_win = wx.ScrolledWindow(self, wx.ID_ANY)
         self.changes_list = PcbItemListBox(self.changes_list_win, board)
 
         self.update_list()
 
-        text_sizer = wx.BoxSizer(wx.VERTICAL)
-        text_sizer.Add(self.changes_list, 1, wx.EXPAND | wx.ALL, 3)
+        changes_list_sizer = wx.BoxSizer(wx.VERTICAL)
+        changes_list_sizer.Add(self.changes_list, 1, wx.EXPAND | wx.ALL, 3)
 
-        self.changes_list_win.SetSizer(text_sizer)
-        self.changes_box_sizer.Add(self.changes_list_win, 1, wx.EXPAND | wx.ALL)
+        self.changes_list_win.SetSizer(changes_list_sizer)
+        self.changes_box_sizer.Add(self.changes_list_win, 1, wx.EXPAND)
 
         sizer.Add(self.changes_box_sizer, 1, wx.EXPAND | wx.ALL, 8)
 
-        # Buttons
+        # Bottom (help link and buttons)
         button_sizer = wx.BoxSizer(wx.HORIZONTAL)
+
+        link = hyperlink.HyperLinkCtrl(self, -1, 'Usage hints', URL=help_url())
+        default_color = wx.Colour()
+        link.SetColours(link=default_color, visited=default_color)
+        link.SetToolTip('Opens a web browser at ' + help_url())
+        link.EnableRollover(False)
 
         ok_button = wx.Button(self, label='Update PCB')
 #        update_button = wx.Button(self, label='Reset Choices')
         cancel_button = wx.Button(self, label='Close')
 
-        button_sizer.Add(cancel_button, 0, wx.ALL, 8)
-#        button_sizer.Add(update_button, 0, wx.ALL, 8)
-        button_sizer.Add(ok_button, 0, wx.ALL, 8)
+        button_sizer.Add(link, 0)
+        button_sizer.AddStretchSpacer(1)
+        button_sizer.Add(cancel_button, 0)
+#        button_sizer.Add(update_button, 0, wx.LEFT, 6)
+        button_sizer.Add(ok_button, 0, wx.LEFT, 6)
 
-        sizer.Add(button_sizer, 0, wx.ALIGN_RIGHT)
+        sizer.Add(button_sizer, 0, wx.EXPAND | wx.ALL, 8)
 
         self.SetSizerAndFit(sizer)
         # TODO avoid 50/50 split between boxes. should be dynamic!
@@ -603,7 +672,7 @@ class MissingRulesDialog(wx.Dialog):
         ok_button = wx.Button(self, wx.ID_OK, 'Close')
         button_sizer.Add(ok_button, 0, wx.ALIGN_CENTRE | wx.ALL, 10)
 
-        sizer.Add(button_sizer, 0, wx.ALIGN_CENTRE | wx.ALL)
+        sizer.Add(button_sizer, 0, wx.ALIGN_CENTRE)
         ok_button.SetFocus()
 
         self.SetSizerAndFit(sizer)
@@ -640,22 +709,39 @@ class PcbItemListDialog(wx.Dialog):
     def __init__(self, title, itemlist, board = None):
         super().__init__(pcbnew_parent_window(), title=title, style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER, size=(800, 500))
         self.refs = []
-
-        list_win = wx.ScrolledWindow(self, wx.ID_ANY)
-        listbox = PcbItemListBox(self, board)
-        listbox.setItemList(itemlist)
-
-        scr_win_sizer = wx.BoxSizer(wx.VERTICAL)
-        scr_win_sizer.Add(listbox, 1, wx.EXPAND | wx.ALL)
-        list_win.SetSizer(scr_win_sizer)
-
-        self.ok_button = wx.Button(self, wx.ID_OK, 'Close')
-        button_sizer = wx.BoxSizer(wx.HORIZONTAL)
-        button_sizer.Add(self.ok_button, 0, wx.ALIGN_RIGHT | wx.ALL, 8)
-
         sizer = wx.BoxSizer(wx.VERTICAL)
-        sizer.Add(list_win, 1, wx.EXPAND | wx.ALL, 8)
-        sizer.Add(button_sizer, 0, wx.ALIGN_RIGHT | wx.ALL)
+
+        # Error messages
+        errors_box = wx.StaticBox(self, label='Errors')
+        errors_box_sizer = wx.StaticBoxSizer(errors_box)
+        errors_box_sizer.SetMinSize((640, 280))
+
+        errors_list_win = wx.ScrolledWindow(self, wx.ID_ANY)
+        errors_list = PcbItemListBox(errors_list_win, board)
+        errors_list.setItemList(itemlist)
+
+        errors_list_sizer = wx.BoxSizer(wx.VERTICAL)
+        errors_list_sizer.Add(errors_list, 1, wx.EXPAND | wx.ALL, 3)
+
+        errors_list_win.SetSizer(errors_list_sizer)
+        errors_box_sizer.Add(errors_list_win, 1, wx.EXPAND)
+
+        sizer.Add(errors_box_sizer, 1, wx.EXPAND | wx.ALL, 8)
+
+        link = hyperlink.HyperLinkCtrl(self, -1, 'Rule implementation hints', URL=help_url())
+        default_color = wx.Colour()
+        link.SetColours(link=default_color, visited=default_color)
+        link.SetToolTip('Opens a web browser at ' + help_url())
+        link.EnableRollover(False)
+        self.ok_button = wx.Button(self, wx.ID_OK, 'Close')
+
+        # Bottom (help link and button)
+        button_sizer = wx.BoxSizer(wx.HORIZONTAL)
+        button_sizer.Add(link, 0)
+        button_sizer.AddStretchSpacer(1)
+        button_sizer.Add(self.ok_button, 0)
+
+        sizer.Add(button_sizer, 0, wx.EXPAND | wx.ALL, 8)
         self.SetSizer(sizer)
 
         self.ok_button.SetFocus()
