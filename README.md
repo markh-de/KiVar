@@ -111,7 +111,7 @@ The following components define the listed values in their `KiVar.Rule` field:
 
 The following figure summarises the structure of a rule definition.  Each part of it is explained in more detail in the following sections. 
 
-![Variation Definition Composition](doc-rule.png)
+![Variation Definition Composition](doc/rule.png)
 
 ###### Rule Definition
 
@@ -236,7 +236,7 @@ Each example is illustrated with a schematic snippet including the values of the
 
 This is a very simple example, used for address selection of an I²C device.  Address input A0 switches between device addresses 0x54 (A0=0) and 0x55 (A0=1).
 
-![EEPROM Address Selection](doc-eeprom.png)
+![EEPROM Address Selection](doc/eeprom.png)
 
 The device address is selected by tying the IC input A0 to either +3V3 or GND, depending on the selected choice.  Inputs A1 and A2 are tied to fixed levels.
 
@@ -252,7 +252,7 @@ Alternatively, the rules in this example could explicitly list _those_ choices t
 
 This is used for the boot source device selection for an NXP i.MX6ULL SoC.
 
-![Boot Source Selection](doc-bootsrc.png)
+![Boot Source Selection](doc/bootsrc.png)
 
 The variation choices provide selection between the boot sources `EMMC`, `SD` and `NAND`, as well as an extra choice `JP` (which leaves _all_ configuration resistors unfitted, so that the user can configure the board by manually shorting the solder bridges JP1, JP2, JP3).
 
@@ -267,7 +267,7 @@ How to read the rules:
 
 Typical use-cases for variations are resistor divider networks, such as voltage regulator feedback dividers or — in this case — a voltage divider with two taps for a programmable hysteresis on an undervoltage lock-out (UVLO) circuit.
 
-![UVLO low and high voltage trip points selection](doc-uvlo.png)
+![UVLO low and high voltage trip points selection](doc/uvlo.png)
 
 The used variation aspect defines all four resistors (only two of them with varying values), allowing to select the lower (cut-off) and higher (recovery) voltage limits for the supply voltage monitor IC.
 
@@ -283,7 +283,7 @@ How to read the rules:
 
 This is used for selection of peripheral parts on a boost-buck-converter IC, which is available as _fixed_ (IRNZ suffix) and _adjustable_ (IRAZ suffix) voltage variants (just like many LDOs are, too).  Depending on the market availability of those IC variants, this variation aspect helps to quickly select between assembly options.
 
-![Switching between fixed and adjustable voltage IC variant](doc-vreg.png)
+![Switching between fixed and adjustable voltage IC variant](doc/vreg.png)
 
 The fixed voltage IC variant requires a direct feedback of the output voltage to the FB pin, while the adjustable voltage IC variant requires a typical feedback resistor network, including a capacitance of 66pF for stabilization.
 
@@ -302,7 +302,7 @@ _Note:_ In this example, the IC itself keeps its original value (part number wit
 
 This is used for selection of an I/O expander IC type (953**5** vs. 953**9**) along with its I²C address.  Different (footprint-compatible!) IC types interpret the input on pin 3 differently ("A2" vs. "/RESET").  See the text callout in the figure for details.
 
-![Device and Address Selection](doc-ioexp.png)
+![Device and Address Selection](doc/ioexp.png)
 
 This example really implements two simple aspects in one variation aspect definition: The type of the IC and the device address.  As both aspects depend on each other and can only be defined in a combined way, all possible combinations must be defined.  It is recommended to use the same dedicated sub-aspect separation character (`/` used in this example) in the variation name as well as the choice names to make it obvious to the user which sub-choice applies to which sub-aspect.
 
@@ -363,7 +363,7 @@ If all rules can be parsed without problems, the main dialog window appears.
 
 For the above [real-world examples](#real-world-examples), the selection dialog window may look similar to the following:
 
-![Variant Selection Dialog Without Changes](doc-selection-nochange.png)
+![Variant Selection Dialog Without Changes](doc/selection-nochange.png)
 
 For each of the listed variation aspects a variation choice can now be selected.  If the values and attributes of the footprint(s) related to a variation aspect shall not be modified, the entry _'\<unset>'_ can be selected for that variation aspect.  In this case, the corresponding variation is skipped during the assignment stage and related footprints remain unmodified.
 
@@ -371,7 +371,7 @@ The change list section below the selection area summarizes all component value 
 
 After selecting a few different variation choices, the dialog window may look like the following:
 
-![Variant Selection Dialog With Changes](doc-selection.png)
+![Variant Selection Dialog With Changes](doc/selection-change.png)
 
 When clicking the _Update PCB_ button, KiVar sets the values and attributes for all relevant footprints as previewed in the information text box.
 
