@@ -1,0 +1,1941 @@
+(kicad_sch
+	(version 20231120)
+	(generator "eeschema")
+	(generator_version "7.99")
+	(uuid "3b92b8ec-1d89-4673-88bb-db246a9f73af")
+	(paper "A4")
+	(title_block
+		(title "KiVar Demo")
+		(date "2024-01-05")
+		(company "Author: Mark Hämmerling <dev@markh.de>")
+		(comment 1 "https://github.com/markh-de/KiVar")
+		(comment 4 "Boot Source Selection")
+	)
+	(lib_symbols
+		(symbol "Device:R"
+			(pin_numbers hide)
+			(pin_names
+				(offset 0)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "R"
+				(at 2.032 0 90)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "R"
+				(at 0 0 90)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" ""
+				(at -1.778 0 90)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Datasheet" "~"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Description" "Resistor"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_keywords" "R res resistor"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_fp_filters" "R_*"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(symbol "R_0_1"
+				(rectangle
+					(start -1.016 -2.54)
+					(end 1.016 2.54)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+			)
+			(symbol "R_1_1"
+				(pin passive line
+					(at 0 3.81 270)
+					(length 1.27)
+					(name "~"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 0 -3.81 90)
+					(length 1.27)
+					(name "~"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+		)
+		(symbol "Jumper:SolderJumper_2_Open"
+			(pin_names
+				(offset 0) hide)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "JP"
+				(at 0 2.032 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "SolderJumper_2_Open"
+				(at 0 -2.54 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" ""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Datasheet" "~"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Description" "Solder Jumper, 2-pole, open"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_keywords" "solder jumper SPST"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_fp_filters" "SolderJumper*Open*"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(symbol "SolderJumper_2_Open_0_1"
+				(arc
+					(start -0.254 1.016)
+					(mid -1.2656 0)
+					(end -0.254 -1.016)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start -0.254 1.016)
+					(mid -1.2656 0)
+					(end -0.254 -1.016)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type outline)
+					)
+				)
+				(polyline
+					(pts
+						(xy -0.254 1.016) (xy -0.254 -1.016)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0.254 1.016) (xy 0.254 -1.016)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 0.254 -1.016)
+					(mid 1.2656 0)
+					(end 0.254 1.016)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 0.254 -1.016)
+					(mid 1.2656 0)
+					(end 0.254 1.016)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type outline)
+					)
+				)
+			)
+			(symbol "SolderJumper_2_Open_1_1"
+				(pin passive line
+					(at -3.81 0 0)
+					(length 2.54)
+					(name "A"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 3.81 0 180)
+					(length 2.54)
+					(name "B"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+		)
+		(symbol "power:+3V3"
+			(power)
+			(pin_names
+				(offset 0)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "#PWR"
+				(at 0 -3.81 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Value" "+3V3"
+				(at 0 3.556 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" ""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Datasheet" ""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Description" "Power symbol creates a global label with name \"+3V3\""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_keywords" "global power"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(symbol "+3V3_0_1"
+				(polyline
+					(pts
+						(xy -0.762 1.27) (xy 0 2.54)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0 0) (xy 0 2.54)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0 2.54) (xy 0.762 1.27)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+			)
+			(symbol "+3V3_1_1"
+				(pin power_in line
+					(at 0 0 90)
+					(length 0) hide
+					(name "+3V3"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+		)
+	)
+	(junction
+		(at 102.235 78.74)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "0f0611ab-513a-4d8b-972d-67f5ebc36f23")
+	)
+	(junction
+		(at 121.285 78.74)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "110da019-575b-4a8f-a815-7dc7f2e59e16")
+	)
+	(junction
+		(at 200.66 96.52)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "34dbcd2c-24c9-4984-b1c2-93e21aa863e0")
+	)
+	(junction
+		(at 92.075 78.74)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "3c821619-b7ba-41e1-ba59-1d26e92544f9")
+	)
+	(junction
+		(at 121.285 88.9)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "588d1df4-5688-45ca-ada5-82e67f4e8bcf")
+	)
+	(junction
+		(at 200.66 88.9)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "6e46da20-15f5-4288-b537-c9213632b0ef")
+	)
+	(junction
+		(at 159.385 96.52)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "bd668cd7-6dc2-4b58-8bf4-bf9ebbc8e162")
+	)
+	(junction
+		(at 159.385 78.74)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "c68459d6-70e1-4be6-a524-63d8eae21db9")
+	)
+	(junction
+		(at 159.385 88.9)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "c839c5c1-528f-4b4d-b56a-654d4cd4bd6d")
+	)
+	(junction
+		(at 121.285 96.52)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "e1141def-967b-4273-a3ac-807d26854109")
+	)
+	(junction
+		(at 81.915 78.74)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "f97f8653-447c-4542-a70a-93b151782f54")
+	)
+	(wire
+		(pts
+			(xy 121.285 96.52) (xy 121.285 101.6)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "0ad47444-431a-4f65-9da9-3db81b0cb80f")
+	)
+	(wire
+		(pts
+			(xy 114.935 101.6) (xy 81.915 101.6)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "0ee0de24-385a-486d-85f4-ad72f58843e4")
+	)
+	(wire
+		(pts
+			(xy 200.66 88.9) (xy 209.55 88.9)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "10cf80f4-0173-44f9-9b2f-65ef15fbeebe")
+	)
+	(wire
+		(pts
+			(xy 121.285 96.52) (xy 130.175 96.52)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "14e8b0f8-ee17-484d-8853-94e5879a8b52")
+	)
+	(polyline
+		(pts
+			(xy 142.875 113.03) (xy 142.875 128.27)
+		)
+		(stroke
+			(width 0.254)
+			(type solid)
+		)
+		(uuid "215f3782-0564-4c77-9adc-b41fc8376da2")
+	)
+	(wire
+		(pts
+			(xy 121.285 78.74) (xy 159.385 78.74)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "260ec70d-5794-41ef-8c53-cc1011a2fa7f")
+	)
+	(wire
+		(pts
+			(xy 159.385 78.74) (xy 200.66 78.74)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "33fa4224-6fe9-4e43-8d53-bdaf4cbec7eb")
+	)
+	(wire
+		(pts
+			(xy 114.935 91.44) (xy 102.235 91.44)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "38624f56-3cf6-440f-8f51-252bb7ddaad2")
+	)
+	(wire
+		(pts
+			(xy 79.375 78.74) (xy 81.915 78.74)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "3892d1ae-a655-4001-bc9b-6f0117821f78")
+	)
+	(wire
+		(pts
+			(xy 159.385 101.6) (xy 170.815 101.6)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "38ae2876-94a3-447a-833b-6c50842acf8f")
+	)
+	(wire
+		(pts
+			(xy 92.075 86.36) (xy 92.075 96.52)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "4788aabe-6344-45d5-b418-d40a01855b90")
+	)
+	(wire
+		(pts
+			(xy 200.66 88.9) (xy 200.66 86.36)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "4b028baa-a68b-4f1c-b6d2-66fd0f52b96f")
+	)
+	(polyline
+		(pts
+			(xy 207.01 128.27) (xy 142.875 128.27)
+		)
+		(stroke
+			(width 0.254)
+			(type solid)
+		)
+		(uuid "53231528-a9e2-405d-a173-b809d48debad")
+	)
+	(wire
+		(pts
+			(xy 132.715 101.6) (xy 121.285 101.6)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "5a665882-1f99-4249-b7c0-f7c5a29bf38b")
+	)
+	(polyline
+		(pts
+			(xy 207.01 119.38) (xy 142.875 119.38)
+		)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(uuid "5cbfecce-e4de-4b21-8f42-c45e90f1447d")
+	)
+	(polyline
+		(pts
+			(xy 207.01 113.03) (xy 207.01 128.27)
+		)
+		(stroke
+			(width 0.254)
+			(type solid)
+		)
+		(uuid "6469f469-ebca-4915-9df6-919a2efdf379")
+	)
+	(wire
+		(pts
+			(xy 159.385 88.9) (xy 168.275 88.9)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "6b9f8e37-6d78-4262-b2d3-f9711ac083d1")
+	)
+	(wire
+		(pts
+			(xy 102.235 86.36) (xy 102.235 91.44)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "716ff780-1fe0-42a6-b64f-443d52a4e91e")
+	)
+	(polyline
+		(pts
+			(xy 175.26 113.03) (xy 175.26 128.27)
+		)
+		(stroke
+			(width 0.1524)
+			(type dash)
+		)
+		(uuid "729c8dd4-0c0d-45b0-9683-21c6ee9c6965")
+	)
+	(wire
+		(pts
+			(xy 92.075 78.74) (xy 102.235 78.74)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "7a4b4427-0c33-4321-99dd-4b8eaee70eb0")
+	)
+	(wire
+		(pts
+			(xy 159.385 96.52) (xy 168.275 96.52)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "7b34518b-3a5d-4adf-92e7-1fd936fc2ddb")
+	)
+	(wire
+		(pts
+			(xy 200.66 96.52) (xy 200.66 101.6)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "8cc2171e-77a7-4393-8d40-523d157f0031")
+	)
+	(wire
+		(pts
+			(xy 200.66 96.52) (xy 209.55 96.52)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "909dd559-8d2b-4c18-b823-a2601aef26de")
+	)
+	(polyline
+		(pts
+			(xy 159.385 113.03) (xy 159.385 128.27)
+		)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(uuid "94f73d95-94e4-46b3-a254-b25c680262b1")
+	)
+	(wire
+		(pts
+			(xy 81.915 78.74) (xy 92.075 78.74)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "955378c8-2369-4d2b-afd4-821098764be3")
+	)
+	(wire
+		(pts
+			(xy 102.235 78.74) (xy 121.285 78.74)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "9d44012a-efad-4502-b489-4532c9bbc98a")
+	)
+	(polyline
+		(pts
+			(xy 191.135 113.03) (xy 191.135 128.27)
+		)
+		(stroke
+			(width 0.1524)
+			(type dash)
+		)
+		(uuid "aed76168-5551-4b7f-8fe0-d9188a682617")
+	)
+	(wire
+		(pts
+			(xy 81.915 86.36) (xy 81.915 101.6)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "b80e1860-9b53-4268-bc36-4737b58e6288")
+	)
+	(wire
+		(pts
+			(xy 121.285 88.9) (xy 121.285 86.36)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "b9097817-f484-42f9-a208-a54ab6216c12")
+	)
+	(wire
+		(pts
+			(xy 159.385 88.9) (xy 159.385 86.36)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "be4523bc-f438-44ce-a4d8-b92c25be681b")
+	)
+	(wire
+		(pts
+			(xy 200.66 101.6) (xy 213.36 101.6)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "cd960d92-3281-4374-b81b-d3c4fa250dc9")
+	)
+	(polyline
+		(pts
+			(xy 207.01 113.03) (xy 142.875 113.03)
+		)
+		(stroke
+			(width 0.254)
+			(type solid)
+		)
+		(uuid "d6913551-c86f-46d0-8178-bd222abe74f7")
+	)
+	(wire
+		(pts
+			(xy 121.285 88.9) (xy 130.175 88.9)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "de487580-e95f-4b31-a581-18f3afb15624")
+	)
+	(wire
+		(pts
+			(xy 114.935 96.52) (xy 92.075 96.52)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "f3965627-4f29-4ae5-b37d-d1808057f553")
+	)
+	(wire
+		(pts
+			(xy 159.385 96.52) (xy 159.385 101.6)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "fe701ccd-05a2-49fe-a3d2-bc2a240c3754")
+	)
+	(text "Internal\nBoot Source"
+		(exclude_from_sim no)
+		(at 144.145 118.11 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+				(italic yes)
+			)
+			(justify left bottom)
+		)
+		(uuid "1a46cd9d-4270-4935-9017-ee7fb562dd26")
+	)
+	(text "open/unfitted\nopen/unfitted\nshort/fitted"
+		(exclude_from_sim no)
+		(at 176.53 127 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "81c0d661-dd34-46ac-909f-eecb27970e2f")
+	)
+	(text "SD Card\nSoM eMMC\nSoM NAND"
+		(exclude_from_sim no)
+		(at 144.145 127 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "983ae016-7d62-4bd5-965a-ba7ac23c61be")
+	)
+	(text "${3bbceba0-eaa0-4152-b1b9-b1bd1abfb625:REFERENCE}/${ba45e535-493c-4b78-88ea-d29e167d7324:REFERENCE}\n(BT_CFG1_7)\n"
+		(exclude_from_sim no)
+		(at 176.53 118.11 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+				(italic yes)
+			)
+			(justify left bottom)
+		)
+		(uuid "b9fb4db4-906b-4b8a-bf44-b4d65f5dfd14")
+	)
+	(text "${ca5cfd02-335b-47ae-bfc9-4a86cfbf38aa:REFERENCE}/${d11fb2ac-e945-42aa-a1ec-cde596cb273c:REFERENCE}\n(BT_CFG2_3)"
+		(exclude_from_sim no)
+		(at 192.405 118.11 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+				(italic yes)
+			)
+			(justify left bottom)
+		)
+		(uuid "c9c60f6f-9a47-4557-bd7a-97c2e674d511")
+	)
+	(text "short/fitted\nshort/fitted\nopen/unfitted"
+		(exclude_from_sim no)
+		(at 160.655 127 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "e0698ad5-37cf-412c-927f-f247d9d1e3e8")
+	)
+	(text "open/unfitted\nshort/fitted\n(don't care)"
+		(exclude_from_sim no)
+		(at 192.405 127 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "e2b969cb-f9a8-4630-b4bd-ac787c921b32")
+	)
+	(text "${0cae3ae8-fba4-4e9c-8564-4ed770a81597:REFERENCE}/${730ed1d1-b7f3-4cc2-b7e6-bb531a213568:REFERENCE}\n(BT_CFG1_6)"
+		(exclude_from_sim no)
+		(at 160.655 118.11 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+				(italic yes)
+			)
+			(justify left bottom)
+		)
+		(uuid "fd1abbfc-31f9-4037-909e-4bc42ca6455f")
+	)
+	(label "LCD.DATA5"
+		(at 114.935 101.6 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "0c64c312-7444-4acb-b7c5-1a4994b174ff")
+	)
+	(label "LCD.DATA6"
+		(at 132.715 101.6 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "16378cb5-d118-4183-beb5-8894c3cdf95e")
+	)
+	(label "LCD.DATA9"
+		(at 114.935 96.52 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "1b86e871-3746-414c-9d70-681e94ef2ce0")
+	)
+	(label "LCD.DATA11"
+		(at 213.36 101.6 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "69899e0c-542c-4b1f-be94-5ecf95ae09f9")
+	)
+	(label "LCD.DATA7"
+		(at 170.815 101.6 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "97fc4c38-889a-40e5-b81d-37d7f59e2f33")
+	)
+	(label "LCD.DATA13"
+		(at 114.935 91.44 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "ca1056ae-6e1d-4ac8-9e89-aaa3857d9aa4")
+	)
+	(symbol
+		(lib_id "Jumper:SolderJumper_2_Open")
+		(at 121.285 92.71 90)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom no)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "0cae3ae8-fba4-4e9c-8564-4ed770a81597")
+		(property "Reference" "JP1"
+			(at 123.825 92.7099 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(property "Value" "BT_CFG1_6"
+			(at 123.825 93.9799 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+				(hide yes)
+			)
+		)
+		(property "Footprint" "Jumper:SolderJumper-2_P1.3mm_Open_RoundedPad1.0x1.5mm"
+			(at 121.285 92.71 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 121.285 92.71 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Solder Jumper, 2-pole, open"
+			(at 121.285 92.71 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "7f44167a-4cb0-48cd-82c7-af475555bffa")
+		)
+		(pin "2"
+			(uuid "f17b88a8-6715-4237-aa8d-1f5af1134b71")
+		)
+		(instances
+			(project "kivar-demo"
+				(path "/cd745a5c-45fb-4106-85c8-c86c130b6ee7/f1bdcd00-da00-4cca-b21f-4862aa5c3200"
+					(reference "JP1")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:+3V3")
+		(at 79.375 78.74 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "1de82ce3-3fcb-4556-8fd8-8dd8a8aa608f")
+		(property "Reference" "#PWR08"
+			(at 79.375 82.55 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "+3V3"
+			(at 79.375 73.66 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 79.375 78.74 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 79.375 78.74 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"+3V3\""
+			(at 79.375 78.74 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "cf8d941a-b175-4db7-98f3-8df9a19a89f1")
+		)
+		(instances
+			(project "kivar-demo"
+				(path "/cd745a5c-45fb-4106-85c8-c86c130b6ee7/f1bdcd00-da00-4cca-b21f-4862aa5c3200"
+					(reference "#PWR08")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Jumper:SolderJumper_2_Open")
+		(at 159.385 92.71 90)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom no)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "3bbceba0-eaa0-4152-b1b9-b1bd1abfb625")
+		(property "Reference" "JP2"
+			(at 161.925 92.7099 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(property "Value" "BT_CFG1_7"
+			(at 155.575 92.71 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Footprint" "Jumper:SolderJumper-2_P1.3mm_Open_RoundedPad1.0x1.5mm"
+			(at 159.385 92.71 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 159.385 92.71 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Solder Jumper, 2-pole, open"
+			(at 159.385 92.71 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "8a437bb7-f6e4-4720-882a-c75718e65da0")
+		)
+		(pin "2"
+			(uuid "04d16a2f-5e53-415b-b9b6-cab93a542bab")
+		)
+		(instances
+			(project "kivar-demo"
+				(path "/cd745a5c-45fb-4106-85c8-c86c130b6ee7/f1bdcd00-da00-4cca-b21f-4862aa5c3200"
+					(reference "JP2")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R")
+		(at 130.175 92.71 0)
+		(mirror x)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "730ed1d1-b7f3-4cc2-b7e6-bb531a213568")
+		(property "Reference" "R9"
+			(at 132.715 90.1699 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "0Ω"
+			(at 132.715 92.7099 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_0402_1005Metric"
+			(at 128.397 92.71 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 130.175 92.71 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 130.175 92.71 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "KiVar.Rule" "BOOT_SRC NAND,JP(-!)"
+			(at 132.715 95.2499 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "1"
+			(uuid "7c051092-6634-4631-8f0b-5dccc9c97b57")
+		)
+		(pin "2"
+			(uuid "948d8c9c-4dd2-4893-bce3-1eb60a2c3433")
+		)
+		(instances
+			(project "kivar-demo"
+				(path "/cd745a5c-45fb-4106-85c8-c86c130b6ee7/f1bdcd00-da00-4cca-b21f-4862aa5c3200"
+					(reference "R9")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R")
+		(at 81.915 82.55 180)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "7f5cd2d7-37a7-4843-81cd-257076ff743d")
+		(property "Reference" "R3"
+			(at 84.455 81.2799 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(property "Value" "10kΩ"
+			(at 84.455 83.82 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_0402_1005Metric"
+			(at 83.693 82.55 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 81.915 82.55 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 81.915 82.55 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "15b7799c-2426-4ed3-9630-f3cd43f2569b")
+		)
+		(pin "2"
+			(uuid "f0f9a7ec-d7fe-431e-9e8f-a84793e43a4a")
+		)
+		(instances
+			(project "kivar-demo"
+				(path "/cd745a5c-45fb-4106-85c8-c86c130b6ee7/f1bdcd00-da00-4cca-b21f-4862aa5c3200"
+					(reference "R3")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R")
+		(at 159.385 82.55 180)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "82cb9104-049e-431a-824b-97e76fb22858")
+		(property "Reference" "R7"
+			(at 161.925 81.2799 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(property "Value" "10kΩ"
+			(at 161.925 83.82 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_0402_1005Metric"
+			(at 161.163 82.55 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 159.385 82.55 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 159.385 82.55 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "142651c9-7dfa-4c36-a00f-b6885f61967f")
+		)
+		(pin "2"
+			(uuid "235d64a7-e068-462c-8eeb-6aac7e757a2a")
+		)
+		(instances
+			(project "kivar-demo"
+				(path "/cd745a5c-45fb-4106-85c8-c86c130b6ee7/f1bdcd00-da00-4cca-b21f-4862aa5c3200"
+					(reference "R7")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R")
+		(at 121.285 82.55 180)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "8cafdb04-e3ae-4ac2-8b41-8e3a1105ae54")
+		(property "Reference" "R6"
+			(at 123.825 81.2799 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(property "Value" "10kΩ"
+			(at 123.825 83.82 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_0402_1005Metric"
+			(at 123.063 82.55 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 121.285 82.55 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 121.285 82.55 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "a0d41124-7e8b-4b25-96eb-9f2e47249cef")
+		)
+		(pin "2"
+			(uuid "18ff9493-b6cb-4700-b26b-e82947d86988")
+		)
+		(instances
+			(project "kivar-demo"
+				(path "/cd745a5c-45fb-4106-85c8-c86c130b6ee7/f1bdcd00-da00-4cca-b21f-4862aa5c3200"
+					(reference "R6")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R")
+		(at 102.235 82.55 180)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "a574d678-234d-4f9c-9cd1-ace5619821f5")
+		(property "Reference" "R5"
+			(at 104.775 81.2799 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(property "Value" "10kΩ"
+			(at 104.775 83.82 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_0402_1005Metric"
+			(at 104.013 82.55 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 102.235 82.55 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 102.235 82.55 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "143b7940-ffc6-4729-b89e-7ebab20d04c9")
+		)
+		(pin "2"
+			(uuid "fe246387-875d-442c-a6df-44550949e6c2")
+		)
+		(instances
+			(project "kivar-demo"
+				(path "/cd745a5c-45fb-4106-85c8-c86c130b6ee7/f1bdcd00-da00-4cca-b21f-4862aa5c3200"
+					(reference "R5")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R")
+		(at 168.275 92.71 0)
+		(mirror x)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom no)
+		(on_board yes)
+		(dnp yes)
+		(fields_autoplaced yes)
+		(uuid "ba45e535-493c-4b78-88ea-d29e167d7324")
+		(property "Reference" "R10"
+			(at 170.18 90.1699 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "0Ω"
+			(at 170.18 92.7099 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_0402_1005Metric"
+			(at 166.497 92.71 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 168.275 92.71 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 168.275 92.71 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "KiVar.Rule" "BOOT_SRC SD,EMMC,JP(-!)"
+			(at 170.18 95.2499 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "1"
+			(uuid "40845c1a-e0e1-4063-827d-a4cb38163441")
+		)
+		(pin "2"
+			(uuid "5a236f1b-f045-46fb-9176-f4ba0c41f1a0")
+		)
+		(instances
+			(project "kivar-demo"
+				(path "/cd745a5c-45fb-4106-85c8-c86c130b6ee7/f1bdcd00-da00-4cca-b21f-4862aa5c3200"
+					(reference "R10")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Jumper:SolderJumper_2_Open")
+		(at 200.66 92.71 90)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom no)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "ca5cfd02-335b-47ae-bfc9-4a86cfbf38aa")
+		(property "Reference" "JP3"
+			(at 203.2 92.7099 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(property "Value" "BT_CFG2_3"
+			(at 196.85 92.71 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Footprint" "Jumper:SolderJumper-2_P1.3mm_Open_RoundedPad1.0x1.5mm"
+			(at 200.66 92.71 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 200.66 92.71 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Solder Jumper, 2-pole, open"
+			(at 200.66 92.71 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "bae78427-b11f-4a8c-a1ff-7f93a2304595")
+		)
+		(pin "2"
+			(uuid "654052bd-03b2-49a2-ad53-8e86d7c3c979")
+		)
+		(instances
+			(project "kivar-demo"
+				(path "/cd745a5c-45fb-4106-85c8-c86c130b6ee7/f1bdcd00-da00-4cca-b21f-4862aa5c3200"
+					(reference "JP3")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R")
+		(at 209.55 92.71 0)
+		(mirror x)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "d11fb2ac-e945-42aa-a1ec-cde596cb273c")
+		(property "Reference" "R11"
+			(at 211.455 90.1699 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "0Ω"
+			(at 211.455 92.7099 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_0402_1005Metric"
+			(at 207.772 92.71 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 209.55 92.71 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 209.55 92.71 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "KiVar.Rule" "BOOT_SRC SD,NAND,JP(-!)"
+			(at 211.455 95.2499 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "1"
+			(uuid "2156fe29-c415-4ec9-973a-5ce274b456ec")
+		)
+		(pin "2"
+			(uuid "af4f4ae2-0be9-45dd-a5d5-e12b4557d443")
+		)
+		(instances
+			(project "kivar-demo"
+				(path "/cd745a5c-45fb-4106-85c8-c86c130b6ee7/f1bdcd00-da00-4cca-b21f-4862aa5c3200"
+					(reference "R11")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R")
+		(at 92.075 82.55 180)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "e50a4e70-39a0-4bac-892f-3320966869cc")
+		(property "Reference" "R4"
+			(at 94.615 81.2799 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(property "Value" "10kΩ"
+			(at 94.615 83.82 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_0402_1005Metric"
+			(at 93.853 82.55 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 92.075 82.55 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 92.075 82.55 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "19eb34cd-ad66-4013-9532-efccee63bd10")
+		)
+		(pin "2"
+			(uuid "78b0892c-856f-4471-ae24-1b759c882a07")
+		)
+		(instances
+			(project "kivar-demo"
+				(path "/cd745a5c-45fb-4106-85c8-c86c130b6ee7/f1bdcd00-da00-4cca-b21f-4862aa5c3200"
+					(reference "R4")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R")
+		(at 200.66 82.55 180)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "f86933d8-0961-4155-b5f1-2eba9d4980e7")
+		(property "Reference" "R8"
+			(at 203.2 81.2799 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(property "Value" "10kΩ"
+			(at 203.2 83.82 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_0402_1005Metric"
+			(at 202.438 82.55 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 200.66 82.55 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 200.66 82.55 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "6efeaf85-824e-488b-b66e-f8d53a5b9b25")
+		)
+		(pin "2"
+			(uuid "b5cf5d60-961c-416f-9b77-f3e3ca618c0f")
+		)
+		(instances
+			(project "kivar-demo"
+				(path "/cd745a5c-45fb-4106-85c8-c86c130b6ee7/f1bdcd00-da00-4cca-b21f-4862aa5c3200"
+					(reference "R8")
+					(unit 1)
+				)
+			)
+		)
+	)
+)

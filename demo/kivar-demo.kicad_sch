@@ -1,0 +1,247 @@
+(kicad_sch
+	(version 20231120)
+	(generator "eeschema")
+	(generator_version "7.99")
+	(uuid "cd745a5c-45fb-4106-85c8-c86c130b6ee7")
+	(paper "A5" portrait)
+	(title_block
+		(title "KiVar Demo")
+		(date "2024-01-05")
+		(company "Author: Mark Hämmerling <dev@markh.de>")
+		(comment 1 "https://github.com/markh-de/KiVar")
+	)
+	(lib_symbols)
+	(sheet
+		(at 57.15 133.35)
+		(size 31.75 10.795)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 255 229 191 1.0000)
+		)
+		(uuid "0e980ce9-433f-4ae1-b84f-fd5b1f452ede")
+		(property "Sheetname" "Example 5"
+			(at 57.15 132.6384 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "example_5.kicad_sch"
+			(at 57.15 144.7296 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(instances
+			(project "kivar-demo"
+				(path "/cd745a5c-45fb-4106-85c8-c86c130b6ee7"
+					(page "6")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 57.15 57.15)
+		(size 31.75 10.795)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 255 229 191 1.0000)
+		)
+		(uuid "819719b2-602e-433d-a771-1f2596d21337")
+		(property "Sheetname" "Example 1"
+			(at 57.15 56.4384 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "example_1.kicad_sch"
+			(at 57.15 68.5296 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(instances
+			(project "kivar-demo"
+				(path "/cd745a5c-45fb-4106-85c8-c86c130b6ee7"
+					(page "2")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 57.15 95.25)
+		(size 31.75 10.795)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 255 229 191 1.0000)
+		)
+		(uuid "98917921-089a-4f53-9391-423838589d96")
+		(property "Sheetname" "Example 3"
+			(at 57.15 94.5384 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "example_3.kicad_sch"
+			(at 57.15 106.6296 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(instances
+			(project "kivar-demo"
+				(path "/cd745a5c-45fb-4106-85c8-c86c130b6ee7"
+					(page "4")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 57.15 114.3)
+		(size 31.75 10.795)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 255 229 191 1.0000)
+		)
+		(uuid "b90e2ece-31a9-44a1-a7e2-4f98d0159cd7")
+		(property "Sheetname" "Example 4"
+			(at 57.15 113.5884 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "example_4.kicad_sch"
+			(at 57.15 125.6796 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(instances
+			(project "kivar-demo"
+				(path "/cd745a5c-45fb-4106-85c8-c86c130b6ee7"
+					(page "5")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 57.15 31.75)
+		(size 31.75 10.795)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 255 255 194 1.0000)
+		)
+		(uuid "ed6b360e-2c97-4912-8101-70e5ae5801ff")
+		(property "Sheetname" "Rule Structure"
+			(at 57.15 31.0384 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "rule_structure.kicad_sch"
+			(at 57.15 43.1296 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(instances
+			(project "kivar-demo"
+				(path "/cd745a5c-45fb-4106-85c8-c86c130b6ee7"
+					(page "7")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 57.15 76.2)
+		(size 31.75 10.795)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 255 229 191 1.0000)
+		)
+		(uuid "f1bdcd00-da00-4cca-b21f-4862aa5c3200")
+		(property "Sheetname" "Example 2"
+			(at 57.15 75.4884 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "example_2.kicad_sch"
+			(at 57.15 87.5796 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(instances
+			(project "kivar-demo"
+				(path "/cd745a5c-45fb-4106-85c8-c86c130b6ee7"
+					(page "3")
+				)
+			)
+		)
+	)
+	(sheet_instances
+		(path "/"
+			(page "1")
+		)
+	)
+)

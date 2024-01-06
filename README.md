@@ -4,7 +4,7 @@
 
 KiVar is a KiCad Action Plugin providing convenient PCB assembly variant selection.
 
-Component variations are defined by rules defined in dedicated symbol or footprint fields.  This allows for the complete variation configuration to be contained in the schematic and board files without requiring external data from outside the native KiCad design files.
+Component variations are specified by rules defined in dedicated symbol or footprint fields.  This allows for the complete variant configuration to be contained in the schematic and board files without requiring external data from outside the native KiCad design files.
 
 The plugin name _KiVar_ may be read as an acronym for _**Ki**Cad **V**ariation **a**ssignment **r**ules_.
 
@@ -18,21 +18,22 @@ Back-propagation of modified component data to the schematic can be done in an e
 
 KiVar is targeted towards release 8 of KiCad.  However, basic feature and API support is already provided by stable KiCad 7 releases.
 
-_Note:_ Current nightly builds of release 8 already fulfill all critical API requirements.
-
 The following table provides a feature support overview.
 
-|Feature                                             |KiCad 7|KiCad 8 and later|
-|----------------------------------------------------|-------|-----------------|
-|Edit variation rule definitions in symbols          |**Yes**|**Yes**          |
-|Edit variation rule definitions in footprints       |No     |**Yes**          |
-|Apply value and DNP variation choices in PCB        |**Yes**|**Yes**          |
-|Apply footprint attribute "Do not populate"         |No     |**Yes**          |
-|Apply footprint attribute "Exclude from BoM"        |**Yes**|**Yes**          |
-|Apply footprint attribute "Exclude from Pos Files"  |**Yes**|**Yes**          |
-|Update schematic symbol values from PCB             |**Yes**|**Yes**          |
-|Update schematic symbol attribute "DNP" from PCB    |No     |**Yes**          |
-|Update schematic variation definitions from PCB     |No     |**Yes**          |
+|Feature                                              |KiCad 7|KiCad 8 and later|
+|-----------------------------------------------------|-------|-----------------|
+|Edit variation rule definitions in symbols           |**Yes**|**Yes**          |
+|Edit variation rule definitions in footprints        |No     |**Yes**          |
+|Apply value and DNP variation choices in PCB         |**Yes**|**Yes**          |
+|Apply footprint attribute "Do not populate"          |No     |**Yes**          |
+|Apply footprint attribute "Exclude from BoM"         |**Yes**|**Yes**          |
+|Apply footprint attribute "Exclude from Pos Files"   |**Yes**|**Yes**          |
+|Update schematic symbol values from PCB              |**Yes**|**Yes**          |
+|Update schematic symbol attribute "DNP" from PCB     |No     |**Yes**          |
+|Update schematic variation definitions from PCB      |No     |**Yes**          |
+|Changes and errors can be clicked to focus components|No     |**Yes**          |
+
+_Note:_ Current nightly builds of release 8 (i.e. version 7.99) already fulfill all critical API requirements.
 
 ## Concepts
 
@@ -57,23 +58,23 @@ If the installation does not work for you this way, consider reporting your prob
 
 The process of writing and assigning rules to components (symbols/footprints) is done manually using simple expressions.
 
-Once all relevant components are equipped with their variation rules, the KiVar plugin allows the selection of variation choices providing an easy-to-use dialog interface and takes care of the automatic assignment of the specified component values and attributes.
+Once all relevant components are equipped with their variation rules, the KiVar plugin allows the selection of variation choices providing an easy-to-use dialog interface and takes care of the automatic assignment of the corresponding component values and attributes.
 
 The following sections describe the process of configuring your schematic or board and, after that, selecting a variation configuration from the previously configured variation choices.
 
-### Symbol Variation Setup
+### Component Variation Setup
 
-The following sub-sections describe the variation setup procedure.
+The following sub-sections describe the variation rules setup procedure.
 
-For stable _KiCad 7 releases_, variation rules must be defined in the _schematic_ and then propagated to the board, on which the plugin operates on.  Setting up the variation rules directly in the board is not possible with KiCad 7, as this version does not yet support footprint user fields, but instead only one-way-copies symbol fields to footprint _properties_, which are not exposed to the user interface in an editable way (but the data is there and is accessed by KiVar) and cannot be propagated back to the schematic.
+For stable _KiCad 7 releases_, variation rules must be defined in the _schematic_ and then propagated to the board, on which the plugin operates on (use _Tools &rarr; Update PCB from Schematic..._).  Setting up the variation rules directly in the board is not possible with KiCad 7, as this version does not yet provide footprint user fields, but instead only one-way-copies symbol fields to footprint _properties_, which are not exposed to the user interface in an editable way (but the data is stored internally and used by KiVar) and cannot be propagated back to the schematic.
 
-For _KiCad 8 and later_, it's up to the user to either edit the _schematic or board_ to setup the variation configuration, as these versions provide footprint fields and synchronization of symbol and footprint fields in _both_ directions.
+For _KiCad 8 and later_, it's up to the user to either edit the _schematic or board_ to setup the variation rules, as these versions provide footprint fields and synchronization of symbol and footprint fields in _both_ directions.
 
 No matter which KiCad version is used, being a _pcbnew_ Action Plugin, KiVar always uses the footprint data found in the currently opened _board_.  So all relevant symbol modifications done in the schematic _must be updated from the schematic to the board_ before using the plugin (described below in more detail).
 
 #### Definition of Terms
 
-As mentioned before, KiVar supports multiple independent _variation aspects_ per board.  For each of these variation aspects, one _variation choice_ can be made later during the selection process.  The result of selecting a specific set of choices for a given set of variations forms a _variation configuration_.
+As mentioned before, KiVar supports multiple independent _variation aspects_ per board.  For each of these variation aspects, one _variation choice_ can be made later during the selection process.  The result of selecting a specific set of choices for a given set of aspects forms a _variation configuration_.
 
 Terms used in this document:
 
@@ -94,30 +95,28 @@ For each component that defines choices for a specific aspect, KiVar enhances it
 
 The syntax of variation rules is described in the following sections.
 
-_Hint:_ It is highly recommended to add `KiVar.Rule` as a project field name template (configure under _File &rarr; Schematic Setup... &rarr; General &rarr; Field Name Templates_), so that rules can easily be entered without manually adding the field to each respective symbol.
+_Hint:_ It is highly recommended to add `KiVar.Rule` as a project field name template (configure under _File &rarr; Schematic Setup... &rarr; General &rarr; Field Name Templates_), so that rules can easily be created without manually adding the field and its name for each affected symbol.
 
 ##### Definition Syntax
 
-_Note:_ Before KiVar 1.0 release, the definition syntax may change. Stay tuned for updates!
-
-The following sections provide an abstract specification of the rule definition syntax, including explanations based on the following simple example rule for illustration purposes.
-
-_Illustration example:_
-
-The following components define the listed values in their `KiVar.Rule` field:
-
- * `R1` &rarr; `ASPECT_A CHOICE_1(0Ω) CHOICE_2,CHOICE_3(10kΩ)`
- * `R2` &rarr; `ASPECT_A CHOICE_3() *(-!)`
+_Note:_ KiVar 0.1.0 introduced a new rule syntax, which will probably become the final format.  However, before KiVar 1.0.0 release, the definition syntax may still change.  Stay tuned for updates!
 
 The following figure summarises the structure of a rule definition.  Each part of it is explained in more detail in the following sections. 
 
 ![Variation Definition Composition](doc/rule.png)
 
+For the upcoming sections, the following simple example rules are used for illustration purposes (components `R1` and `R2`):
+
+ * `R1`: `KiVar.Rule` = `ASPECT_A CHOICE_1(0Ω) CHOICE_2,CHOICE_3(10kΩ)`
+ * `R2`: `KiVar.Rule` = `ASPECT_A CHOICE_3() *(-!)`
+
 ###### Rule Definition
 
-A **rule definition** consists of multiple sections, separated by (unescaped) _space_ characters.
+A **rule definition** consists of multiple sections, separated by one or more (unescaped) _space_ characters.
 
-The **first** section of each rule definition contains the **aspect name**.  **Any subsequent** sections contain **choice definitions**, which relate to the apsect name specified in the first section.
+The **first** section of each rule definition contains the **aspect name**.
+
+**Any subsequent** sections contain **choice definitions**, which relate to the aspect name specified in the first section.
 
 Looking at `R1` of the illustration example, `ASPECT_A` is the aspect name, and the choice definitions _for that aspect_ are defined as:
 
@@ -128,7 +127,7 @@ Follow the next sections for further explanations.
 
 ###### Choice Definition
 
-A choice definition consists of two parts: One or more **choice names**, directly followed by a set of parentheses containing the **choice arguments**.
+A choice definition consists of two parts: One or more **choice names** (_comma_-separated), directly followed by a pair of parentheses containing the **choice arguments**.
 
 The _choice names_ declare to which variation choices the given choice arguments shall be applied.
 
@@ -147,9 +146,9 @@ _Important:_ All arguments starting with an _unescaped_ `-` (dash) character are
 
 ###### Supported Options
 
-Currently only one option is supported:
+Currently only one type of option is supported:
 
-`!` — Unfit component.  If specified, sets the following attributes for the related footprint:
+`!` — **Unfit component**.  If specified, sets the following attributes for the related footprint:
   * _Do not populate_ (not yet supported in KiCad 7),
   * _Exclude from position files_,
   * _Exclude from Bill of Materials_.
@@ -164,7 +163,7 @@ _Note:_ It is important to understand that a component's variation rule must _ei
 
 ###### Default Choice Definitions
 
-Default choices can be used to declare arguments that shall be applied to choices not explicitly defined in the current rule definition, but declared in any other rule definitions (i.e., in rules applied to any other components).
+Default choices can be used to declare arguments that shall be applied to choices not explicitly defined in the current rule definition, but declared in any other rule definitions (i.e., in rules applied to other components).
 
 As the list of possible aspect choices can be enhanced by other components' rules using the same aspect, not each component (or component variation rule) may be "aware" of the resulting full set of aspect choices built up during the footprint rules enumeration.  Also, defining all possible choices in each component's rule would be tedious and harder to maintain, as all related components' rules would need to be extended when new choices are introduced.  Therefore, default choices are a practical means to define default values and options without explicitly listing all choices they shall apply to.
 
@@ -173,7 +172,7 @@ Default choices are defined in the same way as normal choices.  To indicate a de
 Beware that default values and default options are applied differently:
 
  * A **value** listed in a default choice definition applies to _all choices that are not defined or are defined, but do not contain a value assignment_ within the same variation rule.
- * Any **options** listed in a default choice definition only apply to _all choices that are not defined_ within the same variation rule_.  That is, if a specific choice is defined in a rule, that definition _always_ overrides all options of the default choice definition.  Options specified in the default choice definition will _not_ be inherited by specific (non-default) choices that are defined in any way inside the same variation rule definition, but only by choices that are exclusively declared (and defined) by _other_ rules (i.e., rules applied to _other components_, but referring to the same variation aspect).
+ * Any **options** listed in a default choice definition only apply to _all choices that are not defined_ within the same variation rule.  That is, if a specific choice is defined in a rule, that definition _always_ overrides all options of the default choice definition.  Options specified in the default choice definition will _not_ be inherited by specific (non-default) choices that are defined in any way inside the same variation rule definition, but only by choices that are exclusively declared (and defined) by _other_ rules (i.e., rules applied to _other components_, but referring to the same variation aspect).
 
 A default choice definition can be placed anywhere in the list of choice definitions, and can also be defined together with other choices (comma-separated notation).  Two recommended ways are to place the default either at the beginning _('default' notation)_ or the end _('else' notation)_ of the choice definitions.  The effect is the same.  It depends on the user's preference how the rule is worded.  For example,
 
@@ -203,11 +202,11 @@ Special characters, such as `,` ` ` `-` `(` `)` (comma, space, dash, parentheses
  * they are escaped, i.e. prepended with a `\`, or when
  * they appear inside a matching pair of `(` `)` (parentheses, or round brackets).
 
-_Note:_ Double quotation mark characters can **not** be used for quoting.
+_Note:_ Double quotation mark characters (`"`) are **not** used for quoting.
 
 To include any character as-is without being interpreted (e.g. _dash_ to be used as first character of a value, or _single quotation mark_ or _backslash_), that character must be _escaped_, i.e. preceded, with a _backslash_ character.
 
-In many cases, quoting and escaping in KiVar works just like in a regular POSIX shell interpreter.
+_Hint:_ In many cases, quoting and escaping in KiVar works just like in a regular POSIX shell interpreter.
 
 _Examples:_
 
@@ -222,9 +221,9 @@ _Note:_ When separating parts using the space character (rule definition section
 
 ##### Constraints
 
-KiVar uses **implicit declarations** for variations and for choices.  That is, it is not required to maintain a dedicated list of available variations or choices per variation.  Simply mentioning a variation or choice inside a rule definition is sufficient to register them.
+KiVar uses **implicit declarations** for aspects and for choices.  That is, it is not required to maintain a dedicated list of available aspects or choices.  Simply mentioning an aspect or choice inside a rule definition is sufficient to declare them.
 
-Using implicit declarations carries the risk of creating undesired extra variations or choices in case of spelling errors.  Also, this method may require a little more work in case variations or choices are to be renamed.  However, the Schematic Editor's _Symbol Fields Table_ is a useful tool for bulk-editing KiVar rules.
+_Note:_ Using implicit declarations carries the risk of creating undesired extra aspects or choices in case of spelling errors.  Also, this method may require a little more work in case aspects or choices are to be renamed.  However, the Schematic Editor's _Symbol Fields Table_ is a useful tool for bulk-editing KiVar rules.
 
 ##### Real-World Examples
 
@@ -304,7 +303,7 @@ This is used for selection of an I/O expander IC type (953**5** vs. 953**9**) al
 
 ![Device and Address Selection](doc/ioexp.png)
 
-This example really implements two simple aspects in one variation aspect definition: The type of the IC and the device address.  As both aspects depend on each other and can only be defined in a combined way, all possible combinations must be defined.  It is recommended to use the same dedicated sub-aspect separation character (`/` used in this example) in the variation name as well as the choice names to make it obvious to the user which sub-choice applies to which sub-aspect.
+This example really implements two simple aspects in one variation aspect definition: The type of the IC and the device address.  As both aspects depend on each other and can only be defined in a combined way, all possible combinations must be defined.  It is recommended to use the same dedicated sub-aspect separation character (`/` used in this example) in the aspect name as well as the choice names to make it obvious to the user which sub-choice applies to which sub-aspect.
 
 In order to **switch the full set of ordering information or symbol and footprint library references** stored in the symbol fields, this example selects one of two alternate symbol instances, each using a slightly different symbol drawing (note the difference on pin 3).
 
@@ -323,7 +322,7 @@ _Note:_ If copper pads of multiple _alternate(!)_ footprints do overlap, it is i
 
 How to read the sub-aspects:
 
-This example uses variation `IOEXP_TYPE/ADDR` (read as: sub-aspects `IOEXP_TYPE` and `IOEXP_ADDR`) with choice `9539/0x74` (read as: `9539` selected for `IOEXP_TYPE`, `0x74` selected for `IOEXP_ADDR`) currently applied in the figure.
+This example uses variation aspect `IOEXP_TYPE/ADDR` (read as: sub-aspects `IOEXP_TYPE` and `IOEXP_ADDR`) with choice `9539/0x74` (read as: `9539` selected for `IOEXP_TYPE`, `0x74` selected for `IOEXP_ADDR`) currently applied in the figure.
 
 How to read the rules:
 
@@ -347,15 +346,15 @@ To run the plugin, choose the _KiVar_ menu item under _Tools &rarr; External Plu
 
 #### Configuration Identification
 
-Upon start, KiVar automatically detects the current configuration, i.e. tries to find a definite choice for each configured variation, based on the currently assigned values and attributes for each related footprint.
+Upon start, during the enumeration stage, KiVar automatically detects the current variation configuration, i.e., it tries to find a definite choice for each configured variation, based on the currently assigned values and attributes for each related footprint.
 
-If the values and attributes do not exactly match one definite choice (for a variation aspect), then the corresponding variation choice selector is preset to the entry _'\<unset>'_.  This will probably happen before applying a specific choice for the first time or after editing rules, because the currently assigned footprint attributes may not yet perfectly match one of the defined variation choices.
+If the values and attributes do not exactly match one definite choice (for a variation aspect), then the corresponding variation choice selector is preset to the entry _'\<unset>'_.  This will probably happen before applying a specific choice for the first time or after editing rules, because not all of the currently assigned footprint attributes may perfectly match one of the defined variation choices.
 
 #### Possible Error Messages
 
-In case the defined variation rules cannot be parsed without problems, an error message window with a list of problems will appear.  Each of these problems must then be fixed in order to successfully start the plugin.
+In case the defined variation rules cannot be parsed and enumerated without problems, an error message window with a list of problems will appear.  Each of these problems must then be fixed in order to successfully start the plugin.
 
-In KiCad 7.99 Nightlies from around 2023-10-18, clicking an item in the error list focuses the corresponding footprint in the pcbnew canvas.
+_Hint:_ You can click each error message to focus the corresponding footprint on the _pcbnew_ canvas in the background (KiCad 8 only).
 
 #### Variation Choices Selection
 
@@ -365,9 +364,13 @@ For the above [real-world examples](#real-world-examples), the selection dialog 
 
 ![Variant Selection Dialog Without Changes](doc/selection-nochange.png)
 
-For each of the listed variation aspects a variation choice can now be selected.  If the values and attributes of the footprint(s) related to a variation aspect shall not be modified, the entry _'\<unset>'_ can be selected for that variation aspect.  In this case, the corresponding variation is skipped during the assignment stage and related footprints remain unmodified.
+For each of the listed variation aspects a variation choice can now be selected.
 
-The change list section below the selection area summarizes all component value and attribute changes to be performed for each related footprint if the current variation configuration is applied.  In KiCad 7.99 Nightlies from around 2023-10-18, clicking an item in the change list focuses the corresponding footprint in the pcbnew canvas.
+If the values and attributes of the footprint(s) related to a variation aspect shall not be modified, the entry _'\<unset>'_ can be selected for that variation aspect.  In this case, the corresponding variation is skipped during the assignment stage and related footprints remain unmodified.
+
+The change list section below the selection area summarizes all component value and attribute changes to be performed for each related footprint if the current variation configuration is applied.
+
+_Hint:_ You can click each entry in the change list to focus the corresponding footprint on the _pcbnew_ canvas in the background (KiCad 8 only).
 
 After selecting a few different variation choices, the dialog window may look like the following:
 
@@ -377,11 +380,11 @@ When clicking the _Update PCB_ button, KiVar sets the values and attributes for 
 
 #### Visible Changes
 
-The performed changes will immediately be visible in the PCB Editor (e.g. for shown footprint values) and the 3D Viewer window (after refresh, depending on the user's preference).
+The performed changes will immediately be visible in the PCB Editor (e.g. for shown footprint values) and the 3D Viewer window (immediately or after refresh, depending on the preferences setting).
 
 #### Updating the Schematic
 
-All changes by the plugin are only performed in the board, as KiVar is a plugin for pcbnew (eeschema does not yet have a plugin interface).  That is, the performed changes must be propagated back from the board to the schematic in order to be visible there.
+All changes by the plugin are only performed in the board, as KiVar is a plugin for _pcbnew_ (_eeschema_ does not yet have a plugin interface).  That is, the performed changes must be propagated back from the board to the schematic in order to be visible there (e.g. for changed values and DNP markings).
 
 To propagate the changes back to the schematic, use the PCB Editor menu item _Tools &rarr; Update Schematic from PCB..._ and make sure to select the checkboxes _Values_ and _Attributes_\*.  If you have modified the KiVar rules inside the PCB Editor, i.e. edited the footprint fields\* instead of the symbol fields, then also select the checkbox _Other fields_\*, in order to propagate your KiVar rules to the schematic.
 

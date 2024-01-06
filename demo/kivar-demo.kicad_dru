@@ -1,0 +1,6 @@
+(version 1)
+
+(rule "Allow overlapping courtyards for DNP parts"
+    (condition "A.Type == 'Footprint' && B.Type == 'Footprint' && A.Do_not_populate")
+    (constraint courtyard_clearance (min -1mm))
+)

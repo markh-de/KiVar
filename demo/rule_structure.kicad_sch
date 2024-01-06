@@ -1,0 +1,419 @@
+(kicad_sch
+	(version 20231120)
+	(generator "eeschema")
+	(generator_version "7.99")
+	(uuid "55cc74f3-a76a-489e-86d1-364a3afd14d4")
+	(paper "A5")
+	(title_block
+		(title "KiVar Demo")
+		(date "2024-01-05")
+		(company "Author: Mark Hämmerling <dev@markh.de>")
+		(comment 1 "https://github.com/markh-de/KiVar")
+		(comment 4 "KiVar Variation Rule Structure")
+	)
+	(lib_symbols)
+	(polyline
+		(pts
+			(xy 75.819 67.31) (xy 84.3534 67.31)
+		)
+		(stroke
+			(width 0.2032)
+			(type default)
+			(color 0 194 194 1)
+		)
+		(uuid "17610723-a918-4755-b0bb-71bfa6e88343")
+	)
+	(polyline
+		(pts
+			(xy 130.8862 67.31) (xy 143.1544 67.31)
+		)
+		(stroke
+			(width 0.2032)
+			(type default)
+			(color 0 0 255 1)
+		)
+		(uuid "1daf3e52-4fc4-44b1-8978-c1fcdf97a63e")
+	)
+	(polyline
+		(pts
+			(xy 86.233 73.025) (xy 99.4918 67.31)
+		)
+		(stroke
+			(width 0)
+			(type default)
+			(color 0 194 194 1)
+		)
+		(uuid "239267ad-e3c8-4bc6-982f-60767b30c73a")
+	)
+	(polyline
+		(pts
+			(xy 87.7824 64.135) (xy 105.9434 59.055)
+		)
+		(stroke
+			(width 0)
+			(type default)
+			(color 194 194 0 1)
+		)
+		(uuid "2e96de4f-341e-48db-b947-1028dce35a99")
+	)
+	(polyline
+		(pts
+			(xy 98.3996 51.435) (xy 139.5222 64.135)
+		)
+		(stroke
+			(width 0)
+			(type default)
+			(color 221 133 0 1)
+		)
+		(uuid "3bf64849-5e7c-4321-ab20-ff9f4a977b92")
+	)
+	(polyline
+		(pts
+			(xy 86.233 73.025) (xy 80.3148 67.31)
+		)
+		(stroke
+			(width 0)
+			(type default)
+			(color 0 194 194 1)
+		)
+		(uuid "3c1213e8-e2cc-47cf-bb38-2cda96729c98")
+	)
+	(polyline
+		(pts
+			(xy 131.4196 73.025) (xy 129.1336 67.31)
+		)
+		(stroke
+			(width 0)
+			(type default)
+			(color 0 194 194 1)
+		)
+		(uuid "3d6cc179-a2a5-48bd-a1fb-210840a77644")
+	)
+	(polyline
+		(pts
+			(xy 114.4016 67.31) (xy 123.5202 67.31)
+		)
+		(stroke
+			(width 0.2032)
+			(type default)
+			(color 0 0 255 1)
+		)
+		(uuid "3db51f29-b70d-4d79-bb7e-0692c2bbe8f1")
+	)
+	(polyline
+		(pts
+			(xy 119.1006 73.025) (xy 125.9586 67.31)
+		)
+		(stroke
+			(width 0)
+			(type default)
+			(color 194 0 194 1)
+		)
+		(uuid "4344e61c-7252-4620-abe4-2f4cba3cfc39")
+	)
+	(polyline
+		(pts
+			(xy 72.7456 64.135) (xy 98.3996 51.435)
+		)
+		(stroke
+			(width 0)
+			(type default)
+			(color 221 133 0 1)
+		)
+		(uuid "61b3230d-31f2-4670-a731-e52ac5f2ecea")
+	)
+	(polyline
+		(pts
+			(xy 108.4072 73.025) (xy 117.3988 67.31)
+		)
+		(stroke
+			(width 0)
+			(type default)
+			(color 0 0 255 1)
+		)
+		(uuid "64a3d2a6-605b-4022-b83a-c4d0b1cfa719")
+	)
+	(polyline
+		(pts
+			(xy 85.5472 67.31) (xy 92.4814 67.31)
+		)
+		(stroke
+			(width 0.2032)
+			(type default)
+			(color 0 0 255 1)
+		)
+		(uuid "660457be-c45c-4942-a063-ca8697be1fc8")
+	)
+	(polyline
+		(pts
+			(xy 125.0696 67.31) (xy 126.746 67.31)
+		)
+		(stroke
+			(width 0.2032)
+			(type default)
+			(color 194 0 194 1)
+		)
+		(uuid "66843f81-86f3-4bdc-89b8-451ef0cac382")
+	)
+	(polyline
+		(pts
+			(xy 94.8182 67.31) (xy 103.5304 67.31)
+		)
+		(stroke
+			(width 0.2032)
+			(type default)
+			(color 0 194 194 1)
+		)
+		(uuid "6f8d6bde-f2a8-4bde-b0f7-f6bb59eee184")
+	)
+	(polyline
+		(pts
+			(xy 109.2708 64.135) (xy 105.9434 59.055)
+		)
+		(stroke
+			(width 0)
+			(type default)
+			(color 194 194 0 1)
+		)
+		(uuid "87bc7fb3-c5d4-428d-9ad8-952c50076607")
+	)
+	(polyline
+		(pts
+			(xy 88.8238 67.31) (xy 108.4072 73.025)
+		)
+		(stroke
+			(width 0)
+			(type default)
+			(color 0 0 255 1)
+		)
+		(uuid "896940c1-07df-40dc-b3b9-c8f8abc0ac80")
+	)
+	(polyline
+		(pts
+			(xy 104.394 67.31) (xy 113.1062 67.31)
+		)
+		(stroke
+			(width 0.2032)
+			(type default)
+			(color 0 194 194 1)
+		)
+		(uuid "89749966-5d2c-424a-9ee2-1037960c95f4")
+	)
+	(polyline
+		(pts
+			(xy 98.3996 51.435) (xy 96.3422 64.135)
+		)
+		(stroke
+			(width 0)
+			(type default)
+			(color 221 133 0 1)
+		)
+		(uuid "8c2d58fd-d099-4788-9c22-fbd449b337ec")
+	)
+	(polyline
+		(pts
+			(xy 86.233 73.025) (xy 108.1024 67.31)
+		)
+		(stroke
+			(width 0)
+			(type default)
+			(color 0 194 194 1)
+		)
+		(uuid "9373ce6b-1528-4dbe-92a8-ba724417259a")
+	)
+	(polyline
+		(pts
+			(xy 71.7804 64.135) (xy 73.66 59.69)
+		)
+		(stroke
+			(width 0)
+			(type default)
+			(color 0 194 0 1)
+		)
+		(uuid "a4bc3a73-d22b-4ab3-b83f-fe51df53e4bd")
+	)
+	(polyline
+		(pts
+			(xy 128.9558 64.135) (xy 143.891 64.135)
+		)
+		(stroke
+			(width 0.2032)
+			(type default)
+			(color 194 194 0 1)
+		)
+		(uuid "bdc7448e-d5a0-4311-b553-9d6f9b443894")
+	)
+	(polyline
+		(pts
+			(xy 94.8944 64.135) (xy 127.3556 64.135)
+		)
+		(stroke
+			(width 0.2032)
+			(type default)
+			(color 194 194 0 1)
+		)
+		(uuid "bf3e92a2-705e-4a0d-a9c0-2cf405420bba")
+	)
+	(polyline
+		(pts
+			(xy 98.3996 51.435) (xy 85.2678 64.135)
+		)
+		(stroke
+			(width 0)
+			(type default)
+			(color 221 133 0 1)
+		)
+		(uuid "c58278eb-b96a-488b-be89-a8d6f1c9534d")
+	)
+	(polyline
+		(pts
+			(xy 105.9434 59.055) (xy 134.8994 64.135)
+		)
+		(stroke
+			(width 0)
+			(type default)
+			(color 194 194 0 1)
+		)
+		(uuid "cbe6d075-7911-4d73-9cf2-bcb227586760")
+	)
+	(polyline
+		(pts
+			(xy 65.7606 64.135) (xy 74.2442 64.135)
+		)
+		(stroke
+			(width 0.2032)
+			(type default)
+			(color 0 194 0 1)
+		)
+		(uuid "f1778086-b957-4917-8906-8a82a106606a")
+	)
+	(polyline
+		(pts
+			(xy 128.778 67.31) (xy 129.6162 67.31)
+		)
+		(stroke
+			(width 0.2032)
+			(type default)
+			(color 0 194 194 1)
+		)
+		(uuid "f495e3f0-f6d6-4092-b35d-4ff72d32033a")
+	)
+	(polyline
+		(pts
+			(xy 108.4072 73.025) (xy 137.0076 67.31)
+		)
+		(stroke
+			(width 0)
+			(type default)
+			(color 0 0 255 1)
+		)
+		(uuid "f4cb4755-3e3e-4c49-aea6-b550f676d50d")
+	)
+	(polyline
+		(pts
+			(xy 75.7936 64.135) (xy 93.1926 64.135)
+		)
+		(stroke
+			(width 0.2032)
+			(type default)
+			(color 194 194 0 1)
+		)
+		(uuid "f4dd74f0-4ab2-4472-bc0f-9ab5be982be9")
+	)
+	(text "Rule definition sections"
+		(exclude_from_sim no)
+		(at 86.5378 51.435 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+				(color 221 133 0 1)
+			)
+			(justify left bottom)
+		)
+		(uuid "888a4cca-3b08-4b11-9390-bb79dbd2195e")
+	)
+	(text "Choice names"
+		(exclude_from_sim no)
+		(at 80.4672 74.93 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+				(color 0 194 194 1)
+			)
+			(justify left bottom)
+		)
+		(uuid "91d8faf7-c188-47ff-9906-5e6f891de18a")
+	)
+	(text "Option"
+		(exclude_from_sim no)
+		(at 115.0874 74.93 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+				(color 194 0 194 1)
+			)
+			(justify left bottom)
+		)
+		(uuid "970420fc-4bf3-41e8-8e3c-52e3a0187474")
+	)
+	(text "Values"
+		(exclude_from_sim no)
+		(at 105.0798 74.93 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+				(color 0 0 255 1)
+			)
+			(justify left bottom)
+		)
+		(uuid "c4c41051-7fe3-461e-971f-5e00d2dfba09")
+	)
+	(text "Choice definitions"
+		(exclude_from_sim no)
+		(at 98.1964 59.055 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+				(color 194 194 0 1)
+			)
+			(justify left bottom)
+		)
+		(uuid "e2f1397d-1b4e-483d-a834-ec0c05fcbdec")
+	)
+	(text "Aspect name"
+		(exclude_from_sim no)
+		(at 67.3862 59.69 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+				(color 0 194 0 1)
+			)
+			(justify left bottom)
+		)
+		(uuid "ee135e65-edb1-4d4d-8928-bd4ce4f1aa34")
+	)
+	(text "ASPECT_A CHOICE_1(Value_1) CHOICE_2,CHOICE_3(Value_2_3 -!) *(Default_Value)"
+		(exclude_from_sim no)
+		(at 65.3288 66.675 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+				(color 215 75 72 1)
+			)
+			(justify left bottom)
+		)
+		(uuid "f83c6e4c-166f-4d15-b090-71de9447dc5e")
+	)
+	(text "Default choice name"
+		(exclude_from_sim no)
+		(at 123.7742 74.93 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+				(color 0 194 194 1)
+			)
+			(justify left bottom)
+		)
+		(uuid "fa3fbec4-5745-470e-b0b3-0a38636e19f8")
+	)
+)
