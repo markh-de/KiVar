@@ -9,15 +9,14 @@ from os import path as os_path
 
 # TODO:
 #
-# * When printing selected choices, make sure that aspect and choice name are properly quoted.
-#
 # * Add a Setup plugin (separate button) that defines DNP->NoPos/NoBom behavior. Having this in a separate dialog (which
 #   also takes care of nonvolatile storage of the settings) removes any dynamic reload/refresh requirements.
 #   (Setup plugin shall have similar icon with wrench in the foreground.)
 #
-# * Setup plugin: Save option settings as some object in PCB (text box?)
+# * Setup plugin: Save option settings as some object in PCB (board variables or text box)
 #
 # * After applying configuration, define board variables containing the choice for each vn, e.g. ${KIVAR.BOOT_SEL} => NAND
+#   (requires KiCad API change/fix: https://gitlab.com/kicad/code/kicad/-/issues/16426)
 #
 
 class VariantPlugin(pcbnew.ActionPlugin):
@@ -97,6 +96,14 @@ def use_attr_excl_from_bom():
 def use_attr_excl_from_posfiles():
     return True
 #    return api_version() < 799
+
+# TODO When printing selected choices, make sure to escape single-quotes and backslashes (just quoting is not enough)
+def quote_if_special_characters(str):
+    if any(c in str for c in (',', ' ', '-', '\\', '(', ')')):
+        result = f"'{str}'"
+    else:
+        result = str
+    return result
 
 def detect_current_choices(board, vn_dict):
     choices = get_choice_dict(vn_dict)
@@ -203,31 +210,31 @@ def apply_choices(board, vn_dict, selection, dry_run = False):
         for vn in vn_dict[ref]:
             selected_choice = selection[vn]
             if selected_choice != '': # None?
-                vn_text = f'{vn}.{selected_choice}'
+                choice_text = f'{quote_if_special_characters(vn)}.{quote_if_special_characters(selected_choice)}'
                 new_value = vn_dict[ref][vn][selected_choice][key_val()]
                 if new_value is not None:
                     old_value = fp.GetValue()
                     if old_value != new_value:
-                        changes.append([ref, f"Change {ref} value from '{old_value}' to '{new_value}' ({vn_text})."])
+                        changes.append([ref, f"Change {ref} value from '{old_value}' to '{new_value}' ({choice_text})."])
                         if not dry_run:
                             fp.SetValue(new_value)
                 new_unfit = opt_unfit() in vn_dict[ref][vn][selected_choice][key_opts()]
                 if use_attr_dnp():
                     old_dnp = fp.IsDNP()
                     if old_dnp != new_unfit:
-                        changes.append([ref, f"Change {ref} 'Do not populate' from '{bool_as_text(old_dnp)}' to '{bool_as_text(new_unfit)}' ({vn_text})."])
+                        changes.append([ref, f"Change {ref} 'Do not populate' from '{bool_as_text(old_dnp)}' to '{bool_as_text(new_unfit)}' ({choice_text})."])
                         if not dry_run:
                             fp.SetDNP(new_unfit)
                 if use_attr_excl_from_bom():
                     old_excl_from_bom = fp.IsExcludedFromBOM()
                     if old_excl_from_bom != new_unfit:
-                        changes.append([ref, f"Change {ref} 'Exclude from bill of materials' from '{bool_as_text(old_excl_from_bom)}' to '{bool_as_text(new_unfit)}' ({vn_text})."])
+                        changes.append([ref, f"Change {ref} 'Exclude from bill of materials' from '{bool_as_text(old_excl_from_bom)}' to '{bool_as_text(new_unfit)}' ({choice_text})."])
                         if not dry_run:
                             fp.SetExcludedFromBOM(new_unfit)
                 if use_attr_excl_from_posfiles():
                     old_excl_from_posfiles = fp.IsExcludedFromPosFiles()
                     if old_excl_from_posfiles != new_unfit:
-                        changes.append([ref, f"Change {ref} 'Exclude from position files' from '{bool_as_text(old_excl_from_posfiles)}' to '{bool_as_text(new_unfit)}' ({vn_text})."])
+                        changes.append([ref, f"Change {ref} 'Exclude from position files' from '{bool_as_text(old_excl_from_posfiles)}' to '{bool_as_text(new_unfit)}' ({choice_text})."])
                         if not dry_run:
                             fp.SetExcludedFromPosFiles(new_unfit)
     return changes
