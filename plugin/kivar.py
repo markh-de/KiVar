@@ -97,10 +97,14 @@ def use_attr_excl_from_posfiles():
     return True
 #    return api_version() < 799
 
-# TODO When printing selected choices, make sure to escape single-quotes and backslashes (just quoting is not enough)
-def quote_if_special_characters(str):
+def escape_string_if_required(str):
     if any(c in str for c in (',', ' ', '-', '\\', '(', ')')):
-        result = f"'{str}'"
+        result = "'"
+        for c in str:
+            if c == '\\' or c == "'":
+                result += '\\'
+            result += c
+        result += "'"
     else:
         result = str
     return result
@@ -210,7 +214,7 @@ def apply_choices(board, vn_dict, selection, dry_run = False):
         for vn in vn_dict[ref]:
             selected_choice = selection[vn]
             if selected_choice != '': # None?
-                choice_text = f'{quote_if_special_characters(vn)}.{quote_if_special_characters(selected_choice)}'
+                choice_text = f'{escape_string_if_required(vn)}.{escape_string_if_required(selected_choice)}'
                 new_value = vn_dict[ref][vn][selected_choice][key_val()]
                 if new_value is not None:
                     old_value = fp.GetValue()
