@@ -97,6 +97,21 @@ def use_attr_excl_from_posfiles():
     return True
 #    return api_version() < 799
 
+def natural_sort_key(str):
+    key = []
+    part = ''
+    for c in str:
+        if c.isdigit():
+            part += c
+        else:
+            if part:
+                key.append((0, int(part), ''))
+                part = ''
+            key.append((1, 0, c.lower()))
+    if part:
+        key.append((0, int(part), ''))
+    return key
+
 # TODO When printing selected choices, make sure to escape single-quotes and backslashes (just quoting is not enough)
 def quote_if_special_characters(str):
     if any(c in str for c in (',', ' ', '-', '\\', '(', ')')):
@@ -243,7 +258,7 @@ def get_vn_dict(board):
     vns = {}
     errors = []
     fps = board.GetFootprints()
-    fps.sort(key=lambda x: x.GetReference())
+    fps.sort(key=lambda x: natural_sort_key(x.GetReference()))
     accepted_options = [opt_unfit()]
 
     vn_field_name = variant_cfg_field_name()
@@ -541,9 +556,9 @@ class VariantDialog(wx.Dialog):
         var_grid = wx.GridSizer(cols=2, hgap=10, vgap=6)
 
         self.choices = {}
-        for cfg in sorted(choice_dict):
+        for cfg in sorted(choice_dict, key=natural_sort_key):
             opts = ['<unset>']
-            sorted_choices = sorted(choice_dict[cfg])
+            sorted_choices = sorted(choice_dict[cfg], key=natural_sort_key)
             opts.extend(sorted_choices)
             self.choices[cfg] = wx.Choice(self, choices=opts)
             sel_opt = preselect[cfg]
