@@ -133,22 +133,35 @@ The _choice names_ declare to which variation choices the given choice arguments
 
 The _choice arguments_ contain any number of arguments (separated by unescaped _space_ characters) to be applied to each listed choice name.
 
-See below for more details.
+For the illustration example the following assignments apply:
+
+**R1** creates `ASPECT_A` with:
+
+ * the new choice `CHOICE_1` with argument `0Ω`,
+ * the new choices `CHOICE_2` and `CHOICE_3` with argument `10kΩ`, each.
+
+**R2** enhances `ASPECT_A` with:
+
+ * the already known `CHOICE_3` without arguments,
+ * the default choice `*` (i.e. applies to `CHOICE_1` and `CHOICE_2`, see below) with argument `-!`.
 
 ###### Choice Definition Arguments
 
-Each choice definition may contain the following choice arguments:
+Each choice definition may contain the following choice argument types:
 
  * a **value** (one at most) to be assigned to the footprint's value field when that choice is selected during the variation choice selection process, and
  * **options** (none or more) to be assigned to the applicable choice(s).
 
 _Important:_ All arguments starting with an _unescaped_ `-` (dash) character are considered **options**.  Any other arguments are considered **values**.
 
+For the illustration example this means that the arguments `0Ω` and `10kΩ` are considered component values, while `-!` is considered an option.
+
 ###### Supported Options
 
 Currently only one type of option is supported:
 
 `!` — **Unfit component**.  If specified, sets the following attributes for the related footprint:
+
   * _Do not populate_ (not yet supported in KiCad 7),
   * _Exclude from position files_,
   * _Exclude from Bill of Materials_.
@@ -188,11 +201,11 @@ For the above illustration example, which was defined as ...
 
 ... the following resolution would be computed by KiVar:
 
-|Choice for aspect `ASPECT_A`|Component `R1`               |Component `R2`          |
-|----------------------------|-----------------------------|------------------------|
-|`CHOICE_1`                  |Set value to `0Ω`, fitted    |keep value, **unfitted**|
-|`CHOICE_2`                  |Set value to `10kΩ`, fitted  |keep value, **unfitted**|
-|`CHOICE_3`                  |Set value to `10kΩ`, fitted  |keep value, fitted      |
+|Choice for aspect `ASPECT_A`|Component `R1`             |Component `R2`          |
+|----------------------------|---------------------------|------------------------|
+|`CHOICE_1`                  |Set value to `0Ω`, fitted  |keep value, **unfitted**|
+|`CHOICE_2`                  |Set value to `10kΩ`, fitted|keep value, **unfitted**|
+|`CHOICE_3`                  |Set value to `10kΩ`, fitted|keep value, fitted      |
 
 ###### Quoting and Escaping
 
