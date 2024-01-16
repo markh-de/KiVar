@@ -61,7 +61,7 @@ def pcbnew_parent_window():
     return wx.FindWindowByName('PcbFrame')
 
 def version():
-    return '0.1.0'
+    return '0.1.1'
 
 def variant_cfg_field_name():
     return 'KiVar.Rule'
