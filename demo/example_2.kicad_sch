@@ -1,12 +1,12 @@
 (kicad_sch
 	(version 20231120)
 	(generator "eeschema")
-	(generator_version "7.99")
+	(generator_version "8.0")
 	(uuid "3b92b8ec-1d89-4673-88bb-db246a9f73af")
 	(paper "A4")
 	(title_block
 		(title "KiVar Demo")
-		(date "2024-01-05")
+		(date "2024-01-16")
 		(company "Author: Mark Hämmerling <dev@markh.de>")
 		(comment 1 "https://github.com/markh-de/KiVar")
 		(comment 4 "Boot Source Selection")

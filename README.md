@@ -345,6 +345,22 @@ How to read the rules:
  * **U4**: This rule explicitly lists all choices for which this part is unfitted: `9539/0x74`.  For other choices the part will be fitted.
  * **U5**: This rule explicitly lists all choices for which this part is unfitted: `9535/0x20` and `9539/0x74`.  For other choices the part will be fitted.
 
+###### Example 6: Backlight LED Maximum Constant Current Selection
+
+In this example a combination of resistor networks determines the maximum constant current for an LED backlight (_maximum_ because the used current regulator also has a PWM input, which is later controlled via software).
+
+![Maximum LED backlight current selection](doc/backlight.png)
+
+The resistor network combination allows to select an LED current from 10mA to 150mA in steps of 10mA.  Also, like in example 2, there is an additional choice `JP`, which leaves all four configuration resistors unfit so that the user can manually select the current using the solder bridges.
+
+How to read the rules:
+
+ * Variation aspect is `I_LED_MA` (with choice `100` currently applied in the figure).
+ * **R21**: This is the _most significant_ path for 80mA current. For the upper half of the current choices, i.e. `80` up to `150`, the resistor is fitted.  For other choices (incl. `JP`) the part will be unfitted.
+ * **R22**: This is the path for 40mA current. For choices `40` to `70` and for `120` to `150` the resistor is fitted.  For other choices (incl. `JP`) the part will be unfitted.
+ * **R29**: This is the path for 20mA current. For choices `20`, `30`, `60`, `70`, `100`, `110`, `140`, `150` the resistor is fitted.  For other choices (incl. `JP`) the part will be unfitted.
+ * **R30**: This is the _least significant_ path for 10mA current. For choices `10`, `30`, `50`, `70`, `90`, `110`, `130`, `150` the resistor is fitted.  For other choices (incl. `JP`) the part will be unfitted.
+
 ### Rules Application
 
 After setting up the rules for each relevant symbol (or footprint), variations can finally be switched using the _KiVar_ plugin.
@@ -394,6 +410,14 @@ When clicking the _Update PCB_ button, KiVar sets the values and attributes for 
 #### Visible Changes
 
 The performed changes will immediately be visible in the PCB Editor (e.g. for shown footprint values) and the 3D Viewer window (immediately or after refresh, depending on the preferences setting).
+
+The following images show the 3D board view for the original settings:
+
+![3D Board View Without Changes](doc/pcb-nochange.png)
+
+... and after applying the new variation configuration (according to the dialog window above):
+
+![3D Board View With Changes](doc/pcb-change.png)
 
 #### Updating the Schematic
 
