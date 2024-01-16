@@ -407,6 +407,14 @@ After selecting a few different variation choices, the dialog window may look li
 
 When clicking the _Update PCB_ button, KiVar sets the values and attributes for all relevant footprints as previewed in the information text box.
 
+The following images show the 3D board view for the original settings:
+
+![3D Board View Without Changes](doc/pcb-nochange.png)
+
+... and after applying the new variation configuration (see dialog window above):
+
+![3D Board View With Changes](doc/pcb-change.png)
+
 #### Visible Changes
 
 The performed changes will immediately be visible in the PCB Editor (e.g. for shown footprint values) and the 3D Viewer window (immediately or after refresh, depending on the preferences setting).
