@@ -411,7 +411,7 @@ The following images show the 3D board view for the original settings:
 
 ![3D Board View Without Changes](doc/pcb-nochange.png)
 
-... and after applying the new variation configuration (see dialog window above):
+... and after applying the new variation configuration (according to the dialog window above):
 
 ![3D Board View With Changes](doc/pcb-change.png)
 
