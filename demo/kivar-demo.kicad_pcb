@@ -9,7 +9,7 @@
 	(paper "A5" portrait)
 	(title_block
 		(title "KiVar Demo Board")
-		(date "2024-01-05")
+		(date "2024-01-16")
 		(company "Author: Mark Hämmerling <dev@markh.de>")
 		(comment 3 "https://github.com/markh-de/KiVar")
 		(comment 4 "Download KiVar:")
