@@ -351,7 +351,7 @@ In this example a combination of resistor networks determines the maximum consta
 
 ![Maximum LED backlight current selection](doc/backlight.png)
 
-The resistor network offers the user to select an LED current from 10mA to 150mA in fine steps of 10mA.  As for example 2, there is an additional choice `JP`, which leaves all four option resistors unfit so that the user can manually select the current using the solder bridges.
+The resistor network combination allows to select an LED current from 10mA to 150mA in steps of 10mA.  Also, like in example 2, there is an additional choice `JP`, which leaves all four configuration resistors unfit so that the user can manually select the current using the solder bridges.
 
 How to read the rules:
 
