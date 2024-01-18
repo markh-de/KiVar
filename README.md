@@ -246,7 +246,7 @@ Each example is illustrated with a schematic snippet including the values of the
 
 ###### Example 1: I²C Device Address Selection
 
-This is a very simple example, used for address selection of an I²C device.  Address input A0 switches between device addresses 0x54 (A0=0) and 0x55 (A0=1).
+This is a very simple example, used for address selection of an I²C device.  Address input A0 switches between device addresses 0x54 _(A0=0)_ and 0x55 _(A0=1)_.
 
 ![EEPROM Address Selection](doc/eeprom.png)
 
@@ -331,7 +331,7 @@ _Hint:_ Should you decide to use multiple overlapping footprint instances (of co
         (constraint courtyard_clearance (min -1mm))
     )
 
-_Note:_ If copper pads of multiple _alternate(!)_ footprints do overlap, it is important to assign the same net to all overlapping pads, in order to avoid DRC errors.  Some pads of alternate footprints will be applied the same net anyway (as in this example), but _unused_ symbol pins will be automatically applied calculated net names which will naturally conflict with each other if their copper pads overlap in the PCB.  It is then required to connect the corresponding unused pins with each other in the schematic, using wires or labels.  In this example, visually distinguishable labels were chosen for such connections that are otherwise without function.
+_Note:_ If copper pads of multiple _alternate(!)_ footprints do overlap, it is important to assign the same net to each set of overlapping pads, in order to avoid DRC errors.  Some overlapping pads of alternate footprints will be applied the same net anyway (as in this example), but _unconnected_ symbol pins will automatically be applied calculated net names which will naturally conflict with those of alternate symbols if their corresponding copper pads overlap in the PCB.  It is then required to connect the unconnected pins with each other in the schematic (using wires or labels).  In the above example, visually distinguishable labels (P00..P17) were chosen for such connections that are otherwise without function.
 
 How to read the sub-aspects:
 
@@ -340,7 +340,7 @@ This example uses variation aspect `IOEXP_TYPE/ADDR` (read as: sub-aspects `IOEX
 How to read the rules:
 
  * Variation aspect is `IOEXP_TYPE/ADDR` (see above).
- * **R18**: This is unfitted by default (i.e. for each choice not defined otherwise in this rule).  For choice `9535/0x24` and `9539/0x74` this part will be fitted (the empty choice definition overrides all options of the default choice, i.e. no "unfit" option set for these specific choices).
+ * **R18**: This is unfitted by default (i.e. for each choice not defined otherwise in this rule).  For choices `9535/0x24` and `9539/0x74` this part will be fitted (the empty choice definition overrides all options of the default choice, i.e. no "unfit" option set for these specific choices).
  * **R19**: This is unfitted by default (like R18).  For choice `9535/0x20` this part will be fitted (same reason as for R18).
  * **U4**: This rule explicitly lists all choices for which this part is unfitted: `9539/0x74`.  For other choices the part will be fitted.
  * **U5**: This rule explicitly lists all choices for which this part is unfitted: `9535/0x20` and `9539/0x74`.  For other choices the part will be fitted.
@@ -351,7 +351,7 @@ In this example a combination of resistor networks determines the maximum consta
 
 ![Maximum LED backlight current selection](doc/backlight.png)
 
-The resistor network combination allows to select an LED current from 10mA to 150mA in steps of 10mA.  Also, like in example 2, there is an additional choice `JP`, which leaves all four configuration resistors unfit so that the user can manually select the current using the solder bridges.
+The resistor network combination allows to select an LED current from 10mA to 150mA in steps of 10mA.  Also, like in example 2, there is an additional choice `JP`, which leaves all four configuration resistors unfitted, so that the user can manually select the current using the solder bridges.
 
 How to read the rules:
 
