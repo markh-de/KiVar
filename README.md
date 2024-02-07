@@ -18,7 +18,7 @@ Back-propagation of modified component data to the schematic can be done in an e
 
 The key concepts of KiVar are:
 
- * Support for **multiple** independent variation aspects (dimensions, degrees of freedom) per design.
+ * Support for **multiple** independent variation aspects (i.e., dimensions, degrees of freedom) per design.
  * Variation rules are **fully contained** in symbol/footprint fields of native design files (no external configuration files) and **portable** (copying components to another design keeps their variation specification intact).
  * **Seamless integration** of the choice selection process, giving the impression of a native KiCad feature.
  * Component values and attributes are modified **in place**, enabling compatibility with all exporters that work on the actual component data.
