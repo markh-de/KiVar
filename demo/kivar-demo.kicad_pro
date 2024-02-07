@@ -598,31 +598,31 @@
     ],
     [
       "819719b2-602e-433d-a771-1f2596d21337",
-      "Example 1"
+      "Example 1: I²C Device Address Selection"
     ],
     [
       "f1bdcd00-da00-4cca-b21f-4862aa5c3200",
-      "Example 2"
+      "Example 2: Boot Source Selection"
     ],
     [
       "98917921-089a-4f53-9391-423838589d96",
-      "Example 3"
+      "Example 3: Undervoltage Trip Points"
     ],
     [
       "b90e2ece-31a9-44a1-a7e2-4f98d0159cd7",
-      "Example 4"
+      "Example 4: IC Variant Selection"
     ],
     [
       "0e980ce9-433f-4ae1-b84f-fd5b1f452ede",
-      "Example 5"
+      "Example 5: IC Type and Address Selection"
     ],
     [
       "ed6b360e-2c97-4912-8101-70e5ae5801ff",
-      "Rule Structure"
+      "Rule Structure Illustration"
     ],
     [
       "efd04459-986c-49c2-bdc3-96a700b4a724",
-      "Example 6"
+      "Example 6: Maximum LED Backlight Drive Current Selection"
     ]
   ],
   "text_variables": {}
