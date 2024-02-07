@@ -14,6 +14,15 @@ KiVar assigns component **values** and **attributes** (such as _Do not populate_
 
 Back-propagation of modified component data to the schematic can be done in an extra step.
 
+## Concepts
+
+The key concepts of KiVar are:
+
+ * Support for **multiple** independent variation aspects (i.e. dimensions or aspects of freedom) per design.
+ * Component values and attributes are modified **in place**, allowing exporters to work on the actual component data.
+ * **Seamless integration** of the choice selection process, giving the impression of a native KiCad feature.
+ * Variation rules are **fully contained** in symbol/footprint fields (i.e., zero configuration outside the native design files) and hence **portable** (i.e., parts of a schematic or board design containing variation rules can be copied to another design while keeping their variation specification intact).
+
 ## Supported KiCad Versions
 
 KiVar is targeted towards release 8 of KiCad.  However, basic feature and API support is already provided by stable KiCad 7 releases.
@@ -34,15 +43,6 @@ The following table provides a feature support overview.
 |Changes and errors can be clicked to focus components|No     |**Yes**          |
 
 _Note:_ Current nightly builds of release 8 (i.e. version 7.99) already fulfill all critical API requirements.
-
-## Concepts
-
-The key concepts of KiVar are:
-
- * Support for **multiple** independent variation aspects (dimensions) per design.
- * Component values and attributes are modified **in place**, allowing exporters to work on the actual component data.
- * The variation choice selection procedure **integrates seamlessly** into KiCad, giving the impression of a native feature.
- * Variation rules are **fully contained** in symbol and footprint fields (i.e., zero configuration outside the native design files) and hence **portable** (i.e., parts of a schematic or board design containing variation rules can be copied to another design while keeping their variation specification intact).
 
 ## Installation
 
