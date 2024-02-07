@@ -1,8 +1,8 @@
-<img align='right' width='76' src='doc/kivar-icon.inkscape.svg'>
-
 # KiVar − PCB Assembly Variants for KiCad
 
 ## Introduction
+
+<img align='right' width='92' src='doc/kivar-icon.inkscape.svg'>
 
 KiVar is a KiCad Action Plugin providing convenient PCB assembly variant selection.
 
