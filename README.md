@@ -10,7 +10,7 @@ The plugin name _KiVar_ may be read as an acronym for _**Ki**Cad **V**ariation *
 
 ## Features
 
-KiVar assigns component **values** and **attributes** (such as _Do not populate_), depending on the selection of variation rules specified in footprint fields.  Component values and attributes are modified _in place_, allowing for immediate update of the PCB design as well as the 3D view and enabling compatibility with _any_ exporter.
+KiVar assigns component **values** and **attributes** (such as _Do not populate_) according to variation rules specified in footprint fields.  Component values and attributes are modified _in place_, allowing for immediate update of the PCB design as well as the 3D view and enabling compatibility with _any_ exporter.
 
 Back-propagation of modified component data to the schematic can be done in an extra step.
 
@@ -18,10 +18,10 @@ Back-propagation of modified component data to the schematic can be done in an e
 
 The key concepts of KiVar are:
 
- * Support for **multiple** independent variation aspects (i.e. dimensions or aspects of freedom) per design.
- * Component values and attributes are modified **in place**, allowing exporters to work on the actual component data.
+ * Support for **multiple** independent variation aspects (dimensions, degrees of freedom) per design.
+ * Variation rules are **fully contained** in symbol/footprint fields of native design files (no external configuration files) and **portable** (copying components to another design keeps their variation specification intact).
  * **Seamless integration** of the choice selection process, giving the impression of a native KiCad feature.
- * Variation rules are **fully contained** in symbol/footprint fields (i.e., zero configuration outside the native design files) and hence **portable** (i.e., parts of a schematic or board design containing variation rules can be copied to another design while keeping their variation specification intact).
+ * Component values and attributes are modified **in place**, enabling compatibility with all exporters that work on the actual component data.
 
 ## Supported KiCad Versions
 
