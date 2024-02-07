@@ -14,6 +14,15 @@ KiVar assigns component **values** and **attributes** (such as _Do not populate_
 
 Back-propagation of modified component data to the schematic can be done in an extra step.
 
+## Concepts
+
+The key concepts of KiVar are:
+
+ * Support for **multiple** independent variation aspects (i.e. dimensions or aspects of freedom) per design.
+ * Component values and attributes are modified **in place**, allowing exporters to work on the actual component data.
+ * **Seamless integration** of the choice selection process, giving the impression of a native KiCad feature.
+ * Variation rules are **fully contained** in symbol/footprint fields (i.e., zero configuration outside the native design files) and hence **portable** (i.e., parts of a schematic or board design containing variation rules can be copied to another design while keeping their variation specification intact).
+
 ## Supported KiCad Versions
 
 KiVar is targeted towards release 8 of KiCad.  However, basic feature and API support is already provided by stable KiCad 7 releases.
@@ -35,16 +44,9 @@ The following table provides a feature support overview.
 
 _Note:_ Current nightly builds of release 8 (i.e. version 7.99) already fulfill all critical API requirements.
 
-## Concepts
-
-The key concepts of KiVar are:
-
- * Support for **multiple** independent variation aspects (dimensions) per design.
- * Component values and attributes are modified **in place**, allowing exporters to work on the actual component data.
- * The variation choice selection procedure **integrates seamlessly** into KiCad, giving the impression of a native feature.
- * Variation rules are **fully contained** in symbol and footprint fields (i.e., zero configuration outside the native design files) and hence **portable** (i.e., parts of a schematic or board design containing variation rules can be copied to another design while keeping their variation specification intact).
-
 ## Installation
+
+_Important:_ The following installation instructions are currently invalid, as KiVar is applying to join the official KiCad **Plugin & Content Manager** repository and the directory structure has therefore changed.  As soon as KiVar is listed in the official PCM repository, installation becomes very simple and the following instructions will be updated.  Stay tuned!
 
 1. Open the KiCad PCB Editor (pcbnew).
 2. In the PCB Editor, choose the menu option _Tools &rarr; External Plugins &rarr; Open Plugin Directory_.  This will open a file browser at the location of your KiCad plugin directory.
