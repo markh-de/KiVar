@@ -1,6 +1,6 @@
-# KiVar − PCB Assembly Variant Selection for KiCad
-
 <img align='right' src='plugin/resources/icon.png'>
+
+# KiVar − PCB Assembly Variants for KiCad
 
 ## Introduction
 
