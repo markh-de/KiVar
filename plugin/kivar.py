@@ -24,8 +24,8 @@ class VariantPlugin(pcbnew.ActionPlugin):
         self.name = 'KiVar'
         self.category = 'Assembly Variants'
         self.description = 'Switches predefined assembly variant choices'
-        self.icon_file_name = os_path.join(os_path.dirname(__file__), 'kivar-icon-light.svg')
-        self.dark_icon_file_name = os_path.join(os_path.dirname(__file__), 'kivar-icon-dark.svg')
+        self.icon_file_name = os_path.join(os_path.dirname(__file__), 'kivar-icon-24px-light.png')
+        self.dark_icon_file_name = os_path.join(os_path.dirname(__file__), 'kivar-icon-24px-dark.png')
 
     def Run(self):
         board = pcbnew.GetBoard()
