@@ -1,4 +1,4 @@
-<img align='right' src='plugin/resources/icon.png'>
+<img align='right' width='76' src='doc/kivar-icon.inkscape.svg'>
 
 # KiVar − PCB Assembly Variants for KiCad
 
