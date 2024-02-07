@@ -1,5 +1,7 @@
 # KiVar − PCB Assembly Variant Selection for KiCad
 
+<img style="float: right;" src='plugin/resources/icon.png'>
+
 ## Introduction
 
 KiVar is a KiCad Action Plugin providing convenient PCB assembly variant selection.
@@ -13,6 +15,8 @@ The plugin name _KiVar_ may be read as an acronym for _**Ki**Cad **V**ariation *
 KiVar assigns component **values** and **attributes** (such as _Do not populate_) according to variation rules specified in footprint fields.  Component values and attributes are modified _in place_, allowing for immediate update of the PCB design as well as the 3D view and enabling compatibility with _any_ exporter.
 
 Back-propagation of modified component data to the schematic can be done in an extra step.
+
+![KiVar icon](plugin/resources/icon.png)
 
 ## Concepts
 
