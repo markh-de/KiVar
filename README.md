@@ -48,11 +48,15 @@ _Note:_ Current nightly builds of release 8 (i.e. version 7.99) already fulfill 
 
 ## Installation
 
-_Important:_ The following installation instructions are currently invalid, as KiVar is applying to join the official KiCad **Plugin & Content Manager** repository and the directory structure has therefore changed.  As soon as KiVar is listed in the official PCM repository, installation becomes very simple and the following instructions will be updated.  Stay tuned!
+### PCM
+
+_Important:_ KiVar is currently applying to join the official KiCad **Plugin & Content Manager** repository.  As soon as this is completed, the installation instructions for the KiVar PCM package will follow.
+
+### Manually
 
 1. Open the KiCad PCB Editor (pcbnew).
 2. In the PCB Editor, choose the menu option _Tools &rarr; External Plugins &rarr; Open Plugin Directory_.  This will open a file browser at the location of your KiCad plugin directory.
-3. Either copy all files from _this repository's_ sub-directory `plugin`, or unzip the contents of a KiVar release archive to that KiCad plugin directory you opened in the previous step.  _Important:_ If you use the _plugin_ directory, do not copy the directory itself, but only the files inside it.
+3. Unzip the contents of an official [KiVar release archive](https://github.com/markh-de/KiVar/releases) (the ZIP file _without_ the `-pcm` suffix) to that KiCad plugin directory you opened in the previous step.  _Important:_ Do not create another directory inside the target plugin directory, but only place the files from the release archive directly in the plugin directory.
 4. Switch back to the PCB Editor and choose the menu option _Tools &rarr; External Plugins &rarr; Refresh Plugins_.  Now _KiVar_ should appear in the plugin list under _Tools &rarr; External Plugins_.
 5. _Optional:_ For quick access, add the KiVar launcher button to your main toolbar under _Preferences &rarr; Preferences... &rarr; PCB Editor &rarr; Action Plugins_ by clicking the corresponding checkbox in the _Show button_ column.
 
