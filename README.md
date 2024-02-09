@@ -48,11 +48,20 @@ _Note:_ Current nightly builds of release 8 (i.e. version 7.99) already fulfill 
 
 ## Installation
 
-### PCM
+KiVar can be installed from the official KiCad **Plugin and Content Manager** repository.  This is the recommended way for installation, as it provides automated updates and requires the least amount of installation effort.  However, archives for manual installation are also provided.
 
-_Important:_ KiVar is currently applying to join the official KiCad **Plugin & Content Manager** repository.  As soon as this is completed, the installation instructions for the KiVar PCM package will follow.
+### Install Via Plugin and Content Manager
 
-### Manually
+Required steps:
+
+1. Start the _Plugin and Content Manager_ from the KiCad main window.
+2. Find _KiVar_ in the **Plugins** section.
+3. Mark it for installation and apply the pending changes.
+4. _Optional:_ For quick access, start the PCB Editor (pcbnew) and add the KiVar launcher button to your main toolbar under _Preferences &rarr; Preferences... &rarr; PCB Editor &rarr; Action Plugins_ by clicking the corresponding checkbox in the _Show button_ column.
+
+### Install Via Manual Archive Extraction
+
+Required steps:
 
 1. Open the KiCad PCB Editor (pcbnew).
 2. In the PCB Editor, choose the menu option _Tools &rarr; External Plugins &rarr; Open Plugin Directory_.  This will open a file browser at the location of your KiCad plugin directory.
