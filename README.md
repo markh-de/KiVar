@@ -44,7 +44,7 @@ The following table provides a feature support overview.
 |Update schematic variation definitions from PCB      |No     |**Yes**          |
 |Changes and errors can be clicked to focus components|No     |**Yes**          |
 
-_Note:_ Current nightly builds of release 8 (i.e. version 7.99) already fulfill all critical API requirements.
+_Note:_ Current release candidates and nightly builds of release 8 already fulfill all critical API requirements.
 
 ## Installation
 
