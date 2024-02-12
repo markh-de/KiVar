@@ -226,11 +226,11 @@ For the above illustration example, which was defined as ...
 
 ###### Quoting and Escaping
 
-Special characters, such as `,` ` ` `-` `(` `)` (comma, space, dash, parentheses) are not considered special when
+Special characters, such as `,` ` ` `-` `(` `)` (comma, space, dash, parentheses) are **not** considered special when
 
  * they appear inside a quoted part of the definition, i.e. inside a matching pair of two unescaped `'` (single quotation mark) characters, or when
- * they are escaped, i.e. prepended with a `\`, or when
- * they appear inside a matching pair of `(` `)` (parentheses, or round brackets).
+ * they are escaped, i.e. prepended with a `\` (backslash), or when
+ * they appear inside a matching pair of `(` `)` (parentheses/round brackets).
 
 _Note:_ Double quotation mark characters (`"`) are **not** used for quoting.
 
