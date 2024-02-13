@@ -6,37 +6,56 @@ import kivar
 
 # TODO create a generic load function that also handles error printing and aborting
 # TODO add option to save to a different file (create a copy)
-# TODO all prints: use escaped variants of aspect and choice to avoid string ambiguity!
+# TODO use escaped variants of aspect and choice when printing!
+# TODO use cooked variants of aspect and choice when reading via CLI!
 # TODO if output to terminal, use colors for highlighting aspects, choices, matches etc.
 #      (provide --no-color/-C option (or a different usual option name))
 
 def version():
-    return '0.0.1-dev1'
+    return '0.0.1-dev2'
 
-def list_command(board=None, compact=None, selected=None, verbose=False):
+def list_command(board=None, long=False, detailed=False, selected=False, verbose=False):
     b = pcbnew.LoadBoard(board)
-    vn, errors = kivar.get_vn_dict(b)
-    ch = kivar.get_choice_dict(vn)
+    vardict, errors = kivar.get_vn_dict(b)
     if selected:
-        sel = kivar.detect_current_choices(b, vn)
-    for aspect in sorted(ch, key=kivar.natural_sort_key):
-        choices = sorted(ch[aspect], key=kivar.natural_sort_key)
-        if compact:
-            print(aspect + ':', end='')
-            for choice in choices:
-                if selected and sel[aspect] == choice:
-                    print(' [' + choice + ']', end='')
-                else:
-                    print(' ' + choice, end='')
-            print('')
+        sel = kivar.detect_current_choices(b, vardict)
+    ndict = {}
+    for ref in vardict:
+        for aspect in vardict[ref]:
+            if not aspect in ndict:
+                ndict[aspect] = {}
+            for choice in vardict[ref][aspect]:
+                if not choice in ndict[aspect]:
+                    ndict[aspect][choice] = {}
+                if detailed:
+                    ref_info = []
+                    ref_value = vardict[ref][aspect][choice][kivar.key_val()]
+                    if ref_value is not None:
+                        ref_info.append(kivar.escape_string_if_required(ref_value))
+                    ref_opts  = vardict[ref][aspect][choice][kivar.key_opts()]
+                    if '!' in ref_opts:
+                        ref_info.append('<unfit>')
+                    ndict[aspect][choice][ref] = ' '.join(ref_info)
+    for aspect in sorted(ndict, key=kivar.natural_sort_key):
+        if long or detailed:
+            print(aspect)
         else:
-            print(aspect + ':')
-            for choice in choices:
-                if selected and sel[aspect] == choice:
-                    print(' + ' + choice)
+            print(f'{aspect}:', end='')
+        for choice in sorted(ndict[aspect], key=kivar.natural_sort_key):
+            if selected and sel[aspect] == choice:
+                if long or detailed:
+                    print(f'  + {choice}')
                 else:
-                    print('   ' + choice)
-            print('')
+                    print(f' [{choice}]', end='')
+            else:
+                if long or detailed:
+                    print(f'    {choice}')
+                else:
+                    print(f' {choice}', end='')
+            if detailed:
+                for ref in sorted(ndict[aspect][choice], key=kivar.natural_sort_key):
+                    print(f'        {ref} : {ndict[aspect][choice][ref]}')
+        print('')
 
 def state_command(board=None, all=False, verbose=False):
     b = pcbnew.LoadBoard(board)
@@ -60,7 +79,7 @@ def check_command(board=None, verbose=False):
     if len(failed) > 0:
         print(f'Check failed. No matching choice found for {len(failed)} (of {len(sel)}) aspect(s):', file=sys.stderr)
         for aspect in failed:
-            print('   ' + aspect, file=sys.stderr)
+            print(f'    {aspect}', file=sys.stderr)
         return False
     else:
         print(f'Check succeeded. All {len(sel)} aspect(s) have a matching choice.', file=sys.stderr)
@@ -75,8 +94,7 @@ def set_command(board=None, assign=None, dry_run=False, verify=False, verbose=Fa
         sel = kivar.detect_current_choices(b, vn)
         choice_dict = kivar.get_choice_dict(vn)
         for asmt in assign:
-            l = asmt.split('=')
-            # TODO smart split at unescaped(!) "="
+            l = kivar.split_raw_str(asmt, '=', False) # test split
             if len(l) == 2:
                 aspect = l[0]
                 choice = l[1]
@@ -95,7 +113,7 @@ def set_command(board=None, assign=None, dry_run=False, verify=False, verbose=Fa
             if verify and not dry_run:
                 new_sel = kivar.detect_current_choices(b, vn)
                 if new_sel != sel:
-                    print('Error: Verification failed. Ambiguous rules.') # TODO test this!
+                    print('Error: Verification failed. Probably caused by ambiguous rules.') # TODO test this!
                     return False
             for ref, change_text in report:
                 if dry_run or verbose:
@@ -122,7 +140,8 @@ def main():
 
     list_parser = subparsers.add_parser("list", help="list all available aspects and choices")
     list_parser.add_argument("--selection", "-s", action="store_true", help="mark currently matching choices")
-    list_parser.add_argument("--compact",   "-c", action="store_true", help="compact output, one line per aspect")
+    list_parser.add_argument("--long",      "-l", action="store_true", help="long output style")
+    list_parser.add_argument("--detailed",  "-d", action="store_true", help="show component assignments (implies --long)")
     list_parser.add_argument("--verbose",   "-v", action="store_true", help="verbose output")
     list_parser.add_argument("board", help="KiCad PCB file name")
 
@@ -150,7 +169,7 @@ def main():
     result = 0
 
     if args.command == "list":
-        list_command(args.board, args.compact, args.selection, args.verbose)
+        list_command(args.board, args.long, args.detailed, args.selection, args.verbose)
     elif args.command == "state":
         state_command(args.board, args.all, args.verbose)
     elif args.command == "check":
