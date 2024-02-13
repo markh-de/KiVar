@@ -12,7 +12,7 @@ import kivar
 #      (provide --no-color/-C option (or a different usual option name))
 
 def version():
-    return '0.0.1-dev2'
+    return '0.0.1-dev3'
 
 def list_command(board=None, long=False, detailed=False, selected=False, verbose=False):
     b = pcbnew.LoadBoard(board)
@@ -57,14 +57,24 @@ def list_command(board=None, long=False, detailed=False, selected=False, verbose
                     print(f'        {ref} : {ndict[aspect][choice][ref]}')
         print('')
 
-def state_command(board=None, all=False, verbose=False):
+def state_command(board=None, all=False, query=None, verbose=False):
     b = pcbnew.LoadBoard(board)
     vn, errors = kivar.get_vn_dict(b)
     sel = kivar.detect_current_choices(b, vn)
-    for aspect in sorted(sel, key=kivar.natural_sort_key):
-        choice = sel[aspect]
-        if all or choice != '': # TODO use None (in API and here), if None: print ''
-            print(f'{aspect}={choice}')
+    if query is not None:
+        if query in sel:
+            choice = sel[query]
+            # TODO if no match and in verbose mode, print msg to stderr
+            print(choice)
+        else:
+            print(f'Error: No such aspect "{query}".', file=sys.stderr)
+            return False
+    else:
+        for aspect in sorted(sel, key=kivar.natural_sort_key):
+            choice = sel[aspect]
+            if all or choice != '': # TODO use None (in API and here), if None: print ''
+                print(f'{aspect}={choice}')
+    return True
 
 def check_command(board=None, verbose=False):
     b = pcbnew.LoadBoard(board)
@@ -147,6 +157,7 @@ def main():
 
     state_parser = subparsers.add_parser("state", help="show currently matching choice for each aspect")
     state_parser.add_argument("--all",     "-a", action="store_true", help="show all aspects, even without matching choice")
+    state_parser.add_argument("--query",   "-Q", action="store",      help="query only matching choice name for given aspect", metavar="aspect")
     state_parser.add_argument("--verbose", "-v", action="store_true", help="verbose output")
     state_parser.add_argument("board", help="KiCad PCB file name")
 
@@ -171,7 +182,8 @@ def main():
     if args.command == "list":
         list_command(args.board, args.long, args.detailed, args.selection, args.verbose)
     elif args.command == "state":
-        state_command(args.board, args.all, args.verbose)
+        if not state_command(args.board, args.all, args.query, args.verbose):
+            result = 12
     elif args.command == "check":
         if not check_command(args.board, args.verbose):
             result = 10
