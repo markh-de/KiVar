@@ -4,15 +4,16 @@ import argparse
 import pcbnew
 import kivar
 
+# TODO make use of verbose options, where applicable
 # TODO create a generic load function that also handles error printing and aborting
 # TODO add option to save to a different file (create a copy)
-# TODO use escaped variants of aspect and choice when printing!
-# TODO use cooked variants of aspect and choice when reading via CLI!
+# TODO use escaped variants of aspect and choice name when printing!
+# TODO use cooked variants of aspect and choice name when reading via CLI!
 # TODO if output to terminal, use colors for highlighting aspects, choices, matches etc.
 #      (provide --no-color/-C option (or a different usual option name))
 
 def version():
-    return '0.0.1-dev4'
+    return '0.0.1-dev5'
 
 def list_command(board=None, long=False, detailed=False, selected=False, verbose=False):
     b = pcbnew.LoadBoard(board)
@@ -155,17 +156,17 @@ def main():
     list_parser.add_argument("--selection", "-s", action="store_true", help="mark currently matching choices")
     list_parser.add_argument("--long",      "-l", action="store_true", help="long output style")
     list_parser.add_argument("--detailed",  "-d", action="store_true", help="show component assignments (implies --long)")
-    list_parser.add_argument("--verbose",   "-v", action="store_true", help="verbose output")
+#    list_parser.add_argument("--verbose",   "-v", action="store_true", help="verbose output")
     list_parser.add_argument("board", help="KiCad PCB file name")
 
     state_parser = subparsers.add_parser("state", help="show currently matching choice for each aspect")
     state_parser.add_argument("--query",   "-Q", action="store",      help="query aspect for matching choice", metavar="aspect")
     state_parser.add_argument("--all",     "-a", action="store_true", help="list all aspects (default: list only aspects with matching choice)")
-    state_parser.add_argument("--verbose", "-v", action="store_true", help="verbose output")
+#    state_parser.add_argument("--verbose", "-v", action="store_true", help="verbose output")
     state_parser.add_argument("board", help="KiCad PCB file name")
 
     check_parser = subparsers.add_parser("check", help="check all aspects for matching choices, exit with error if check fails")
-    check_parser.add_argument("--verbose", "-v", action="store_true", help="verbose output")
+#    check_parser.add_argument("--verbose", "-v", action="store_true", help="verbose output")
     # TODO add option to check only for dedicated list of aspects
     check_parser.add_argument("board", help="KiCad PCB file name")
 
@@ -183,12 +184,12 @@ def main():
     result = 0
 
     if args.command == "list":
-        list_command(args.board, args.long, args.detailed, args.selection, args.verbose)
+        list_command(args.board, args.long, args.detailed, args.selection) # , args.verbose
     elif args.command == "state":
-        if not state_command(args.board, args.all, args.query, args.verbose):
+        if not state_command(args.board, args.all, args.query): # , args.verbose
             result = 12
     elif args.command == "check":
-        if not check_command(args.board, args.verbose):
+        if not check_command(args.board): # , args.verbose
             result = 10
     elif args.command == "set":
         if not set_command(args.board, args.assign, args.dry_run, args.verify, args.verbose):
