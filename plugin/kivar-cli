@@ -12,7 +12,7 @@ import kivar
 #      (provide --no-color/-C option (or a different usual option name))
 
 def version():
-    return '0.0.1-dev3'
+    return '0.0.1-dev4'
 
 def list_command(board=None, long=False, detailed=False, selected=False, verbose=False):
     b = pcbnew.LoadBoard(board)
@@ -62,6 +62,9 @@ def state_command(board=None, all=False, query=None, verbose=False):
     vn, errors = kivar.get_vn_dict(b)
     sel = kivar.detect_current_choices(b, vn)
     if query is not None:
+        if all:
+            print('Error: Options "--all" and "--query" are mutually exclusive.', file=sys.stderr)
+            return False
         if query in sel:
             choice = sel[query]
             # TODO if no match and in verbose mode, print msg to stderr
@@ -156,8 +159,8 @@ def main():
     list_parser.add_argument("board", help="KiCad PCB file name")
 
     state_parser = subparsers.add_parser("state", help="show currently matching choice for each aspect")
-    state_parser.add_argument("--all",     "-a", action="store_true", help="show all aspects, even without matching choice")
-    state_parser.add_argument("--query",   "-Q", action="store",      help="query only matching choice name for given aspect", metavar="aspect")
+    state_parser.add_argument("--query",   "-Q", action="store",      help="query aspect for matching choice", metavar="aspect")
+    state_parser.add_argument("--all",     "-a", action="store_true", help="list all aspects (default: list only aspects with matching choice)")
     state_parser.add_argument("--verbose", "-v", action="store_true", help="verbose output")
     state_parser.add_argument("board", help="KiCad PCB file name")
 
