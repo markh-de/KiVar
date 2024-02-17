@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+
+import os
 import sys
 import argparse
 import pcbnew
@@ -13,11 +15,38 @@ import kivar
 #      (provide --no-color/-C option (or a different usual option name))
 
 def version():
-    return '0.0.1-dev5'
+    return '0.0.1-dev6'
+
+# TODO have common help URL for both plugin and CLI? place in module?
+def help_url():
+    return 'https://github.com/markh-de/KiVar/blob/main/README.md#usage'
+
+def print_err(*args, file=sys.stderr, **kwargs):
+    print(*args, file=file, **kwargs)
+
+def load_board(board_file):
+    if not os.path.isfile(board_file) or not os.access(board_file, os.R_OK):
+        print_err(f'Error: "{board_file}" is not a readable file.')
+        return None
+    return pcbnew.LoadBoard(board_file)
+
+def get_vardict(board):
+    vardict, errors = kivar.get_vn_dict(board)
+    if len(errors) > 0:
+        print_err(f'Errors ({len(errors)}):')
+        for ref, error in sorted(errors, key=kivar.natural_sort_key):
+            print_err('    ' + error)
+        return None
+    if len(vardict) == 0:
+        print_err(f'Error: No rule definitions found.\n       Read {help_url()} for usage instructions.')
+        return None
+    return vardict
 
 def list_command(board=None, long=False, detailed=False, selected=False, verbose=False):
-    b = pcbnew.LoadBoard(board)
-    vardict, errors = kivar.get_vn_dict(b)
+    b = load_board(board)
+    if b is None: return False
+    vardict = get_vardict(b)
+    if vardict is None: return False
     if selected:
         sel = kivar.detect_current_choices(b, vardict)
     ndict = {}
@@ -57,21 +86,28 @@ def list_command(board=None, long=False, detailed=False, selected=False, verbose
                 for ref in sorted(ndict[aspect][choice], key=kivar.natural_sort_key):
                     print(f'        {ref} : {ndict[aspect][choice][ref]}')
         print('')
+    return True
 
 def state_command(board=None, all=False, query=None, verbose=False):
-    b = pcbnew.LoadBoard(board)
-    vn, errors = kivar.get_vn_dict(b)
-    sel = kivar.detect_current_choices(b, vn)
+    b = load_board(board)
+    if b is None: return False
+    vardict = get_vardict(b)
+    if vardict is None: return False
+    sel = kivar.detect_current_choices(b, vardict)
     if query is not None:
         if all:
-            print('Error: Options "--all" and "--query" are mutually exclusive.', file=sys.stderr)
+            print_err('Error: Options "--all" and "--query" are mutually exclusive.')
             return False
-        if query in sel:
-            choice = sel[query]
+        if len(query) > 1:
+            print_err(f'Error: Only a single query allowed.')
+            return False
+        q = query[0]
+        if q in sel:
+            choice = sel[q]
             # TODO if no match and in verbose mode, print msg to stderr
             print(choice)
         else:
-            print(f'Error: No such aspect "{query}".', file=sys.stderr)
+            print_err(f'Error: No such aspect "{query}".')
             return False
     else:
         for aspect in sorted(sel, key=kivar.natural_sort_key):
@@ -81,9 +117,11 @@ def state_command(board=None, all=False, query=None, verbose=False):
     return True
 
 def check_command(board=None, verbose=False):
-    b = pcbnew.LoadBoard(board)
-    vn, errors = kivar.get_vn_dict(b)
-    sel = kivar.detect_current_choices(b, vn)
+    b = load_board(board)
+    if b is None: return False
+    vardict = get_vardict(b)
+    if vardict is None: return False
+    sel = kivar.detect_current_choices(b, vardict)
     failed = []
     for aspect in sorted(sel, key=kivar.natural_sort_key):
         choice = sel[aspect]
@@ -91,22 +129,26 @@ def check_command(board=None, verbose=False):
         if choice == '': # TODO use None (in API and here), if None: print ''
             failed.append(aspect)
     if len(failed) > 0:
-        print(f'Check failed. No matching choice found for {len(failed)} (of {len(sel)}) aspect(s):', file=sys.stderr)
+        print_err(f'Check failed. No matching choice found for {len(failed)} (of {len(sel)}) aspect(s):')
         for aspect in failed:
-            print(f'    {aspect}', file=sys.stderr)
+            print_err(f'    {aspect}')
         return False
     else:
-        print(f'Check succeeded. All {len(sel)} aspect(s) have a matching choice.', file=sys.stderr)
+        print_err(f'Check succeeded. All {len(sel)} aspect(s) have a matching choice.')
     return True
 
 def set_command(board=None, assign=None, dry_run=False, verify=False, verbose=False):
     # TODO how to handle errors? ignore failing assignments, or abort?
     #      collect errors, then print & return?
     if assign is not None:
+        b = load_board(board)
+        if b is None: return False
+        vardict = get_vardict(b)
+        if vardict is None: return False
         b = pcbnew.LoadBoard(board)
-        vn, errors = kivar.get_vn_dict(b)
-        sel = kivar.detect_current_choices(b, vn)
-        choice_dict = kivar.get_choice_dict(vn)
+        vardict, errors = kivar.get_vn_dict(b)
+        sel = kivar.detect_current_choices(b, vardict)
+        choice_dict = kivar.get_choice_dict(vardict)
         for asmt in assign:
             l = kivar.split_raw_str(asmt, '=', False) # test split
             if len(l) == 2:
@@ -121,11 +163,11 @@ def set_command(board=None, assign=None, dry_run=False, verify=False, verbose=Fa
                     print(f'Error: Assignment "{asmt}" failed: No such aspect "{aspect}".')
             else:
                 print(f'Error: Assignment "{asmt}" failed: Wrong number of "=" separators.')
-        report = kivar.apply_choices(b, vn, sel, dry_run)
+        report = kivar.apply_choices(b, vardict, sel, dry_run)
         if len(report) > 0:
             # performed some changes
             if verify and not dry_run:
-                new_sel = kivar.detect_current_choices(b, vn)
+                new_sel = kivar.detect_current_choices(b, vardict)
                 if new_sel != sel:
                     print('Error: Verification failed. Probably caused by ambiguous rules.') # TODO test this!
                     return False
@@ -135,9 +177,9 @@ def set_command(board=None, assign=None, dry_run=False, verify=False, verbose=Fa
             if not dry_run:
                 if pcbnew.SaveBoard(board, b):
                     if verbose:
-                        print(f'Board saved to file "{board}".', file=sys.stderr)
+                        print(f'Board saved to file "{board}".')
                 else:
-                    print(f'Error: Failed to save board to file "{board}".', file=sys.stderr)
+                    print_err(f'Error: Failed to save board to file "{board}".')
                     return False
         else:
             if verbose or dry_run:
@@ -145,7 +187,6 @@ def set_command(board=None, assign=None, dry_run=False, verify=False, verbose=Fa
     else:
         print('Error: No assignments passed.')
         return False
-
     return True
 
 def main():
@@ -160,7 +201,7 @@ def main():
     list_parser.add_argument("board", help="KiCad PCB file name")
 
     state_parser = subparsers.add_parser("state", help="show currently matching choice for each aspect")
-    state_parser.add_argument("--query",   "-Q", action="store",      help="query aspect for matching choice", metavar="aspect")
+    state_parser.add_argument("--query",   "-Q", action="append",     help="query aspect for matching choice", metavar="aspect")
     state_parser.add_argument("--all",     "-a", action="store_true", help="list all aspects (default: list only aspects with matching choice)")
 #    state_parser.add_argument("--verbose", "-v", action="store_true", help="verbose output")
     state_parser.add_argument("board", help="KiCad PCB file name")
@@ -184,18 +225,19 @@ def main():
     result = 0
 
     if args.command == "list":
-        list_command(args.board, args.long, args.detailed, args.selection) # , args.verbose
+        if not list_command(args.board, args.long, args.detailed, args.selection): # , args.verbose
+            result = 1
     elif args.command == "state":
         if not state_command(args.board, args.all, args.query): # , args.verbose
-            result = 12
+            result = 1
     elif args.command == "check":
         if not check_command(args.board): # , args.verbose
-            result = 10
+            result = 1
     elif args.command == "set":
         if not set_command(args.board, args.assign, args.dry_run, args.verify, args.verbose):
-            result = 11
+            result = 1
     else:
-        print(f'Missing command. Use "-h" or "--help" for help.', file=sys.stderr)
+        print_err(f'Error: Missing command. Use "-h" or "--help" for help.')
         result = 2
 
     return result
