@@ -6,11 +6,13 @@ import argparse
 import pcbnew
 import kivar
 
-# TODO make use of verbose options, where applicable
-# TODO create a generic load function that also handles error printing and aborting
-# TODO add option to save to a different file (create a copy)
+# Required for merging CLI branch:
 # TODO use escaped variants of aspect and choice name when printing!
 # TODO use cooked variants of aspect and choice name when reading via CLI!
+#
+# Nice to have for later:
+# TODO make use of verbose options, where applicable
+# TODO add option to save to a different file (create a copy)
 # TODO if output to terminal, use colors for highlighting aspects, choices, matches etc.
 #      (provide --no-color/-C option (or a different usual option name))
 
