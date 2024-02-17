@@ -9,7 +9,8 @@ import kivar
 # Required for merging CLI branch:
 # TODO use escaped variants of aspect and choice name when printing!
 # TODO use cooked variants of aspect and choice name when reading via CLI!
-#
+# (also check all TODO notes buried in the code below!)
+
 # Nice to have for later:
 # TODO make use of verbose options, where applicable
 # TODO add option to save to a different file (create a copy)
