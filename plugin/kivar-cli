@@ -18,7 +18,7 @@ import kivar
 #      (provide --no-color/-C option (or a different usual option name))
 
 def version():
-    return '0.0.1-dev6'
+    return '0.0.1-dev7'
 
 # TODO have common help URL for both plugin and CLI? place in module?
 def help_url():
@@ -166,17 +166,17 @@ def set_command(board=None, assign=None, dry_run=False, verify=False, verbose=Fa
                     print(f'Error: Assignment "{asmt}" failed: No such aspect "{aspect}".')
             else:
                 print(f'Error: Assignment "{asmt}" failed: Wrong number of "=" separators.')
-        report = kivar.apply_choices(b, vardict, sel, dry_run)
-        if len(report) > 0:
-            # performed some changes
+        changes = kivar.apply_choices(b, vardict, sel, dry_run)
+        if len(changes) > 0:
             if verify and not dry_run:
                 new_sel = kivar.detect_current_choices(b, vardict)
                 if new_sel != sel:
                     print('Error: Verification failed. Probably caused by ambiguous rules.') # TODO test this!
                     return False
-            for ref, change_text in report:
-                if dry_run or verbose:
-                    print(change_text)
+            if dry_run or verbose:
+                print_err(f'Changes ({len(changes)}):')
+                for ref, change in sorted(changes, key=kivar.natural_sort_key):
+                    print('    ' + change)
             if not dry_run:
                 if pcbnew.SaveBoard(board, b):
                     if verbose:
