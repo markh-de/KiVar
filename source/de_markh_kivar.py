@@ -1,12 +1,8 @@
-from kivar import * # TODO use as module
+import kivar
 import pcbnew
 import wx
 import wx.lib.agw.hyperlink as hyperlink
 from os import path as os_path
-
-# Used abbreviations:
-# * Vn = Variation
-# * Ch = Choice
 
 # TODO:
 #
@@ -16,9 +12,8 @@ from os import path as os_path
 #
 # * Setup plugin: Save option settings as some object in PCB (board variables or text box)
 #
-# * After applying configuration, define board variables containing the choice for each vn, e.g. ${KIVAR.BOOT_SEL} => NAND
+# * After applying configuration, define board variables containing the choice for each aspect, e.g. ${KIVAR.BOOT_SEL} => NAND
 #   (requires KiCad API change/fix: https://gitlab.com/kicad/code/kicad/-/issues/16426)
-#
 
 class VariantPlugin(pcbnew.ActionPlugin):
     def defaults(self):
@@ -30,17 +25,16 @@ class VariantPlugin(pcbnew.ActionPlugin):
 
     def Run(self):
         board = pcbnew.GetBoard()
-        vn_dict, errors = get_vn_dict(board)
+        vardict, errors = kivar.get_vardict(board)
         if len(errors) > 0:
             ShowErrorDialog('Rule errors', errors, board)
-        elif len(vn_dict) == 0:
+        elif len(vardict) == 0:
             ShowMissingRulesDialog()
         else:
-            ShowVariantDialog(board, vn_dict)
+            ShowVariantDialog(board, vardict)
 
-# TODO this is the plugin version now, use again when we use kivar as module
-#def version():
-#    return '0.1.2'
+def version():
+    return kivar.version()
 
 def help_url():
     return 'https://github.com/markh-de/KiVar/blob/main/README.md#usage'
@@ -57,9 +51,9 @@ class VariantDialog(wx.Dialog):
         super().__init__(pcbnew_parent_window(), title=f'KiVar {version()}: Variant Selection', style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER)
 
         self.board = board
-        self.vn_dict = vn_dict
-        choice_dict = get_choice_dict(self.vn_dict)
-        preselect = detect_current_choices(self.board, self.vn_dict)
+        self.vardict = vn_dict
+        choice_dict = kivar.get_choice_dict(self.vardict)
+        preselect = kivar.detect_current_choices(self.board, self.vardict)
 
         sizer = wx.BoxSizer(wx.VERTICAL)
 
@@ -73,9 +67,9 @@ class VariantDialog(wx.Dialog):
         var_grid = wx.GridSizer(cols=2, hgap=10, vgap=6)
 
         self.choices = {}
-        for cfg in sorted(choice_dict, key=natural_sort_key):
+        for cfg in sorted(choice_dict, key=kivar.natural_sort_key):
             opts = ['<unset>']
-            sorted_choices = sorted(choice_dict[cfg], key=natural_sort_key)
+            sorted_choices = sorted(choice_dict[cfg], key=kivar.natural_sort_key)
             opts.extend(sorted_choices)
             self.choices[cfg] = wx.Choice(self, choices=opts)
             sel_opt = preselect[cfg]
@@ -166,7 +160,7 @@ class VariantDialog(wx.Dialog):
         return s
 
     def on_ok(self, event):
-        apply_choices(self.board, self.vn_dict, self.selections())
+        kivar.apply_choices(self.board, self.vardict, self.selections())
         pcbnew.Refresh()
         self.Destroy()
 
@@ -180,7 +174,7 @@ class VariantDialog(wx.Dialog):
         self.Destroy()
 
     def update_list(self):
-        changes = apply_choices(self.board, self.vn_dict, self.selections(), True)
+        changes = kivar.apply_choices(self.board, self.vardict, self.selections(), True)
         self.changes_list.setItemList(changes)
 
 def ShowMissingRulesDialog():

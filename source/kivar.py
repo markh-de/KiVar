@@ -21,9 +21,9 @@ def pcbnew_version():
     return int(pcbnew.GetMajorMinorPatchVersion().split('.')[0]) * 100 + int(pcbnew.GetMajorMinorPatchVersion().split('.')[1])
 
 def version():
-    return '0.2.0-dev1'
+    return '0.2.0-dev2'
 
-def variant_cfg_field_name():
+def rule_field_name():
     return 'KiVar.Rule'
 
 def opt_unfit():
@@ -81,17 +81,17 @@ def escape_string_if_required(str):
         result = str
     return result
 
-def detect_current_choices(board, vn_dict):
-    choices = get_choice_dict(vn_dict)
+def detect_current_choices(board, vardict):
+    choices = get_choice_dict(vardict)
 
     # How it works:
-    # We use the usual Choice dict filled with all possible Choices per Vn.
+    # We start with the usual Choice dict filled with all possible Choices per Aspect.
     # Then we eliminate all Choices whose values do not match the actual FP values (or attributes).
-    # If exactly one Choice per Vn remains, then we convert these to a selection dict, which is then
+    # If exactly one Choice per Aspect remains, then we convert these to a selection dict, which is then
     # filtered to contain only Choices that exactly match the actual FP values and attributes.
 
     # Step 1: Eliminate Choices not matching the actual FP values.
-    for ref in vn_dict:
+    for ref in vardict:
         fp = board.FindFootprintByReference(ref) # TODO error handling! can return "None"
         fp_value = fp.GetValue()
 
@@ -102,12 +102,12 @@ def detect_current_choices(board, vn_dict):
         if use_attr_dnp():
             fp_dnp = fp.IsDNP()
 
-        for vn in vn_dict[ref]:
+        for aspect in vardict[ref]:
             # Check each remaining Choice whether it can be eliminated.
             eliminate_choices = []
-            for choice in choices[vn]:
-                fp_choice_value = vn_dict[ref][vn][choice][key_val()]
-                fp_choice_unfit = opt_unfit() in vn_dict[ref][vn][choice][key_opts()]
+            for choice in choices[aspect]:
+                fp_choice_value = vardict[ref][aspect][choice][key_val()]
+                fp_choice_unfit = opt_unfit() in vardict[ref][aspect][choice][key_opts()]
                 eliminate = False
 
                 if fp_choice_value is not None:
@@ -132,7 +132,7 @@ def detect_current_choices(board, vn_dict):
                     eliminate_choices.append(choice)
             
             for choice in eliminate_choices:
-                choices[vn].remove(choice)
+                choices[aspect].remove(choice)
 
     # Step 2: Create a dict with candidate Choices.
     selection = {}
@@ -140,11 +140,11 @@ def detect_current_choices(board, vn_dict):
         if len(choices[choice]) == 1:
             selection[choice] = choices[choice][0]
         else:
-            selection[choice] = ''
+            selection[choice] = None
 
     # Step 3: Eliminate candidate Choice that do not exactly match the required conditions.
     #         (Basically, this is a dry-run of the apply function.)
-    for ref in vn_dict:
+    for ref in vardict:
         fp = board.FindFootprintByReference(ref) # TODO error handling! can return "None"
         fp_value = fp.GetValue()
         if use_attr_excl_from_bom():
@@ -153,11 +153,11 @@ def detect_current_choices(board, vn_dict):
             fp_excl_pos = fp.IsExcludedFromPosFiles()
         if use_attr_dnp():
             fp_dnp = fp.IsDNP()
-        for vn in vn_dict[ref]:
-            selected_choice = selection[vn]
-            if selected_choice != '':
-                new_value = vn_dict[ref][vn][selected_choice][key_val()]
-                new_unfit = opt_unfit() in vn_dict[ref][vn][selected_choice][key_opts()]
+        for aspect in vardict[ref]:
+            selected_choice = selection[aspect]
+            if selected_choice is not None:
+                new_value = vardict[ref][aspect][selected_choice][key_val()]
+                new_unfit = opt_unfit() in vardict[ref][aspect][selected_choice][key_opts()]
                 mismatch = False
                 if new_value is not None:
                     if fp_value != new_value:
@@ -172,29 +172,27 @@ def detect_current_choices(board, vn_dict):
                     if fp_dnp != new_unfit:
                         mismatch = True
                 if mismatch:
-                    selection[vn] = ''
+                    selection[aspect] = None
 
     return selection
 
-# TODO check each '' or "" and use None, if applicable
-
-def apply_choices(board, vn_dict, selection, dry_run = False):
+def apply_choices(board, vardict, selection, dry_run = False):
     changes = []
 
-    for ref in vn_dict:
+    for ref in vardict:
         fp = board.FindFootprintByReference(ref) # TODO error handling! can return "None"
-        for vn in vn_dict[ref]:
-            selected_choice = selection[vn]
-            if selected_choice != '': # None?
-                choice_text = f'{escape_string_if_required(vn)}={escape_string_if_required(selected_choice)}'
-                new_value = vn_dict[ref][vn][selected_choice][key_val()]
+        for aspect in vardict[ref]:
+            selected_choice = selection[aspect]
+            if selected_choice is not None:
+                choice_text = f'{escape_string_if_required(aspect)}={escape_string_if_required(selected_choice)}'
+                new_value = vardict[ref][aspect][selected_choice][key_val()]
                 if new_value is not None:
                     old_value = fp.GetValue()
                     if old_value != new_value:
                         changes.append([ref, f"Change {ref} value from '{old_value}' to '{new_value}' ({choice_text})."])
                         if not dry_run:
                             fp.SetValue(new_value)
-                new_unfit = opt_unfit() in vn_dict[ref][vn][selected_choice][key_opts()]
+                new_unfit = opt_unfit() in vardict[ref][aspect][selected_choice][key_opts()]
                 if use_attr_dnp():
                     old_dnp = fp.IsDNP()
                     if old_dnp != new_unfit:
@@ -215,52 +213,52 @@ def apply_choices(board, vn_dict, selection, dry_run = False):
                             fp.SetExcludedFromPosFiles(new_unfit)
     return changes
 
-def get_vn_dict(board):
-    vns = {}
+def get_vardict(board):
+    vardict = {}
     errors = []
     fps = board.GetFootprints()
     fps.sort(key=lambda x: natural_sort_key(x.GetReference()))
     accepted_options = [opt_unfit()]
 
-    vn_field_name = variant_cfg_field_name()
+    rule_field = rule_field_name()
 
     for fp in fps:
         ref = fp.GetReference()
-        if wrap_HasField(fp, vn_field_name):
-            if ref in vns:
-                errors.append([ref, f"{ref}: Multiple footprints with same reference containing a rule definition field '{vn_field_name}'."])
+        if wrap_HasField(fp, rule_field): # TODO case-insensitive (iterate over all fields)
+            if ref in vardict:
+                errors.append([ref, f"{ref}: Multiple footprints with same reference containing a rule definition field '{rule_field}'."])
                 continue
 
-            field_value = wrap_GetField(fp, vn_field_name)
+            field_value = wrap_GetField(fp, rule_field)
             if len(field_value) < 1:
                 # field exists, but is empty. ignore it.
                 # a field containing only white-space is considered an error.
                 continue
 
-            vns[ref] = {}
+            vardict[ref] = {}
             try:
-                vn_defs = split_raw_str(field_value, ' ', True)
+                rule_sections = split_raw_str(field_value, ' ', True)
             except Exception as e:
                 errors.append([ref, f"{ref}: Rule splitter error: {str(e)}."])
                 continue
 
-            if len(vn_defs) < 2:
-                errors.append([ref, f"{ref}: Invalid number of elements in rule definition field '{vn_field_name}'."])
+            if len(rule_sections) < 2:
+                errors.append([ref, f"{ref}: Invalid number of elements in rule definition field '{rule_field}'."])
                 continue
 
-            section_is_vn = True
-            vn = None
-            for section in vn_defs:
+            section_is_aspect_name = True
+            aspect = None
+            for section in rule_sections:
                 try:
                     name, content = split_choice(section)
                 except Exception as e:
                     errors.append([ref, f"{ref}: Section splitter error: {str(e)}."])
                     continue
 
-                if section_is_vn:
-                    # First rule section contains the Vn name only.
-                    # TODO clarify rules for Vn name (forbidden characters: "*" ".")
-                    section_is_vn = False
+                if section_is_aspect_name:
+                    # First rule section contains the Aspect name only.
+                    # TODO clarify rules for Aspect name (forbidden characters: "*" ".")
+                    section_is_aspect_name = False
                     cooked_name = cook_raw_string(name)
                     if cooked_name is None or cooked_name == '':
                         errors.append([ref, f"{ref}: Variation aspect name must not be empty."])
@@ -268,11 +266,11 @@ def get_vn_dict(board):
                     if content is not None:
                         errors.append([ref, f"{ref}: First rule section must be variation name without parenthesis."])
                         continue
-                    vn = cooked_name
-                    if not vn in vns[ref]:
-                        vns[ref][vn] = {}
-                elif vn is not None:
-                    # Any following rule sections are Vn Choice definitions.
+                    aspect = cooked_name
+                    if not aspect in vardict[ref]:
+                        vardict[ref][aspect] = {}
+                elif aspect is not None:
+                    # Any following rule sections are Choice definitions.
                     if name is None or name == '':
                         errors.append([ref, f"{ref}: Variation choice name list must not be empty."])
                         continue
@@ -319,61 +317,61 @@ def get_vn_dict(board):
                         continue
                     else:
                         for choice in choices:
-                            if choice in vns[ref][vn]:
+                            if choice in vardict[ref][aspect]:
                                 errors.append([ref, f"{ref}: Choice '{choice}' is defined more than once inside the rule definition."])
                                 continue
-                            vns[ref][vn][choice] = {}
-                            vns[ref][vn][choice][key_val()] = values[0] if len(values) > 0 else None
-                            vns[ref][vn][choice][key_opts()] = options
+                            vardict[ref][aspect][choice] = {}
+                            vardict[ref][aspect][choice][key_val()] = values[0] if len(values) > 0 else None
+                            vardict[ref][aspect][choice][key_opts()] = options
 
-    # Now check that each choice of each variation is defined for each reference.
-    # Also, flatten the dict, i.e. assign default values and options to specific choices.
-    choices = get_choice_dict(vns)
-    for ref in vns:
-        for vn in vns[ref]:
+    # Now check that each Choice of each Aspect is defined for each reference.
+    # Also, flatten the dict, i.e. assign default values and options to specific Choices.
+    choices = get_choice_dict(vardict)
+    for ref in vardict:
+        for aspect in vardict[ref]:
             choices_with_value_defined = 0
-            for choice in choices[vn]:
-                if choice in vns[ref][vn]: # TODO check that each choice is contained exactly ONCE in vns!
-                    if vns[ref][vn][choice][key_val()] is None:
-                        # There is a specific choice definition, but it does not contain a value.
-                        # Take the value from the default choice (if it exists), keep the options
-                        # as defined in the specific choice definition.
-                        if key_default() in vns[ref][vn]:
-                            vns[ref][vn][choice][key_val()] = vns[ref][vn][key_default()][key_val()]
+            for choice in choices[aspect]:
+                if choice in vardict[ref][aspect]: # TODO check that each Choice is contained exactly ONCE!
+                    if vardict[ref][aspect][choice][key_val()] is None:
+                        # There is a specific Choice definition, but it does not contain a value.
+                        # Take the value from the Default Choice (if it exists), keep the options
+                        # as defined in the specific Choice definition.
+                        if key_default() in vardict[ref][aspect]:
+                            vardict[ref][aspect][choice][key_val()] = vardict[ref][aspect][key_default()][key_val()]
                 else:
-                    # The specific choice definition is missing. Copy value and options from default
-                    # choice definition (if it exists).
-                    if key_default() in vns[ref][vn]:
-                        vns[ref][vn][choice] = {}
-                        vns[ref][vn][choice][key_val()] = vns[ref][vn][key_default()][key_val()]
-                        vns[ref][vn][choice][key_opts()] = vns[ref][vn][key_default()][key_opts()]
+                    # The specific Choice definition is missing. Copy value and options from Default
+                    # Choice definition (if it exists).
+                    if key_default() in vardict[ref][aspect]:
+                        vardict[ref][aspect][choice] = {}
+                        vardict[ref][aspect][choice][key_val()] = vardict[ref][aspect][key_default()][key_val()]
+                        vardict[ref][aspect][choice][key_opts()] = vardict[ref][aspect][key_default()][key_opts()]
                     else:
-                        vns[ref][vn][choice] = {}
-                        vns[ref][vn][choice][key_val()] = None
-                        vns[ref][vn][choice][key_opts()] = []
+                        vardict[ref][aspect][choice] = {}
+                        vardict[ref][aspect][choice][key_val()] = None
+                        vardict[ref][aspect][choice][key_opts()] = []
 
-                if vns[ref][vn][choice][key_val()] is not None:
+                if vardict[ref][aspect][choice][key_val()] is not None:
                     choices_with_value_defined += 1
 
-            if not (choices_with_value_defined == 0 or choices_with_value_defined == len(choices[vn])):
-                errors.append([ref, f"{ref}: Rule mixes choices with defined ({choices_with_value_defined}) and undefined ({len(choices[vn]) - choices_with_value_defined}) values (either all or none must be defined)."])
+            if not (choices_with_value_defined == 0 or choices_with_value_defined == len(choices[aspect])):
+                errors.append([ref, f"{ref}: Rule mixes choices with defined ({choices_with_value_defined}) and undefined ({len(choices[aspect]) - choices_with_value_defined}) values (either all or none must be defined)."])
                 continue
 
-            vns[ref][vn].pop(key_default(), None) # clean-up temporary data: remove default choice data
+            vardict[ref][aspect].pop(key_default(), None) # clean-up temporary data: remove default Choice data
 
-    return vns, errors
+    return vardict, errors
 
-def get_choice_dict(vn_dict):
+def get_choice_dict(vardict):
     choices = {}
 
-    for ref in vn_dict:
-        for vn in vn_dict[ref]:
-            if not vn in choices:
-                choices[vn] = []
-            for choice in vn_dict[ref][vn]:
+    for ref in vardict:
+        for aspect in vardict[ref]:
+            if not aspect in choices:
+                choices[aspect] = []
+            for choice in vardict[ref][aspect]:
                 # In case the input dict still contains temporary data (such as default data), ignore it.
-                if choice != key_default() and not choice in choices[vn]:
-                    choices[vn].append(choice)
+                if choice != key_default() and not choice in choices[aspect]:
+                    choices[aspect].append(choice)
 
     return choices
 

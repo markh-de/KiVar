@@ -18,7 +18,7 @@ import kivar
 #      (provide --no-color/-C option (or a different usual option name))
 
 def version():
-    return '0.0.1-dev7'
+    return kivar.version()
 
 # TODO have common help URL for both plugin and CLI? place in module?
 def help_url():
@@ -34,7 +34,7 @@ def load_board(board_file):
     return pcbnew.LoadBoard(board_file)
 
 def get_vardict(board):
-    vardict, errors = kivar.get_vn_dict(board)
+    vardict, errors = kivar.get_vardict(board)
     if len(errors) > 0:
         print_err(f'Errors ({len(errors)}):')
         for ref, error in sorted(errors, key=kivar.natural_sort_key):
@@ -149,7 +149,7 @@ def set_command(board=None, assign=None, dry_run=False, verify=False, verbose=Fa
         vardict = get_vardict(b)
         if vardict is None: return False
         b = pcbnew.LoadBoard(board)
-        vardict, errors = kivar.get_vn_dict(b)
+        vardict, errors = kivar.get_vardict(b)
         sel = kivar.detect_current_choices(b, vardict)
         choice_dict = kivar.get_choice_dict(vardict)
         for asmt in assign:
