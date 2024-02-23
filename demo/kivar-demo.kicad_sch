@@ -6,7 +6,7 @@
 	(paper "A5" portrait)
 	(title_block
 		(title "KiVar Demo")
-		(date "2024-02-07")
+		(date "2024-02-10")
 		(company "Author: Mark Hämmerling <dev@markh.de>")
 		(comment 1 "https://github.com/markh-de/KiVar")
 		(comment 4 "Root Sheet")
@@ -19,9 +19,10 @@
 		(stroke
 			(width 0.1524)
 			(type solid)
+			(color 125 147 158 1)
 		)
 		(fill
-			(color 255 229 191 1.0000)
+			(color 181 212 228 1.0000)
 		)
 		(uuid "0e980ce9-433f-4ae1-b84f-fd5b1f452ede")
 		(property "Sheetname" "Example 5: IC Type and Address Selection"
@@ -30,6 +31,7 @@
 				(font
 					(size 1.778 1.778)
 					(bold yes)
+					(color 146 108 108 1)
 				)
 				(justify left bottom)
 			)
@@ -39,6 +41,8 @@
 			(effects
 				(font
 					(size 1.27 1.27)
+					(italic yes)
+					(color 194 194 194 1)
 				)
 				(justify left top)
 			)
@@ -52,15 +56,59 @@
 		)
 	)
 	(sheet
+		(at 80.01 146.05)
+		(size 40.005 10.795)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+			(color 151 166 142 1)
+		)
+		(fill
+			(color 208 229 196 1.0000)
+		)
+		(uuid "133d4058-5b5c-4077-bb0d-59323121a93a")
+		(property "Sheetname" "Rule Processing Illustration"
+			(at 80.01 145.0844 0)
+			(effects
+				(font
+					(size 1.778 1.778)
+					(bold yes)
+					(color 146 108 108 1)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "rule_processing.kicad_sch"
+			(at 80.01 157.4296 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+					(italic yes)
+					(color 194 194 194 1)
+				)
+				(justify left top)
+			)
+		)
+		(instances
+			(project "kivar-demo"
+				(path "/cd745a5c-45fb-4106-85c8-c86c130b6ee7"
+					(page "9")
+				)
+			)
+		)
+	)
+	(sheet
 		(at 27.94 25.4)
 		(size 92.075 10.795)
 		(fields_autoplaced yes)
 		(stroke
 			(width 0.1524)
 			(type solid)
+			(color 125 147 158 1)
 		)
 		(fill
-			(color 255 229 191 1.0000)
+			(color 181 212 228 1.0000)
 		)
 		(uuid "819719b2-602e-433d-a771-1f2596d21337")
 		(property "Sheetname" "Example 1: I²C Device Address Selection"
@@ -69,6 +117,7 @@
 				(font
 					(size 1.778 1.778)
 					(bold yes)
+					(color 146 108 108 1)
 				)
 				(justify left bottom)
 			)
@@ -78,6 +127,8 @@
 			(effects
 				(font
 					(size 1.27 1.27)
+					(italic yes)
+					(color 194 194 194 1)
 				)
 				(justify left top)
 			)
@@ -97,9 +148,10 @@
 		(stroke
 			(width 0.1524)
 			(type solid)
+			(color 125 147 158 1)
 		)
 		(fill
-			(color 255 229 191 1.0000)
+			(color 181 212 228 1.0000)
 		)
 		(uuid "98917921-089a-4f53-9391-423838589d96")
 		(property "Sheetname" "Example 3: Undervoltage Trip Points"
@@ -108,6 +160,7 @@
 				(font
 					(size 1.778 1.778)
 					(bold yes)
+					(color 146 108 108 1)
 				)
 				(justify left bottom)
 			)
@@ -117,6 +170,8 @@
 			(effects
 				(font
 					(size 1.27 1.27)
+					(italic yes)
+					(color 194 194 194 1)
 				)
 				(justify left top)
 			)
@@ -136,9 +191,10 @@
 		(stroke
 			(width 0.1524)
 			(type solid)
+			(color 125 147 158 1)
 		)
 		(fill
-			(color 255 229 191 1.0000)
+			(color 181 212 228 1.0000)
 		)
 		(uuid "b90e2ece-31a9-44a1-a7e2-4f98d0159cd7")
 		(property "Sheetname" "Example 4: IC Variant Selection"
@@ -147,6 +203,7 @@
 				(font
 					(size 1.778 1.778)
 					(bold yes)
+					(color 146 108 108 1)
 				)
 				(justify left bottom)
 			)
@@ -156,6 +213,8 @@
 			(effects
 				(font
 					(size 1.27 1.27)
+					(italic yes)
+					(color 194 194 194 1)
 				)
 				(justify left top)
 			)
@@ -170,14 +229,15 @@
 	)
 	(sheet
 		(at 27.94 146.05)
-		(size 37.465 10.795)
+		(size 40.005 10.795)
 		(fields_autoplaced yes)
 		(stroke
 			(width 0.1524)
 			(type solid)
+			(color 151 166 142 1)
 		)
 		(fill
-			(color 255 255 194 1.0000)
+			(color 208 229 196 1.0000)
 		)
 		(uuid "ed6b360e-2c97-4912-8101-70e5ae5801ff")
 		(property "Sheetname" "Rule Structure Illustration"
@@ -186,6 +246,7 @@
 				(font
 					(size 1.778 1.778)
 					(bold yes)
+					(color 146 108 108 1)
 				)
 				(justify left bottom)
 			)
@@ -195,6 +256,8 @@
 			(effects
 				(font
 					(size 1.27 1.27)
+					(italic yes)
+					(color 194 194 194 1)
 				)
 				(justify left top)
 			)
@@ -214,9 +277,10 @@
 		(stroke
 			(width 0.1524)
 			(type solid)
+			(color 125 147 158 1)
 		)
 		(fill
-			(color 255 229 191 1.0000)
+			(color 181 212 228 1.0000)
 		)
 		(uuid "efd04459-986c-49c2-bdc3-96a700b4a724")
 		(property "Sheetname" "Example 6: Maximum LED Backlight Drive Current Selection"
@@ -225,6 +289,7 @@
 				(font
 					(size 1.778 1.778)
 					(bold yes)
+					(color 146 108 108 1)
 				)
 				(justify left bottom)
 			)
@@ -234,6 +299,8 @@
 			(effects
 				(font
 					(size 1.27 1.27)
+					(italic yes)
+					(color 194 194 194 1)
 				)
 				(justify left top)
 			)
@@ -253,9 +320,10 @@
 		(stroke
 			(width 0.1524)
 			(type solid)
+			(color 125 147 158 1)
 		)
 		(fill
-			(color 255 229 191 1.0000)
+			(color 181 212 228 1.0000)
 		)
 		(uuid "f1bdcd00-da00-4cca-b21f-4862aa5c3200")
 		(property "Sheetname" "Example 2: Boot Source Selection"
@@ -264,6 +332,7 @@
 				(font
 					(size 1.778 1.778)
 					(bold yes)
+					(color 146 108 108 1)
 				)
 				(justify left bottom)
 			)
@@ -273,6 +342,8 @@
 			(effects
 				(font
 					(size 1.27 1.27)
+					(italic yes)
+					(color 194 194 194 1)
 				)
 				(justify left top)
 			)

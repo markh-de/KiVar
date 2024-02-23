@@ -1,0 +1,521 @@
+(kicad_sch
+	(version 20231120)
+	(generator "eeschema")
+	(generator_version "8.0")
+	(uuid "55cc74f3-a76a-489e-86d1-364a3afd14d4")
+	(paper "A5")
+	(title_block
+		(title "KiVar Demo")
+		(date "2024-02-10")
+		(company "Author: Mark Hämmerling <dev@markh.de>")
+		(comment 1 "https://github.com/markh-de/KiVar")
+		(comment 4 "KiVar Rule Processing")
+	)
+	(lib_symbols)
+	(polyline
+		(pts
+			(xy 101.6 53.34) (xy 102.235 54.61)
+		)
+		(stroke
+			(width 0)
+			(type default)
+			(color 188 126 122 1)
+		)
+		(uuid "10b7d359-0861-4c9e-953e-fe4804005652")
+	)
+	(polyline
+		(pts
+			(xy 81.28 64.135) (xy 81.28 67.945)
+		)
+		(stroke
+			(width 0)
+			(type default)
+			(color 188 126 122 1)
+		)
+		(uuid "1cd31313-c47e-4b96-901e-7f7829a37352")
+	)
+	(polyline
+		(pts
+			(xy 123.825 66.675) (xy 123.19 67.945)
+		)
+		(stroke
+			(width 0)
+			(type default)
+			(color 188 126 122 1)
+		)
+		(uuid "1fd90198-0a28-46a3-921c-cf4588d3f82d")
+	)
+	(polyline
+		(pts
+			(xy 123.19 64.135) (xy 123.19 67.945)
+		)
+		(stroke
+			(width 0)
+			(type default)
+			(color 188 126 122 1)
+		)
+		(uuid "2a6ccc75-e8dd-4588-949a-3e24735fbc5f")
+	)
+	(polyline
+		(pts
+			(xy 123.825 53.34) (xy 123.19 54.61)
+		)
+		(stroke
+			(width 0)
+			(type default)
+			(color 188 126 122 1)
+		)
+		(uuid "5c7feb87-83db-47ca-aff0-1fce0d712917")
+	)
+	(polyline
+		(pts
+			(xy 102.87 53.34) (xy 102.235 54.61)
+		)
+		(stroke
+			(width 0)
+			(type default)
+			(color 188 126 122 1)
+		)
+		(uuid "606f9e25-2662-4e24-a5df-c02754a9225a")
+	)
+	(polyline
+		(pts
+			(xy 80.645 66.675) (xy 81.28 67.945)
+		)
+		(stroke
+			(width 0)
+			(type default)
+			(color 188 126 122 1)
+		)
+		(uuid "64e73ba7-9e23-4b54-a327-8f6d10ff7990")
+	)
+	(polyline
+		(pts
+			(xy 122.555 53.34) (xy 123.19 54.61)
+		)
+		(stroke
+			(width 0)
+			(type default)
+			(color 188 126 122 1)
+		)
+		(uuid "7b0d524b-36a0-4e16-8b29-f4f0b7fcb0ce")
+	)
+	(polyline
+		(pts
+			(xy 102.87 66.675) (xy 102.235 67.945)
+		)
+		(stroke
+			(width 0)
+			(type default)
+			(color 188 126 122 1)
+		)
+		(uuid "a5870322-4fab-4b61-a7be-e5e5a5613b1e")
+	)
+	(polyline
+		(pts
+			(xy 123.19 50.8) (xy 123.19 54.61)
+		)
+		(stroke
+			(width 0)
+			(type default)
+			(color 188 126 122 1)
+		)
+		(uuid "b073ff6d-af75-497c-ae2d-1534c97b2685")
+	)
+	(polyline
+		(pts
+			(xy 102.235 64.135) (xy 102.235 67.945)
+		)
+		(stroke
+			(width 0)
+			(type default)
+			(color 188 126 122 1)
+		)
+		(uuid "bdbca326-dd07-4ed3-a930-9f8eef90c22e")
+	)
+	(polyline
+		(pts
+			(xy 102.235 50.8) (xy 102.235 54.61)
+		)
+		(stroke
+			(width 0)
+			(type default)
+			(color 188 126 122 1)
+		)
+		(uuid "c22e554f-b69b-4ebf-94fd-48be23cdef5c")
+	)
+	(polyline
+		(pts
+			(xy 81.915 66.675) (xy 81.28 67.945)
+		)
+		(stroke
+			(width 0)
+			(type default)
+			(color 188 126 122 1)
+		)
+		(uuid "c357f0e9-5f93-4371-8fd7-be5418d5f123")
+	)
+	(polyline
+		(pts
+			(xy 81.28 50.8) (xy 81.28 54.61)
+		)
+		(stroke
+			(width 0)
+			(type default)
+			(color 188 126 122 1)
+		)
+		(uuid "c9648ff4-a141-4a50-a7a3-05d3eab8826c")
+	)
+	(polyline
+		(pts
+			(xy 81.915 53.34) (xy 81.28 54.61)
+		)
+		(stroke
+			(width 0)
+			(type default)
+			(color 188 126 122 1)
+		)
+		(uuid "cec418f9-06bd-4437-81b6-94607425d0fa")
+	)
+	(polyline
+		(pts
+			(xy 80.645 53.34) (xy 81.28 54.61)
+		)
+		(stroke
+			(width 0)
+			(type default)
+			(color 188 126 122 1)
+		)
+		(uuid "cfcea8ea-a86f-432d-967c-97d3231e1710")
+	)
+	(polyline
+		(pts
+			(xy 101.6 66.675) (xy 102.235 67.945)
+		)
+		(stroke
+			(width 0)
+			(type default)
+			(color 188 126 122 1)
+		)
+		(uuid "d0597db5-ec96-4168-b579-e7ec3ada5c5c")
+	)
+	(polyline
+		(pts
+			(xy 122.555 66.675) (xy 123.19 67.945)
+		)
+		(stroke
+			(width 0)
+			(type default)
+			(color 188 126 122 1)
+		)
+		(uuid "d3ee2723-c8ad-437c-b250-1cbc03be3e70")
+	)
+	(text_box "C1"
+		(exclude_from_sim no)
+		(at 92.71 67.945 0)
+		(size 19.05 12.7)
+		(stroke
+			(width -0.0001)
+			(type default)
+			(color 0 194 194 1)
+		)
+		(fill
+			(type color)
+			(color 227 190 165 1)
+		)
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.254)
+				(bold yes)
+				(italic yes)
+				(color 177 148 129 1)
+			)
+			(justify top)
+		)
+		(uuid "345334cb-8809-4a48-85da-532752a9b19b")
+	)
+	(text_box "R1"
+		(exclude_from_sim no)
+		(at 71.755 67.945 0)
+		(size 19.05 12.7)
+		(stroke
+			(width -0.0001)
+			(type default)
+			(color 0 194 194 1)
+		)
+		(fill
+			(type color)
+			(color 227 190 165 1)
+		)
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.254)
+				(bold yes)
+				(italic yes)
+				(color 177 148 129 1)
+			)
+			(justify top)
+		)
+		(uuid "35ff6598-4048-4b9e-aa41-7a0666c4bb61")
+	)
+	(text_box "C1"
+		(exclude_from_sim no)
+		(at 92.71 40.005 0)
+		(size 19.05 10.795)
+		(stroke
+			(width -0.0001)
+			(type default)
+			(color 0 194 194 1)
+		)
+		(fill
+			(type color)
+			(color 201 231 219 1)
+		)
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.254)
+				(bold yes)
+				(italic yes)
+				(color 153 176 167 1)
+			)
+			(justify top)
+		)
+		(uuid "3aa90bca-20c0-4541-8c2d-3178392d24bd")
+	)
+	(text_box "R1"
+		(exclude_from_sim no)
+		(at 71.755 40.005 0)
+		(size 19.05 10.795)
+		(stroke
+			(width -0.0001)
+			(type default)
+			(color 0 194 194 1)
+		)
+		(fill
+			(type color)
+			(color 201 231 219 1)
+		)
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.254)
+				(bold yes)
+				(italic yes)
+				(color 153 176 167 1)
+			)
+			(justify top)
+		)
+		(uuid "54760d29-0db6-463a-a2f5-f7c82d04c02d")
+	)
+	(text_box "KiVar Rule Compiler"
+		(exclude_from_sim no)
+		(at 71.755 54.61 0)
+		(size 60.96 9.525)
+		(stroke
+			(width -0.0001)
+			(type default)
+		)
+		(fill
+			(type color)
+			(color 188 198 249 1)
+		)
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.254)
+				(bold yes)
+				(italic yes)
+				(color 134 141 177 1)
+			)
+			(justify top)
+		)
+		(uuid "c03eb24b-a96a-4516-a7fc-0527fa5a7732")
+	)
+	(text_box "L1"
+		(exclude_from_sim no)
+		(at 113.665 67.945 0)
+		(size 19.05 12.7)
+		(stroke
+			(width -0.0001)
+			(type default)
+			(color 0 194 194 1)
+		)
+		(fill
+			(type color)
+			(color 227 190 165 1)
+		)
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.254)
+				(bold yes)
+				(italic yes)
+				(color 177 148 129 1)
+			)
+			(justify top)
+		)
+		(uuid "e7bfe24a-0f09-448b-bdbd-f4333151be35")
+	)
+	(text_box "L1"
+		(exclude_from_sim no)
+		(at 113.665 40.005 0)
+		(size 19.05 10.795)
+		(stroke
+			(width -0.0001)
+			(type default)
+			(color 0 194 194 1)
+		)
+		(fill
+			(type color)
+			(color 201 231 219 1)
+		)
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.254)
+				(bold yes)
+				(italic yes)
+				(color 153 176 167 1)
+			)
+			(justify top)
+		)
+		(uuid "e9ffcd0d-541a-475f-8ba0-9c6ae4208948")
+	)
+	(text "One: 10mH\nTwo: 10mH\nThree: 1mH unfit\nFour: 10mH unfit\n"
+		(exclude_from_sim no)
+		(at 114.3 72.39 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+				(color 113 86 77 1)
+			)
+			(justify left top)
+		)
+		(uuid "1ba64b71-db13-4aff-af22-c68e411d34a5")
+	)
+	(text "Two(33pF)\nFour(100pF -!)\n*(470pF)"
+		(exclude_from_sim no)
+		(at 93.345 44.45 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+				(color 72 101 132 1)
+			)
+			(justify left top)
+		)
+		(uuid "2b0eb2a0-6cf5-45ec-b422-8965bc4f759f")
+	)
+	(text "One: 470pF\nTwo: 33pF\nThree: 470pF\nFour: 100pF unfit"
+		(exclude_from_sim no)
+		(at 93.345 72.39 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+				(color 113 86 77 1)
+			)
+			(justify left top)
+		)
+		(uuid "4e726c43-feea-4e83-b64b-5f1f63afd715")
+	)
+	(text "Three(1mH -!)\nFour(-!)\n*(10mH)"
+		(exclude_from_sim no)
+		(at 114.3 44.45 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+				(color 72 101 132 1)
+			)
+			(justify left top)
+		)
+		(uuid "6a895d36-352c-49b6-b695-6522fee58438")
+	)
+	(text "One, Two, Three, Four"
+		(exclude_from_sim no)
+		(at 102.235 62.865 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+				(color 72 101 132 1)
+			)
+		)
+		(uuid "960f15b2-96fb-44f9-baaa-4d34f7675cd9")
+	)
+	(text "One: 0Ω\nTwo: 10kΩ\nThree: 10kΩ unfit\nFour: 10kΩ unfit"
+		(exclude_from_sim no)
+		(at 72.39 72.39 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+				(color 113 86 77 1)
+			)
+			(justify left top)
+		)
+		(uuid "a9c957b8-9f45-47b1-93c2-17c607c6b3ba")
+	)
+	(text "All choices apply to the same example aspect."
+		(exclude_from_sim no)
+		(at 71.755 36.195 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+				(italic yes)
+				(color 67 93 122 1)
+			)
+			(justify left top)
+		)
+		(uuid "ae1d8ec5-2f8d-4198-ba33-cf738998e168")
+	)
+	(text "Resulting value\nand attribute\nassignments:"
+		(exclude_from_sim no)
+		(at 69.215 68.58 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+				(italic yes)
+				(color 134 141 177 1)
+			)
+			(justify right top)
+		)
+		(uuid "cab26815-2b7f-43ec-a032-513ef3ed2966")
+	)
+	(text "Choice definitions\nin rules:"
+		(exclude_from_sim no)
+		(at 69.215 40.64 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+				(italic yes)
+				(color 134 141 177 1)
+			)
+			(justify right top)
+		)
+		(uuid "cf54357c-5c54-408d-8bec-2a66c13474a6")
+	)
+	(text "One(0Ω)\nTwo()\n*(10kΩ -!)"
+		(exclude_from_sim no)
+		(at 72.39 44.45 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+				(color 72 101 132 1)
+			)
+			(justify left top)
+		)
+		(uuid "ddae87ba-535d-499e-b382-4d5a34b9279e")
+	)
+	(text "Declared choices:"
+		(exclude_from_sim no)
+		(at 102.235 60.325 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+				(italic yes)
+				(color 134 141 177 1)
+			)
+		)
+		(uuid "ef6cf0e5-03f1-4e08-99dd-48f6a1ecc4c1")
+	)
+)
