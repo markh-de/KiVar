@@ -10,8 +10,8 @@ VERSION=$1
 ID='de_markh_kivar'
 RELEASE_NAME='kivar'
 
-RELEASE_DIR="$(dirname "$0")/release"
-SRC_PLUGIN_DIR="$(dirname "$0")/plugin"
+RELEASE_DIR="$(dirname "$0")/../release"
+SRC_PLUGIN_DIR="$(dirname "$0")"
 SRC_PCM_DIR="$SRC_PLUGIN_DIR/pcm"
 
 ### PCM PACKAGE ###
@@ -29,10 +29,10 @@ cp "$SRC_PCM_DIR/icon.png" \
 
 sed "s/<<VERSION>>/$VERSION/g" "$SRC_PCM_DIR/metadata.json.tpl" > "$PCM_DIR/metadata.json"
 
-cd "$PCM_DIR"
 rm  -f "$RELEASE_DIR/${RELEASE_NAME}-v${VERSION}-pcm.zip"
-zip -r "$RELEASE_DIR/${RELEASE_NAME}-v${VERSION}-pcm.zip" .
-cd -
+cd "$PCM_DIR"
+zip -r "$(readlink -f "$RELEASE_DIR/${RELEASE_NAME}-v${VERSION}-pcm.zip")" .
+cd - >/dev/null
 
 rm -rf "$PCM_DIR"
 
@@ -45,7 +45,7 @@ cp "$SRC_PLUGIN_DIR/$ID-"*.png \
 
 cd "$ARCH_DIR"
 rm  -f "$RELEASE_DIR/${RELEASE_NAME}-v${VERSION}.zip"
-zip -r "$RELEASE_DIR/${RELEASE_NAME}-v${VERSION}.zip" .
-cd -
+zip -r "$(readlink -f "$RELEASE_DIR/${RELEASE_NAME}-v${VERSION}.zip")" .
+cd - >/dev/null
 
 rm -rf "$ARCH_DIR"

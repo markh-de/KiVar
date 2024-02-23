@@ -1,0 +1,251 @@
+#!/usr/bin/env python3
+
+import os
+import sys
+import argparse
+import pcbnew
+import kivar
+
+# TODO make use of verbose options, where applicable
+# TODO add option to save to a different file (create a copy)
+# TODO if output to terminal, use colors for highlighting aspects, choices, matches etc.
+#      (provide --no-color/-C option (or a different usual option name))
+# also check all TODO notes buried in the code below!
+
+def version():
+    return kivar.version()
+
+# TODO have common help URL for both plugin and CLI? place in module?
+def help_url():
+    return 'https://github.com/markh-de/KiVar/blob/main/README.md#usage'
+
+def print_err(*args, file=sys.stderr, **kwargs):
+    print(*args, file=file, **kwargs)
+
+def load_board(board_file):
+    if not os.path.isfile(board_file) or not os.access(board_file, os.R_OK):
+        print_err(f'Error: "{board_file}" is not a readable file.')
+        return None
+    return pcbnew.LoadBoard(board_file)
+
+def save_board(board_file, board):
+    return pcbnew.SaveBoard(board_file, board)
+
+def get_vardict(board):
+    vardict, errors = kivar.get_vardict(board)
+    if len(errors) > 0:
+        print_err(f'Errors ({len(errors)}):')
+        for ref, error in sorted(errors, key=kivar.natural_sort_key):
+            print_err('    ' + error)
+        return None
+    if len(vardict) == 0:
+        print_err(f'Error: No rule definitions found.')
+        print_err(f'       Read {help_url()} for usage instructions.')
+        return None
+    return vardict
+
+def list_command(board=None, long=False, detailed=False, selected=False, verbose=False):
+    b = load_board(board)
+    if b is None: return False
+    vardict = get_vardict(b)
+    if vardict is None: return False
+    if selected:
+        sel = kivar.detect_current_choices(b, vardict)
+    ndict = {}
+    for ref in vardict:
+        for aspect in vardict[ref]:
+            if not aspect in ndict:
+                ndict[aspect] = {}
+            for choice in vardict[ref][aspect]:
+                if not choice in ndict[aspect]:
+                    ndict[aspect][choice] = {}
+                if detailed:
+                    ref_info = []
+                    ref_value = vardict[ref][aspect][choice][kivar.key_val()]
+                    if ref_value is not None:
+                        ref_info.append(kivar.escape_string_if_required(ref_value))
+                    ref_opts  = vardict[ref][aspect][choice][kivar.key_opts()]
+                    if '!' in ref_opts:
+                        ref_info.append('<unfit>')
+                    ndict[aspect][choice][ref] = ' '.join(ref_info)
+    for aspect in sorted(ndict, key=kivar.natural_sort_key):
+        p_aspect = kivar.escape_string_if_required(aspect)
+        if long or detailed:
+            print(p_aspect)
+        else:
+            print(f'{p_aspect}:', end='')
+        for choice in sorted(ndict[aspect], key=kivar.natural_sort_key):
+            p_choice = kivar.escape_string_if_required(choice)
+            if selected and sel[aspect] == choice:
+                if long or detailed:
+                    print(f'  + {p_choice}')
+                else:
+                    print(f' [{p_choice}]', end='')
+            else:
+                if long or detailed:
+                    print(f'    {p_choice}')
+                else:
+                    print(f' {p_choice}', end='')
+            if detailed:
+                for ref in sorted(ndict[aspect][choice], key=kivar.natural_sort_key):
+                    print(f'        {ref} : {ndict[aspect][choice][ref]}')
+        print()
+    return True
+
+def state_command(board=None, all=False, query_aspect=None, verbose=False):
+    b = load_board(board)
+    if b is None: return False
+    vardict = get_vardict(b)
+    if vardict is None: return False
+    sel = kivar.detect_current_choices(b, vardict)
+    if query_aspect is not None:
+        if all:
+            print_err('Error: Options "--all" and "--query" are mutually exclusive.')
+            return False
+        if len(query_aspect) > 1:
+            print_err(f'Error: Only one query allowed.')
+            return False
+        q = kivar.cook_raw_string(query_aspect[0])
+        if q in sel:
+            p_choice = kivar.escape_string_if_required(sel[q])
+            print(p_choice)
+        else:
+            print_err(f'Error: No such aspect "{kivar.escape_string_if_required(q)}".')
+            return False
+    else:
+        for aspect in sorted(sel, key=kivar.natural_sort_key):
+            choice = sel[aspect]
+            if all or choice is not None:
+                c = '' if choice is None else choice
+                p_aspect = kivar.escape_string_if_required(aspect)
+                p_c = kivar.escape_string_if_required(c)
+                print(f'{p_aspect}={p_c}')
+    return True
+
+def check_command(board=None, verbose=False):
+    b = load_board(board)
+    if b is None: return False
+    vardict = get_vardict(b)
+    if vardict is None: return False
+    sel = kivar.detect_current_choices(b, vardict)
+    failed = []
+    for aspect in sorted(sel, key=kivar.natural_sort_key):
+        choice = sel[aspect]
+        # TODO if verbose: print result of each check here!
+        if choice is None:
+            failed.append(aspect)
+    if len(failed) > 0:
+        print_err(f'Check failed. No matching choice found for {len(failed)} (of {len(sel)}) aspect(s):')
+        for aspect in failed:
+            p_aspect = kivar.escape_string_if_required(aspect)
+            print_err(f'    {p_aspect}')
+        return False
+    else:
+        print_err(f'Check passed. All {len(sel)} aspect(s) have a matching choice.')
+    return True
+
+def set_command(board=None, assign=None, dry_run=False, verify=False, verbose=False):
+    # TODO how to handle errors? ignore failing assignments, or abort?
+    #      collect errors, then print & return?
+    if assign is not None:
+        b = load_board(board)
+        if b is None: return False
+        vardict, errors = kivar.get_vardict(b)
+        if vardict is None: return False
+        sel = kivar.detect_current_choices(b, vardict)
+        choice_dict = kivar.get_choice_dict(vardict)
+        for asmt in assign:
+            l = kivar.split_raw_str(asmt, '=', False) # TODO: test split
+            if len(l) == 2:
+                aspect = kivar.cook_raw_string(l[0])
+                choice = kivar.cook_raw_string(l[1])
+                p_aspect = kivar.escape_string_if_required(aspect)
+                p_choice = kivar.escape_string_if_required(choice)
+                p_asmt = f'{p_aspect}={p_choice}'
+                if aspect in sel:
+                    if choice in choice_dict[aspect]:
+                        sel[aspect] = choice
+                    else:
+                        print(f'Error: Assignment "{p_asmt}" failed: No such choice "{p_choice}" for aspect "{p_aspect}".')
+                else:
+                    print(f'Error: Assignment "{p_asmt}" failed: No such aspect "{p_aspect}".')
+            else:
+                print(f'Error: Assignment "{asmt}" failed: Format error: Wrong number of "=" separators.')
+        changes = kivar.apply_choices(b, vardict, sel, dry_run)
+        if len(changes) > 0:
+            if verify and not dry_run:
+                new_sel = kivar.detect_current_choices(b, vardict)
+                if new_sel != sel:
+                    print('Error: Verification failed. Probably caused by ambiguous rules.') # TODO test this!
+                    return False
+            if dry_run or verbose:
+                print_err(f'Changes ({len(changes)}):')
+                for ref, change in sorted(changes, key=kivar.natural_sort_key):
+                    print('    ' + change)
+            if not dry_run:
+                if save_board(board, b):
+                    if verbose:
+                        print(f'Board saved to file "{board}".')
+                else:
+                    print_err(f'Error: Failed to save board to file "{board}".')
+                    return False
+        else:
+            if verbose or dry_run:
+                print('No changes.')
+    else:
+        print('Error: No assignments passed.')
+        return False
+    return True
+
+def main():
+    parser = argparse.ArgumentParser(description=f"KiVar Command Line Interface ({version()})")
+    subparsers = parser.add_subparsers(dest="command")
+
+    list_parser = subparsers.add_parser("list", help="list all available aspects and choices")
+    list_parser.add_argument("--selection", "-s", action="store_true", help="mark currently matching choices")
+    list_parser.add_argument("--long",      "-l", action="store_true", help="long output style")
+    list_parser.add_argument("--detailed",  "-d", action="store_true", help="show component assignments (implies --long)")
+#    list_parser.add_argument("--verbose",   "-v", action="store_true", help="verbose output")
+    list_parser.add_argument("board", help="KiCad PCB file name")
+
+    state_parser = subparsers.add_parser("state", help="show currently matching choice for each aspect")
+    state_parser.add_argument("--query",   "-Q", action="append",     help="query aspect for matching choice", metavar="aspect")
+    state_parser.add_argument("--all",     "-a", action="store_true", help="list all aspects (default: list only aspects with matching choice)")
+#    state_parser.add_argument("--verbose", "-v", action="store_true", help="verbose output")
+    state_parser.add_argument("board", help="KiCad PCB file name")
+
+    check_parser = subparsers.add_parser("check", help="check all aspects for matching choices, exit with error if check fails")
+#    check_parser.add_argument("--verbose", "-v", action="store_true", help="verbose output")
+    # TODO add option to check only for dedicated list of aspects
+    check_parser.add_argument("board", help="KiCad PCB file name")
+
+    set_parser = subparsers.add_parser("set", help="assign choices to aspects")
+    set_parser.add_argument("--assign",  "-A", action="append",     help="assign choice to aspect ('str' format: \"aspect=choice\")", metavar="str")
+    set_parser.add_argument("--dry-run", "-D", action="store_true", help="only print assignments, do not really perform/save them")
+    set_parser.add_argument("--verify",  "-V", action="store_true", help="verify unambiguity of assignments, exit with error if check fails")
+    set_parser.add_argument("--verbose", "-v", action="store_true", help="verbose output")
+    set_parser.add_argument("board", help="KiCad PCB file name")
+
+    args = parser.parse_args()
+    result = 0
+
+    if args.command == "list":
+        if not list_command(args.board, args.long, args.detailed, args.selection): # , args.verbose
+            result = 1
+    elif args.command == "state":
+        if not state_command(args.board, args.all, args.query): # , args.verbose
+            result = 1
+    elif args.command == "check":
+        if not check_command(args.board): # , args.verbose
+            result = 1
+    elif args.command == "set":
+        if not set_command(args.board, args.assign, args.dry_run, args.verify, args.verbose):
+            result = 1
+    else:
+        print_err(f'Error: Missing command. Use "-h" or "--help" for help.')
+        result = 2
+
+    return result
+
+if __name__ == "__main__":
+    sys.exit(main())
