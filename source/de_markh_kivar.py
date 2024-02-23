@@ -1,8 +1,8 @@
-import kivar
-import pcbnew
+from os import path as os_path
 import wx
 import wx.lib.agw.hyperlink as hyperlink
-from os import path as os_path
+import pcbnew
+import kivar
 
 # TODO:
 #
@@ -15,7 +15,7 @@ from os import path as os_path
 # * After applying configuration, define board variables containing the choice for each aspect, e.g. ${KIVAR.BOOT_SEL} => NAND
 #   (requires KiCad API change/fix: https://gitlab.com/kicad/code/kicad/-/issues/16426)
 
-class VariantPlugin(pcbnew.ActionPlugin):
+class KiVarPlugin(pcbnew.ActionPlugin):
     def defaults(self):
         self.name = 'KiVar'
         self.category = 'Assembly Variants'
@@ -27,19 +27,27 @@ class VariantPlugin(pcbnew.ActionPlugin):
         board = pcbnew.GetBoard()
         vardict, errors = kivar.get_vardict(board)
         if len(errors) > 0:
-            ShowErrorDialog('Rule errors', errors, board)
+            show_error_dialog('Rule errors', errors, board)
         elif len(vardict) == 0:
-            ShowMissingRulesDialog()
+            show_missing_rules_dialog()
         else:
-            ShowVariantDialog(board, vardict)
+            show_selection_dialog(board, vardict)
 
 def version():
     return kivar.version()
 
+def has_focus_on_item():
+    # not supported on earlier versions
+    return kivar.pcbnew_version() >= 799
+
+def focus_on_item(item):
+    if has_focus_on_item():
+        return pcbnew.FocusOnItem(item)
+
 def help_url():
     return 'https://github.com/markh-de/KiVar/blob/main/README.md#usage'
 
-def ShowVariantDialog(board, vn_dict):
+def show_selection_dialog(board, vn_dict):
     dlg = VariantDialog(board, vn_dict)
     dlg.ShowModal()
 
@@ -175,9 +183,9 @@ class VariantDialog(wx.Dialog):
 
     def update_list(self):
         changes = kivar.apply_choices(self.board, self.vardict, self.selections(), True)
-        self.changes_list.setItemList(changes)
+        self.changes_list.set_item_list(changes)
 
-def ShowMissingRulesDialog():
+def show_missing_rules_dialog():
     dialog = MissingRulesDialog()
     dialog.ShowModal()
     dialog.Destroy()
@@ -210,7 +218,7 @@ class MissingRulesDialog(wx.Dialog):
 
         self.SetSizerAndFit(sizer)
 
-def ShowErrorDialog(title, errors, board = None):
+def show_error_dialog(title, errors, board = None):
     dialog = PcbItemListDialog(f'KiVar {version()}: {title}', errors, board)
     dialog.ShowModal()
     dialog.Destroy()
@@ -220,23 +228,23 @@ class PcbItemListBox(wx.ListBox):
         super().__init__(parent)
         self.board = board
         self.refs = []
-        self.Bind(wx.EVT_LISTBOX, self.onListItemSelected)
+        self.Bind(wx.EVT_LISTBOX, self.on_list_item_selected)
 
-    def setItemList(self, itemlist):
+    def set_item_list(self, item_list):
         # current selection gets reset automatically
         self.refs = []
         self.Clear()
-        for item in itemlist:
+        for item in item_list:
             self.refs.append(item[0])
             self.Append(item[1])
 
-    def onListItemSelected(self, event):
+    def on_list_item_selected(self, event):
         if self.board is not None:
             ref = self.refs[self.GetSelection()]
             if ref is not None:
                 fp = self.board.FindFootprintByReference(ref)
                 if fp is not None:
-                    wrap_FocusOnItem(fp)
+                    focus_on_item(fp)
 
 class PcbItemListDialog(wx.Dialog):
     def __init__(self, title, itemlist, board = None):
@@ -251,7 +259,7 @@ class PcbItemListDialog(wx.Dialog):
 
         errors_list_win = wx.ScrolledWindow(self, wx.ID_ANY)
         errors_list = PcbItemListBox(errors_list_win, board)
-        errors_list.setItemList(itemlist)
+        errors_list.set_item_list(itemlist)
 
         errors_list_sizer = wx.BoxSizer(wx.VERTICAL)
         errors_list_sizer.Add(errors_list, 1, wx.EXPAND | wx.ALL, 3)
@@ -279,4 +287,4 @@ class PcbItemListDialog(wx.Dialog):
 
         self.ok_button.SetFocus()
 
-VariantPlugin().register()
+KiVarPlugin().register()

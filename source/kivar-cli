@@ -6,16 +6,11 @@ import argparse
 import pcbnew
 import kivar
 
-# Required for merging CLI branch:
-# TODO use escaped variants of aspect and choice name when printing!
-# TODO use cooked variants of aspect and choice name when reading via CLI!
-# (also check all TODO notes buried in the code below!)
-
-# Nice to have for later:
 # TODO make use of verbose options, where applicable
 # TODO add option to save to a different file (create a copy)
 # TODO if output to terminal, use colors for highlighting aspects, choices, matches etc.
 #      (provide --no-color/-C option (or a different usual option name))
+# also check all TODO notes buried in the code below!
 
 def version():
     return kivar.version()
@@ -33,6 +28,9 @@ def load_board(board_file):
         return None
     return pcbnew.LoadBoard(board_file)
 
+def save_board(board_file, board):
+    return pcbnew.SaveBoard(board_file, board)
+
 def get_vardict(board):
     vardict, errors = kivar.get_vardict(board)
     if len(errors) > 0:
@@ -41,7 +39,8 @@ def get_vardict(board):
             print_err('    ' + error)
         return None
     if len(vardict) == 0:
-        print_err(f'Error: No rule definitions found.\n       Read {help_url()} for usage instructions.')
+        print_err(f'Error: No rule definitions found.')
+        print_err(f'       Read {help_url()} for usage instructions.')
         return None
     return vardict
 
@@ -70,53 +69,57 @@ def list_command(board=None, long=False, detailed=False, selected=False, verbose
                         ref_info.append('<unfit>')
                     ndict[aspect][choice][ref] = ' '.join(ref_info)
     for aspect in sorted(ndict, key=kivar.natural_sort_key):
+        p_aspect = kivar.escape_string_if_required(aspect)
         if long or detailed:
-            print(aspect)
+            print(p_aspect)
         else:
-            print(f'{aspect}:', end='')
+            print(f'{p_aspect}:', end='')
         for choice in sorted(ndict[aspect], key=kivar.natural_sort_key):
+            p_choice = kivar.escape_string_if_required(choice)
             if selected and sel[aspect] == choice:
                 if long or detailed:
-                    print(f'  + {choice}')
+                    print(f'  + {p_choice}')
                 else:
-                    print(f' [{choice}]', end='')
+                    print(f' [{p_choice}]', end='')
             else:
                 if long or detailed:
-                    print(f'    {choice}')
+                    print(f'    {p_choice}')
                 else:
-                    print(f' {choice}', end='')
+                    print(f' {p_choice}', end='')
             if detailed:
                 for ref in sorted(ndict[aspect][choice], key=kivar.natural_sort_key):
                     print(f'        {ref} : {ndict[aspect][choice][ref]}')
-        print('')
+        print()
     return True
 
-def state_command(board=None, all=False, query=None, verbose=False):
+def state_command(board=None, all=False, query_aspect=None, verbose=False):
     b = load_board(board)
     if b is None: return False
     vardict = get_vardict(b)
     if vardict is None: return False
     sel = kivar.detect_current_choices(b, vardict)
-    if query is not None:
+    if query_aspect is not None:
         if all:
             print_err('Error: Options "--all" and "--query" are mutually exclusive.')
             return False
-        if len(query) > 1:
-            print_err(f'Error: Only a single query allowed.')
+        if len(query_aspect) > 1:
+            print_err(f'Error: Only one query allowed.')
             return False
-        q = query[0]
+        q = kivar.cook_raw_string(query_aspect[0])
         if q in sel:
-            choice = sel[q]
-            # TODO if no match and in verbose mode, print msg to stderr
-            print(choice)
+            p_choice = kivar.escape_string_if_required(sel[q])
+            print(p_choice)
         else:
-            print_err(f'Error: No such aspect "{query}".')
+            print_err(f'Error: No such aspect "{kivar.escape_string_if_required(q)}".')
             return False
     else:
         for aspect in sorted(sel, key=kivar.natural_sort_key):
             choice = sel[aspect]
-            if all or choice != '': # TODO use None (in API and here), if None: print ''
-                print(f'{aspect}={choice}')
+            if all or choice is not None:
+                c = '' if choice is None else choice
+                p_aspect = kivar.escape_string_if_required(aspect)
+                p_c = kivar.escape_string_if_required(c)
+                print(f'{p_aspect}={p_c}')
     return True
 
 def check_command(board=None, verbose=False):
@@ -129,15 +132,16 @@ def check_command(board=None, verbose=False):
     for aspect in sorted(sel, key=kivar.natural_sort_key):
         choice = sel[aspect]
         # TODO if verbose: print result of each check here!
-        if choice == '': # TODO use None (in API and here), if None: print ''
+        if choice is None:
             failed.append(aspect)
     if len(failed) > 0:
         print_err(f'Check failed. No matching choice found for {len(failed)} (of {len(sel)}) aspect(s):')
         for aspect in failed:
-            print_err(f'    {aspect}')
+            p_aspect = kivar.escape_string_if_required(aspect)
+            print_err(f'    {p_aspect}')
         return False
     else:
-        print_err(f'Check succeeded. All {len(sel)} aspect(s) have a matching choice.')
+        print_err(f'Check passed. All {len(sel)} aspect(s) have a matching choice.')
     return True
 
 def set_command(board=None, assign=None, dry_run=False, verify=False, verbose=False):
@@ -146,26 +150,27 @@ def set_command(board=None, assign=None, dry_run=False, verify=False, verbose=Fa
     if assign is not None:
         b = load_board(board)
         if b is None: return False
-        vardict = get_vardict(b)
-        if vardict is None: return False
-        b = pcbnew.LoadBoard(board)
         vardict, errors = kivar.get_vardict(b)
+        if vardict is None: return False
         sel = kivar.detect_current_choices(b, vardict)
         choice_dict = kivar.get_choice_dict(vardict)
         for asmt in assign:
-            l = kivar.split_raw_str(asmt, '=', False) # test split
+            l = kivar.split_raw_str(asmt, '=', False) # TODO: test split
             if len(l) == 2:
-                aspect = l[0]
-                choice = l[1]
+                aspect = kivar.cook_raw_string(l[0])
+                choice = kivar.cook_raw_string(l[1])
+                p_aspect = kivar.escape_string_if_required(aspect)
+                p_choice = kivar.escape_string_if_required(choice)
+                p_asmt = f'{p_aspect}={p_choice}'
                 if aspect in sel:
                     if choice in choice_dict[aspect]:
                         sel[aspect] = choice
                     else:
-                        print(f'Error: Assignment "{asmt}" failed: No such choice "{choice}" for aspect "{aspect}".')
+                        print(f'Error: Assignment "{p_asmt}" failed: No such choice "{p_choice}" for aspect "{p_aspect}".')
                 else:
-                    print(f'Error: Assignment "{asmt}" failed: No such aspect "{aspect}".')
+                    print(f'Error: Assignment "{p_asmt}" failed: No such aspect "{p_aspect}".')
             else:
-                print(f'Error: Assignment "{asmt}" failed: Wrong number of "=" separators.')
+                print(f'Error: Assignment "{asmt}" failed: Format error: Wrong number of "=" separators.')
         changes = kivar.apply_choices(b, vardict, sel, dry_run)
         if len(changes) > 0:
             if verify and not dry_run:
@@ -178,7 +183,7 @@ def set_command(board=None, assign=None, dry_run=False, verify=False, verbose=Fa
                 for ref, change in sorted(changes, key=kivar.natural_sort_key):
                     print('    ' + change)
             if not dry_run:
-                if pcbnew.SaveBoard(board, b):
+                if save_board(board, b):
                     if verbose:
                         print(f'Board saved to file "{board}".')
                 else:
@@ -220,9 +225,6 @@ def main():
     set_parser.add_argument("--verify",  "-V", action="store_true", help="verify unambiguity of assignments, exit with error if check fails")
     set_parser.add_argument("--verbose", "-v", action="store_true", help="verbose output")
     set_parser.add_argument("board", help="KiCad PCB file name")
-
-    # TODO add command "get": only returns (w/o any human-readable formatting) matching choice name for a given aspect name
-    #      (or error if aspect name does not exist, different error code if it exists but has not matching choice).
 
     args = parser.parse_args()
     result = 0

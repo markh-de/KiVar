@@ -1,30 +1,34 @@
 import pcbnew
 
-def wrap_HasField(fp, field):
-    if pcbnew_version() >= 799:
-        return fp.HasField(field)
-    else:
-        return fp.HasProperty(field)
-
-def wrap_GetField(fp, field):
-    if pcbnew_version() >= 799:
-        return fp.GetFieldByName(field).GetText()
-    else:
-        return fp.GetProperty(field)
-
-def wrap_FocusOnItem(item):
-    if pcbnew_version() >= 799:
-        return pcbnew.FocusOnItem(item)
-    # not supported on earlier versions
-
-def pcbnew_version():
-    return int(pcbnew.GetMajorMinorPatchVersion().split('.')[0]) * 100 + int(pcbnew.GetMajorMinorPatchVersion().split('.')[1])
-
 def version():
     return '0.2.0-dev2'
 
-def rule_field_name():
-    return 'KiVar.Rule'
+def pcbnew_version():
+    v = pcbnew.GetMajorMinorPatchVersion().split('.')
+    return int(v[0]) * 100 + int(v[1])
+
+def get_fp_fields(fp):
+    if pcbnew_version() < 799:
+        fields = fp.GetProperties()
+    else:
+        fields = fp.GetFieldsText()
+    return fields
+
+def get_my_fp_fields(fp):
+    result = {}
+    prefix = fp_field_prefix().lower()
+    fields = get_fp_fields(fp)
+    for field in fields:
+        lc_field = field.lower()
+        if lc_field.startswith(prefix):
+            result[lc_field[len(prefix):]] = fields[field]
+    return result
+
+def fp_field_prefix():
+    return 'kivar.'
+
+def field_suffix_rule():
+    return 'rule' # must be lower-case
 
 def opt_unfit():
     return '!'
@@ -220,16 +224,17 @@ def get_vardict(board):
     fps.sort(key=lambda x: natural_sort_key(x.GetReference()))
     accepted_options = [opt_unfit()]
 
-    rule_field = rule_field_name()
+    rule_field = field_suffix_rule()
 
     for fp in fps:
         ref = fp.GetReference()
-        if wrap_HasField(fp, rule_field): # TODO case-insensitive (iterate over all fields)
+        fields = get_my_fp_fields(fp)
+        if field_suffix_rule() in fields:
             if ref in vardict:
                 errors.append([ref, f"{ref}: Multiple footprints with same reference containing a rule definition field '{rule_field}'."])
                 continue
 
-            field_value = wrap_GetField(fp, rule_field)
+            field_value = fields[field_suffix_rule()]
             if len(field_value) < 1:
                 # field exists, but is empty. ignore it.
                 # a field containing only white-space is considered an error.
