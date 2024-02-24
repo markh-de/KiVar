@@ -27,7 +27,7 @@ The key concepts of KiVar are:
 
 ## Supported KiCad Versions
 
-KiVar is targeted towards release 8 of KiCad.  However, basic feature and API support is already provided by stable KiCad 7 releases.
+KiVar is targeted towards release 8 of KiCad.  However, basic feature and API support is already provided by KiCad 7 releases.
 
 The following table provides a feature support overview.
 
@@ -43,8 +43,6 @@ The following table provides a feature support overview.
 |Update schematic symbol attribute "DNP" from PCB     |No     |**Yes**          |
 |Update schematic variation definitions from PCB      |No     |**Yes**          |
 |Changes and errors can be clicked to focus components|No     |**Yes**          |
-
-_Note:_ Current release candidates and nightly builds of release 8 already fulfill all critical API requirements.
 
 ## Installation
 
@@ -83,7 +81,7 @@ The following sections describe the process of configuring your schematic or boa
 
 The following sub-sections describe the variation rules setup procedure.
 
-For stable _KiCad 7 releases_, variation rules must be defined in the _schematic_ and then propagated to the board, on which the plugin operates on (use _Tools &rarr; Update PCB from Schematic..._).  Setting up the variation rules directly in the board is not possible with KiCad 7, as this version does not yet provide footprint user fields, but instead only one-way-copies symbol fields to footprint _properties_, which are not exposed to the user interface in an editable way (but the data is stored internally and used by KiVar) and cannot be propagated back to the schematic.
+For _KiCad 7 releases_, variation rules must be defined in the _schematic_ and then propagated to the board, on which the plugin operates on (use _Tools &rarr; Update PCB from Schematic..._).  Setting up the variation rules directly in the board is not possible with KiCad 7, as this version does not yet provide footprint user fields, but instead only one-way-copies symbol fields to footprint _properties_, which are not exposed to the user interface in an editable way (but the data is stored internally and used by KiVar) and cannot be propagated back to the schematic.
 
 For _KiCad 8 and later_, it's up to the user to either edit the _schematic or board_ to setup the variation rules, as these versions provide footprint fields and synchronization of symbol and footprint fields in _both_ directions.
 
@@ -400,7 +398,7 @@ If the values and attributes do not exactly match one definite choice (for a var
 
 In case the defined variation rules cannot be parsed and enumerated without problems, an error message window with a list of problems will appear.  Each of these problems must then be fixed in order to successfully start the plugin.
 
-_Hint:_ You can click each error message to focus the corresponding footprint on the _pcbnew_ canvas in the background (KiCad 8 only).
+_Hint:_ You can click each error message to focus the corresponding footprint on the _pcbnew_ canvas in the background (KiCad 8 and later only).
 
 #### Variation Choices Selection
 
@@ -416,7 +414,7 @@ If the values and attributes of the footprint(s) related to a variation aspect s
 
 The change list section below the selection area summarizes all component value and attribute changes to be performed for each related footprint if the current variation configuration is applied.
 
-_Hint:_ You can click each entry in the change list to focus the corresponding footprint on the _pcbnew_ canvas in the background (KiCad 8 only).
+_Hint:_ You can click each entry in the change list to focus the corresponding footprint on the _pcbnew_ canvas in the background (KiCad 8 and later only).
 
 After selecting a few different variation choices, the dialog window may look like the following:
 
@@ -442,4 +440,4 @@ All changes by the plugin are only performed in the board, as KiVar is a plugin 
 
 To propagate the changes back to the schematic, use the PCB Editor menu item _Tools &rarr; Update Schematic from PCB..._ and make sure to select the checkboxes _Values_ and _Attributes_\*.  If you have modified the KiVar rules inside the PCB Editor, i.e. edited the footprint fields\* instead of the symbol fields, then also select the checkbox _Other fields_\*, in order to propagate your KiVar rules to the schematic.
 
-\* _The stable KiCad release 7 does not yet use the concept of footprint fields and can only propagate the footprint value back to the corresponding symbol value.  Also, footprints do not yet have a 'Do not populate' footprint attribute and back-propagation of attributes is not yet supported in release 7.  That is, the 'DNP' state of a schematic symbol can **not** be changed using the 'Update Schematic from PCB...' mechanism.  KiCad 7.99 Nightlies of August 8th 2023 and later **do** support all of these feartures and therefore provide support for all features currently required by KiVar.  Refer to section '[Supported KiCad Versions](#supported-kicad-versions)' for details._
+\* _KiCad release 7 does not yet use the concept of footprint fields and can only propagate the footprint value back to the corresponding symbol value.  Also, footprints do not yet have a 'Do not populate' footprint attribute and back-propagation of attributes is not yet supported in release 7.  That is, the 'DNP' state of a schematic symbol can **not** be changed using the 'Update Schematic from PCB...' mechanism.  KiCad releases 8 and later **do** support all of these feartures and therefore provide support for all features currently required by KiVar.  Refer to section '[Supported KiCad Versions](#supported-kicad-versions)' for details._
