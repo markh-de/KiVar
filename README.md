@@ -245,7 +245,7 @@ _Examples:_
 
 _Note:_ The same rules apply for aspect and choice names.  E.g., the rule `'Aspect Name' 'Choice One'('Value One') Choice\ Two(Value\ Two)` is valid.
 
-_Note:_ When separating parts using the space character (rule definition sections or choice definition arguments), one or more space chacters may be used per separation.
+_Note:_ When separating parts using the space character (rule definition sections or choice definition arguments), one or more space characters may be used per separation.
 
 ##### Constraints
 
