@@ -52,30 +52,33 @@ def list_command(board=None, long=False, detailed=False, selected=False, verbose
     if selected:
         sel = kivar.detect_current_choices(b, vardict)
     ndict = {}
-    for ref in vardict:
-        for aspect in vardict[ref]:
-            if not aspect in ndict:
-                ndict[aspect] = {}
-            for choice in vardict[ref][aspect]:
-                if not choice in ndict[aspect]:
-                    ndict[aspect][choice] = {}
-                if detailed:
-                    ref_info = []
-                    ref_value = vardict[ref][aspect][choice][kivar.key_val()]
-                    if ref_value is not None:
-                        ref_info.append(kivar.escape_string_if_required(ref_value))
-                    ref_opts  = vardict[ref][aspect][choice][kivar.key_opts()]
-                    if '!' in ref_opts:
-                        ref_info.append('<unfit>')
-                    ndict[aspect][choice][ref] = ' '.join(ref_info)
+    for uuid in vardict:
+        ref = kivar.uuid_to_fp(b, uuid).GetReferenceAsString()
+        aspect = vardict[uuid][kivar.key_aspect()]
+        if not aspect in ndict:
+            ndict[aspect] = {}
+        for choice in vardict[uuid][kivar.key_main()]:
+            if not choice in ndict[aspect]:
+                ndict[aspect][choice] = {}
+            if detailed:
+                ref_info = []
+                ref_value = vardict[uuid][kivar.key_main()][choice][kivar.key_value()]
+                if ref_value is not None:
+                    ref_info.append(kivar.quote_str(ref_value))
+                ref_opts  = vardict[uuid][kivar.key_main()][choice][kivar.key_options()]
+                if '!' in ref_opts:
+                    ref_info.append('<unfit>')
+                # if ref in ndict[aspect][choice]:
+                #     # TODO error handling. same ref name already used for this aspect choice!
+                ndict[aspect][choice][ref] = ' '.join(ref_info)
     for aspect in sorted(ndict, key=kivar.natural_sort_key):
-        p_aspect = kivar.escape_string_if_required(aspect)
+        p_aspect = kivar.quote_str(aspect)
         if long or detailed:
             print(p_aspect)
         else:
             print(f'{p_aspect}:', end='')
         for choice in sorted(ndict[aspect], key=kivar.natural_sort_key):
-            p_choice = kivar.escape_string_if_required(choice)
+            p_choice = kivar.quote_str(choice)
             if selected and sel[aspect] == choice:
                 if long or detailed:
                     print(f'  + {p_choice}')
@@ -88,7 +91,12 @@ def list_command(board=None, long=False, detailed=False, selected=False, verbose
                     print(f' {p_choice}', end='')
             if detailed:
                 for ref in sorted(ndict[aspect][choice], key=kivar.natural_sort_key):
-                    print(f'        {ref} : {ndict[aspect][choice][ref]}')
+                    print(f'        {ref}: {ndict[aspect][choice][ref]}')
+                    for field in sorted(vardict[uuid][kivar.key_aux()], key=kivar.natural_sort_key):
+                        f = kivar.quote_str(field)
+                        v = kivar.quote_str(vardict[uuid][kivar.key_aux()][field][choice][kivar.key_value()])
+                        print(f"            {f}: {v}")
+                        # Future note: When options for aux rules are allowed, print them here
         print()
     return True
 
@@ -107,18 +115,17 @@ def state_command(board=None, all=False, query_aspect=None, verbose=False):
             return False
         q = kivar.cook_raw_string(query_aspect[0])
         if q in sel:
-            p_choice = kivar.escape_string_if_required(sel[q])
+            p_choice = kivar.quote_str(sel[q])
             print(p_choice)
         else:
-            print_err(f'Error: No such aspect "{kivar.escape_string_if_required(q)}".')
+            print_err(f"Error: No such aspect '{kivar.escape_str(q)}'.")
             return False
     else:
         for aspect in sorted(sel, key=kivar.natural_sort_key):
             choice = sel[aspect]
             if all or choice is not None:
-                c = '' if choice is None else choice
-                p_aspect = kivar.escape_string_if_required(aspect)
-                p_c = kivar.escape_string_if_required(c)
+                p_aspect = kivar.quote_str(aspect)
+                p_c = '' if choice is None else kivar.quote_str(choice)
                 print(f'{p_aspect}={p_c}')
     return True
 
@@ -137,7 +144,7 @@ def check_command(board=None, verbose=False):
     if len(failed) > 0:
         print_err(f'Check failed. No matching choice found for {len(failed)} (of {len(sel)}) aspect(s):')
         for aspect in failed:
-            p_aspect = kivar.escape_string_if_required(aspect)
+            p_aspect = kivar.quote_str(aspect)
             print_err(f'    {p_aspect}')
         return False
     else:
@@ -150,7 +157,7 @@ def set_command(board=None, assign=None, dry_run=False, verify=False, verbose=Fa
     if assign is not None:
         b = load_board(board)
         if b is None: return False
-        vardict, errors = kivar.get_vardict(b)
+        vardict = get_vardict(b)
         if vardict is None: return False
         sel = kivar.detect_current_choices(b, vardict)
         choice_dict = kivar.get_choice_dict(vardict)
@@ -159,18 +166,18 @@ def set_command(board=None, assign=None, dry_run=False, verify=False, verbose=Fa
             if len(l) == 2:
                 aspect = kivar.cook_raw_string(l[0])
                 choice = kivar.cook_raw_string(l[1])
-                p_aspect = kivar.escape_string_if_required(aspect)
-                p_choice = kivar.escape_string_if_required(choice)
+                p_aspect = kivar.escape_str(aspect)
+                p_choice = kivar.escape_str(choice)
                 p_asmt = f'{p_aspect}={p_choice}'
                 if aspect in sel:
                     if choice in choice_dict[aspect]:
                         sel[aspect] = choice
                     else:
-                        print(f'Error: Assignment "{p_asmt}" failed: No such choice "{p_choice}" for aspect "{p_aspect}".')
+                        print(f"Error: Assignment '{p_asmt}' failed: No such choice '{p_choice}' for aspect '{p_aspect}'.")
                 else:
-                    print(f'Error: Assignment "{p_asmt}" failed: No such aspect "{p_aspect}".')
+                    print(f"Error: Assignment '{p_asmt}' failed: No such aspect '{p_aspect}'.")
             else:
-                print(f'Error: Assignment "{asmt}" failed: Format error: Wrong number of "=" separators.')
+                print(f"Error: Assignment '{asmt}' failed: Format error: Wrong number of '=' separators.")
         changes = kivar.apply_choices(b, vardict, sel, dry_run)
         if len(changes) > 0:
             if verify and not dry_run:

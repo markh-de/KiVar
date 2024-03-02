@@ -82,7 +82,7 @@ class VariantDialog(wx.Dialog):
             self.choices[cfg] = wx.Choice(self, choices=opts)
             sel_opt = preselect[cfg]
             sel_index = 0 # <unset> by default
-            if sel_opt != '':
+            if sel_opt is not None:
                 sel_index = sorted_choices.index(sel_opt) + 1
             self.choices[cfg].SetSelection(sel_index)
             self.choices[cfg].Bind(wx.EVT_CHOICE, self.on_change)
@@ -162,7 +162,7 @@ class VariantDialog(wx.Dialog):
         for choice in self.choices:
             sel_value = self.choices[choice].GetStringSelection()
             if self.choices[choice].GetSelection() < 1:
-                sel_value = '' # <unset>, do not apply to values
+                sel_value = None # <unset>, do not apply to values
             s[choice] = sel_value
 
         return s
@@ -196,22 +196,18 @@ class MissingRulesDialog(wx.Dialog):
 
         sizer = wx.BoxSizer(wx.VERTICAL)
 
-        sizer.Add(wx.StaticText(self, label='Please consult the KiVar documentation to learn how to\nassign variation rules to symbols/footprints:'), 0, wx.ALL, 10)
-
-        sizer.AddSpacer(15)
+        sizer.Add(wx.StaticText(self, label='Please consult the KiVar documentation to learn how to\nassign variation rules to symbols/footprints:'), 0, wx.ALL, 20)
 
         link = hyperlink.HyperLinkCtrl(self, -1, help_url(), URL='')
         default_color = wx.Colour()
         link.SetColours(link=default_color, visited=default_color)
         link.SetToolTip('')
         link.EnableRollover(False)
-        sizer.Add(link, 0, wx.ALIGN_CENTRE, wx.ALL, 10)
-
-        sizer.AddSpacer(15)
+        sizer.Add(link, 0, wx.ALIGN_CENTRE | wx.ALL, 20)
 
         button_sizer = wx.BoxSizer(wx.HORIZONTAL)
         ok_button = wx.Button(self, wx.ID_OK, 'Close')
-        button_sizer.Add(ok_button, 0, wx.ALIGN_CENTRE | wx.ALL, 10)
+        button_sizer.Add(ok_button, 0, wx.ALIGN_CENTRE | wx.ALL, 20)
 
         sizer.Add(button_sizer, 0, wx.ALIGN_CENTRE)
         ok_button.SetFocus()
@@ -227,22 +223,22 @@ class PcbItemListBox(wx.ListBox):
     def __init__(self, parent, board = None):
         super().__init__(parent)
         self.board = board
-        self.refs = []
+        self.uuids = []
         self.Bind(wx.EVT_LISTBOX, self.on_list_item_selected)
 
     def set_item_list(self, item_list):
         # current selection gets reset automatically
-        self.refs = []
+        self.uuids = []
         self.Clear()
         for item in item_list:
-            self.refs.append(item[0])
+            self.uuids.append(item[0])
             self.Append(item[1])
 
     def on_list_item_selected(self, event):
         if self.board is not None:
-            ref = self.refs[self.GetSelection()]
-            if ref is not None:
-                fp = self.board.FindFootprintByReference(ref)
+            uuid = self.uuids[self.GetSelection()]
+            if uuid is not None:
+                fp = kivar.uuid_to_fp(self.board, uuid)
                 if fp is not None:
                     focus_on_item(fp)
 
