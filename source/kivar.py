@@ -20,7 +20,7 @@ import pcbnew
 # TODO example project: use updated UVLO_LO/HI from real project
 
 def version():
-    return '0.2.0-dev7'
+    return '0.2.0-dev8'
 
 def pcbnew_version():
     v = pcbnew.GetMajorMinorPatchVersion().split('.')
