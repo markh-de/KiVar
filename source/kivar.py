@@ -20,7 +20,7 @@ import pcbnew
 # TODO example project: use updated UVLO_LO/HI from real project
 
 def version():
-    return '0.2.0-dev6'
+    return '0.2.0-dev7'
 
 def pcbnew_version():
     v = pcbnew.GetMajorMinorPatchVersion().split('.')
@@ -440,6 +440,7 @@ def get_vardict(board):
     all_choices = get_choice_dict(vardict)
     for uuid in vardict:
         fp = uuid_to_fp(board, uuid)
+        ref = fp.GetReferenceAsString()
         aspect = vardict[uuid][key_aspect()]
         # Parse aux assignments
         all_fields = get_fp_fields(fp)
