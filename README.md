@@ -227,8 +227,7 @@ For the above illustration example, which was defined as ...
 Special characters used for separating parts of a rule definition, such as `,` ` ` `-` `(` `)` (comma, space, dash, parentheses) are **not** considered special (i.e. do not separate parts) when
 
  * they appear inside a quoted part of the definition, i.e. inside a matching pair of two unescaped `'` (single quotation mark) characters, or when
- * they are escaped, i.e. prepended with a `\` (backslash), or when
- * they appear inside a matching pair of `(` `)` (parentheses/round brackets).
+ * they are escaped, i.e. prepended with a `\` (backslash).
 
 _Note:_ Double quotation mark characters (`"`) are **not** accepted for quoting.
 
