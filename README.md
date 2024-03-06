@@ -224,13 +224,13 @@ For the above illustration example, which was defined as ...
 
 ###### Quoting and Escaping
 
-Special characters, such as `,` ` ` `-` `(` `)` (comma, space, dash, parentheses) are **not** considered special when
+Special characters used for separating parts of a rule definition, such as `,` ` ` `-` `(` `)` (comma, space, dash, parentheses) are **not** considered special (i.e. do not separate parts) when
 
  * they appear inside a quoted part of the definition, i.e. inside a matching pair of two unescaped `'` (single quotation mark) characters, or when
  * they are escaped, i.e. prepended with a `\` (backslash), or when
  * they appear inside a matching pair of `(` `)` (parentheses/round brackets).
 
-_Note:_ Double quotation mark characters (`"`) are **not** used for quoting.
+_Note:_ Double quotation mark characters (`"`) are **not** accepted for quoting.
 
 To include any character as-is without being interpreted (e.g. _dash_ to be used as first character of a value, or _single quotation mark_ or _backslash_), that character must be _escaped_, i.e. preceded, with a _backslash_ character.
 
@@ -239,9 +239,9 @@ _Hint:_ In many cases, quoting and escaping in KiVar works just like in a regula
 _Examples:_
 
 * To assign the fictional value `don't care` (a string containing a single quotation mark and a space), the appropriate value argument in the choice definition would be either `'don\'t care'` or `don\'t\ care`.
-* To use `-12V`, (a string starting with a dash), as a value, the choice definition arguments `'-12V'` or `\-12V` would be appropriate.  If the dash were not escaped, `-12V` would be interpreted as an (unknown) option.
+* To use `-12V` (a string starting with a dash) as a value, the choice definition arguments `'-12V'` or `\-12V` would be appropriate.  If the dash were not escaped, `-12V` would be interpreted as an (unknown) option.
 * To assign an empty component value, use an empty quoted string `''` as choice definition argument.
-* To assign a simple "one-word" (not separated by a space character) component value, the value does not need to be quoted.  E.g., `10mH` or `'10mH'` are equivalent.
+* To assign a simple single-worded (not separated by a space character) component value, the value does not need to be quoted.  E.g., `10mH` or `'10mH'` are equivalent.
 
 _Note:_ The same rules apply for aspect and choice names.  E.g., the rule `'Aspect Name' 'Choice One'('Value One') Choice\ Two(Value\ Two)` is valid.
 
