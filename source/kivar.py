@@ -3,7 +3,7 @@ import pcbnew
 # TODO case-sensitivity concept! where and when do we lower-case names?
 #      keep casing intact at least for reporting field names!
 
-# TODO natural sorting when iterating over field names (-> error output sort order)
+# TODO review all iterations for natural sorting (e.g. for error reporting sort order)
 
 # TODO filter locked field names (reference, value, footprint (???)) for set AND get!!
 
@@ -12,7 +12,7 @@ import pcbnew
 # TODO example project: use updated UVLO_LO/HI from real project
 
 def version():
-    return '0.2.0-dev9'
+    return '0.2.0-dev10'
 
 def pcbnew_version():
     v = pcbnew.GetMajorMinorPatchVersion().split('.')
@@ -25,38 +25,46 @@ def uuid_to_fp(board, uuid):
     # TODO type check. if not FOOTPRINT -> return None
     return board.GetItem(pcbnew.KIID(uuid)).Cast()
 
+# TODO deprecated -> move to get_fpdict()
 def get_fp_fields(fp):
     if pcbnew_version() < 799: fields = fp.GetProperties()
     else:                      fields = fp.GetFieldsText()
     return fields
 
+# TODO deprecated -> create set_fpdict() and apply all dirty fields (compare before SetField()!)
 def set_fp_field(fp, field, value):
+    # TODO in a first implementation, we'll use the "Value" field (instead of GetValue/SetValue).
+    #      SetField() works for these. so store and use it as any other (custom) field.
     if not field.lower() in ['value', 'reference', 'footprint']:
         if pcbnew_version() < 799: fp.SetProperty(field, value)
         else:                      fp.SetField(field, value)
 
-def get_my_fp_fields(fp):
-    result = {}
-    prefix = 'KiVar.' # lower-case! TODO
-    fields = get_fp_fields(fp)
-    for field in fields:
-        if field.startswith(prefix): result[field[len(prefix):]] = fields[field]
-    return result
+# TODO use a class with a getter
+def load_fpdict(board):
+    fpdict = {}
+    for fp in board.GetFootprints():
+        uuid = fp_to_uuid(fp)
+        # TODO check if UUID exists in dict!
+        fpdict[uuid] = {}
+        fpdict[uuid][key_fp_ref()] = fp.GetReferenceAsString()
+        fpdict[uuid][key_fp_fields()] = get_fp_fields(fp)
+        fpdict[uuid][key_fp_fields_dirty()] = False
+    return fpdict
 
+# TODO unify
 def get_rule(fields):
-    key = 'Rule' # lower-case! TODO
+    key = 'KiVar.Rule' # lower-case! TODO
     return fields[key] if key in fields else None
 
+# TODO unify
 def get_rule_aspect(fields):
-    key = 'Rule.Aspect' # lower-case! TODO
+    key = 'KiVar.Rule.Aspect' # lower-case! TODO
     return fields[key] if key in fields else None
 
-# TODO we should use our split function. at least for aux fields we need to be able to allow special characters (space, period, ...)
-#      rework this field reading stuff.
-
+# TODO unify
 def get_aux(fields):
     result = {}
-    prefix = 'Aux.' # lower-case! TODO
+    prefix = 'KiVar.Aux.' # lower-case! TODO
     for f in fields:
         if f.startswith(prefix):
             # TODO check for invalid characters in referenced field name (period, etc.)
@@ -111,13 +119,16 @@ def quote_str(str):
         else: result = str
     return result
 
-def key_aspect():  return 'a'
-def key_main():    return 'd'
-def key_aux():     return 'x'
-def key_default(): return '*'
-def key_value():   return 'v'
-def key_options(): return 'o'
-def opt_unfit():   return '!'
+def key_aspect():          return 'a'
+def key_main():            return 'd'
+def key_aux():             return 'x'
+def key_default():         return '*'
+def key_value():           return 'v'
+def key_options():         return 'o'
+def opt_unfit():           return '!'
+def key_fp_ref():          return 'R'
+def key_fp_fields():       return 'F'
+def key_fp_fields_dirty(): return 'D'
 
 def detect_current_choices(board, vardict):
     choices = get_choice_dict(vardict)
@@ -248,25 +259,27 @@ def apply_choices(board, vardict, selection, dry_run = False):
                         if not dry_run: set_fp_field(fp, field, new_field_value)
     return changes
 
-def add_choice(vardict, uuid, aspect, raw_choice_name, raw_choice_def, field=None, all_choices=None):
+def add_choice(vardict, uuid, aspect, raw_choice_name, raw_choice_def, field=None, all_aspect_choices=None):
+    """ Adds a choice set (main or aux rule definition) to the vardict. """
+    # TODO add unique error codes (for aux rules, add an offset), for unit testing (do not compare error strings)
     # If field is passed, this handles aux rules, else main rules.
     is_aux = field is not None
     accepted_options = [] if is_aux else [opt_unfit()]
     try:
         raw_names = split_raw_str(raw_choice_name, ',', False)
     except Exception as e:
-        return f"Choice names splitter error: {str(e)}."
+        return f"Choice names splitter error for choice set '{raw_choice_name}': {str(e)}." # TODO cook name?
 
     try:
         raw_args = split_raw_str(raw_choice_def, ' ', True)
     except Exception as e:
-        return f"Choice arguments splitter error: {str(e)}."
+        return f"Choice arguments splitter error for choice def '{raw_choice_def}': {str(e)}."
 
     choices = []
     for choice_name in raw_names:
         cooked_name = cook_raw_string(choice_name)
         if cooked_name == '':
-            return f"Variation choice name must not be empty."
+            return "Empty choice name."
         choices.append(cooked_name)
 
     values = []
@@ -276,45 +289,82 @@ def add_choice(vardict, uuid, aspect, raw_choice_name, raw_choice_def, field=Non
         if raw_arg.startswith('-'): # not supposed to match if arg starts with \- or '-'
             option = arg[1:]
             if not option in accepted_options:
-                return f"Unknown or invalid option '{option}'."
+                return f"Unknown or invalid option '{option}' for choice set '{raw_choice_name}'." # TODO cook name?
             options.append(option)
         else:
             values.append(arg)
 
+    # TODO do this check later when assigning the value(s) to the choice. this way we catch the error no matter how the values were stored
     if len(values) > 1:
-        return f"More than one value provided inside a choice definition." # TODO add info in which choice def (index value)
+        return f"Multiple value arguments provided for choice set '{raw_choice_name}'."
 
     if not is_aux: vardict[uuid][key_aspect()] = aspect
 
     for choice in choices:
-        if not is_aux:
-            if choice in vardict[uuid][key_main()]:
-                return f"Multiple definitions."
-            vardict[uuid][key_main()][choice] = {}
-            vardict[uuid][key_main()][choice][key_value()] = values[0] if len(values) > 0 else None
-            vardict[uuid][key_main()][choice][key_options()] = options
+        if is_aux:
+            if choice != key_default() and not choice in all_aspect_choices:
+                return f"Undeclared choice '{choice}' (in aspect {quote_str(aspect)})."
+            vardict_branch = vardict[uuid][key_aux()][field]
         else:
-            if choice != key_default() and not choice in all_choices[aspect]:
-                return f"Undeclared choice (aspect {quote_str(aspect)})."
-            if choice in vardict[uuid][key_aux()][field]:
-                return f"Multiple definitions."
-            vardict[uuid][key_aux()][field][choice] = {}
-            vardict[uuid][key_aux()][field][choice][key_value()] = values[0] if len(values) > 0 else None
-            vardict[uuid][key_aux()][field][choice][key_options()] = options
+            vardict_branch = vardict[uuid][key_main()]
+        if choice in vardict_branch:
+            if is_aux: return f"Multiple references to choice '{choice}'."
+            else:      return f"Multiple definitions of choice '{choice}'."
+        vardict_branch[choice] = {}
+        vardict_branch[choice][key_value()] = values[0] if len(values) > 0 else None
+        vardict_branch[choice][key_options()] = options
     return None
 
+def finalize_vardict_branch(vardict_choice_branch, all_aspect_choices):
+    """ Finalizes (flattens) a branch of the vardict (either main rules or aux rules). """
+    choices_with_value_defined = 0
+    for choice in all_aspect_choices:
+        if choice in vardict_choice_branch: # TODO check that each Choice is contained exactly ONCE!
+            if vardict_choice_branch[choice][key_value()] is None:
+                # There is a specific Choice definition, but it does not contain a value.
+                # Take the value from the Default Choice (if it exists), keep the options
+                # as defined in the specific Choice definition.
+                if key_default() in vardict_choice_branch:
+                    vardict_choice_branch[choice][key_value()] = vardict_choice_branch[key_default()][key_value()]
+        else:
+            # The specific Choice definition is missing. Copy value and options from Default
+            # Choice definition (if it exists).
+            vardict_choice_branch[choice] = {}
+            if key_default() in vardict_choice_branch:
+                value = vardict_choice_branch[key_default()][key_value()]
+                options = vardict_choice_branch[key_default()][key_options()]
+            else:
+                value = None
+                options = []
+            vardict_choice_branch[choice][key_value()] = value
+            vardict_choice_branch[choice][key_options()] = options
+
+        if vardict_choice_branch[choice][key_value()] is not None:
+            choices_with_value_defined += 1
+
+    if not (choices_with_value_defined == 0 or choices_with_value_defined == len(all_aspect_choices)):
+        return f"Rule mixes choices with defined ({choices_with_value_defined}) and undefined ({len(all_aspect_choices) - choices_with_value_defined}) values (either all or none must be defined)."
+
+    # Remove default choice entries from main sub-dict
+    vardict_choice_branch.pop(key_default(), None)
+    return None
+
+# TODO deprecated!! use build_dict() in apps!
 def get_vardict(board):
+    return build_vardict(load_fpdict(board))
+
+def build_vardict(fpdict):
     # TODO streamline all error messages to make clear where exactly the problem happened (main rule or aux rule, consistent wording!)
     vardict = {}
     errors = []
-    fps = board.GetFootprints()
-    fps.sort(key=lambda x: natural_sort_key(x.GetReference()))
 
-    for fp in fps:
-        uuid = fp_to_uuid(fp)
-        ref = fp.GetReferenceAsString()
-        my_fields = get_my_fp_fields(fp)
-        rule = get_rule(my_fields)
+    # TODO unify rule handling for main and aux rules.
+    #      aspect name is either already known (via .Aspect=...) or not. if not known and main rule and not as 1st arg -> error.
+
+    # TODO sort uuids by their refs! old: fps.sort(key=lambda x: natural_sort_key(x.GetReference()))
+    for uuid in sorted(fpdict, key=lambda x: natural_sort_key(fpdict[x][key_fp_ref()])):
+        ref = fpdict[uuid][key_fp_ref()]
+        rule = get_rule(fpdict[uuid][key_fp_fields()])
         if rule is not None:
             if uuid in vardict:
                 errors.append([uuid, f"{ref}: Multiple footprints with same UUID containing a rule definition field '{rule_field}'."])
@@ -332,7 +382,7 @@ def get_vardict(board):
                 errors.append([uuid, f"{ref}: Rule splitter error: {str(e)}."])
                 continue
             # TODO clarify: shall we use uncooked aspect name? we have the whole field content only for the pure value.
-            aspect = get_rule_aspect(my_fields)
+            aspect = get_rule_aspect(fpdict[uuid][key_fp_fields()])
             aspect_from_field = aspect is not None and len(aspect) > 0
             if not aspect_from_field:
                 aspect = None
@@ -378,25 +428,22 @@ def get_vardict(board):
                     error_str = add_choice(vardict, uuid, aspect, name, content)
                     if error_str is not None:
                         # TODO cook and quote names in error message, refine wording
-                        errors.append([uuid, f"{ref}: In definition of choice '{name}': {error_str}"])
+                        errors.append([uuid, f"{ref}: In main rule: {error_str}"])
                         continue
 # TODO check ALL(!) continue statements if we can really continue, or we should break completely!!!!
 
     # Handle aux rules
     all_choices = get_choice_dict(vardict)
-    for uuid in vardict:
-        fp = uuid_to_fp(board, uuid)
-        ref = fp.GetReferenceAsString()
+    for uuid in sorted(vardict, key=lambda x: natural_sort_key(fpdict[x][key_fp_ref()])):
+        ref = fpdict[uuid][key_fp_ref()]
         aspect = vardict[uuid][key_aspect()]
         # Parse aux assignments
-        all_fields = get_fp_fields(fp)
-        my_fields = get_my_fp_fields(fp)
-        aux_fields = get_aux(my_fields)
+        aux_fields = get_aux(fpdict[uuid][key_fp_fields()])
 
         # TODO better save the assignment field names in orig. case (not lower()), at least to print correct error messages with orig name
         for field in aux_fields:
             # TODO case insens.?        if not field in [f.lower() for f in all_fields]:
-            if not field in all_fields:
+            if not field in fpdict[uuid][key_fp_fields()]:
                 errors.append([uuid, f"{ref}: Aux rule for non-existing field name '{field}'."]) # TODO escape field name?
                 continue
             rule = aux_fields[field]
@@ -430,78 +477,24 @@ def get_vardict(board):
                 if content is None:
                     errors.append([uuid, f"{ref}: Variation choice definition must have parenthesis in aux rule for field '{field}'."])
                     continue
-                error_str = add_choice(vardict, uuid, aspect, name, content, field, all_choices)
+                error_str = add_choice(vardict, uuid, aspect, name, content, field, all_choices[aspect])
                 if error_str is not None:
                     # TODO cook and quote names in error message, refine wording
-                    errors.append([uuid, f"{ref}: In aux rule for field '{field}', choice '{name}': {error_str}"])
+                    errors.append([uuid, f"{ref}: In aux rule for field '{field}': {error_str}"])
                     continue
 
-        # Flatten definition sub-dict, assign default values
-        choices_with_value_defined = 0
-        for choice in all_choices[aspect]:
-            if choice in vardict[uuid][key_main()]: # TODO check that each Choice is contained exactly ONCE!
-                if vardict[uuid][key_main()][choice][key_value()] is None:
-                    # There is a specific Choice definition, but it does not contain a value.
-                    # Take the value from the Default Choice (if it exists), keep the options
-                    # as defined in the specific Choice definition.
-                    if key_default() in vardict[uuid][key_main()]:
-                        vardict[uuid][key_main()][choice][key_value()] = vardict[uuid][key_main()][key_default()][key_value()]
-            else:
-                # The specific Choice definition is missing. Copy value and options from Default
-                # Choice definition (if it exists).
-                vardict[uuid][key_main()][choice] = {}
-                if key_default() in vardict[uuid][key_main()]:
-                    value = vardict[uuid][key_main()][key_default()][key_value()]
-                    options = vardict[uuid][key_main()][key_default()][key_options()]
-                else:
-                    value = None
-                    options = []
-                vardict[uuid][key_main()][choice][key_value()] = value
-                vardict[uuid][key_main()][choice][key_options()] = options
-
-            if vardict[uuid][key_main()][choice][key_value()] is not None:
-                choices_with_value_defined += 1
-
-        if not (choices_with_value_defined == 0 or choices_with_value_defined == len(all_choices[aspect])):
-            errors.append([uuid, f"{ref}: Rule mixes choices with defined ({choices_with_value_defined}) and undefined ({len(all_choices[aspect]) - choices_with_value_defined}) values (either all or none must be defined)."])
+        error_str = finalize_vardict_branch(vardict[uuid][key_main()], all_choices[aspect])
+        if error_str is not None:
+            # TODO cook and quote names in error message, refine wording
+            errors.append([uuid, f"{ref}: In main rule: {error_str}"])
             continue
 
-        # Remove default choice entries from main sub-dict
-        vardict[uuid][key_main()].pop(key_default(), None)
-
-        # Flatten aux sub-dict, assign default values
         for field in vardict[uuid][key_aux()]:
-            choices_with_value_defined = 0
-            for choice in all_choices[aspect]:
-                if choice in vardict[uuid][key_aux()][field]: # TODO check that each Choice is contained exactly ONCE!
-                    if vardict[uuid][key_aux()][field][choice][key_value()] is None:
-                        # There is a specific Choice definition, but it does not contain a value.
-                        # Take the value from the Default Choice (if it exists), keep the options
-                        # as defined in the specific Choice definition.
-                        if key_default() in vardict[uuid][key_aux()][field]:
-                            vardict[uuid][key_aux()][field][choice][key_value()] = vardict[uuid][key_aux()][field][key_default()][key_value()]
-                else:
-                    # The specific Choice definition is missing. Copy value and options from Default
-                    # Choice definition (if it exists).
-                    vardict[uuid][key_aux()][field][choice] = {}
-                    if key_default() in vardict[uuid][key_aux()][field]:
-                        value = vardict[uuid][key_aux()][field][key_default()][key_value()]
-                        options = vardict[uuid][key_aux()][field][key_default()][key_options()]
-                    else:
-                        value = None
-                        options = []
-                    vardict[uuid][key_aux()][field][choice][key_value()] = value
-                    vardict[uuid][key_aux()][field][choice][key_options()] = options
-
-                if vardict[uuid][key_aux()][field][choice][key_value()] is not None:
-                    choices_with_value_defined += 1
-
-            if not (choices_with_value_defined == 0 or choices_with_value_defined == len(all_choices[aspect])):
-                errors.append([uuid, f"{ref}: Aux rule for field '{field}' mixes choices with defined ({choices_with_value_defined}) and undefined ({len(all_choices[aspect]) - choices_with_value_defined}) values (either all or none must be defined)."])
+            error_str = finalize_vardict_branch(vardict[uuid][key_aux()][field], all_choices[aspect])
+            if error_str is not None:
+                # TODO cook and quote names in error message, refine wording
+                errors.append([uuid, f"{ref}: In aux rule for field '{field}': {error_str}"])
                 continue
-
-            # Remove default choice entries from aux sub-dict
-            vardict[uuid][key_aux()][field].pop(key_default(), None)
     return vardict, errors
 
 def get_choice_dict(vardict):
