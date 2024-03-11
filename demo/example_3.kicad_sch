@@ -987,7 +987,7 @@
 				(hide yes)
 			)
 		)
-		(property "KiVar.Rule" "UVLO_HYST '2.41V/3.40V'(309kΩ) '3.15V/3.57V'(100kΩ)"
+		(property "KiVar.Rule" "UVLO_LO/HI '2.41V/3.40V'(309kΩ) '3.15V/3.57V'(100kΩ)"
 			(at 106.045 71.1199 0)
 			(effects
 				(font
@@ -1212,7 +1212,7 @@
 				(hide yes)
 			)
 		)
-		(property "KiVar.Rule" "UVLO_HYST '2.41V/3.40V'(0Ω) '3.15V/3.57V'(309kΩ)"
+		(property "KiVar.Rule" "UVLO_LO/HI '2.41V/3.40V'(0Ω) '3.15V/3.57V'(309kΩ)"
 			(at 106.045 53.3399 0)
 			(effects
 				(font
@@ -1428,7 +1428,7 @@
 				(hide yes)
 			)
 		)
-		(property "KiVar.Rule" "UVLO_HYST *(750kΩ)"
+		(property "KiVar.Rule" "UVLO_LO/HI *(750kΩ)"
 			(at 106.045 80.0099 0)
 			(effects
 				(font
@@ -1507,7 +1507,7 @@
 				(hide yes)
 			)
 		)
-		(property "KiVar.Rule" "UVLO_HYST *(1MΩ)"
+		(property "KiVar.Rule" "UVLO_LO/HI *(1MΩ)"
 			(at 106.045 62.2299 0)
 			(effects
 				(font

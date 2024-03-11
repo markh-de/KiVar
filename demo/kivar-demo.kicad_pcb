@@ -640,7 +640,7 @@
 				)
 			)
 		)
-		(property "KiVar.Rule" "'IOEXP_TYPE/ADDR' *(-!) '9535/0x20'()"
+		(property "KiVar.Rule" "'IOEXP_TYPE/ADDR' '9535/0x20'(+!)"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -864,7 +864,7 @@
 				)
 			)
 		)
-		(property "KiVar.Rule" "UVLO_HYST '2.41V/3.40V'(0Ω) '3.15V/3.57V'(309kΩ)"
+		(property "KiVar.Rule" "UVLO_LO/HI '2.41V/3.40V'(0Ω) '3.15V/3.57V'(309kΩ)"
 			(at 0 0 180)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -1087,7 +1087,7 @@
 				)
 			)
 		)
-		(property "KiVar.Rule" "I_LED_MA *,JP(-!) 20,30,60,70,100,110,140,150()"
+		(property "KiVar.Rule" "I_LED_MA 20,30,60,70,100,110,140,150(+!) JP()"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -1311,7 +1311,7 @@
 				)
 			)
 		)
-		(property "KiVar.Rule" "UVLO_HYST '2.41V/3.40V'(309kΩ) '3.15V/3.57V'(100kΩ)"
+		(property "KiVar.Rule" "UVLO_LO/HI '2.41V/3.40V'(309kΩ) '3.15V/3.57V'(100kΩ)"
 			(at 0 0 90)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -2248,7 +2248,7 @@
 				)
 			)
 		)
-		(property "KiVar.Rule" "'IOEXP_TYPE/ADDR' *(-!) '9535/0x24','9539/0x74'()"
+		(property "KiVar.Rule" "'IOEXP_TYPE/ADDR' '9535/0x24','9539/0x74'(+!)"
 			(at 0 0 180)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -3886,7 +3886,7 @@
 				)
 			)
 		)
-		(property "KiVar.Rule" "UVLO_HYST *(1MΩ)"
+		(property "KiVar.Rule" "UVLO_LO/HI *(1MΩ)"
 			(at 0 0 90)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -4584,7 +4584,7 @@
 				)
 			)
 		)
-		(property "KiVar.Rule" "I_LED_MA *,JP(-!) 40,50,60,70,120,130,140,150()"
+		(property "KiVar.Rule" "I_LED_MA 40,50,60,70,120,130,140,150(+!) JP()"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -5019,7 +5019,7 @@
 				)
 			)
 		)
-		(property "KiVar.Rule" "UVLO_HYST *(750kΩ)"
+		(property "KiVar.Rule" "UVLO_LO/HI *(750kΩ)"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -5243,7 +5243,7 @@
 				)
 			)
 		)
-		(property "KiVar.Rule" "EEPROM_ADDR 0x54() *(-!)"
+		(property "KiVar.Rule" "EEPROM_ADDR 0x54(+!)"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -6812,7 +6812,7 @@
 				)
 			)
 		)
-		(property "KiVar.Rule" "I_LED_MA *,JP(-!) 10,30,50,70,90,110,130,150()"
+		(property "KiVar.Rule" "I_LED_MA 10,30,50,70,90,110,130,150(+!) JP()"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -10167,7 +10167,7 @@
 				)
 			)
 		)
-		(property "KiVar.Rule" "I_LED_MA *,JP(-!) 80,90,100,110,120,130,140,150()"
+		(property "KiVar.Rule" "I_LED_MA 80,90,100,110,120,130,140,150(+!) JP()"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -13305,7 +13305,7 @@
 				)
 			)
 		)
-		(property "KiVar.Rule" "EEPROM_ADDR 0x55() *(-!)"
+		(property "KiVar.Rule" "EEPROM_ADDR 0x55(+!)"
 			(at 0 0 180)
 			(unlocked yes)
 			(layer "F.Fab")
