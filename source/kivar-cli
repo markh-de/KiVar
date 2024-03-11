@@ -31,8 +31,8 @@ def load_board(board_file):
 def save_board(board_file, board):
     return pcbnew.SaveBoard(board_file, board)
 
-def get_vardict(board):
-    vardict, errors = kivar.get_vardict(board)
+def build_vardict(fpdict):
+    vardict, errors = kivar.build_vardict(fpdict)
     if len(errors) > 0:
         print_err(f'Errors ({len(errors)}):')
         for ref, error in sorted(errors, key=kivar.natural_sort_key):
@@ -47,10 +47,10 @@ def get_vardict(board):
 def list_command(board=None, long=False, detailed=False, selected=False, verbose=False):
     b = load_board(board)
     if b is None: return False
-    vardict = get_vardict(b)
+    fpdict = kivar.build_fpdict(b)
+    vardict = build_vardict(fpdict)
     if vardict is None: return False
-    if selected:
-        sel = kivar.detect_current_choices(b, vardict)
+    if selected: sel = kivar.detect_current_choices(fpdict, vardict)
     ndict = {}
     for uuid in vardict:
         aspect = vardict[uuid][kivar.key_aspect()]
@@ -60,16 +60,20 @@ def list_command(board=None, long=False, detailed=False, selected=False, verbose
             if not choice in ndict[aspect]:
                 ndict[aspect][choice] = {}
             if detailed:
-                ref_info = []
-                ref_value = vardict[uuid][kivar.key_main()][choice][kivar.key_value()]
-                if ref_value is not None:
-                    ref_info.append(kivar.quote_str(ref_value))
-                ref_opts  = vardict[uuid][kivar.key_main()][choice][kivar.key_options()]
-                if '!' in ref_opts:
-                    ref_info.append('<unfit>')
+                cmp_info = []
+                cmp_value = vardict[uuid][kivar.key_main()][choice][kivar.key_value()]
+                if cmp_value is not None:
+                    cmp_info.append(kivar.quote_str(cmp_value))
+                cmp_props  = vardict[uuid][kivar.key_main()][choice][kivar.key_props()]
+                for prop_code in cmp_props:
+                    if cmp_props[prop_code] is not None:
+                        # TODO use colored output and use green and red here!
+                        state_text = 'Yes' if cmp_props[prop_code] else 'No'
+                        cmp_info.append(f'<{kivar.prop_abbrev(prop_code)}:{state_text}>')
+#                    cmp_info.append('<unfit>')
                 # if ref in ndict[aspect][choice]:
                 #     # TODO error handling. same ref name already used for this aspect choice!
-                ndict[aspect][choice][uuid] = ' '.join(ref_info)
+                ndict[aspect][choice][uuid] = ' '.join(cmp_info)
     for aspect in sorted(ndict, key=kivar.natural_sort_key):
         p_aspect = kivar.quote_str(aspect)
         if long or detailed:
@@ -103,9 +107,10 @@ def list_command(board=None, long=False, detailed=False, selected=False, verbose
 def state_command(board=None, all=False, query_aspect=None, verbose=False):
     b = load_board(board)
     if b is None: return False
-    vardict = get_vardict(b)
+    fpdict = kivar.build_fpdict(b)
+    vardict = build_vardict(fpdict)
     if vardict is None: return False
-    sel = kivar.detect_current_choices(b, vardict)
+    sel = kivar.detect_current_choices(fpdict, vardict)
     if query_aspect is not None:
         if all:
             print_err('Error: Options "--all" and "--query" are mutually exclusive.')
@@ -132,9 +137,10 @@ def state_command(board=None, all=False, query_aspect=None, verbose=False):
 def check_command(board=None, verbose=False):
     b = load_board(board)
     if b is None: return False
-    vardict = get_vardict(b)
+    fpdict = kivar.build_fpdict(b)
+    vardict = build_vardict(fpdict)
     if vardict is None: return False
-    sel = kivar.detect_current_choices(b, vardict)
+    sel = kivar.detect_current_choices(fpdict, vardict)
     failed = []
     for aspect in sorted(sel, key=kivar.natural_sort_key):
         choice = sel[aspect]
@@ -154,54 +160,59 @@ def check_command(board=None, verbose=False):
 def set_command(board=None, assign=None, dry_run=False, verify=False, verbose=False):
     # TODO how to handle errors? ignore failing assignments, or abort?
     #      collect errors, then print & return?
-    if assign is not None:
-        b = load_board(board)
-        if b is None: return False
-        vardict = get_vardict(b)
-        if vardict is None: return False
-        sel = kivar.detect_current_choices(b, vardict)
-        choice_dict = kivar.get_choice_dict(vardict)
-        for asmt in assign:
-            l = kivar.split_raw_str(asmt, '=', False) # TODO: test split
-            if len(l) == 2:
-                aspect = kivar.cook_raw_string(l[0])
-                choice = kivar.cook_raw_string(l[1])
-                p_aspect = kivar.escape_str(aspect)
-                p_choice = kivar.escape_str(choice)
-                p_asmt = f'{p_aspect}={p_choice}'
-                if aspect in sel:
-                    if choice in choice_dict[aspect]:
-                        sel[aspect] = choice
-                    else:
-                        print(f"Error: Assignment '{p_asmt}' failed: No such choice '{p_choice}' for aspect '{p_aspect}'.")
-                else:
-                    print(f"Error: Assignment '{p_asmt}' failed: No such aspect '{p_aspect}'.")
-            else:
-                print(f"Error: Assignment '{asmt}' failed: Format error: Wrong number of '=' separators.")
-        changes = kivar.apply_choices(b, vardict, sel, dry_run)
-        if len(changes) > 0:
-            if verify and not dry_run:
-                new_sel = kivar.detect_current_choices(b, vardict)
-                if new_sel != sel:
-                    print('Error: Verification failed. Probably caused by ambiguous rules.') # TODO test this!
-                    return False
-            if dry_run or verbose:
-                print_err(f'Changes ({len(changes)}):')
-                for ref, change in sorted(changes, key=kivar.natural_sort_key):
-                    print('    ' + change)
-            if not dry_run:
-                if save_board(board, b):
-                    if verbose:
-                        print(f'Board saved to file "{board}".')
-                else:
-                    print_err(f'Error: Failed to save board to file "{board}".')
-                    return False
-        else:
-            if verbose or dry_run:
-                print('No changes.')
-    else:
+    if assign is None:
         print('Error: No assignments passed.')
         return False
+
+    b = load_board(board)
+    if b is None: return False
+    fpdict = kivar.build_fpdict(b)
+    vardict = build_vardict(fpdict)
+    if vardict is None: return False
+    sel = kivar.detect_current_choices(fpdict, vardict)
+    choice_dict = kivar.get_choice_dict(vardict)
+    for asmt in assign:
+        l = kivar.split_raw_str(asmt, '=', False) # TODO: test split
+        if len(l) == 2:
+            aspect = kivar.cook_raw_string(l[0])
+            choice = kivar.cook_raw_string(l[1])
+            p_aspect = kivar.escape_str(aspect)
+            p_choice = kivar.escape_str(choice)
+            p_asmt = f'{p_aspect}={p_choice}'
+            if aspect in sel:
+                if choice in choice_dict[aspect]:
+                    sel[aspect] = choice
+                else:
+                    print(f"Error: Assignment '{p_asmt}' failed: No such choice '{p_choice}' for aspect '{p_aspect}'.")
+            else:
+                print(f"Error: Assignment '{p_asmt}' failed: No such aspect '{p_aspect}'.")
+        else:
+            print(f"Error: Assignment '{asmt}' failed: Format error: Wrong number of '=' separators.")
+    changes = kivar.apply_selection(fpdict, vardict, sel, dry_run=False)
+
+    if len(changes) > 0:
+        if dry_run or verbose:
+            print_err(f'Changes ({len(changes)}):')
+            for ref, change in sorted(changes, key=kivar.natural_sort_key):
+                print('    ' + change)
+        if verify:
+            new_sel = kivar.detect_current_choices(fpdict, vardict)
+            if new_sel == sel:
+                print('Info: Verification passed.') # TODO test this!
+            else:
+                print('Error: Verification failed. Probably caused by ambiguous rules.') # TODO test this!
+                return False
+        if not dry_run:
+            kivar.store_fpdict(b, fpdict)
+            if save_board(board, b):
+                if verbose:
+                    print(f'Board saved to file "{board}".')
+            else:
+                print_err(f'Error: Failed to save board to file "{board}".')
+                return False
+    else:
+        if verbose or dry_run:
+            print('No changes.')
     return True
 
 def main():

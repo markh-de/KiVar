@@ -25,13 +25,14 @@ class KiVarPlugin(pcbnew.ActionPlugin):
 
     def Run(self):
         board = pcbnew.GetBoard()
-        vardict, errors = kivar.get_vardict(board)
+        fpdict = kivar.build_fpdict(board)
+        vardict, errors = kivar.build_vardict(fpdict)
         if len(errors) > 0:
             show_error_dialog('Rule errors', errors, board)
         elif len(vardict) == 0:
             show_missing_rules_dialog()
         else:
-            show_selection_dialog(board, vardict)
+            show_selection_dialog(board, fpdict, vardict)
 
 def version():
     return kivar.version()
@@ -47,21 +48,23 @@ def focus_on_item(item):
 def help_url():
     return 'https://github.com/markh-de/KiVar/blob/main/README.md#usage'
 
-def show_selection_dialog(board, vn_dict):
-    dlg = VariantDialog(board, vn_dict)
+def show_selection_dialog(board, fpdict, vardict):
+    dlg = VariantDialog(board, fpdict, vardict)
     dlg.ShowModal()
 
 def pcbnew_parent_window():
     return wx.FindWindowByName('PcbFrame')
 
 class VariantDialog(wx.Dialog):
-    def __init__(self, board, vn_dict):
+    def __init__(self, board, fpdict, vardict):
         super().__init__(pcbnew_parent_window(), title=f'KiVar {version()}: Variant Selection', style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER)
 
         self.board = board
-        self.vardict = vn_dict
+        self.vardict = vardict
+        self.fpdict = fpdict
+
         choice_dict = kivar.get_choice_dict(self.vardict)
-        preselect = kivar.detect_current_choices(self.board, self.vardict)
+        preselect = kivar.detect_current_choices(self.fpdict, self.vardict)
 
         sizer = wx.BoxSizer(wx.VERTICAL)
 
@@ -168,7 +171,9 @@ class VariantDialog(wx.Dialog):
         return s
 
     def on_ok(self, event):
-        kivar.apply_choices(self.board, self.vardict, self.selections())
+        kivar.apply_selection(self.fpdict, self.vardict, self.selections())
+        # TODO do a verify step as in the CLI. bring up an error message if it failed!
+        kivar.store_fpdict(self.board, self.fpdict)
         pcbnew.Refresh()
         self.Destroy()
 
@@ -182,7 +187,7 @@ class VariantDialog(wx.Dialog):
         self.Destroy()
 
     def update_list(self):
-        changes = kivar.apply_choices(self.board, self.vardict, self.selections(), True)
+        changes = kivar.apply_selection(self.fpdict, self.vardict, self.selections(), True)
         self.changes_list.set_item_list(changes)
 
 def show_missing_rules_dialog():
@@ -214,13 +219,13 @@ class MissingRulesDialog(wx.Dialog):
 
         self.SetSizerAndFit(sizer)
 
-def show_error_dialog(title, errors, board = None):
+def show_error_dialog(title, errors, board=None):
     dialog = PcbItemListDialog(f'KiVar {version()}: {title}', errors, board)
     dialog.ShowModal()
     dialog.Destroy()
 
 class PcbItemListBox(wx.ListBox):
-    def __init__(self, parent, board = None):
+    def __init__(self, parent, board=None):
         super().__init__(parent)
         self.board = board
         self.uuids = []
@@ -243,7 +248,7 @@ class PcbItemListBox(wx.ListBox):
                     focus_on_item(fp)
 
 class PcbItemListDialog(wx.Dialog):
-    def __init__(self, title, itemlist, board = None):
+    def __init__(self, title, itemlist, board=None):
         super().__init__(pcbnew_parent_window(), title=title, style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER, size=(800, 500))
         self.refs = []
         sizer = wx.BoxSizer(wx.VERTICAL)
