@@ -2,8 +2,6 @@ import pcbnew
 
 # TODO more testing!
 
-# TODO review all continue statements! decide whether it makes sense to continue and where. and which post-actions should be skipped on break.
-
 # TODO KiCad 7 API is currently not working. implement low-level stuff.
 
 # TODO KiCad 8 has different reporting style, it seems. use this?
@@ -22,8 +20,10 @@ import pcbnew
 
 # TODO clean-up implementation (more object-orientation)
 
+# TODO clarify rules for Aspect name (forbidden characters: "*" ".")
+
 def version():
-    return '0.2.0-dev15'
+    return '0.2.0-dev16'
 
 def pcbnew_version():
     v = pcbnew.GetMajorMinorPatchVersion().split('.')
@@ -55,16 +55,13 @@ def build_fpdict(board):
         fpdict[uuid] = {}
         fpdict[uuid][key_fp_ref()] = fp.GetReferenceAsString()
         fpdict[uuid][key_fp_fields()] = get_fp_fields(fp)
-
         # TODO clean up, we currently store the value twice! (at least for api version 8, not sure about 7!)
         # the format is the same as for choice branches
         fpdict[uuid][key_value()] = fp.GetValue()
-
         fpdict[uuid][key_props()] = {}
         fpdict[uuid][key_props()][code_prop_bom()] = not fp.IsExcludedFromBOM()      if use_attr_excl_from_bom() else None
         fpdict[uuid][key_props()][code_prop_pos()] = not fp.IsExcludedFromPosFiles() if use_attr_excl_from_posfiles() else None
         fpdict[uuid][key_props()][code_prop_fit()] = not fp.IsDNP()                  if use_attr_dnp() else None
-
     return fpdict
 
 def store_fpdict(board, fpdict):
@@ -224,17 +221,12 @@ def mismatches_fp_choice_aux(fp_fields, vardict_aux_branch, choice):
     return mismatches
 
 def detect_current_choices(fpdict, vardict):
-    choices = get_choice_dict(vardict)
-
     # How it works:
-    # We start with the usual Choice dict filled with all possible Choices per Aspect.
-    # Then we eliminate all Choices whose values do not match the actual FP values (or attributes).
-    # If exactly one Choice per Aspect remains, then we convert these to a selection dict.
-# TODO remove step 3? old text:
-#    # , which is then
-#    # filtered to contain only Choices that exactly match the actual FP values and attributes.
-
-    # Step 1: Eliminate Choices not matching the actual FP values.
+    # We start with the usual Choice dict filled with all possible Choices per Aspect and then
+    # eliminate all Choices whose values do not exactly match the actual FP values, fields or attributes.
+    # If exactly one Choice per Aspect remains, then we add this choice to the selection dict.
+    choices = get_choice_dict(vardict)
+    # Eliminate Choices not matching the actual FP values.
     for uuid in vardict:
         fp_ref = fpdict[uuid][key_fp_ref()]
         aspect = vardict[uuid][key_aspect()]
@@ -248,25 +240,11 @@ def detect_current_choices(fpdict, vardict):
             # defer elimination until after iteration
             if eliminate: eliminate_choices.append(choice)
         for choice in eliminate_choices: choices[aspect].remove(choice)
-
-    # Step 2: Create a dict with candidate Choices. Report Choices only if they are unambiguous.
+    # Create a dict with candidate Choices. Report Choices only if they are unambiguous.
     selection = {}
     for aspect in choices:
         if len(choices[aspect]) == 1: selection[aspect] = choices[aspect][0]
         else:                         selection[aspect] = None
-
-    # Step 3: Eliminate candidate Choices that do not exactly match the required conditions.
-    # TODO check again ... why exactly is this (still??) required? we do the same as above, don't we???
-    # for uuid in vardict:
-    #     aspect = vardict[uuid][key_aspect()]
-    #     choice = selection[aspect]
-    #     if choice is not None:
-    #         eliminate = False
-    #         mismatches = mismatches_fp_choice(fpdict[uuid], vardict[uuid][key_main()][choice])
-    #         if len(mismatches) > 0: eliminate = True
-    #         mismatches = mismatches_fp_choice_aux(fpdict[uuid][key_fp_fields()], vardict[uuid][key_aux()], choice)
-    #         if len(mismatches) > 0: eliminate = True
-    #         if eliminate: selection[aspect] = None
     return selection
 
 def apply_selection(fpdict, vardict, selection, dry_run = False):
@@ -306,62 +284,64 @@ def code_prop_pos(): return 'p'
 def base_prop_codes(): return code_prop_fit()+code_prop_bom()+code_prop_pos()
 def supported_prop_codes(): return base_prop_codes()+'!'
 
-def handle_prop(props, prop_code, state):
-    if not prop_code in supported_prop_codes(): return f"Unsupported property code '{prop_code}'."
-    # TODO add a '?' symbol, which can be defined by the user
-    if prop_code == '!':
-        for p in base_prop_codes(): props[p] = state
-    else:
-        props[prop_code] = state
-
-# TODO more syntax checking.
-#      forbidden: "-+-+" (polarity change without prop inbetween)
-#                 "+b-" (polarity change at end of string)
-#                 etc ...
-def handle_prop_str(props, prop_str):
+def parse_prop_str(prop_str):
+    prop_set = {}
     state = None
-    for c in prop_str:
-        if   c == '-': state = False
-        elif c == '+': state = True
+    expect_prop = False
+
+    for prop_code in prop_str:
+        if prop_code in '+-':
+            if expect_prop: raise ValueError(f"Invalid syntax: Expecting property code after state modifier.")
+            expect_prop = True
+            state = prop_code == '+'
         else:
-            if state is None: return f"Undefined property state for code '{c}'."
-            error = handle_prop(props, c, state)
-            if error is not None: return error
+            expect_prop = False
+            if state is None: raise ValueError(f"Undefined property state for code '{prop_code}'.")
+            if not prop_code in supported_prop_codes(): raise ValueError(f"Unsupported property code '{prop_code}'.")
+            # TODO add a '?' symbol, which can be defined by the user
+            if prop_code == '!':
+                for c in base_prop_codes(): prop_set[c] = state
+            else:
+                prop_set[prop_code] = state
+    if expect_prop: raise ValueError(f"Invalid syntax: Property set ends with state modifier.")
+    return prop_set
 
 def add_choice(vardict, uuid, aspect, raw_choice_name, raw_choice_def, field=None, all_aspect_choices=None):
     """ Adds a choice set (main or aux rule definition) to the vardict. """
     # TODO add unique error codes (for aux rules, add an offset), for unit testing (do not compare error strings).
-    # TODO allow multiple errors and continue/break here, too? we do this in many other places to enable the user to find as many problems in a single run.
     # If field is passed, this handles aux rules, else main rules.
     is_aux = field is not None
     try:
         raw_names = split_raw_str(raw_choice_name, ',', False)
     except Exception as e:
-        return f"Choice names splitter error for choice set '{raw_choice_name}': {str(e)}." # TODO cook name?
+        return [f"Choice names splitter error for choice set '{raw_choice_name}': {str(e)}."] # TODO cook name?
 
     try:
         raw_args = split_raw_str(raw_choice_def, ' ', True)
     except Exception as e:
-        return f"Choice arguments splitter error for choice def '{raw_choice_def}': {str(e)}."
+        return [f"Choice arguments splitter error for choice def '{raw_choice_def}': {str(e)}."]
 
     choices = []
     for choice_name in raw_names:
         cooked_name = cook_raw_string(choice_name)
         if cooked_name == '':
-            return "Empty choice name."
+            return ["Empty choice name."]
         choices.append(cooked_name)
 
+    errors = []
     value = None
     prop_strs = []
     for raw_arg in raw_args:
         arg = cook_raw_string(raw_arg)
         if raw_arg[0] in '-+': # not supposed to match if arg starts with \-, \+, '+' or '-'
             if is_aux:
-                return f"Properties not allowed for aux rules."
+                errors.append(f"Properties not allowed for aux rules.")
+                continue
             prop_strs.append(arg)
         else:
             if value is not None:
-                return f"Multiple value arguments provided for choice set '{raw_choice_name}'."
+                errors.append(f"Multiple value arguments provided for choice set '{raw_choice_name}'.")
+                continue
             value = arg
 
     if not is_aux: vardict[uuid][key_aspect()] = aspect
@@ -369,7 +349,8 @@ def add_choice(vardict, uuid, aspect, raw_choice_name, raw_choice_def, field=Non
     for choice in choices:
         if is_aux:
             if choice != key_default() and not choice in all_aspect_choices:
-                return f"Undeclared choice '{choice}' (in aspect {quote_str(aspect)})."
+                errors.append(f"Undeclared choice '{choice}' (in aspect {quote_str(aspect)}).")
+                continue
             vardict_branch = vardict[uuid][key_aux()][field]
         else:
             vardict_branch = vardict[uuid][key_main()]
@@ -379,12 +360,23 @@ def add_choice(vardict, uuid, aspect, raw_choice_name, raw_choice_def, field=Non
             vardict_branch[choice][key_props()] = {}
         if value is not None:
             if vardict_branch[choice][key_value()] is not None:
-                return f"Multiple value assignments for choice '{choice}'."
+                errors.append(f"Multiple value assignments for choice '{choice}'.")
+                continue
             vardict_branch[choice][key_value()] = value
         for prop_str in prop_strs:
-            error = handle_prop_str(vardict_branch[choice][key_props()], prop_str)
-            if error is not None: return error
-    return None
+            try:
+                prop_set = parse_prop_str(prop_str)
+            except Exception as error:
+                errors.append(f"Property set parser error: {str(error)}.")
+                continue
+            for prop_code in prop_set:
+                if not prop_code in vardict_branch[choice][key_props()]:
+                    vardict_branch[choice][key_props()][prop_code] = None
+                if vardict_branch[choice][key_props()][prop_code] is not None:
+                    errors.append(f"Multiple {prop_abbrev(prop_code)} property value assignments for choice '{choice}'.")
+                    continue
+                vardict_branch[choice][key_props()][prop_code] = prop_set[prop_code]
+    return errors
 
 def finalize_vardict_branch(vardict_choice_branch, all_aspect_choices, is_aux = False):
     """ Finalizes (flattens) a branch of the vardict (either main rules or aux rules). """
@@ -444,36 +436,27 @@ def build_vardict(fpdict):
     vardict = {}
     errors = []
 
-    # TODO unify rule handling for main and aux rules.
-    #      aspect name is either already known (via .Aspect=...) or not. if not known and main rule and not as 1st arg -> error.
+    # Handle main rule
     for uuid in fpdict:
         ref = fpdict[uuid][key_fp_ref()]
         rule = get_rule(fpdict[uuid][key_fp_fields()])
-        if rule is None or len(rule) < 1: continue
+        if rule is None or rule == '': continue
         if uuid in vardict:
             errors.append([uuid, f"{ref}: Multiple footprints with same UUID containing a rule definition field '{rule_field}'."])
             continue
-        vardict[uuid] = {}
-        vardict[uuid][key_aspect()] = None
-        vardict[uuid][key_main()] = {}
-        vardict[uuid][key_aux()] = {}
         try:
             rule_sections = split_raw_str(rule, ' ', True)
         except Exception as error:
             errors.append([uuid, f"{ref}: Rule splitter error: {str(error)}."])
             continue
-        # TODO clarify: shall we use uncooked aspect name? we have the whole field content only for the pure value.
+        vardict[uuid] = {}
+        vardict[uuid][key_aspect()] = None
+        vardict[uuid][key_main()] = {}
+        vardict[uuid][key_aux()] = {}
+        # TODO decide: shall we really use uncooked aspect name? we have the whole field content only for the pure value.
         aspect = get_rule_aspect(fpdict[uuid][key_fp_fields()])
-        aspect_from_field = aspect is not None and len(aspect) > 0
-        if not aspect_from_field:
-            aspect = None
-            if len(rule_sections) < 2:
-                errors.append([uuid, f"{ref}: Invalid number of elements in rule definition (expecting aspect name and at least one choice definition)."])
-                continue
-        else:
-            if len(rule_sections) < 1:
-                errors.append([uuid, f"{ref}: Invalid number of elements in rule definition (expecting at least one choice definition)."])
-                continue
+        aspect_from_field = aspect is not None and aspect != ''
+        if not aspect_from_field: aspect = None
         section_is_aspect_name = not aspect_from_field
         section_num = 0
         for section in rule_sections:
@@ -483,9 +466,7 @@ def build_vardict(fpdict):
             except Exception as error:
                 errors.append([uuid, f"{ref}: Section splitter error: {str(error)}."])
                 break
-            if section_is_aspect_name:
-                # First rule section contains the Aspect name only (if not already defined by dedicated field)
-                # TODO clarify rules for Aspect name (forbidden characters: "*" ".")
+            if section_is_aspect_name: # First rule section contains the Aspect name only (if not already defined by dedicated field)
                 section_is_aspect_name = False
                 cooked_name = cook_raw_string(name)
                 if cooked_name is None or cooked_name == '':
@@ -495,8 +476,7 @@ def build_vardict(fpdict):
                     errors.append([uuid, f"{ref}: Expecting aspect name in first rule section (or in dedicated field)."]) # TODO as a help, print out the dedicated field name
                     break
                 aspect = cooked_name
-            elif aspect is not None:
-                # Any following rule sections are Choice definitions.
+            elif aspect is not None: # Any following rule sections are Choice definitions.
                 if name is None or name == '':
                     errors.append([uuid, f"{ref}: Choice name list must not be empty."])
                     break
@@ -506,28 +486,21 @@ def build_vardict(fpdict):
                     else:
                         errors.append([uuid, f"{ref}: Choice definition must have parenthesis."])
                     break
-                error_str = add_choice(vardict, uuid, aspect, name, content)
-                if error_str is not None:
+                add_errors = add_choice(vardict, uuid, aspect, name, content)
+                if len(add_errors) > 0:
                     # TODO cook and quote names in error message, refine wording
-                    errors.append([uuid, f"{ref}: In main rule: {error_str}"])
+                    for error in add_errors: errors.append([uuid, f"{ref}: In main rule: {error}"])
                     break
 
-# TODO fix break/else/continue!!
-
-    # Handle aux rules
     all_choices = get_choice_dict(vardict)
+    # Handle aux rules
     for uuid in vardict:
         ref = fpdict[uuid][key_fp_ref()]
         aspect = vardict[uuid][key_aspect()]
-        # Parse aux assignments
         aux_fields = get_aux(fpdict[uuid][key_fp_fields()])
-
-        # TODO better save the assignment field names in orig. case (not lower()), at least to print correct error messages with orig name
-
         if len(aux_fields) > 0 and aspect is None:
             errors.append([uuid, f"{ref}: Aux rules missing main rule definition."])
             continue
-
         valid = False
         for field in aux_fields:
             # TODO case insens.?        if not field in [f.lower() for f in all_fields]:
@@ -535,40 +508,32 @@ def build_vardict(fpdict):
                 errors.append([uuid, f"{ref}: Aux rule for non-existing field name '{field}'."]) # TODO escape field name?
                 continue
             rule = aux_fields[field]
-            if len(rule) < 1:
-                # field exists, but is empty. ignore it.
-                # a field containing only white-space is considered an error.
-                continue
+            if rule is None or rule == '': continue
             try:
                 rule_sections = split_raw_str(rule, ' ', True)
             except Exception as error:
                 errors.append([uuid, f"{ref}: Aux rule splitter error for field '{field}': {str(error)}."]) # TODO escape field name?
                 continue
-
             if field in vardict[uuid][key_aux()]:
                 errors.append([uuid, f"{ref}: Multiple aux rule definitions for field '{field}'."])
                 continue
             vardict[uuid][key_aux()][field] = {}
-            if len(rule_sections) < 1:
-                errors.append([uuid, f"{ref}: Invalid number of elements in aux rule definition for field '{field}' (expecting at least one choice definition)."])
-                continue
             for section in rule_sections:
                 try:
                     name, content = split_choice(section)
                 except Exception as error:
                     errors.append([uuid, f"{ref}: Section splitter error in aux rule for field '{field}': {str(error)}."])
                     break
-                # In aux rules, all rule sections are Choice references.
                 if name is None or name == '':
                     errors.append([uuid, f"{ref}: Variation choice name list must not be empty in aux rule for field '{field}'."])
                     break
                 if content is None:
                     errors.append([uuid, f"{ref}: Variation choice definition must have parenthesis in aux rule for field '{field}'."])
                     break
-                error_str = add_choice(vardict, uuid, aspect, name, content, field, all_choices[aspect])
-                if error_str is not None:
+                add_errors = add_choice(vardict, uuid, aspect, name, content, field, all_choices[aspect])
+                if len(add_errors) > 0:
                     # TODO cook and quote names in error message, refine wording
-                    errors.append([uuid, f"{ref}: In aux rule for field '{field}': {error_str}"])
+                    for error in add_errors: errors.append([uuid, f"{ref}: In aux rule for field '{field}': {error}"])
                     break
         else:
             valid = True
