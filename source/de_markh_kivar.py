@@ -188,7 +188,7 @@ class VariantDialog(wx.Dialog):
 
     def update_list(self):
         changes = kivar.apply_selection(self.fpdict, self.vardict, self.selections(), True)
-        self.changes_list.set_item_list(changes)
+        self.changes_list.set_item_list(sorted(changes, key=lambda x: kivar.natural_sort_key(x[1]))) # sort by text
 
 def show_missing_rules_dialog():
     dialog = MissingRulesDialog()
@@ -220,7 +220,7 @@ class MissingRulesDialog(wx.Dialog):
         self.SetSizerAndFit(sizer)
 
 def show_error_dialog(title, errors, board=None):
-    dialog = PcbItemListDialog(f'KiVar {version()}: {title}', errors, board)
+    dialog = PcbItemListDialog(f'KiVar {version()}: {title}', sorted(errors, key=lambda x: kivar.natural_sort_key(x[1])), board) # sort by text
     dialog.ShowModal()
     dialog.Destroy()
 

@@ -35,7 +35,7 @@ def build_vardict(fpdict):
     vardict, errors = kivar.build_vardict(fpdict)
     if len(errors) > 0:
         print_err(f'Errors ({len(errors)}):')
-        for ref, error in sorted(errors, key=kivar.natural_sort_key):
+        for ref, error in sorted(errors, key=lambda x: kivar.natural_sort_key(x[0])):
             print_err('    ' + error)
         return None
     if len(vardict) == 0:
@@ -93,8 +93,8 @@ def list_command(board=None, long=False, detailed=False, selected=False, verbose
                 else:
                     print(f' {p_choice}', end='')
             if detailed:
-                for uuid in sorted(ndict[aspect][choice], key=lambda x: kivar.natural_sort_key(kivar.uuid_to_fp(b, x).GetReferenceAsString())):
-                    ref = kivar.uuid_to_fp(b, uuid).GetReferenceAsString()
+                for uuid in sorted(ndict[aspect][choice], key=lambda x: kivar.natural_sort_key(fpdict[x][kivar.key_fp_ref()])):
+                    ref = fpdict[uuid][kivar.key_fp_ref()]
                     print(f'        {ref}: {ndict[aspect][choice][uuid]}')
                     for field in sorted(vardict[uuid][kivar.key_aux()], key=kivar.natural_sort_key):
                         f = kivar.quote_str(field)
@@ -193,7 +193,7 @@ def set_command(board=None, assign=None, dry_run=False, verify=False, verbose=Fa
     if len(changes) > 0:
         if dry_run or verbose:
             print_err(f'Changes ({len(changes)}):')
-            for ref, change in sorted(changes, key=kivar.natural_sort_key):
+            for ref, change in sorted(changes, key=lambda x: kivar.natural_sort_key(x[1])):
                 print('    ' + change)
         if verify:
             new_sel = kivar.detect_current_choices(fpdict, vardict)

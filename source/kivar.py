@@ -16,8 +16,6 @@ import pcbnew
 # TODO case-sensitivity concept! where and when do we lower-case names?
 #      keep casing intact at least for reporting field names!
 
-# TODO review all iterations for natural sorting (e.g. for error reporting sort order)
-
 # TODO filter locked field names (reference, value, footprint (???)) for set AND get!!
 
 # TODO finalize format how to specify main and aux rules
@@ -25,7 +23,7 @@ import pcbnew
 # TODO clean-up implementation (more object-orientation)
 
 def version():
-    return '0.2.0-dev14'
+    return '0.2.0-dev15'
 
 def pcbnew_version():
     v = pcbnew.GetMajorMinorPatchVersion().split('.')
@@ -448,7 +446,7 @@ def build_vardict(fpdict):
 
     # TODO unify rule handling for main and aux rules.
     #      aspect name is either already known (via .Aspect=...) or not. if not known and main rule and not as 1st arg -> error.
-    for uuid in sorted(fpdict, key=lambda x: natural_sort_key(fpdict[x][key_fp_ref()])):
+    for uuid in fpdict:
         ref = fpdict[uuid][key_fp_ref()]
         rule = get_rule(fpdict[uuid][key_fp_fields()])
         if rule is None or len(rule) < 1: continue
@@ -518,7 +516,7 @@ def build_vardict(fpdict):
 
     # Handle aux rules
     all_choices = get_choice_dict(vardict)
-    for uuid in sorted(vardict, key=lambda x: natural_sort_key(fpdict[x][key_fp_ref()])):
+    for uuid in vardict:
         ref = fpdict[uuid][key_fp_ref()]
         aspect = vardict[uuid][key_aspect()]
         # Parse aux assignments
