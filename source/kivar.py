@@ -16,14 +16,14 @@ import pcbnew
 
 # TODO filter locked field names (reference, value, footprint (???)) for set AND get!!
 
-# TODO finalize format how to specify main and aux rules
+# TODO finalize format how to specify base and aux rules
 
 # TODO clean-up implementation (more object-orientation)
 
 # TODO clarify rules for Aspect name (forbidden characters: "*" ".")
 
 def version():
-    return '0.2.0-dev16'
+    return '0.2.0-dev17'
 
 def pcbnew_version():
     v = pcbnew.GetMajorMinorPatchVersion().split('.')
@@ -67,12 +67,10 @@ def build_fpdict(board):
 def store_fpdict(board, fpdict):
     for uuid in fpdict:
         fp = uuid_to_fp(board, uuid)
-
         old_fp_value = fp.GetValue()
         new_fp_value = fpdict[uuid][key_value()]
         if old_fp_value != new_fp_value:
             fp.SetValue(new_fp_value)
-
         for prop_code in fpdict[uuid][key_props()]:
             new_prop_value = fpdict[uuid][key_props()][prop_code]
             if new_prop_value is not None:
@@ -88,7 +86,6 @@ def store_fpdict(board, fpdict):
                         if   prop_code == code_prop_bom(): fp.SetExcludedFromBOM(not new_prop_value)
                         elif prop_code == code_prop_pos(): fp.SetExcludedFromPosFiles(not new_prop_value)
                         elif prop_code == code_prop_fit(): fp.SetDNP(not new_prop_value)
-
         # TODO api version 7 might need dedicated getter/setter for value/datasheet etc...
         old_fp_field_values = get_fp_fields(fp)
         for field in fpdict[uuid][key_fp_fields()]:
@@ -96,7 +93,6 @@ def store_fpdict(board, fpdict):
             new_fp_field_value = fpdict[uuid][key_fp_fields()][field]
             if old_fp_field_value != new_fp_field_value:
                 set_fp_field(fp, field, new_fp_field_value)
-
     return fpdict
 
 # TODO unify
@@ -105,7 +101,7 @@ def get_rule(fields):
     # if key in fields:
     #     return fields[key]
     # else:
-    #     print(f'Debug: no main rule found.')
+    #     print(f'Debug: no base rule found.')
     #     return None
     return fields[key] if key in fields else None
 
@@ -171,7 +167,7 @@ def quote_str(str):
 
 # TODO use a cleaner way for keys
 def key_aspect():    return 'a'
-def key_main():      return 'd'
+def key_base():      return 'b'
 def key_aux():       return 'x'
 def key_default():   return '*'
 def key_value():     return 'v'
@@ -179,6 +175,14 @@ def key_props():     return 'p'
 def opt_unfit():     return '!'
 def key_fp_ref():    return 'R'
 def key_fp_fields(): return 'F'
+
+def code_prop_fit(): return 'f'
+def code_prop_bom(): return 'b'
+def code_prop_pos(): return 'p'
+
+def base_prop_codes(): return code_prop_fit()+code_prop_bom()+code_prop_pos()
+
+def supported_prop_codes(): return base_prop_codes()+'!'
 
 def prop_state(props, prop):
     return props[prop] if prop in props else None
@@ -221,7 +225,6 @@ def mismatches_fp_choice_aux(fp_fields, vardict_aux_branch, choice):
     return mismatches
 
 def detect_current_choices(fpdict, vardict):
-    # How it works:
     # We start with the usual Choice dict filled with all possible Choices per Aspect and then
     # eliminate all Choices whose values do not exactly match the actual FP values, fields or attributes.
     # If exactly one Choice per Aspect remains, then we add this choice to the selection dict.
@@ -233,10 +236,10 @@ def detect_current_choices(fpdict, vardict):
         eliminate_choices = []
         for choice in choices[aspect]:
             eliminate = False
-            mismatches = mismatches_fp_choice(fpdict[uuid], vardict[uuid][key_main()][choice])
-            if len(mismatches) > 0: eliminate = True
+            mismatches = mismatches_fp_choice(fpdict[uuid], vardict[uuid][key_base()][choice])
+            if mismatches: eliminate = True
             mismatches = mismatches_fp_choice_aux(fpdict[uuid][key_fp_fields()], vardict[uuid][key_aux()], choice)
-            if len(mismatches) > 0: eliminate = True
+            if mismatches: eliminate = True
             # defer elimination until after iteration
             if eliminate: eliminate_choices.append(choice)
         for choice in eliminate_choices: choices[aspect].remove(choice)
@@ -255,14 +258,14 @@ def apply_selection(fpdict, vardict, selection, dry_run = False):
         selected_choice = selection[aspect]
         if selected_choice is not None:
             choice_text = f'{quote_str(aspect)}={quote_str(selected_choice)}'
-            new_value = vardict[uuid][key_main()][selected_choice][key_value()]
+            new_value = vardict[uuid][key_base()][selected_choice][key_value()]
             if new_value is not None:
                 old_value = fpdict[uuid][key_value()]
                 if old_value != new_value:
                     changes.append([uuid, f"Change {ref} value from '{escape_str(old_value)}' to '{escape_str(new_value)}' ({choice_text})."])
                     if not dry_run: fpdict[uuid][key_value()] = new_value
             for prop_code in base_prop_codes():
-                new_prop = vardict[uuid][key_main()][selected_choice][key_props()][prop_code]
+                new_prop = vardict[uuid][key_base()][selected_choice][key_props()][prop_code]
                 if new_prop is not None:
                     old_prop = fpdict[uuid][key_props()][prop_code]
                     if old_prop is not None and old_prop != new_prop:
@@ -277,18 +280,10 @@ def apply_selection(fpdict, vardict, selection, dry_run = False):
                         if not dry_run: fpdict[uuid][key_fp_fields()][field] = new_field_value
     return changes
 
-def code_prop_fit(): return 'f'
-def code_prop_bom(): return 'b'
-def code_prop_pos(): return 'p'
-
-def base_prop_codes(): return code_prop_fit()+code_prop_bom()+code_prop_pos()
-def supported_prop_codes(): return base_prop_codes()+'!'
-
 def parse_prop_str(prop_str):
     prop_set = {}
     state = None
     expect_prop = False
-
     for prop_code in prop_str:
         if prop_code in '+-':
             if expect_prop: raise ValueError(f"Invalid syntax: Expecting property code after state modifier.")
@@ -307,27 +302,24 @@ def parse_prop_str(prop_str):
     return prop_set
 
 def add_choice(vardict, uuid, aspect, raw_choice_name, raw_choice_def, field=None, all_aspect_choices=None):
-    """ Adds a choice set (main or aux rule definition) to the vardict. """
+    """ Adds a choice set (base or aux rule definition) to the vardict. """
     # TODO add unique error codes (for aux rules, add an offset), for unit testing (do not compare error strings).
-    # If field is passed, this handles aux rules, else main rules.
+    # If field is passed, this handles aux rules, else base rules.
     is_aux = field is not None
     try:
         raw_names = split_raw_str(raw_choice_name, ',', False)
     except Exception as e:
         return [f"Choice names splitter error for choice set '{raw_choice_name}': {str(e)}."] # TODO cook name?
-
     try:
         raw_args = split_raw_str(raw_choice_def, ' ', True)
     except Exception as e:
         return [f"Choice arguments splitter error for choice def '{raw_choice_def}': {str(e)}."]
-
     choices = []
     for choice_name in raw_names:
         cooked_name = cook_raw_string(choice_name)
         if cooked_name == '':
             return ["Empty choice name."]
         choices.append(cooked_name)
-
     errors = []
     value = None
     prop_strs = []
@@ -343,9 +335,7 @@ def add_choice(vardict, uuid, aspect, raw_choice_name, raw_choice_def, field=Non
                 errors.append(f"Multiple value arguments provided for choice set '{raw_choice_name}'.")
                 continue
             value = arg
-
     if not is_aux: vardict[uuid][key_aspect()] = aspect
-
     for choice in choices:
         if is_aux:
             if choice != key_default() and not choice in all_aspect_choices:
@@ -353,7 +343,7 @@ def add_choice(vardict, uuid, aspect, raw_choice_name, raw_choice_def, field=Non
                 continue
             vardict_branch = vardict[uuid][key_aux()][field]
         else:
-            vardict_branch = vardict[uuid][key_main()]
+            vardict_branch = vardict[uuid][key_base()]
         if not choice in vardict_branch:
             vardict_branch[choice] = {}
             vardict_branch[choice][key_value()] = None
@@ -379,7 +369,7 @@ def add_choice(vardict, uuid, aspect, raw_choice_name, raw_choice_def, field=Non
     return errors
 
 def finalize_vardict_branch(vardict_choice_branch, all_aspect_choices, is_aux = False):
-    """ Finalizes (flattens) a branch of the vardict (either main rules or aux rules). """
+    """ Finalizes (flattens) a branch of the vardict (either base rules or aux rules). """
     errors = []
     # Flatten values
     choices_with_value_defined = 0
@@ -395,10 +385,8 @@ def finalize_vardict_branch(vardict_choice_branch, all_aspect_choices, is_aux = 
 
         if vardict_choice_branch[choice][key_value()] is not None:
             choices_with_value_defined += 1
-
     if not (choices_with_value_defined == 0 or choices_with_value_defined == len(all_aspect_choices)):
         errors.append(f"Rule mixes choices with defined ({choices_with_value_defined}) and undefined ({len(all_aspect_choices) - choices_with_value_defined}) values (either all or none must be defined).")
-
     if not is_aux:
         # Flatten properties
         for prop_code in base_prop_codes():
@@ -415,8 +403,8 @@ def finalize_vardict_branch(vardict_choice_branch, all_aspect_choices, is_aux = 
                         if vardict_choice_branch[choice][key_props()][prop_code]: choices_with_true  += 1
                         else:                                                     choices_with_false += 1
                 # if only set x-or clear is used in (specific) choices, the implicit default is the opposite.
-                if   choices_with_false > 0 and choices_with_true == 0: default_prop_value = True
-                elif choices_with_false == 0 and choices_with_true > 0: default_prop_value = False
+                if   choices_with_false and not choices_with_true: default_prop_value = True
+                elif not choices_with_false and choices_with_true: default_prop_value = False
             choices_with_prop_defined = 0
             for choice in all_aspect_choices:
                 if not prop_code in vardict_choice_branch[choice][key_props()] or vardict_choice_branch[choice][key_props()][prop_code] is None:
@@ -426,134 +414,133 @@ def finalize_vardict_branch(vardict_choice_branch, all_aspect_choices, is_aux = 
 
             if not (choices_with_prop_defined == 0 or choices_with_prop_defined == len(all_aspect_choices)):
                 errors.append(f"Rule mixes choices with defined ({choices_with_prop_defined}) and undefined ({len(all_aspect_choices) - choices_with_prop_defined}) {prop_abbrev(prop_code)} property ('{prop_code}') state (either all or none must be defined).")
-
     # Remove default choice entries from branch
     vardict_choice_branch.pop(key_default(), None)
     return errors
 
+def parse_rule(rule_str):
+    errors = []
+    aspects = []
+    choices = []
+    try:
+        rule_sections = split_raw_str(rule_str, ' ', True)
+    except Exception as error:
+        return [f'Rule splitter: {str(error)}'], None, None
+    for section in rule_sections:
+        try:
+            name, content = split_parens(section)
+        except Exception as error:
+            errors.append(f'Section splitter: {str(error)}')
+            continue
+        if content is None: # None means: no parens
+            # this is an aspect name. cook and store.
+            try:
+                cooked_name = cook_raw_string(name)
+            except Exception as error:
+                errors.append(f'Aspect name parser: {str(error)}')
+                continue
+            if cooked_name is None or cooked_name == '':
+                errors.append('Aspect name must not be empty')
+                continue
+            aspects.append(cooked_name)
+        else:
+            # this is a choice definition. leave name and content raw and store.
+            if name is None or name == '':
+                errors.append('Choice name list must not be empty')
+                continue
+            choices.append([name, content])
+    return errors, aspects, choices
+
 def build_vardict(fpdict):
-    # TODO streamline all error messages to make clear where exactly the problem happened (main rule or aux rule, consistent wording!)
     vardict = {}
     errors = []
-
-    # Handle main rule
+    # Handle base rule
     for uuid in fpdict:
         ref = fpdict[uuid][key_fp_ref()]
-        rule = get_rule(fpdict[uuid][key_fp_fields()])
-        if rule is None or rule == '': continue
+        rule_str = get_rule(fpdict[uuid][key_fp_fields()])
+        if rule_str is None or rule_str == '': continue
         if uuid in vardict:
-            errors.append([uuid, f"{ref}: Multiple footprints with same UUID containing a rule definition field '{rule_field}'."])
+            errors.append([uuid, f"{ref}: Multiple footprints with same UUID containing a base rule definition."])
             continue
-        try:
-            rule_sections = split_raw_str(rule, ' ', True)
-        except Exception as error:
-            errors.append([uuid, f"{ref}: Rule splitter error: {str(error)}."])
+        parse_errors, aspects, choice_sets = parse_rule(rule_str)
+        if parse_errors:
+            for parse_error in parse_errors:
+                errors.append([uuid, f"{ref}: When parsing base rule: {parse_error}."])
             continue
         vardict[uuid] = {}
         vardict[uuid][key_aspect()] = None
-        vardict[uuid][key_main()] = {}
+        vardict[uuid][key_base()] = {}
         vardict[uuid][key_aux()] = {}
         # TODO decide: shall we really use uncooked aspect name? we have the whole field content only for the pure value.
         aspect = get_rule_aspect(fpdict[uuid][key_fp_fields()])
-        aspect_from_field = aspect is not None and aspect != ''
-        if not aspect_from_field: aspect = None
-        section_is_aspect_name = not aspect_from_field
-        section_num = 0
-        for section in rule_sections:
-            section_num += 1
-            try:
-                name, content = split_choice(section)
-            except Exception as error:
-                errors.append([uuid, f"{ref}: Section splitter error: {str(error)}."])
+        if len(aspects) > 1:
+            errors.append([uuid, f"{ref}: Multiple aspect name definitions in base rule."])
+            continue
+        elif len(aspects) == 1:
+            # about to use the aspect name from the base rule
+            if aspect is not None and aspect != '':
+                # but there is already an aspect set via the aspect field
+                errors.append([uuid, f"{ref}: Multiple aspect name definition styles (base rule vs. aspect field)."])
+                continue
+            aspect = aspects[0]
+        if choice_sets and (aspect is None or aspect == ''):
+            errors.append([uuid, f"{ref}: Missing aspect name definition."])
+            continue
+        for choice_name, choice_content in choice_sets:
+            add_errors = add_choice(vardict, uuid, aspect, choice_name, choice_content)
+            if add_errors:
+                for error in add_errors: errors.append([uuid, f"{ref}: When adding base rule choice list '{choice_name}': {error}."])
                 break
-            if section_is_aspect_name: # First rule section contains the Aspect name only (if not already defined by dedicated field)
-                section_is_aspect_name = False
-                cooked_name = cook_raw_string(name)
-                if cooked_name is None or cooked_name == '':
-                    errors.append([uuid, f"{ref}: Aspect name must not be empty."])
-                    break
-                if content is not None:
-                    errors.append([uuid, f"{ref}: Expecting aspect name in first rule section (or in dedicated field)."]) # TODO as a help, print out the dedicated field name
-                    break
-                aspect = cooked_name
-            elif aspect is not None: # Any following rule sections are Choice definitions.
-                if name is None or name == '':
-                    errors.append([uuid, f"{ref}: Choice name list must not be empty."])
-                    break
-                if content is None:
-                    if section_num == 1 and aspect_from_field:
-                        errors.append([uuid, f"{ref}: Choice definition must have parenthesis (aspect name already defined in dedicated field)."])
-                    else:
-                        errors.append([uuid, f"{ref}: Choice definition must have parenthesis."])
-                    break
-                add_errors = add_choice(vardict, uuid, aspect, name, content)
-                if len(add_errors) > 0:
-                    # TODO cook and quote names in error message, refine wording
-                    for error in add_errors: errors.append([uuid, f"{ref}: In main rule: {error}"])
-                    break
-
     all_choices = get_choice_dict(vardict)
     # Handle aux rules
     for uuid in vardict:
         ref = fpdict[uuid][key_fp_ref()]
         aspect = vardict[uuid][key_aspect()]
         aux_fields = get_aux(fpdict[uuid][key_fp_fields()])
-        if len(aux_fields) > 0 and aspect is None:
-            errors.append([uuid, f"{ref}: Aux rules missing main rule definition."])
+        if aux_fields and aspect is None:
+            errors.append([uuid, f"{ref}: Aux rules missing base rule definition."])
             continue
         valid = False
         for field in aux_fields:
-            # TODO case insens.?        if not field in [f.lower() for f in all_fields]:
             if not field in fpdict[uuid][key_fp_fields()]:
                 errors.append([uuid, f"{ref}: Aux rule for non-existing field name '{field}'."]) # TODO escape field name?
                 continue
-            rule = aux_fields[field]
-            if rule is None or rule == '': continue
-            try:
-                rule_sections = split_raw_str(rule, ' ', True)
-            except Exception as error:
-                errors.append([uuid, f"{ref}: Aux rule splitter error for field '{field}': {str(error)}."]) # TODO escape field name?
+            rule_str = aux_fields[field]
+            if rule_str is None or rule_str == '': continue
+            parse_errors, aspects, choice_sets = parse_rule(rule_str)
+            if parse_errors:
+                for parse_error in parse_errors:
+                    errors.append([uuid, f"{ref}: When parsing aux rule for field '{field}': {parse_error}."])
+                continue
+            if aspects:
+                errors.append([uuid, f"{ref}: Aux rule for field '{field}' contains an aspect name (only allowed for base rule)."])
                 continue
             if field in vardict[uuid][key_aux()]:
                 errors.append([uuid, f"{ref}: Multiple aux rule definitions for field '{field}'."])
                 continue
             vardict[uuid][key_aux()][field] = {}
-            for section in rule_sections:
-                try:
-                    name, content = split_choice(section)
-                except Exception as error:
-                    errors.append([uuid, f"{ref}: Section splitter error in aux rule for field '{field}': {str(error)}."])
-                    break
-                if name is None or name == '':
-                    errors.append([uuid, f"{ref}: Variation choice name list must not be empty in aux rule for field '{field}'."])
-                    break
-                if content is None:
-                    errors.append([uuid, f"{ref}: Variation choice definition must have parenthesis in aux rule for field '{field}'."])
-                    break
-                add_errors = add_choice(vardict, uuid, aspect, name, content, field, all_choices[aspect])
-                if len(add_errors) > 0:
-                    # TODO cook and quote names in error message, refine wording
-                    for error in add_errors: errors.append([uuid, f"{ref}: In aux rule for field '{field}': {error}"])
+            for choice_name, choice_content in choice_sets:
+                add_errors = add_choice(vardict, uuid, aspect, choice_name, choice_content, field, all_choices[aspect])
+                if add_errors:
+                    for error in add_errors: errors.append([uuid, f"{ref}: When adding aux rule choice list '{choice_name}' for field '{field}': {error}."])
                     break
         else:
             valid = True
         if not valid: continue
-
-        fin_errors = finalize_vardict_branch(vardict[uuid][key_main()], all_choices[aspect], is_aux=False)
-        if len(fin_errors) > 0:
+        fin_errors = finalize_vardict_branch(vardict[uuid][key_base()], all_choices[aspect], is_aux=False)
+        if fin_errors:
             for e in fin_errors:
                 # TODO cook and quote names in error message, refine wording
-                errors.append([uuid, f"{ref}: In main rule: {e}"])
+                errors.append([uuid, f"{ref}: In base rule: {e}"])
             continue
-
         for field in vardict[uuid][key_aux()]:
             fin_errors = finalize_vardict_branch(vardict[uuid][key_aux()][field], all_choices[aspect], is_aux=True)
-            if len(fin_errors) > 0:
+            if fin_errors:
                 for e in fin_errors:
                     # TODO cook and quote names in error message, refine wording
                     errors.append([uuid, f"{ref}: In aux rule for field '{field}': {e}"])
                 continue
-    if len(errors) > 0: vardict = {} # make sure an incomplete vardict cannot be used by the caller
+    if errors: vardict = {} # make sure an incomplete vardict cannot be used by the caller
     return vardict, errors
 
 def get_choice_dict(vardict):
@@ -561,12 +548,12 @@ def get_choice_dict(vardict):
     for uuid in vardict:
         aspect = vardict[uuid][key_aspect()]
         if not aspect in choices: choices[aspect] = []
-        for choice in vardict[uuid][key_main()]:
+        for choice in vardict[uuid][key_base()]:
             # In case the input dict still contains temporary data (such as default data), ignore it.
             if choice != key_default() and not choice in choices[aspect]: choices[aspect].append(choice)
     return choices
 
-def split_choice(str):
+def split_parens(str):
     item = []
     outside = None
     inside = None
@@ -608,7 +595,7 @@ def split_choice(str):
     if parens > 0: raise ValueError('Unmatched opening parenthesis')
     if quoted:     raise ValueError('Unmatched quote character in string')
     if escaped:    raise ValueError('Unterminated escape sequence at end of string')
-    if len(item) > 0: outside = ''.join(item)
+    if item: outside = ''.join(item)
     return outside, inside
 
 def split_raw_str(str, sep, multisep):
@@ -636,7 +623,7 @@ def split_raw_str(str, sep, multisep):
             else: raise ValueError('Unmatched closing parenthesis')
             item.append(c)
         elif c == sep and not quoted and parens == 0:
-            if not multisep or len(item) > 0:
+            if not multisep or item:
                 result.append(''.join(item))
                 item = []
         else:
@@ -644,7 +631,7 @@ def split_raw_str(str, sep, multisep):
     if parens > 0: raise ValueError('Unmatched opening parenthesis')
     if quoted:     raise ValueError('Unmatched quote character in string')
     if escaped:    raise ValueError('Unterminated escape sequence at end of string')
-    if not multisep or len(item) > 0: result.append(''.join(item))
+    if not multisep or item: result.append(''.join(item))
     return result
 
 def cook_raw_string(str):

@@ -56,15 +56,15 @@ def list_command(board=None, long=False, detailed=False, selected=False, verbose
         aspect = vardict[uuid][kivar.key_aspect()]
         if not aspect in ndict:
             ndict[aspect] = {}
-        for choice in vardict[uuid][kivar.key_main()]:
+        for choice in vardict[uuid][kivar.key_base()]:
             if not choice in ndict[aspect]:
                 ndict[aspect][choice] = {}
             if detailed:
                 cmp_info = []
-                cmp_value = vardict[uuid][kivar.key_main()][choice][kivar.key_value()]
+                cmp_value = vardict[uuid][kivar.key_base()][choice][kivar.key_value()]
                 if cmp_value is not None:
                     cmp_info.append(kivar.quote_str(cmp_value))
-                cmp_props  = vardict[uuid][kivar.key_main()][choice][kivar.key_props()]
+                cmp_props  = vardict[uuid][kivar.key_base()][choice][kivar.key_props()]
                 for prop_code in cmp_props:
                     if cmp_props[prop_code] is not None:
                         # TODO use colored output and use green and red here!
@@ -163,7 +163,6 @@ def set_command(board=None, assign=None, dry_run=False, verify=False, verbose=Fa
     if assign is None:
         print('Error: No assignments passed.')
         return False
-
     b = load_board(board)
     if b is None: return False
     fpdict = kivar.build_fpdict(b)
@@ -189,7 +188,6 @@ def set_command(board=None, assign=None, dry_run=False, verify=False, verbose=Fa
         else:
             print(f"Error: Assignment '{asmt}' failed: Format error: Wrong number of '=' separators.")
     changes = kivar.apply_selection(fpdict, vardict, sel, dry_run=False)
-
     if len(changes) > 0:
         if dry_run or verbose:
             print_err(f'Changes ({len(changes)}):')
