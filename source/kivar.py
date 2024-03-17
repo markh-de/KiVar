@@ -1,7 +1,5 @@
 import pcbnew
 
-# TODO import only required functions!!!
-
 # TODO more testing!
 
 # TODO KiCad 7 API is currently not working. implement low-level stuff.
@@ -25,14 +23,14 @@ import pcbnew
 
 # TODO filter locked field names (reference, value, footprint (???)) for set AND get!!
 
-# TODO finalize format how to specify base and aux rules
+# TODO finalize substrings for base and aux rule field names
 
-# TODO clean-up implementation (more object-orientation)
+# TODO clean-up implementation (more object-orientation, where useful)
 
 # TODO clarify rules for Aspect name (forbidden characters: "*" ".")
 
 def version():
-    return '0.2.0-dev19'
+    return '0.2.0-dev20'
 
 def pcbnew_version():
     v = pcbnew.GetMajorMinorPatchVersion().split('.')
