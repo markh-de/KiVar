@@ -1,8 +1,28 @@
 import pcbnew
 
-# TODO more testing!
+# TODO value/prop definitions:
+#      instead of forbidding multiple values in rules, join them with a single space, so that we can
+#      specify them without being forced to quote them (in most cases).
+
+# TODO for concatenated/nested error messages, period rule:
+#      * exceptions do not include final period
+#      * error messages include a period
+#      * messages that append the returned error message do not contain the period
+
+# TODO clarify rules for Aspect name (forbidden characters: "*" ".")
+
+# TODO filter locked field names (reference, value, footprint (???)) for set AND get!!
+
+# TODO finalize substrings for base and aux rule field names
+
+# TODO in aux field parser, accept only target fields which are no KiVar fields themselves (avoid recursion!)
+
+# TODO case-sensitivity concept! where and when do we lower-case names?
+#      keep casing intact at least for reporting field names!
 
 # TODO cleaner object-oriented interface.
+
+# TODO more testing!
 
 # TODO KiCad 8 has different reporting style, it seems. use this?
     # Remove R29 'Do not place' fabrication attribute.
@@ -10,24 +30,6 @@ import pcbnew
     # Add R22 'exclude from BOM' fabrication attribute.
     # Add R22 'Do not place' fabrication attribute.
     # Update R2 fields.
-
-# TODO for concatenated/nested error messages, period rule:
-#      * exceptions do not include final period
-#      * error messages include a period
-#      * messages that append the returned error message do not contain the period
-
-# TODO in field parser, accept only target fields, which are no KiVar fields themselves (avoid recursion!)
-
-# TODO case-sensitivity concept! where and when do we lower-case names?
-#      keep casing intact at least for reporting field names!
-
-# TODO filter locked field names (reference, value, footprint (???)) for set AND get!!
-
-# TODO finalize substrings for base and aux rule field names
-
-# TODO clean-up implementation (more object-orientation, where useful)
-
-# TODO clarify rules for Aspect name (forbidden characters: "*" ".")
 
 def version():
     return '0.2.0-dev21'
