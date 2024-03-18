@@ -1165,7 +1165,7 @@
 				(hide yes)
 			)
 		)
-		(property "KiVar.Rule" "EEPROM_ADDR 0x54() *(-!)"
+		(property "KiVar.Rule" "EEPROM_ADDR 0x54(+!)"
 			(at 95.25 66.0399 0)
 			(effects
 				(font
@@ -1381,7 +1381,7 @@
 				(hide yes)
 			)
 		)
-		(property "KiVar.Rule" "EEPROM_ADDR 0x55() *(-!)"
+		(property "KiVar.Rule" "EEPROM_ADDR 0x55(+!)"
 			(at 95.25 55.8799 0)
 			(effects
 				(font

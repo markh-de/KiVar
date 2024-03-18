@@ -2242,7 +2242,7 @@
 				(hide yes)
 			)
 		)
-		(property "KiVar.Rule" "I_LED_MA *,JP(-!) 20,30,60,70,100,110,140,150()"
+		(property "KiVar.Rule" "I_LED_MA 20,30,60,70,100,110,140,150(+!) JP()"
 			(at 119.38 119.3799 0)
 			(effects
 				(font
@@ -3089,7 +3089,7 @@
 				(hide yes)
 			)
 		)
-		(property "KiVar.Rule" "I_LED_MA *,JP(-!) 80,90,100,110,120,130,140,150()"
+		(property "KiVar.Rule" "I_LED_MA 80,90,100,110,120,130,140,150(+!) JP()"
 			(at 119.38 74.2949 0)
 			(effects
 				(font
@@ -3860,7 +3860,7 @@
 				(hide yes)
 			)
 		)
-		(property "KiVar.Rule" "I_LED_MA *,JP(-!) 40,50,60,70,120,130,140,150()"
+		(property "KiVar.Rule" "I_LED_MA 40,50,60,70,120,130,140,150(+!) JP()"
 			(at 187.96 74.2949 0)
 			(effects
 				(font
@@ -4076,8 +4076,8 @@
 				(hide yes)
 			)
 		)
-		(property "KiVar.Rule" "I_LED_MA *,JP(-!) 10,30,50,70,90,110,130,150()"
 			(at 187.325 119.3799 0)
+		(property "KiVar.Rule" "I_LED_MA 10,30,50,70,90,110,130,150(+!) JP()"
 			(effects
 				(font
 					(size 1.27 1.27)

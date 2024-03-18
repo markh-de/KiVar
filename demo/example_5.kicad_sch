@@ -2401,7 +2401,7 @@
 				(hide yes)
 			)
 		)
-		(property "KiVar.Rule" "'IOEXP_TYPE/ADDR' *(-!) '9535/0x24','9539/0x74'()"
+		(property "KiVar.Rule" "'IOEXP_TYPE/ADDR' '9535/0x24','9539/0x74'(+!)"
 			(at 113.03 114.2999 0)
 			(effects
 				(font
@@ -3503,7 +3503,7 @@
 				(hide yes)
 			)
 		)
-		(property "KiVar.Rule" "'IOEXP_TYPE/ADDR' *(-!) '9535/0x20'()"
+		(property "KiVar.Rule" "'IOEXP_TYPE/ADDR' '9535/0x20'(+!)"
 			(at 113.03 124.4599 0)
 			(effects
 				(font
