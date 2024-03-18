@@ -2,15 +2,12 @@ from os import path as os_path
 import wx
 import wx.lib.agw.hyperlink as hyperlink
 import pcbnew
-import kivar
+from kivar import build_fpdict, build_vardict, version, get_choice_dict, detect_current_choices, natural_sort_key, apply_selection, store_fpdict, uuid_to_fp, pcbnew_compatibility_error
 
 # TODO:
 #
-# * Add a Setup plugin (separate button) that defines DNP->NoPos/NoBom behavior. Having this in a separate dialog (which
-#   also takes care of nonvolatile storage of the settings) removes any dynamic reload/refresh requirements.
-#   (Setup plugin shall have similar icon with wrench in the foreground.)
-#
-# * Setup plugin: Save option settings as some object in PCB (board variables or text box)
+# * As saving text variables is currently not supported by the API wrapper, and as KiVar is typically configured
+#   via fields anyway, add text variables for configuration of the custom property (to be called "?").
 #
 # * After applying configuration, define board variables containing the choice for each aspect, e.g. ${KIVAR.BOOT_SEL} => NAND
 #   (requires KiCad API change/fix: https://gitlab.com/kicad/code/kicad/-/issues/16426)
@@ -24,26 +21,19 @@ class KiVarPlugin(pcbnew.ActionPlugin):
         self.dark_icon_file_name = os_path.join(os_path.dirname(__file__), 'de_markh_kivar-icon-dark.png')
 
     def Run(self):
+        compatibility_problem = pcbnew_compatibility_error()
+        if compatibility_problem is not None:
+            wx.MessageBox(message=compatibility_problem, caption=f'KiVar {version()}: Compatibility problem', style=wx.ICON_ERROR)
+            return
         board = pcbnew.GetBoard()
-        fpdict = kivar.build_fpdict(board)
-        vardict, errors = kivar.build_vardict(fpdict)
+        fpdict = build_fpdict(board)
+        vardict, errors = build_vardict(fpdict)
         if len(errors) > 0:
             show_error_dialog('Rule errors', errors, board)
         elif len(vardict) == 0:
             show_missing_rules_dialog()
         else:
             show_selection_dialog(board, fpdict, vardict)
-
-def version():
-    return kivar.version()
-
-def has_focus_on_item():
-    # not supported on earlier versions
-    return kivar.pcbnew_version() >= 799
-
-def focus_on_item(item):
-    if has_focus_on_item():
-        return pcbnew.FocusOnItem(item)
 
 def help_url():
     return 'https://github.com/markh-de/KiVar/blob/main/README.md#usage'
@@ -63,8 +53,8 @@ class VariantDialog(wx.Dialog):
         self.vardict = vardict
         self.fpdict = fpdict
 
-        choice_dict = kivar.get_choice_dict(self.vardict)
-        preselect = kivar.detect_current_choices(self.fpdict, self.vardict)
+        choice_dict = get_choice_dict(self.vardict)
+        preselect = detect_current_choices(self.fpdict, self.vardict)
 
         sizer = wx.BoxSizer(wx.VERTICAL)
 
@@ -78,9 +68,9 @@ class VariantDialog(wx.Dialog):
         var_grid = wx.GridSizer(cols=2, hgap=10, vgap=6)
 
         self.choices = {}
-        for cfg in sorted(choice_dict, key=kivar.natural_sort_key):
+        for cfg in sorted(choice_dict, key=natural_sort_key):
             opts = ['<unset>']
-            sorted_choices = sorted(choice_dict[cfg], key=kivar.natural_sort_key)
+            sorted_choices = sorted(choice_dict[cfg], key=natural_sort_key)
             opts.extend(sorted_choices)
             self.choices[cfg] = wx.Choice(self, choices=opts)
             sel_opt = preselect[cfg]
@@ -171,9 +161,9 @@ class VariantDialog(wx.Dialog):
         return s
 
     def on_ok(self, event):
-        kivar.apply_selection(self.fpdict, self.vardict, self.selections())
+        apply_selection(self.fpdict, self.vardict, self.selections())
         # TODO do a verify step as in the CLI. bring up an error message if it failed!
-        kivar.store_fpdict(self.board, self.fpdict)
+        store_fpdict(self.board, self.fpdict)
         pcbnew.Refresh()
         self.Destroy()
 
@@ -187,8 +177,8 @@ class VariantDialog(wx.Dialog):
         self.Destroy()
 
     def update_list(self):
-        changes = kivar.apply_selection(self.fpdict, self.vardict, self.selections(), True)
-        self.changes_list.set_item_list(sorted(changes, key=lambda x: kivar.natural_sort_key(x[1]))) # sort by text
+        changes = apply_selection(self.fpdict, self.vardict, self.selections(), True)
+        self.changes_list.set_item_list(sorted(changes, key=lambda x: natural_sort_key(x[1]))) # sort by text
 
 def show_missing_rules_dialog():
     dialog = MissingRulesDialog()
@@ -220,7 +210,7 @@ class MissingRulesDialog(wx.Dialog):
         self.SetSizerAndFit(sizer)
 
 def show_error_dialog(title, errors, board=None):
-    dialog = PcbItemListDialog(f'KiVar {version()}: {title}', sorted(errors, key=lambda x: kivar.natural_sort_key(x[1])), board) # sort by text
+    dialog = PcbItemListDialog(f'KiVar {version()}: {title}', sorted(errors, key=lambda x: natural_sort_key(x[1])), board) # sort by text
     dialog.ShowModal()
     dialog.Destroy()
 
@@ -243,9 +233,9 @@ class PcbItemListBox(wx.ListBox):
         if self.board is not None:
             uuid = self.uuids[self.GetSelection()]
             if uuid is not None:
-                fp = kivar.uuid_to_fp(self.board, uuid)
+                fp = uuid_to_fp(self.board, uuid)
                 if fp is not None:
-                    focus_on_item(fp)
+                    pcbnew.FocusOnItem(fp)
 
 class PcbItemListDialog(wx.Dialog):
     def __init__(self, title, itemlist, board=None):
