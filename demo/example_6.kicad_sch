@@ -6,7 +6,7 @@
 	(paper "A4")
 	(title_block
 		(title "KiVar Demo")
-		(date "2024-01-16")
+		(date "2024-03-18")
 		(rev "0.1.0")
 		(company "Author: Mark Hämmerling <dev@markh.de>")
 		(comment 1 "https://github.com/markh-de/KiVar")
@@ -4032,7 +4032,7 @@
 		(fields_autoplaced yes)
 		(uuid "ee48da60-6876-4ef0-84f6-cffde08936df")
 		(property "Reference" "R30"
-			(at 187.325 114.2999 0)
+			(at 187.96 114.2999 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4041,7 +4041,7 @@
 			)
 		)
 		(property "Value" "0Ω"
-			(at 187.325 116.8399 0)
+			(at 187.96 116.8399 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4076,8 +4076,8 @@
 				(hide yes)
 			)
 		)
-			(at 187.325 119.3799 0)
 		(property "KiVar.Rule" "I_LED_MA 10,30,50,70,90,110,130,150(+!) JP()"
+			(at 187.96 119.3799 0)
 			(effects
 				(font
 					(size 1.27 1.27)

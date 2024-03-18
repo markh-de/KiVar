@@ -6,7 +6,7 @@
 	(paper "A5")
 	(title_block
 		(title "KiVar Demo")
-		(date "2024-01-16")
+		(date "2024-03-18")
 		(company "Author: Mark Hämmerling <dev@markh.de>")
 		(comment 1 "https://github.com/markh-de/KiVar")
 		(comment 4 "I²C Device Address Selection")
