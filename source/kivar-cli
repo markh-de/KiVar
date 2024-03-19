@@ -6,6 +6,7 @@ import argparse
 import pcbnew
 from kivar import Key, version, build_vardict, natural_sort_key, build_fpdict, store_fpdict, detect_current_choices, quote_str, prop_abbrev, cook_raw_string, escape_str, get_choice_dict, split_raw_str, apply_selection, pcbnew_compatibility_error
 
+# TODO when reporting properties, allow choosing between readable and property code format (+/- f,b,p,!)
 # TODO make use of verbose options, where applicable
 # TODO add option to save to a different file (create a copy)
 # TODO if output to terminal, use colors for highlighting aspects, choices, matches etc.

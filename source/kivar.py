@@ -1,5 +1,7 @@
 import pcbnew
 
+# TODO allow double-quotes for quoting, use them in quote_str()
+
 # TODO for concatenated/nested error messages, period rule:
 #      * exceptions do not include final period
 #      * error messages include a period
