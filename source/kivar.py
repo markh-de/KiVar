@@ -6,7 +6,7 @@ import pcbnew
 
 # TODO filter locked field names (reference, value, footprint (???)) for set AND get!!
 
-# TODO finalize substrings for base and aux rule field names
+# TODO finalize substrings for base and aux rule field names, make them case-insensitive
 
 # TODO in aux field parser, accept only target fields which are no KiVar fields themselves (avoid recursion!)
 
