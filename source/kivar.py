@@ -1,9 +1,5 @@
 import pcbnew
 
-# TODO value/prop definitions:
-#      instead of forbidding multiple values in rules, join them with a single space, so that we can
-#      specify them without being forced to quote them (in most cases).
-
 # TODO for concatenated/nested error messages, period rule:
 #      * exceptions do not include final period
 #      * error messages include a period
@@ -32,7 +28,7 @@ import pcbnew
     # Update R2 fields.
 
 def version():
-    return '0.2.0-dev22'
+    return '0.2.0-dev23'
 
 def pcbnew_compatibility_error():
     ver = pcbnew.GetMajorMinorPatchVersion()
@@ -248,8 +244,8 @@ def apply_selection(fpdict, vardict, selection, dry_run = False):
                         if not dry_run: fpdict[uuid][Key.FIELDS][field] = new_field_value
     return changes
 
-def parse_prop_str(prop_str):
-    prop_set = {}
+def parse_prop_str(prop_str, old_prop_set={}):
+    prop_set = old_prop_set.copy() # TODO as a dict, this is pass-by-reference, so we could simply overwrite the old prop_set and return only errors
     state = None
     expect_prop = False
     for prop_code in prop_str.upper():
@@ -289,20 +285,21 @@ def add_choice(vardict, uuid, raw_choice_name, raw_choice_def, field=None, all_a
             return ["Empty choice name."]
         choices.append(cooked_name)
     errors = []
-    value = None
-    prop_strs = []
+    values = []
+    prop_set = {}
     for raw_arg in raw_args:
         arg = cook_raw_string(raw_arg)
         if raw_arg[0] in '-+': # not supposed to match if arg starts with \-, \+, '+' or '-'
             if is_aux:
                 errors.append(f"Properties not allowed for aux rules.")
                 continue
-            prop_strs.append(arg)
-        else:
-            if value is not None:
-                errors.append(f"Illegal additional value argument ('{arg}') for choice set '{raw_choice_name}'.")
+            try:
+                prop_set = parse_prop_str(arg, prop_set)
+            except Exception as error:
+                errors.append(f"Property set parser error: {str(error)}.")
                 continue
-            value = arg
+        else:
+            values.append(arg)
     for choice in choices:
         if is_aux:
             if choice != Key.DEFAULT and not choice in all_aspect_choices:
@@ -316,24 +313,19 @@ def add_choice(vardict, uuid, raw_choice_name, raw_choice_def, field=None, all_a
             vardict_branch[choice] = {}
             vardict_branch[choice][Key.VALUE] = None
             vardict_branch[choice][Key.PROPS] = {}
-        if value is not None:
-            if vardict_branch[choice][Key.VALUE] is not None:
+        if values:
+            value = ' '.join(values)
+            if vardict_branch[choice][Key.VALUE] is None:
+                vardict_branch[choice][Key.VALUE] = value
+            else:
                 errors.append(f"Illegal additional value '{value}' assignment for choice '{choice}'.")
-                continue
-            vardict_branch[choice][Key.VALUE] = value
-        for prop_str in prop_strs:
-            try:
-                prop_set = parse_prop_str(prop_str)
-            except Exception as error:
-                errors.append(f"Property set parser error: {str(error)}.")
-                continue
-            for prop_code in prop_set:
-                if not prop_code in vardict_branch[choice][Key.PROPS]:
-                    vardict_branch[choice][Key.PROPS][prop_code] = None
-                if vardict_branch[choice][Key.PROPS][prop_code] is not None:
-                    errors.append(f"Multiple {prop_abbrev(prop_code)} property value assignments for choice '{choice}'.")
-                    continue
+        for prop_code in prop_set:
+            if not prop_code in vardict_branch[choice][Key.PROPS]:
+                vardict_branch[choice][Key.PROPS][prop_code] = None
+            if vardict_branch[choice][Key.PROPS][prop_code] is None:
                 vardict_branch[choice][Key.PROPS][prop_code] = prop_set[prop_code]
+            else:
+                errors.append(f"Illegal additional '{prop_abbrev(prop_code)}' property assignment for choice '{choice}'.")
     return errors
 
 def finalize_vardict_branch(vardict_choice_branch, all_aspect_choices, is_aux = False):
