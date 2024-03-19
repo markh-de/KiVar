@@ -246,9 +246,6 @@ def main():
     args = parser.parse_args()
     exitcode = 0
 
-    if args.prop_codes: args.detailed = True
-    if args.detailed:   args.long = True
-
     if args.version:
         print(f"KiVar {version()}")
         exitcode = 0
@@ -261,6 +258,8 @@ def main():
         else:
             cmd = args.command
             if cmd == "list":
+                if args.prop_codes: args.detailed = True
+                if args.detailed:   args.long = True
                 if not list_command(board=args.board, long=args.long, prop_codes=args.prop_codes, detailed=args.detailed, selected=args.selection): exitcode = 1
             elif cmd == "state":
                 if not state_command(board=args.board, all=args.all, query_aspect=args.query): exitcode = 1
