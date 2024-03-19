@@ -1,23 +1,25 @@
 import pcbnew
 
+# Note about field case-sensitivity:
+# As long as KiCad can easily be tricked* into having multiple fields whose names only differ in casing, we
+# will not allow case-insensitive field parsing/assignment.
+# * Even though the symbol editor does not allow having "Var" and "VAR" at the same time, you can rename a field
+#   to "VAR" and will still get the field name template "Var" presented, which you can fill with a value and KiCad
+#   will even save that field to your file.
+
 # TODO allow double-quotes for quoting, use them in quote_str()
 
 # TODO clarify rules for Aspect name (forbidden characters: "*" ".")
 
 # TODO filter locked field names (reference, value, footprint (???)) for set AND get!!
 
-# TODO finalize substrings for base and aux rule field names, make them case-insensitive
-
 # TODO in aux field parser, accept only target fields which are no KiVar fields themselves (avoid recursion!)
-
-# TODO case-sensitivity concept! where and when do we lower-case names?
-#      keep casing intact at least for reporting field names!
 
 # TODO cleaner object-oriented interface.
 
 # TODO more testing!
 
-# TODO KiCad 8 has different reporting style, it seems. use this?
+# TODO KiCad 8 has different change reporting style, it seems. use this?
     # Remove R29 'Do not place' fabrication attribute.
     # Remove R29 'exclude from BOM' fabrication attribute.
     # Add R22 'exclude from BOM' fabrication attribute.
@@ -25,7 +27,7 @@ import pcbnew
     # Update R2 fields.
 
 def version():
-    return '0.2.0-dev24'
+    return '0.2.0-dev25'
 
 def pcbnew_compatibility_error():
     ver = pcbnew.GetMajorMinorPatchVersion()
@@ -138,6 +140,9 @@ class PropCode: # all of these must be uppercase
     BOM = 'B'
     POS = 'P'
 
+class FieldID: # case-sensitive
+    BASE   = 'Var'
+    ASPECT = 'Aspect'
 class PropGroup:
     ALL = '!'
 
@@ -421,18 +426,17 @@ def parse_rule_fields(fpdict_uuid_branch):
         # an error message. we don't want to misinterpret user's fields.
         try: parts = split_raw_str(fp_field, '.', False)
         except: continue
-        # TODO use dedicated getters for strings/lists
-        if len(parts) == 3 and parts[0] == 'KiVar' and parts[1] == 'Rule' and parts[2] == 'Aspect': # TODO remove "Rule"
+        if len(parts) == 2 and parts[0] == FieldID.BASE and parts[1] == FieldID.ASPECT:
             aspect = value
-        elif len(parts) == 2 and parts[0] == 'KiVar' and parts[1] == 'Rule': # TODO remove "Rule"
+        elif len(parts) == 1 and parts[0] == FieldID.BASE:
             base_rule_string = value
-        elif len(parts) > 1 and parts[-1] == 'KiVar':
+        elif len(parts) > 1 and parts[-1] == FieldID.BASE:
             target_field = '.'.join(parts[0:-1])
             aux_rule_strings.append([target_field, value])
         else:
             try: prefix, name_list = split_parens(parts[-1])
             except: continue
-            if prefix == 'KiVar':
+            if prefix == FieldID.BASE:
                 try: parts_in_parens = split_raw_str(name_list, ' ', True)
                 except: continue
                 if len(parts_in_parens) > 1:
