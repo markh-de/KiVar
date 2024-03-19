@@ -6,7 +6,7 @@
 	(paper "A5")
 	(title_block
 		(title "KiVar Demo")
-		(date "2024-03-18")
+		(date "2024-03-19")
 		(company "Author: Mark Hämmerling <dev@markh.de>")
 		(comment 1 "https://github.com/markh-de/KiVar")
 		(comment 4 "Undervoltage Trip Points")
@@ -951,9 +951,10 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
+		(fields_autoplaced yes)
 		(uuid "2ccc51d3-0eb9-4181-909b-6b48a6a96e2e")
 		(property "Reference" "R14"
-			(at 106.045 66.0399 0)
+			(at 106.68 66.0399 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -962,7 +963,7 @@
 			)
 		)
 		(property "Value" "100kΩ"
-			(at 106.045 68.5799 0)
+			(at 106.68 68.5799 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -997,8 +998,8 @@
 				(hide yes)
 			)
 		)
-		(property "KiVar.Rule" "UVLO_LO/HI '2.41V/3.40V'(309kΩ) '3.15V/3.57V'(100kΩ)"
-			(at 106.045 71.1199 0)
+		(property "Var" "UVLO_LO/HI '2.41V/3.40V'(309kΩ) '3.15V/3.57V'(100kΩ)"
+			(at 106.68 71.1199 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1176,9 +1177,10 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
+		(fields_autoplaced yes)
 		(uuid "54c95d51-ec8d-4420-b00a-f1ba680dfcf8")
 		(property "Reference" "R12"
-			(at 106.045 48.2599 0)
+			(at 106.68 48.2599 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1187,7 +1189,7 @@
 			)
 		)
 		(property "Value" "309kΩ"
-			(at 106.045 50.7999 0)
+			(at 106.68 50.7999 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1222,8 +1224,8 @@
 				(hide yes)
 			)
 		)
-		(property "KiVar.Rule" "UVLO_LO/HI '2.41V/3.40V'(0Ω) '3.15V/3.57V'(309kΩ)"
-			(at 106.045 53.3399 0)
+		(property "Var" "UVLO_LO/HI '2.41V/3.40V'(0Ω) '3.15V/3.57V'(309kΩ)"
+			(at 106.68 53.3399 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1324,7 +1326,7 @@
 		(fields_autoplaced yes)
 		(uuid "93a73913-2e0b-430d-91ec-eb5d89767884")
 		(property "Reference" "C2"
-			(at 120.015 49.5299 0)
+			(at 120.65 49.5299 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1333,7 +1335,7 @@
 			)
 		)
 		(property "Value" "0.1µF"
-			(at 120.015 52.0699 0)
+			(at 120.65 52.0699 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1392,9 +1394,10 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
+		(fields_autoplaced yes)
 		(uuid "a0b6fe2a-c5c9-4b16-b092-a05117637bc1")
 		(property "Reference" "R15"
-			(at 106.045 74.9299 0)
+			(at 106.68 74.9299 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1403,7 +1406,7 @@
 			)
 		)
 		(property "Value" "750kΩ"
-			(at 106.045 77.4699 0)
+			(at 106.68 77.4699 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1438,8 +1441,8 @@
 				(hide yes)
 			)
 		)
-		(property "KiVar.Rule" "UVLO_LO/HI *(750kΩ)"
-			(at 106.045 80.0099 0)
+		(property "Var" "UVLO_LO/HI *(750kΩ)"
+			(at 106.68 80.0099 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1471,9 +1474,10 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
+		(fields_autoplaced yes)
 		(uuid "b814fe6b-59a2-4356-befe-86b98ed0b7cd")
 		(property "Reference" "R13"
-			(at 106.045 57.1499 0)
+			(at 106.68 57.1499 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1482,7 +1486,7 @@
 			)
 		)
 		(property "Value" "1MΩ"
-			(at 106.045 59.6899 0)
+			(at 106.68 59.6899 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1517,8 +1521,8 @@
 				(hide yes)
 			)
 		)
-		(property "KiVar.Rule" "UVLO_LO/HI *(1MΩ)"
-			(at 106.045 62.2299 0)
+		(property "Var" "UVLO_LO/HI *(1MΩ)"
+			(at 106.68 62.2299 0)
 			(effects
 				(font
 					(size 1.27 1.27)

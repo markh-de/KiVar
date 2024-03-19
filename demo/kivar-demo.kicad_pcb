@@ -9,7 +9,7 @@
 	(paper "A5" portrait)
 	(title_block
 		(title "KiVar Demo Board")
-		(date "2024-03-18")
+		(date "2024-03-19")
 		(company "Author: Mark Hämmerling <dev@markh.de>")
 		(comment 3 "https://github.com/markh-de/KiVar")
 		(comment 4 "Download KiVar:")
@@ -416,12 +416,12 @@
 				)
 			)
 		)
-		(property "KiVar.Rule" "ISL91127 IRNZ(-!)"
+		(property "Var" "ISL91127 IRNZ(-!)"
 			(at 0 0 -90)
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "34a26d8e-fdb1-45f3-bbc7-cadec7767ac3")
+			(uuid "2c720400-5e2a-466a-8eca-65df789bd2f0")
 			(effects
 				(font
 					(size 1 1)
@@ -640,12 +640,12 @@
 				)
 			)
 		)
-		(property "KiVar.Rule" "'IOEXP_TYPE/ADDR' '9535/0x20'(+!)"
+		(property "Var" "'IOEXP_TYPE/ADDR' '9535/0x20'(+!)"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "921669fc-e1c8-40fa-9779-30299909c624")
+			(uuid "df635872-b45e-464d-9b7f-3bfb154cd437")
 			(effects
 				(font
 					(size 1 1)
@@ -864,12 +864,12 @@
 				)
 			)
 		)
-		(property "KiVar.Rule" "UVLO_LO/HI '2.41V/3.40V'(0Ω) '3.15V/3.57V'(309kΩ)"
+		(property "Var" "UVLO_LO/HI '2.41V/3.40V'(0Ω) '3.15V/3.57V'(309kΩ)"
 			(at 0 0 180)
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "4dd95646-13ec-4629-84d7-0eb07efed3ef")
+			(uuid "ec823b84-6b63-4d57-a852-495f1b8c3023")
 			(effects
 				(font
 					(size 1 1)
@@ -1087,12 +1087,12 @@
 				)
 			)
 		)
-		(property "KiVar.Rule" "I_LED_MA 20,30,60,70,100,110,140,150(+!) JP()"
+		(property "Var" "I_LED_MA 20,30,60,70,100,110,140,150(+!) JP()"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "3da47dbb-2120-46a1-b819-5db0de3e68ae")
+			(uuid "903c0e95-9a84-43d8-8072-636b9921ed0c")
 			(effects
 				(font
 					(size 1 1)
@@ -1311,12 +1311,12 @@
 				)
 			)
 		)
-		(property "KiVar.Rule" "UVLO_LO/HI '2.41V/3.40V'(309kΩ) '3.15V/3.57V'(100kΩ)"
+		(property "Var" "UVLO_LO/HI '2.41V/3.40V'(309kΩ) '3.15V/3.57V'(100kΩ)"
 			(at 0 0 90)
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "c476ee4b-c3ef-48b6-bc83-08eda5a8a1ff")
+			(uuid "6590e9da-4e41-46a5-8d08-28912c41e7af")
 			(effects
 				(font
 					(size 1 1)
@@ -2248,12 +2248,12 @@
 				)
 			)
 		)
-		(property "KiVar.Rule" "'IOEXP_TYPE/ADDR' '9535/0x24','9539/0x74'(+!)"
+		(property "Var" "'IOEXP_TYPE/ADDR' '9535/0x24','9539/0x74'(+!)"
 			(at 0 0 180)
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "62623423-cd18-464e-bcd6-abeaf47e9515")
+			(uuid "e23728ba-03ea-4a1b-aa01-aeaadee53ba5")
 			(effects
 				(font
 					(size 1 1)
@@ -3214,12 +3214,12 @@
 				)
 			)
 		)
-		(property "KiVar.Rule" "BOOT_SRC SD,EMMC,JP(-!)"
+		(property "Var" "BOOT_SRC SD,EMMC,JP(-!)"
 			(at 0 0 90)
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "d157101a-7f80-47f1-87d3-31108d336584")
+			(uuid "75873cfb-45bb-42c5-a330-fcff3ce5e38b")
 			(effects
 				(font
 					(size 1 1)
@@ -3438,12 +3438,12 @@
 				)
 			)
 		)
-		(property "KiVar.Rule" "ISL91127 IRNZ(0Ω) IRAZ(1MΩ)"
+		(property "Var" "ISL91127 IRNZ(0Ω) IRAZ(1MΩ)"
 			(at 0 0 -90)
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "d9496c0c-7241-4f3b-886c-69d0c0c2a6d0")
+			(uuid "47e0106b-d495-4433-af3b-92b714621d65")
 			(effects
 				(font
 					(size 1 1)
@@ -3662,12 +3662,12 @@
 				)
 			)
 		)
-		(property "KiVar.Rule" "BOOT_SRC NAND,JP(-!)"
+		(property "Var" "BOOT_SRC NAND,JP(-!)"
 			(at 0 0 90)
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "cf50ad37-d6f4-4011-8e87-3a240fefa24b")
+			(uuid "f71a371e-b7d1-4684-abad-650883808899")
 			(effects
 				(font
 					(size 1 1)
@@ -3886,12 +3886,12 @@
 				)
 			)
 		)
-		(property "KiVar.Rule" "UVLO_LO/HI *(1MΩ)"
+		(property "Var" "UVLO_LO/HI *(1MΩ)"
 			(at 0 0 90)
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "2029b6c8-4b6c-41d4-85af-babcb3f70a06")
+			(uuid "580668f3-184d-4358-9ff9-209e9aae999d")
 			(effects
 				(font
 					(size 1 1)
@@ -4584,12 +4584,12 @@
 				)
 			)
 		)
-		(property "KiVar.Rule" "I_LED_MA 40,50,60,70,120,130,140,150(+!) JP()"
+		(property "Var" "I_LED_MA 40,50,60,70,120,130,140,150(+!) JP()"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "982f5353-e456-42fd-818e-0d5b3e1e7384")
+			(uuid "1fba31eb-bfd8-40a5-b91a-209b39334984")
 			(effects
 				(font
 					(size 1 1)
@@ -5019,12 +5019,12 @@
 				)
 			)
 		)
-		(property "KiVar.Rule" "UVLO_LO/HI *(750kΩ)"
+		(property "Var" "UVLO_LO/HI *(750kΩ)"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "09369bbc-d929-4bfa-8f9b-9acb241435a3")
+			(uuid "404a2492-5504-41b0-a6c1-d59078a22313")
 			(effects
 				(font
 					(size 1 1)
@@ -5243,12 +5243,12 @@
 				)
 			)
 		)
-		(property "KiVar.Rule" "EEPROM_ADDR 0x54(+!)"
+		(property "Var" "EEPROM_ADDR 0x54(+!)"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "5660583b-ab89-420a-a0e5-cd737a4b98f0")
+			(uuid "03f8943b-d10a-46af-879f-d64b235b2971")
 			(effects
 				(font
 					(size 1 1)
@@ -5467,12 +5467,12 @@
 				)
 			)
 		)
-		(property "KiVar.Rule" "ISL91127 IRNZ(-!)"
+		(property "Var" "ISL91127 IRNZ(-!)"
 			(at 0 0 -90)
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "0d6002e6-a619-4d02-bc0a-3eaa5356cc61")
+			(uuid "ce2135fb-c62a-4673-8660-e95792203b5d")
 			(effects
 				(font
 					(size 1 1)
@@ -6589,12 +6589,12 @@
 				)
 			)
 		)
-		(property "KiVar.Rule" "BOOT_SRC SD,NAND,JP(-!)"
+		(property "Var" "BOOT_SRC SD,NAND,JP(-!)"
 			(at 0 0 90)
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "864c37b3-102c-493f-aef9-638058b3c3a8")
+			(uuid "866010a9-e266-433c-877d-3a004fb87836")
 			(effects
 				(font
 					(size 1 1)
@@ -6812,12 +6812,12 @@
 				)
 			)
 		)
-		(property "KiVar.Rule" "I_LED_MA 10,30,50,70,90,110,130,150(+!) JP()"
+		(property "Var" "I_LED_MA 10,30,50,70,90,110,130,150(+!) JP()"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "42490488-4005-40fc-af31-2754705e688e")
+			(uuid "9b387ffa-aa75-459c-b158-488c5ad55a67")
 			(effects
 				(font
 					(size 1 1)
@@ -10167,12 +10167,12 @@
 				)
 			)
 		)
-		(property "KiVar.Rule" "I_LED_MA 80,90,100,110,120,130,140,150(+!) JP()"
+		(property "Var" "I_LED_MA 80,90,100,110,120,130,140,150(+!) JP()"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "b15af20c-6421-4f9b-8722-279172164c86")
+			(uuid "aa7aac47-aa15-42ea-aabc-377f9be8451d")
 			(effects
 				(font
 					(size 1 1)
@@ -10391,12 +10391,12 @@
 				)
 			)
 		)
-		(property "KiVar.Rule" "'IOEXP_TYPE/ADDR' '9539/0x74'(-!)"
+		(property "Var" "'IOEXP_TYPE/ADDR' '9539/0x74'(-!)"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "58255df4-6ee8-4cbd-b464-053079ad0811")
+			(uuid "16a6cfd3-e0f4-4927-a1fa-4a5b36ff4ed9")
 			(effects
 				(font
 					(size 1 1)
@@ -11974,12 +11974,12 @@
 				)
 			)
 		)
-		(property "KiVar.Rule" "ISL91127 IRNZ(-!)"
+		(property "Var" "ISL91127 IRNZ(-!)"
 			(at 0 0 90)
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "b5689b36-eaeb-46b0-8ff2-bc210fccf8f1")
+			(uuid "68ecbc50-2eb8-466d-9868-43a6bdd944a7")
 			(effects
 				(font
 					(size 1 1)
@@ -12408,12 +12408,12 @@
 				)
 			)
 		)
-		(property "KiVar.Rule" "'IOEXP_TYPE/ADDR' '9535/0x20','9535/0x24'(-!)"
+		(property "Var" "'IOEXP_TYPE/ADDR' '9535/0x20','9535/0x24'(-!)"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "628da3ea-8e60-4fa1-b5cd-8563b9effc25")
+			(uuid "bbcc6b0a-c310-4809-912b-268b6aeda413")
 			(effects
 				(font
 					(size 1 1)
@@ -13305,12 +13305,12 @@
 				)
 			)
 		)
-		(property "KiVar.Rule" "EEPROM_ADDR 0x55(+!)"
+		(property "Var" "EEPROM_ADDR 0x55(+!)"
 			(at 0 0 180)
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "03e3adfc-3803-408f-8e1d-82caf265b524")
+			(uuid "16edbc87-92e9-4d7e-85b2-c3ede1fbe375")
 			(effects
 				(font
 					(size 1 1)

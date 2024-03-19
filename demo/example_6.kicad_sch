@@ -6,7 +6,7 @@
 	(paper "A4")
 	(title_block
 		(title "KiVar Demo")
-		(date "2024-03-18")
+		(date "2024-03-19")
 		(rev "0.1.0")
 		(company "Author: Mark Hämmerling <dev@markh.de>")
 		(comment 1 "https://github.com/markh-de/KiVar")
@@ -2242,7 +2242,7 @@
 				(hide yes)
 			)
 		)
-		(property "KiVar.Rule" "I_LED_MA 20,30,60,70,100,110,140,150(+!) JP()"
+		(property "Var" "I_LED_MA 20,30,60,70,100,110,140,150(+!) JP()"
 			(at 119.38 119.3799 0)
 			(effects
 				(font
@@ -2825,21 +2825,19 @@
 		(fields_autoplaced yes)
 		(uuid "88f2433f-a129-4956-b0ca-bab5dcb54cae")
 		(property "Reference" "U6"
-			(at 83.82 51.435 0)
+			(at 91.44 48.26 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
-				(justify left)
 			)
 		)
 		(property "Value" "AP3032"
-			(at 99.06 51.435 0)
+			(at 91.44 50.8 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
-				(justify right)
 			)
 		)
 		(property "Footprint" "Package_TO_SOT_SMD:SOT-23-6"
@@ -3089,7 +3087,7 @@
 				(hide yes)
 			)
 		)
-		(property "KiVar.Rule" "I_LED_MA 80,90,100,110,120,130,140,150(+!) JP()"
+		(property "Var" "I_LED_MA 80,90,100,110,120,130,140,150(+!) JP()"
 			(at 119.38 74.2949 0)
 			(effects
 				(font
@@ -3860,7 +3858,7 @@
 				(hide yes)
 			)
 		)
-		(property "KiVar.Rule" "I_LED_MA 40,50,60,70,120,130,140,150(+!) JP()"
+		(property "Var" "I_LED_MA 40,50,60,70,120,130,140,150(+!) JP()"
 			(at 187.96 74.2949 0)
 			(effects
 				(font
@@ -4076,7 +4074,7 @@
 				(hide yes)
 			)
 		)
-		(property "KiVar.Rule" "I_LED_MA 10,30,50,70,90,110,130,150(+!) JP()"
+		(property "Var" "I_LED_MA 10,30,50,70,90,110,130,150(+!) JP()"
 			(at 187.96 119.3799 0)
 			(effects
 				(font

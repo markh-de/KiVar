@@ -6,7 +6,7 @@
 	(paper "A4")
 	(title_block
 		(title "KiVar Demo")
-		(date "2024-03-18")
+		(date "2024-03-19")
 		(company "Author: Mark Hämmerling <dev@markh.de>")
 		(comment 1 "https://github.com/markh-de/KiVar")
 		(comment 4 "Boot Source Selection")
@@ -1019,7 +1019,7 @@
 		(fields_autoplaced yes)
 		(uuid "0cae3ae8-fba4-4e9c-8564-4ed770a81597")
 		(property "Reference" "JP1"
-			(at 123.825 92.7099 90)
+			(at 123.19 92.7099 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1156,7 +1156,7 @@
 		(fields_autoplaced yes)
 		(uuid "3bbceba0-eaa0-4152-b1b9-b1bd1abfb625")
 		(property "Reference" "JP2"
-			(at 161.925 92.7099 90)
+			(at 161.29 92.7099 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1224,9 +1224,10 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
+		(fields_autoplaced yes)
 		(uuid "730ed1d1-b7f3-4cc2-b7e6-bb531a213568")
 		(property "Reference" "R9"
-			(at 132.715 90.1699 0)
+			(at 132.08 90.1699 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1235,7 +1236,7 @@
 			)
 		)
 		(property "Value" "0Ω"
-			(at 132.715 92.7099 0)
+			(at 132.08 92.7099 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1270,8 +1271,8 @@
 				(hide yes)
 			)
 		)
-		(property "KiVar.Rule" "BOOT_SRC NAND,JP(-!)"
-			(at 132.715 95.2499 0)
+		(property "Var" "BOOT_SRC NAND,JP(-!)"
+			(at 132.08 95.2499 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1302,9 +1303,10 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
+		(fields_autoplaced yes)
 		(uuid "7f5cd2d7-37a7-4843-81cd-257076ff743d")
 		(property "Reference" "R3"
-			(at 84.455 81.2799 0)
+			(at 83.82 81.2799 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1313,7 +1315,7 @@
 			)
 		)
 		(property "Value" "10kΩ"
-			(at 84.455 83.82 0)
+			(at 83.82 83.8199 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1371,9 +1373,10 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
+		(fields_autoplaced yes)
 		(uuid "82cb9104-049e-431a-824b-97e76fb22858")
 		(property "Reference" "R7"
-			(at 161.925 81.2799 0)
+			(at 161.29 81.2799 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1382,7 +1385,7 @@
 			)
 		)
 		(property "Value" "10kΩ"
-			(at 161.925 83.82 0)
+			(at 161.29 83.8199 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1440,9 +1443,10 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
+		(fields_autoplaced yes)
 		(uuid "8cafdb04-e3ae-4ac2-8b41-8e3a1105ae54")
 		(property "Reference" "R6"
-			(at 123.825 81.2799 0)
+			(at 123.19 81.2799 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1451,7 +1455,7 @@
 			)
 		)
 		(property "Value" "10kΩ"
-			(at 123.825 83.82 0)
+			(at 123.19 83.8199 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1509,9 +1513,10 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
+		(fields_autoplaced yes)
 		(uuid "a574d678-234d-4f9c-9cd1-ace5619821f5")
 		(property "Reference" "R5"
-			(at 104.775 81.2799 0)
+			(at 104.14 81.2799 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1520,7 +1525,7 @@
 			)
 		)
 		(property "Value" "10kΩ"
-			(at 104.775 83.82 0)
+			(at 104.14 83.8199 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1626,7 +1631,7 @@
 				(hide yes)
 			)
 		)
-		(property "KiVar.Rule" "BOOT_SRC SD,EMMC,JP(-!)"
+		(property "Var" "BOOT_SRC SD,EMMC,JP(-!)"
 			(at 170.18 95.2499 0)
 			(effects
 				(font
@@ -1732,7 +1737,7 @@
 		(fields_autoplaced yes)
 		(uuid "d11fb2ac-e945-42aa-a1ec-cde596cb273c")
 		(property "Reference" "R11"
-			(at 211.455 90.1699 0)
+			(at 212.09 90.1699 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1741,7 +1746,7 @@
 			)
 		)
 		(property "Value" "0Ω"
-			(at 211.455 92.7099 0)
+			(at 212.09 92.7099 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1776,8 +1781,8 @@
 				(hide yes)
 			)
 		)
-		(property "KiVar.Rule" "BOOT_SRC SD,NAND,JP(-!)"
-			(at 211.455 95.2499 0)
+		(property "Var" "BOOT_SRC SD,NAND,JP(-!)"
+			(at 212.09 95.2499 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1808,9 +1813,10 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
+		(fields_autoplaced yes)
 		(uuid "e50a4e70-39a0-4bac-892f-3320966869cc")
 		(property "Reference" "R4"
-			(at 94.615 81.2799 0)
+			(at 93.98 81.2799 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1819,7 +1825,7 @@
 			)
 		)
 		(property "Value" "10kΩ"
-			(at 94.615 83.82 0)
+			(at 93.98 83.8199 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1877,6 +1883,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
+		(fields_autoplaced yes)
 		(uuid "f86933d8-0961-4155-b5f1-2eba9d4980e7")
 		(property "Reference" "R8"
 			(at 203.2 81.2799 0)
@@ -1888,7 +1895,7 @@
 			)
 		)
 		(property "Value" "10kΩ"
-			(at 203.2 83.82 0)
+			(at 203.2 83.8199 0)
 			(effects
 				(font
 					(size 1.27 1.27)

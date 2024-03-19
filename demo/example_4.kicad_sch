@@ -6,7 +6,7 @@
 	(paper "A4")
 	(title_block
 		(title "KiVar Demo")
-		(date "2024-03-18")
+		(date "2024-03-19")
 		(company "Author: Mark Hämmerling <dev@markh.de>")
 		(comment 1 "https://github.com/markh-de/KiVar")
 		(comment 4 "IC Variant Selection")
@@ -1765,7 +1765,7 @@
 				(hide yes)
 			)
 		)
-		(property "KiVar.Rule" "ISL91127 IRNZ(0Ω) IRAZ(1MΩ)"
+		(property "Var" "ISL91127 IRNZ(0Ω) IRAZ(1MΩ)"
 			(at 186.69 90.1699 0)
 			(effects
 				(font
@@ -2138,7 +2138,7 @@
 		(fields_autoplaced yes)
 		(uuid "61002a8a-6b88-406b-8c99-a0cdff0f1a3f")
 		(property "Reference" "U3"
-			(at 104.8894 76.2 0)
+			(at 105.0641 76.2 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2147,7 +2147,7 @@
 			)
 		)
 		(property "Value" "ISL91127IR"
-			(at 104.8894 78.74 0)
+			(at 105.0641 78.74 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2180,14 +2180,6 @@
 					(size 1.27 1.27)
 				)
 				(hide yes)
-			)
-		)
-		(property "KiVar.Rule" ""
-			(at 99.06 90.17 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
 			)
 		)
 		(pin "18"
@@ -2468,6 +2460,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
+		(fields_autoplaced yes)
 		(uuid "a4ade26b-8133-417f-a3c4-f707e58b4e1d")
 		(property "Reference" "C6"
 			(at 158.75 85.0899 0)
@@ -2514,7 +2507,7 @@
 				(hide yes)
 			)
 		)
-		(property "KiVar.Rule" "ISL91127 IRNZ(-!)"
+		(property "Var" "ISL91127 IRNZ(-!)"
 			(at 158.75 90.1699 0)
 			(effects
 				(font
@@ -2593,7 +2586,7 @@
 				(hide yes)
 			)
 		)
-		(property "KiVar.Rule" "ISL91127 IRNZ(-!)"
+		(property "Var" "ISL91127 IRNZ(-!)"
 			(at 186.69 97.7899 0)
 			(effects
 				(font
@@ -2672,7 +2665,7 @@
 				(hide yes)
 			)
 		)
-		(property "KiVar.Rule" "ISL91127 IRNZ(-!)"
+		(property "Var" "ISL91127 IRNZ(-!)"
 			(at 128.27 90.1699 0)
 			(effects
 				(font
@@ -2786,11 +2779,12 @@
 			)
 		)
 		(property "Value" "GND"
-			(at 184.15 104.14 0)
+			(at 186.69 100.3299 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
+				(justify left)
 			)
 		)
 		(property "Footprint" ""
@@ -2954,14 +2948,6 @@
 					(size 1.27 1.27)
 				)
 				(hide yes)
-			)
-		)
-		(property "KiVar.Rule" ""
-			(at 99.06 73.66 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
 			)
 		)
 		(pin "1"

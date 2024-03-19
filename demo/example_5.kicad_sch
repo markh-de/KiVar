@@ -6,7 +6,7 @@
 	(paper "A4")
 	(title_block
 		(title "KiVar Demo")
-		(date "2024-03-18")
+		(date "2024-03-19")
 		(rev "0.1.0")
 		(company "Author: Mark Hämmerling <dev@markh.de>")
 		(comment 1 "https://github.com/markh-de/KiVar")
@@ -2401,7 +2401,7 @@
 				(hide yes)
 			)
 		)
-		(property "KiVar.Rule" "'IOEXP_TYPE/ADDR' '9535/0x24','9539/0x74'(+!)"
+		(property "Var" "'IOEXP_TYPE/ADDR' '9535/0x24','9539/0x74'(+!)"
 			(at 113.03 114.2999 0)
 			(effects
 				(font
@@ -2697,9 +2697,10 @@
 		(in_bom no)
 		(on_board yes)
 		(dnp yes)
+		(fields_autoplaced yes)
 		(uuid "3b9e0524-a02f-4202-b853-f7382c4f7196")
 		(property "Reference" "U4"
-			(at 157.48 69.85 0)
+			(at 157.1341 67.31 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2708,7 +2709,7 @@
 			)
 		)
 		(property "Value" "TCA9535PWR"
-			(at 157.48 72.39 0)
+			(at 157.1341 69.85 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2743,8 +2744,8 @@
 				(hide yes)
 			)
 		)
-		(property "KiVar.Rule" "'IOEXP_TYPE/ADDR' '9539/0x74'(-!)"
-			(at 137.16 60.96 0)
+		(property "Var" "'IOEXP_TYPE/ADDR' '9539/0x74'(-!)"
+			(at 157.1341 72.39 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2841,6 +2842,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
+		(fields_autoplaced yes)
 		(uuid "517c6da7-3494-4573-bbc7-a3656548fd47")
 		(property "Reference" "C10"
 			(at 118.11 72.3899 0)
@@ -3311,9 +3313,10 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
+		(fields_autoplaced yes)
 		(uuid "de08725d-1c09-4d54-a5b5-69848dce00e1")
 		(property "Reference" "U5"
-			(at 212.09 69.85 0)
+			(at 211.7441 67.31 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3322,7 +3325,7 @@
 			)
 		)
 		(property "Value" "TCA9539PWR"
-			(at 212.09 72.39 0)
+			(at 211.7441 69.85 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3357,8 +3360,8 @@
 				(hide yes)
 			)
 		)
-		(property "KiVar.Rule" "'IOEXP_TYPE/ADDR' '9535/0x20','9535/0x24'(-!)"
-			(at 185.42 60.96 0)
+		(property "Var" "'IOEXP_TYPE/ADDR' '9535/0x20','9535/0x24'(-!)"
+			(at 211.7441 72.39 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3503,7 +3506,7 @@
 				(hide yes)
 			)
 		)
-		(property "KiVar.Rule" "'IOEXP_TYPE/ADDR' '9535/0x20'(+!)"
+		(property "Var" "'IOEXP_TYPE/ADDR' '9535/0x20'(+!)"
 			(at 113.03 124.4599 0)
 			(effects
 				(font
