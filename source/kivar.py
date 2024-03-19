@@ -32,7 +32,7 @@ import pcbnew
     # Update R2 fields.
 
 def version():
-    return '0.2.0-dev21'
+    return '0.2.0-dev22'
 
 def pcbnew_compatibility_error():
     ver = pcbnew.GetMajorMinorPatchVersion()
@@ -140,10 +140,10 @@ class Key:
     REF     = 'R'
     FIELDS  = 'F'
 
-class PropCode:
-    FIT = 'f'
-    BOM = 'b'
-    POS = 'p'
+class PropCode: # all of these must be uppercase
+    FIT = 'F'
+    BOM = 'B'
+    POS = 'P'
 
 class PropGroup:
     ALL = '!'
@@ -252,7 +252,7 @@ def parse_prop_str(prop_str):
     prop_set = {}
     state = None
     expect_prop = False
-    for prop_code in prop_str:
+    for prop_code in prop_str.upper():
         if prop_code in '+-':
             if expect_prop: raise ValueError(f"Invalid syntax: Expecting property code after state modifier.")
             expect_prop = True
