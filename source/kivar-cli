@@ -4,9 +4,8 @@ import os
 import sys
 import argparse
 import pcbnew
-from kivar import Key, version, build_vardict, natural_sort_key, build_fpdict, store_fpdict, detect_current_choices, quote_str, prop_abbrev, cook_raw_string, escape_str, get_choice_dict, split_raw_str, apply_selection, pcbnew_compatibility_error
+from kivar import Key, version, build_vardict, natural_sort_key, build_fpdict, store_fpdict, detect_current_choices, quote_str, prop_abbrev, base_prop_codes, cook_raw_string, escape_str, get_choice_dict, split_raw_str, apply_selection, pcbnew_compatibility_error
 
-# TODO when reporting properties, allow choosing between readable and property code format (+/- f,b,p,!)
 # TODO make use of verbose options, where applicable
 # TODO add option to save to a different file (create a copy)
 # TODO if output to terminal, use colors for highlighting aspects, choices, matches etc.
@@ -42,7 +41,7 @@ def build_vardict_wrapper(fpdict):
         return None
     return vardict
 
-def list_command(board=None, long=False, detailed=False, selected=False, verbose=False):
+def list_command(board=None, long=False, prop_codes=False, detailed=False, selected=False, verbose=False):
     b = load_board(board)
     if b is None: return False
     fpdict = build_fpdict(b)
@@ -62,31 +61,32 @@ def list_command(board=None, long=False, detailed=False, selected=False, verbose
                 cmp_value = vardict[uuid][Key.BASE][choice][Key.VALUE]
                 if cmp_value is not None:
                     cmp_info.append(quote_str(cmp_value))
-                cmp_props  = vardict[uuid][Key.BASE][choice][Key.PROPS]
-                for prop_code in cmp_props:
-                    if cmp_props[prop_code] is not None:
+                cmp_props = vardict[uuid][Key.BASE][choice][Key.PROPS]
+                for prop_code in base_prop_codes():
+                    if prop_code in cmp_props and cmp_props[prop_code] is not None:
                         # TODO use colored output and use green and red here!
-                        state_text = 'Yes' if cmp_props[prop_code] else 'No'
-                        cmp_info.append(f'<{prop_abbrev(prop_code)}:{state_text}>')
-#                    cmp_info.append('<unfit>')
-                # if ref in ndict[aspect][choice]:
-                #     # TODO error handling. same ref name already used for this aspect choice!
+                        if prop_codes:
+                            state_text = '+' if cmp_props[prop_code] else '-'
+                            cmp_info.append(f'{state_text}{prop_code}')
+                        else:
+                            state_text = 'Yes' if cmp_props[prop_code] else 'No'
+                            cmp_info.append(f'<{prop_abbrev(prop_code)}:{state_text}>')
                 ndict[aspect][choice][uuid] = ' '.join(cmp_info)
     for aspect in sorted(ndict, key=natural_sort_key):
         p_aspect = quote_str(aspect)
-        if long or detailed:
+        if long:
             print(p_aspect)
         else:
             print(f'{p_aspect}:', end='')
         for choice in sorted(ndict[aspect], key=natural_sort_key):
             p_choice = quote_str(choice)
             if selected and sel[aspect] == choice:
-                if long or detailed:
+                if long:
                     print(f'  + {p_choice}')
                 else:
                     print(f' [{p_choice}]', end='')
             else:
-                if long or detailed:
+                if long:
                     print(f'    {p_choice}')
                 else:
                     print(f' {p_choice}', end='')
@@ -218,10 +218,11 @@ def main():
     subparsers = parser.add_subparsers(dest="command")
 
     list_parser = subparsers.add_parser("list", help="list all available aspects and choices")
-    list_parser.add_argument("-s", "--selection", action="store_true", help="mark currently matching choices")
-    list_parser.add_argument("-l", "--long",      action="store_true", help="long output style")
-    list_parser.add_argument("-d", "--detailed",  action="store_true", help="show component assignments (implies --long)")
-#   list_parser.add_argument("-v", "--verbose",   action="store_true", help="verbose output")
+    list_parser.add_argument("-s", "--selection",  action="store_true", help="mark currently matching choices")
+    list_parser.add_argument("-l", "--long",       action="store_true", help="long output style")
+    list_parser.add_argument("-d", "--detailed",   action="store_true", help="show component assignments (implies --long)")
+    list_parser.add_argument("-c", "--prop-codes", action="store_true", help="display property codes (implies --detailed)")
+#   list_parser.add_argument("-v", "--verbose",    action="store_true", help="verbose output")
     list_parser.add_argument("board", help="KiCad PCB file name")
 
     state_parser = subparsers.add_parser("state", help="show currently matching choice for each aspect")
@@ -245,6 +246,9 @@ def main():
     args = parser.parse_args()
     exitcode = 0
 
+    if args.prop_codes: args.detailed = True
+    if args.detailed:   args.long = True
+
     if args.version:
         print(f"KiVar {version()}")
         exitcode = 0
@@ -257,13 +261,13 @@ def main():
         else:
             cmd = args.command
             if cmd == "list":
-                if not list_command(args.board, args.long, args.detailed, args.selection): exitcode = 1
+                if not list_command(board=args.board, long=args.long, prop_codes=args.prop_codes, detailed=args.detailed, selected=args.selection): exitcode = 1
             elif cmd == "state":
-                if not state_command(args.board, args.all, args.query): exitcode = 1
+                if not state_command(board=args.board, all=args.all, query_aspect=args.query): exitcode = 1
             elif cmd == "check":
-                if not check_command(args.board): exitcode = 1
+                if not check_command(board=args.board): exitcode = 1
             elif cmd == "set":
-                if not set_command(args.board, args.assign, args.dry_run, args.verify, args.verbose): exitcode = 1
+                if not set_command(board=args.board, assign=args.assign, dry_run=args.dry_run, verify=args.verify, verbose=args.verbose): exitcode = 1
             else:
                 print_err(f'Error: Missing command. Use "-h" or "--help" for help.')
                 exitcode = 2
