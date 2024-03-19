@@ -2,11 +2,6 @@ import pcbnew
 
 # TODO allow double-quotes for quoting, use them in quote_str()
 
-# TODO for concatenated/nested error messages, period rule:
-#      * exceptions do not include final period
-#      * error messages include a period
-#      * messages that append the returned error message do not contain the period
-
 # TODO clarify rules for Aspect name (forbidden characters: "*" ".")
 
 # TODO filter locked field names (reference, value, footprint (???)) for set AND get!!
@@ -30,7 +25,7 @@ import pcbnew
     # Update R2 fields.
 
 def version():
-    return '0.2.0-dev23'
+    return '0.2.0-dev24'
 
 def pcbnew_compatibility_error():
     ver = pcbnew.GetMajorMinorPatchVersion()
@@ -252,19 +247,19 @@ def parse_prop_str(prop_str, old_prop_set={}):
     expect_prop = False
     for prop_code in prop_str.upper():
         if prop_code in '+-':
-            if expect_prop: raise ValueError(f"Invalid syntax: Expecting property code after state modifier.")
+            if expect_prop: raise ValueError(f"Expecting property code after state modifier")
             expect_prop = True
             state = prop_code == '+'
         else:
             expect_prop = False
-            if state is None: raise ValueError(f"Undefined property state for code '{prop_code}'.")
-            if not prop_code in supported_prop_codes(): raise ValueError(f"Unsupported property code '{prop_code}'.")
+            if state is None: raise ValueError(f"Undefined property state for code '{prop_code}'")
+            if not prop_code in supported_prop_codes(): raise ValueError(f"Unsupported property code '{prop_code}'")
             # TODO add a '?' symbol, which can be defined by the user
             if prop_code == PropGroup.ALL:
                 for c in base_prop_codes(): prop_set[c] = state
             else:
                 prop_set[prop_code] = state
-    if expect_prop: raise ValueError(f"Invalid syntax: Property set ends with state modifier.")
+    if expect_prop: raise ValueError(f"Property set ends with state modifier")
     return prop_set
 
 def add_choice(vardict, uuid, raw_choice_name, raw_choice_def, field=None, all_aspect_choices=None):
@@ -275,16 +270,16 @@ def add_choice(vardict, uuid, raw_choice_name, raw_choice_def, field=None, all_a
     try:
         raw_names = split_raw_str(raw_choice_name, ',', False)
     except Exception as e:
-        return [f"Choice names splitter error for choice set '{raw_choice_name}': {str(e)}."] # TODO cook name?
+        return [f"Choice names splitter error for choice set '{raw_choice_name}': {str(e)}"] # TODO cook name?
     try:
         raw_args = split_raw_str(raw_choice_def, ' ', True)
     except Exception as e:
-        return [f"Choice arguments splitter error for choice def '{raw_choice_def}': {str(e)}."]
+        return [f"Choice arguments splitter error for choice def '{raw_choice_def}': {str(e)}"]
     choices = []
     for choice_name in raw_names:
         cooked_name = cook_raw_string(choice_name)
         if cooked_name == '':
-            return ["Empty choice name."]
+            return ["Empty choice name"]
         choices.append(cooked_name)
     errors = []
     values = []
@@ -293,19 +288,19 @@ def add_choice(vardict, uuid, raw_choice_name, raw_choice_def, field=None, all_a
         arg = cook_raw_string(raw_arg)
         if raw_arg[0] in '-+': # not supposed to match if arg starts with \-, \+, '+' or '-'
             if is_aux:
-                errors.append(f"Properties not allowed for aux rules.")
+                errors.append(f"Properties not allowed for aux rules")
                 continue
             try:
                 prop_set = parse_prop_str(arg, prop_set)
             except Exception as error:
-                errors.append(f"Property set parser error: {str(error)}.")
+                errors.append(f"Property set parser error: {str(error)}")
                 continue
         else:
             values.append(arg)
     for choice in choices:
         if is_aux:
             if choice != Key.DEFAULT and not choice in all_aspect_choices:
-                errors.append(f"Undeclared choice '{choice}'.") # TODO print aspect in caller.### (in aspect {quote_str(aspect)}).")
+                errors.append(f"Undeclared choice '{choice}'") # TODO print aspect in caller.### (in aspect {quote_str(aspect)})")
                 continue
             if not field in vardict[uuid][Key.AUX]: vardict[uuid][Key.AUX][field] = {}
             vardict_branch = vardict[uuid][Key.AUX][field]
@@ -320,14 +315,14 @@ def add_choice(vardict, uuid, raw_choice_name, raw_choice_def, field=None, all_a
             if vardict_branch[choice][Key.VALUE] is None:
                 vardict_branch[choice][Key.VALUE] = value
             else:
-                errors.append(f"Illegal additional value '{value}' assignment for choice '{choice}'.")
+                errors.append(f"Illegal additional value '{value}' assignment for choice '{choice}'")
         for prop_code in prop_set:
             if not prop_code in vardict_branch[choice][Key.PROPS]:
                 vardict_branch[choice][Key.PROPS][prop_code] = None
             if vardict_branch[choice][Key.PROPS][prop_code] is None:
                 vardict_branch[choice][Key.PROPS][prop_code] = prop_set[prop_code]
             else:
-                errors.append(f"Illegal additional '{prop_abbrev(prop_code)}' property assignment for choice '{choice}'.")
+                errors.append(f"Illegal additional '{prop_abbrev(prop_code)}' property assignment for choice '{choice}'")
     return errors
 
 def finalize_vardict_branch(vardict_choice_branch, all_aspect_choices, is_aux = False):
@@ -348,7 +343,7 @@ def finalize_vardict_branch(vardict_choice_branch, all_aspect_choices, is_aux = 
         if vardict_choice_branch[choice][Key.VALUE] is not None:
             choices_with_value_defined += 1
     if not (choices_with_value_defined == 0 or choices_with_value_defined == len(all_aspect_choices)):
-        errors.append(f"Rule mixes choices with defined ({choices_with_value_defined}) and undefined ({len(all_aspect_choices) - choices_with_value_defined}) values (either all or none must be defined).")
+        errors.append(f"Rule mixes choices with defined ({choices_with_value_defined}) and undefined ({len(all_aspect_choices) - choices_with_value_defined}) values (either all or none must be defined)")
     if not is_aux:
         # Flatten properties
         for prop_code in base_prop_codes():
@@ -374,7 +369,7 @@ def finalize_vardict_branch(vardict_choice_branch, all_aspect_choices, is_aux = 
                 if vardict_choice_branch[choice][Key.PROPS][prop_code] is not None:
                     choices_with_prop_defined += 1
             if not (choices_with_prop_defined == 0 or choices_with_prop_defined == len(all_aspect_choices)):
-                errors.append(f"Rule mixes choices with defined ({choices_with_prop_defined}) and undefined ({len(all_aspect_choices) - choices_with_prop_defined}) {prop_abbrev(prop_code)} property ('{prop_code}') state (either all or none must be defined).")
+                errors.append(f"Rule mixes choices with defined ({choices_with_prop_defined}) and undefined ({len(all_aspect_choices) - choices_with_prop_defined}) {prop_abbrev(prop_code)} property ('{prop_code}') state (either all or none must be defined)")
     # Remove default choice entries from branch
     vardict_choice_branch.pop(Key.DEFAULT, None)
     return errors
@@ -544,13 +539,13 @@ def build_vardict(fpdict):
         fin_errors = finalize_vardict_branch(vardict[uuid][Key.BASE], all_choices[aspect], is_aux=False)
         if fin_errors:
             # TODO cook and quote names in error message, refine wording
-            for e in fin_errors: errors.append([uuid, f"{ref}: In base rule: {e}"])
+            for e in fin_errors: errors.append([uuid, f"{ref}: In base rule: {e}."])
             continue
         for field in vardict[uuid][Key.AUX]:
             fin_errors = finalize_vardict_branch(vardict[uuid][Key.AUX][field], all_choices[aspect], is_aux=True)
             if fin_errors:
                 # TODO cook and quote names in error message, refine wording
-                for e in fin_errors: errors.append([uuid, f"{ref}: In aux rule for field '{field}': {e}"])
+                for e in fin_errors: errors.append([uuid, f"{ref}: In aux rule for field '{field}': {e}."])
                 continue
     if errors: vardict = {} # make sure an incomplete vardict cannot be used by the caller
     return vardict, errors
