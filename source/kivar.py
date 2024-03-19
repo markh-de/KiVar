@@ -7,11 +7,9 @@ import pcbnew
 #   to "VAR" and will still get the field name template "Var" presented, which you can fill with a value and KiCad
 #   will even save that field to your file.
 
-# TODO allow double-quotes for quoting, use them in quote_str()
-
 # TODO clarify rules for Aspect name (forbidden characters: "*" ".")
 
-# TODO filter locked field names (reference, value, footprint (???)) for set AND get!!
+# TODO filter forbidden field names (reference, value, footprint (???)) for set AND get!!
 
 # TODO in aux field parser, accept only target fields which are no KiVar fields themselves (avoid recursion!)
 
@@ -27,7 +25,7 @@ import pcbnew
     # Update R2 fields.
 
 def version():
-    return '0.2.0-dev25'
+    return '0.2.0-dev26'
 
 def pcbnew_compatibility_error():
     ver = pcbnew.GetMajorMinorPatchVersion()
@@ -92,10 +90,10 @@ def store_fpdict(board, fpdict):
 def bool_as_text(value):
     return 'true' if value == True else 'false'
 
-def natural_sort_key(str):
+def natural_sort_key(string):
     key = []
     part = ''
-    for c in str:
+    for c in string:
         if c.isdigit(): part += c
         else:
             if part:
@@ -105,23 +103,25 @@ def natural_sort_key(str):
     if part: key.append((0, int(part), ''))
     return key
 
-def escape_str(str):
+def escape_str(string):
     result = ''
-    for c in str:
-        if c == '\\' or c == "'": result += '\\'
+    for c in string:
+        if c == '\\' or c == "'" or c == '"': result += '\\'
         result += c
     return result
 
-def quote_str(str):
-    if str == '': result = "''"
+def quote_str(string):
+    # we prefer single-quotes for output
+    if string == '': result = "''"
     else:
-        if any(c in str for c in ', -\\()='):
-            result = "'"
-            for c in str:
-                if c == '\\' or c == "'": result += '\\'
+        if any(c in string for c in ', -\\()="\''):
+            q = '"' if string.count("'") > string.count('"') else "'"
+            result = q
+            for c in string:
+                if c == '\\' or c == q: result += '\\'
                 result += c
-            result += "'"
-        else: result = str
+            result += q
+        else: result = string
     return result
 
 # TODO use a cleaner way for keys
@@ -564,15 +564,16 @@ def get_choice_dict(vardict):
             if choice != Key.DEFAULT and not choice in choices[aspect]: choices[aspect].append(choice)
     return choices
 
-def split_parens(str):
+def split_parens(string):
     item = []
     outside = None
     inside = None
     escaped = False
-    quoted = False
+    quoted_s = False
+    quoted_d = False
     parens = 0
     end_expected = False
-    for c in str:
+    for c in string:
         if end_expected: raise ValueError('String extends beyond closing parenthesis')
         elif escaped:
             escaped = False
@@ -580,10 +581,13 @@ def split_parens(str):
         elif c == '\\':
             escaped = True
             item.append(c)
-        elif c == "'":
-            quoted = not quoted
+        elif c == "'" and not quoted_d:
+            quoted_s = not quoted_s
             item.append(c)
-        elif c == '(' and not quoted:
+        elif c == '"' and not quoted_s:
+            quoted_d = not quoted_d
+            item.append(c)
+        elif c == '(' and not (quoted_s or quoted_d):
             parens += 1
             if parens == 1:
                 outside = ''.join(item)
@@ -591,7 +595,7 @@ def split_parens(str):
                 item = []
             else:
                 item.append(c)
-        elif c == ')' and not quoted:
+        elif c == ')' and not (quoted_s or quoted_d):
             if parens > 0:
                 parens -= 1
                 if parens == 0:
@@ -603,9 +607,10 @@ def split_parens(str):
             else:  raise ValueError('Unmatched closing parenthesis')
         else:
             item.append(c)
-    if parens > 0: raise ValueError('Unmatched opening parenthesis')
-    if quoted:     raise ValueError('Unmatched quote character in string')
-    if escaped:    raise ValueError('Unterminated escape sequence at end of string')
+    if parens:   raise ValueError('Unmatched opening parenthesis')
+    if escaped:  raise ValueError('Unterminated escape sequence (\\) at end of string')
+    if quoted_s: raise ValueError("Unmatched single-quote (') character in string")
+    if quoted_d: raise ValueError('Unmatched double-quote (") character in string')
     if item: outside = ''.join(item)
     return outside, inside
 
@@ -613,7 +618,8 @@ def split_raw_str(str, sep, multisep):
     result = []
     item = []
     escaped = False
-    quoted = False
+    quoted_s = False
+    quoted_d = False
     parens = 0
     for c in str:
         if escaped:
@@ -622,43 +628,51 @@ def split_raw_str(str, sep, multisep):
         elif c == '\\':
             escaped = True
             item.append(c)
-        elif c == "'":
-            quoted = not quoted
+        elif c == "'" and not quoted_d:
+            quoted_s = not quoted_s
             item.append(c)
-        elif c == '(' and not quoted:
+        elif c == '"' and not quoted_s:
+            quoted_d = not quoted_d
+            item.append(c)
+        elif c == '(' and not (quoted_s or quoted_d):
             parens += 1
             item.append(c)
-        elif c == ')' and not quoted:
+        elif c == ')' and not (quoted_s or quoted_d):
             if parens > 0:
                 parens -= 1
             else: raise ValueError('Unmatched closing parenthesis')
             item.append(c)
-        elif c == sep and not quoted and parens == 0:
+        elif c == sep and not (quoted_s or quoted_d) and parens == 0:
             if not multisep or item:
                 result.append(''.join(item))
                 item = []
         else:
             item.append(c)
-    if parens > 0: raise ValueError('Unmatched opening parenthesis')
-    if quoted:     raise ValueError('Unmatched quote character in string')
-    if escaped:    raise ValueError('Unterminated escape sequence at end of string')
+    if parens:   raise ValueError('Unmatched opening parenthesis')
+    if escaped:  raise ValueError('Unterminated escape sequence (\\) at end of string')
+    if quoted_s: raise ValueError("Unmatched single-quote (') character in string")
+    if quoted_d: raise ValueError('Unmatched double-quote (") character in string')
     if not multisep or item: result.append(''.join(item))
     return result
 
-def cook_raw_string(str):
+def cook_raw_string(string):
     result = []
-    escaped = False
-    quoted = False
-    for c in str:
+    escaped  = False
+    quoted_s = False
+    quoted_d = False
+    for c in string:
         if escaped:
             result.append(c)
             escaped = False
         elif c == '\\':
             escaped = True
-        elif c == "'":
-            quoted = not quoted
+        elif c == "'" and not quoted_d:
+            quoted_s = not quoted_s
+        elif c == '"' and not quoted_s:
+            quoted_d = not quoted_d
         else:
             result.append(c)
-    if quoted:  raise ValueError('Unmatched quote character in string')
-    if escaped: raise ValueError('Unterminated escape sequence at end of string')
+    if escaped:  raise ValueError('Unterminated escape sequence (\\) at end of string')
+    if quoted_s: raise ValueError("Unmatched single-quote (') character in string")
+    if quoted_d: raise ValueError('Unmatched double-quote (") character in string')
     return ''.join(result)
