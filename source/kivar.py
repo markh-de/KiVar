@@ -25,7 +25,7 @@ import pcbnew
     # Update R2 fields.
 
 def version():
-    return '0.2.0-dev26'
+    return '0.2.0-dev27'
 
 def pcbnew_compatibility_error():
     ver = pcbnew.GetMajorMinorPatchVersion()
@@ -465,7 +465,6 @@ def build_vardict(fpdict):
             for parse_error in parse_errors: errors.append([uuid, f"{ref}: When parsing base rule string: {parse_error}."])
             continue
         choice_sets.extend(base_choice_sets)
-        if not choice_sets: continue
         # TODO decide: shall we really use uncooked aspect name? we have the whole field content only for the pure value.
         if len(aspects) > 1:
             errors.append([uuid, f"{ref}: Multiple aspect name definitions in base rule."])
@@ -478,7 +477,8 @@ def build_vardict(fpdict):
                 continue
             aspect = aspects[0]
         if aspect is None or aspect == '':
-            errors.append([uuid, f"{ref}: Missing aspect name definition."])
+            if choice_sets:
+                errors.append([uuid, f"{ref}: Choice sets without aspect name."])
             continue
         if uuid in vardict:
             errors.append([uuid, f"{ref}: Multiple footprints with same UUID containing a base rule definition."])
@@ -495,10 +495,10 @@ def build_vardict(fpdict):
                 break
     # Handle aux rules
     all_choices = get_choice_dict(vardict)
-    for uuid in vardict:
+    for uuid in auxdict:
+        aux_rule_strings, aux_choice_sets = auxdict[uuid]
         ref = fpdict[uuid][Key.REF]
         aspect = vardict[uuid][Key.ASPECT]
-        aux_rule_strings, aux_choice_sets = auxdict[uuid]
         if aux_rule_strings and aspect is None:
             errors.append([uuid, f"{ref}: Aux rule strings found, but missing base rule definition."]) # TODO terminology
             continue
