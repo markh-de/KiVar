@@ -44,7 +44,7 @@ The KiVar Action Plugin uses the Python API wrapper for pcbnew, the KiCad PCB Ed
 
 The recommended installation method is to use KiCad's integrated **Plugin and Content Manager**.  KiVar is included in the official PCM repository, allowing a smooth and safe installation experience.  For manual installation users can also choose to download the plugin archive packages.
 
-#### Install Via Plugin and Content Manager
+#### Using the Plugin and Content Manager
 
 Required steps:
 
@@ -53,7 +53,7 @@ Required steps:
 3. Mark it for installation and apply the pending changes.
 4. _Optional:_ For quick access, start the PCB Editor (pcbnew) and add the KiVar launcher button to your main toolbar under _Preferences &rarr; Preferences... &rarr; PCB Editor &rarr; Action Plugins_ by clicking the corresponding checkbox in the _Show button_ column.
 
-#### Install Via Manual Archive Extraction
+#### Using Manual Archive Extraction
 
 Required steps:
 
@@ -71,9 +71,9 @@ If the installation does not work for you this way, consider reporting your prob
 
 ## Usage
 
-The process of writing and assigning rules to components (symbols/footprints) is done manually using simple expressions.
+The process of writing and assigning rules to components (i.e. symbols and footprints) is done manually using simple expressions.
 
-Once all relevant components are equipped with their variation rules, the KiVar plugin allows the selection of variation choices providing an easy-to-use dialog interface and takes care of the automatic assignment of the corresponding component values and attributes.
+Once all relevant components are equipped with their variation rules, KiVar allows the selection of variation choices using either an easy-to-use dialog interface (when using the Action Plugin) or a command-line interface (when using the CLI application) and takes care of the automatic analysis and assignment of the corresponding component values and attributes.
 
 The following sections describe the process of configuring your schematic or board and, after that, selecting a variation configuration from the previously configured variation choices.
 
@@ -81,11 +81,7 @@ The following sections describe the process of configuring your schematic or boa
 
 The following sub-sections describe the variation rules setup procedure.
 
-For _KiCad 7 releases_, variation rules must be defined in the _schematic_ and then propagated to the board, on which the plugin operates on (use _Tools &rarr; Update PCB from Schematic..._).  Setting up the variation rules directly in the board is not possible with KiCad 7, as this version does not yet provide footprint user fields, but instead only one-way-copies symbol fields to footprint _properties_, which are not exposed to the user interface in an editable way (but the data is stored internally and used by KiVar) and cannot be propagated back to the schematic.
-
-For _KiCad 8 and later_, it's up to the user to either edit the _schematic or board_ to setup the variation rules, as these versions provide footprint fields and synchronization of symbol and footprint fields in _both_ directions.
-
-No matter which KiCad version is used, being a _pcbnew_ Action Plugin, KiVar always uses the footprint data found in the currently opened _board_.  So all relevant symbol modifications done in the schematic _must be updated from the schematic to the board_ before using the plugin (described below in more detail).
+While it is recommended to define variation rules in the schematic (i.e. in symbol fields) and propagate them to the board, it is also possible to define those rules in the board (i.e. in footprint fields) and propagate them back to the schematic.  Either way, in the end the rules must be present in the footprint fields, as KiVar works as a pcbnew plugin and can therefore only operate on board (not schematic) data.  Changes performed by KiVar must then be propagated back to the schematic as described below.
 
 #### Definition of Terms
 
@@ -102,19 +98,31 @@ Terms used in this document:
  * **Configuration:**
    A combination of specific _Choices_ for _all_ available _Aspects_.  In other words: The resulting board state after applying a fully defined set of _Aspect_ _Choices_.
 
+**TODO** new and changed terms
+
 #### Variation Rules
 
-Each variation rule is defined in a field named `KiVar.Rule` (case-sensitive) of the component (symbol and/or footprint) it relates to.  Multiple components may refer to the same aspects and choices.
+Variation rules are defined in fields of the component (symbol and/or footprint) they relate to.  Multiple components may (and usually will) refer to the same aspects and choices.
+
+Variation rules can be defined in different ways, depending on the user's preferences and requirements:
+
+The **aspect** name can be defined in a dedicated field, or as part of ... **TODO**
+
+**Choices** can be defined either in group or flat expressions, or in a mixture of both.
+
+**TODO**
 
 For each component that defines choices for a specific aspect, KiVar enhances its internally computed set of choices for that aspect to provide the user interface for the variation selection procedure and to collect the values and attributes to be assigned to each related component for each aspect choice.
 
+**TODO** rule compiler figure
+
 The syntax of variation rules is described in the following sections.
 
-_Hint:_ It is highly recommended to add `KiVar.Rule` as a project field name template (configure under _File &rarr; Schematic Setup... &rarr; General &rarr; Field Name Templates_), so that rules can easily be created without manually adding the field and its name for each affected symbol.
+_Hint:_ It is recommended to add `Var` and **TODO** as project field name templates (configured under _File &rarr; Schematic Setup... &rarr; General &rarr; Field Name Templates_), so that rules can easily be created without manually adding those fields and their names for each affected symbol.
 
 ##### Definition Syntax
 
-_Note:_ KiVar 0.1.0 introduced a new rule syntax, which will probably become the final format.  However, before KiVar 1.0.0 release, the definition syntax may still change.  Stay tuned for updates!
+_Note:_ KiVar 0.2.0 again introduced changes to the rule syntax, which will probably become the final format.  However, before KiVar 1.0.0 release, the definition syntax may still change.  Stay tuned for updates!
 
 The following figure summarises the structure of a rule definition.  Each part of it is explained in more detail in the following sections. 
 
