@@ -4,10 +4,10 @@
 
 <img align='right' width='92' src='doc/kivar-icon.inkscape.svg'>
 
-KiVar is a KiCad PCB Assembly Variant selection tool available as
+KiVar is a tool for **KiCad PCB Assembly Variant selection**, available as
 
  * **KiCad Action Plugin** and
- * **Command Line Utility** (Python).
+ * **Command Line Application** (Python).
 
 PCB component variation rules are defined in component (i.e. symbol or footprint) fields.  This allows for the complete variant configuration to be contained in the schematic and board files without requiring external data from outside the native KiCad design files.
 
@@ -18,6 +18,8 @@ The name _KiVar_ (for _KiCad Variants_, obviously) can also be read as an acrony
 KiVar assigns PCB component **values** and **attributes** (such as _Do not populate_, _Not in position files_, _Not in BoM_) according to variation rules specified in footprint fields.  When applying those rules, component values and attributes are modified _in place_, allowing for immediate update of the PCB design as well as the 3D view and enabling compatibility with _any_ exporter.
 
 Back-propagation of modified component data from the PCB to the schematic can be done in an extra step.
+
+**TODO** Add screenshot of plugin (same as below?), add screenshot of CLI app.
 
 ## Concepts
 
@@ -30,7 +32,7 @@ Key concepts of KiVar are:
 
 ## Supported KiCad Versions
 
-KiVar releases 0.2.0 and later require at least KiCad release 8.
+KiVar releases 0.2.0 and later require at least **KiCad release 8**.
 
 Earlier versions of KiVar also supported KiCad 7, but in a very restricted way.  Hence, after the official release of KiCad 8, KiVar support for KiCad 7 was dropped.
 
