@@ -4,51 +4,45 @@
 
 <img align='right' width='92' src='doc/kivar-icon.inkscape.svg'>
 
-KiVar is a KiCad Action Plugin providing convenient PCB assembly variant selection.
+KiVar is a KiCad PCB Assembly Variant selection tool available as
 
-Component variations are specified by rules defined in dedicated symbol or footprint fields.  This allows for the complete variant configuration to be contained in the schematic and board files without requiring external data from outside the native KiCad design files.
+ * **KiCad Action Plugin** and
+ * **Command Line Utility** (Python).
 
-The plugin name _KiVar_ may be read as an acronym for _**Ki**Cad **V**ariation **a**ssignment **r**ules_.
+PCB component variation rules are defined in component (i.e. symbol or footprint) fields.  This allows for the complete variant configuration to be contained in the schematic and board files without requiring external data from outside the native KiCad design files.
+
+The name _KiVar_ (for _KiCad Variants_, obviously) can also be read as an acronym for _**Ki**Cad **V**ariation **a**ssignment **r**ules_.
 
 ## Features
 
-KiVar assigns component **values** and **attributes** (such as _Do not populate_) according to variation rules specified in footprint fields.  Component values and attributes are modified _in place_, allowing for immediate update of the PCB design as well as the 3D view and enabling compatibility with _any_ exporter.
+KiVar assigns PCB component **values** and **attributes** (such as _Do not populate_, _Not in position files_, _Not in BoM_) according to variation rules specified in footprint fields.  When applying those rules, component values and attributes are modified _in place_, allowing for immediate update of the PCB design as well as the 3D view and enabling compatibility with _any_ exporter.
 
-Back-propagation of modified component data to the schematic can be done in an extra step.
+Back-propagation of modified component data from the PCB to the schematic can be done in an extra step.
 
 ## Concepts
 
-The key concepts of KiVar are:
+Key concepts of KiVar are:
 
- * Support for **multiple** independent variation aspects (i.e., dimensions, degrees of freedom) per design.
- * Variation rules are **fully contained** in symbol/footprint fields of native design files (no external configuration files) and **portable** (copying components to another design keeps their variation specification intact).
- * **Seamless integration** of the choice selection process, giving the impression of a native KiCad feature.
+ * Support for **multiple** independent variation aspects (i.e. dimensions or degrees of freedom) per design.
+ * Variation rules are **fully contained** in component fields of native design files (no external configuration files) and **portable** (i.e. copying components to another design keeps their variation specification intact).
  * Component values and attributes are modified **in place**, enabling compatibility with all exporters that work on the actual component data.
+ * **No external state information** is stored, i.e. all currently selected/matching variation choices are detected automatically.
 
 ## Supported KiCad Versions
 
-KiVar is targeted towards release 8 of KiCad.  However, basic feature and API support is already provided by KiCad 7 releases.
+KiVar releases 0.2.0 and later require at least KiCad release 8.
 
-The following table provides a feature support overview.
-
-|Feature                                              |KiCad 7|KiCad 8 and later|
-|-----------------------------------------------------|-------|-----------------|
-|Edit variation rule definitions in symbols           |**Yes**|**Yes**          |
-|Edit variation rule definitions in footprints        |No     |**Yes**          |
-|Apply value and DNP variation choices in PCB         |**Yes**|**Yes**          |
-|Apply footprint attribute "Do not populate"          |No     |**Yes**          |
-|Apply footprint attribute "Exclude from BoM"         |**Yes**|**Yes**          |
-|Apply footprint attribute "Exclude from Pos Files"   |**Yes**|**Yes**          |
-|Update schematic symbol values from PCB              |**Yes**|**Yes**          |
-|Update schematic symbol attribute "DNP" from PCB     |No     |**Yes**          |
-|Update schematic variation definitions from PCB      |No     |**Yes**          |
-|Changes and errors can be clicked to focus components|No     |**Yes**          |
+Earlier versions of KiVar also supported KiCad 7, but in a very restricted way.  Hence, after the official release of KiCad 8, KiVar support for KiCad 7 was dropped.
 
 ## Installation
 
-KiVar can be installed from the official KiCad **Plugin and Content Manager** repository.  This is the recommended way for installation, as it provides automated updates and requires the least amount of installation effort.  However, archives for manual installation are also provided.
+### KiVar Action Plugin
 
-### Install Via Plugin and Content Manager
+The KiVar Action Plugin uses the Python API wrapper for pcbnew, the KiCad PCB Editor.
+
+The recommended installation method is to use KiCad's integrated **Plugin and Content Manager**.  KiVar is included in the official PCM repository, allowing a smooth and safe installation experience.  For manual installation users can also choose to download the plugin archive packages.
+
+#### Install Via Plugin and Content Manager
 
 Required steps:
 
@@ -57,7 +51,7 @@ Required steps:
 3. Mark it for installation and apply the pending changes.
 4. _Optional:_ For quick access, start the PCB Editor (pcbnew) and add the KiVar launcher button to your main toolbar under _Preferences &rarr; Preferences... &rarr; PCB Editor &rarr; Action Plugins_ by clicking the corresponding checkbox in the _Show button_ column.
 
-### Install Via Manual Archive Extraction
+#### Install Via Manual Archive Extraction
 
 Required steps:
 
@@ -68,6 +62,10 @@ Required steps:
 5. _Optional:_ For quick access, add the KiVar launcher button to your main toolbar under _Preferences &rarr; Preferences... &rarr; PCB Editor &rarr; Action Plugins_ by clicking the corresponding checkbox in the _Show button_ column.
 
 If the installation does not work for you this way, consider reporting your problem as an issue in the KiVar bug tracker.
+
+### KiVar Command Line Application
+
+**TODO**
 
 ## Usage
 
