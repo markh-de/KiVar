@@ -177,10 +177,14 @@ With these two expression types and two expression formats, the following four k
 3. **Simple Auxiliary Choice Expressions** (SACX)
 4. **Combined Auxiliary Choice Expressions** (CACX)
 
-As mentioned above, each component that uses of KiVar variation rules must refer to exactly one Aspect.  There are two methods of passing the **Aspect identifier**:
+As mentioned above, each component that uses of KiVar variation rules must refer to exactly one Aspect.
 
-1. Using a _dedicated component field_ (details below), or
+There are two methods of passing the **Aspect identifier**:
+
+1. Using a _dedicated component field_, or
 2. as part of a _Combined Base Choice Expression_.
+
+Details and examples can be found in the following sections.
 
 #### Rule Processing
 
