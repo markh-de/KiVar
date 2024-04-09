@@ -106,44 +106,35 @@ Component variation rules are specified in **Choice Expressions** (short: _CX_),
 
 There are two basic types of Choice Expressions:
 
-1. **Base Choice Expressions**  
-  _define_ or _extend_ the set of available choices for a given aspect, and assign component **values** and **properties**.
+1. **Base Choice Expressions** (BCX)  
+   _define_ or _extend_ the set of available choices for a given aspect, and assign component **values** and **properties**.
 
-3. **Auxiliary Choice Expressions**  
-  _refer to_ defined aspect choices, and assign values to specific custom **fields** (other than the _Value_ field).
+3. **Auxiliary Choice Expressions** (ACX)  
+   _refer to_ defined aspect choices, and assign values to specific custom **fields** (other than the _Value_ field).
 
-Furthermore, Choice Expressions can be defined in different ways, depending on the user's preferences and requirements.
+Furthermore, Choice Expressions can be defined in different ways, depending on the user's preferences and requirements.  There are two different Choice Expression formats:
 
-There are two methods of specifying Choice Expressions:
+1. **Simple Choice Expressions** (SCX)  
+   specify a single Choice Expression using one specific component field per expression.
 
-1. **Flat Choice Expressions**  
-  use one component field to specify exactly one Choice Expression.
+2. **Combined Choice Expressions** (CCX)  
+   allow combining multiple Choice Expressions in a single single component field (also, for Base Choice Expressions, optionally accepting the Aspect identifier).
 
-2. **Combined Choice Expressions**  
-  allow combining multiple Choice Expressions using only a single component field (optionally allowing the Aspect identifier to be passed along in Base Choice Expressions).
+With these two expression types and two expression formats, the following four kinds of Choice Expressions can be specified:
 
-With these two expression types and two specification methods, the following four kinds of Choice Expressions are supported:
+1. **Simple Base Choice Expressions** (SBCX)
+2. **Combined Base Choice Expressions** (CBCX)
+3. **Simple Auxiliary Choice Expressions** (SACX)
+4. **Combined Auxiliary Choice Expressions** (CACX)
 
-1. **** TODO ****
+As mentioned above, each component that uses of KiVar variation rules must refer to exactly one Aspect.  There are two methods of passing the **Aspect identifier**:
 
+1. Using a _dedicated component field_ (details below), or
+2. as part of a _Combined Base Choice Expression_.
 
-As mentioned above, each component that uses of KiVar variation rules must refer to exactly one Aspect.  There are two methods of passing the Aspect identifier:
+#### Rule Processing
 
-1. Using a **dedicated component field** (see below), or
-
-2. Passing the Aspect identifier inside a **Combined Base Choice Expression**
-
------------------
-
-The **aspect** name can be defined in a dedicated field, or as part of ... **TODO**
-
-**Choices** can be defined either in group or flat expressions, or in a mixture of both.
-
-**TODO**
-
-For each component that defines choices for a specific aspect, KiVar enhances its internally computed set of choices for that aspect to provide the user interface for the variation selection procedure and to collect the values and attributes to be assigned to each related component for each aspect choice.
-
-**TODO** rule compiler figure
+For each component that defines choices for a specific aspect, KiVar enhances its internally computed set of choices for that aspect to provide the user interface for the variation selection or analysis, and to collect the values, fields and attributes to be assigned to each related component for each aspect choice.
 
 The syntax of variation rules is described in the following sections.
 
