@@ -83,6 +83,56 @@ The following sub-sections describe the variation rules setup procedure.
 
 While it is recommended to define variation rules in the schematic (i.e. in symbol fields) and propagate them to the board, it is also possible to define those rules directly in the board (i.e. in footprint fields) and propagate them back to the schematic.  Either way, in the end the rules must be present in the footprint fields, as KiVar uses the _pcbnew_ API wrapper and can therefore only operate on board (not schematic) data, which must then be propagated back to the schematic as described in later sections. (TODO link)
 
+#### Migrating from KiVar 0.1.x
+
+KiVar 0.2.0 introduced changes and enhancements to the rule syntax.  The following sub-sections will support experienced users of KiVar 0.1.x with updating their legacy variation rules for current and upcoming KiVar releases.
+
+##### New Field Names
+
+While KiVar 0.1.x and earlier used a single field `KiVar.Rule`, current releases use `Var` for quite the same purpose.
+
+So as a first step you should move all legacy rules from `KiVar.Rule` to `Var`.  This can be achieved simply with copy & paste in the KiCad Schematic Editor's Symbol Fields Table.
+
+_Hint:_  In the Symbol Fields Table, sort by the legacy `KiVar.Rule` field, then copy & paste all relevant cells to the `Var` field.  Afterwards, remove all `KiVar.Rule` fields (can be done in the Symbol Fields Table dialog).
+
+##### Basic Rule Format
+
+While the legacy rule format of the `KiVar.Rule` field is very similar to the current `Var` field expression format, there have been some changes that may (or may not) break your legacy rules.  You will need to review your legacy rules to be sure that they are parsed correctly with current (and upcoming) versions of KiVar.
+
+The following sections will cover the details.
+
+##### Property (Formerly Options) Inheritance
+
+Severity: Critical.
+
+***TODO*** add examples old -> new
+
+##### Implicit Default Properties
+
+Severity: Critical.
+
+While being party backwards-compatible, the `-!` statement is now no longer an option, but a property modifier.
+
+***TODO***
+
+##### Values As Multiple Words
+
+Severity: Not critical (relaxed rules).
+
+***TODO***
+
+##### Aspect Identifier Position
+
+Severity: Not critical (relaxed rules).
+
+***TODO***
+
+##### New Choice Expression Types and Formats
+
+Severity: Not critical (optional enhancements).
+
+***TODO***
+
 #### Definition of Terms
 
 As mentioned before, KiVar supports multiple independent _variation aspects_ per board.  For each of these variation aspects, one _variation choice_ can be made later during the selection process.  The result of selecting a specific set of choices for a given set of aspects forms a _variation configuration_.
@@ -138,13 +188,14 @@ For each component that defines choices for a specific aspect, KiVar enhances it
 
 The syntax of variation rules is described in the following sections.
 
+(TODO move this)
 _Hint:_ It is recommended to add `Var` and **TODO** as project field name templates (configured under _File &rarr; Schematic Setup... &rarr; General &rarr; Field Name Templates_), so that rules can easily be created without manually adding those fields and their names for each affected symbol.
 
-##### Definition Syntax
-
-_Note:_ KiVar 0.2.0 again introduced changes to the rule syntax, which will probably become the final format.  However, before KiVar 1.0.0 release, the definition syntax may still change.  Stay tuned for updates!
+#### Definition Syntax
 
 The following figure summarises the structure of a rule definition.  Each part of it is explained in more detail in the following sections. 
+
+***TODO*** new example, more specific aspect and choice names. LED color (red/green/yellow/white) and matching resistors? optionally changing the LED MPN?
 
 ![Variation Definition Composition](doc/rule.png)
 
@@ -153,7 +204,7 @@ For the upcoming sections, the following simple example rules are used for illus
  * `R1`: `KiVar.Rule` = `ASPECT_A CHOICE_1(0Ω) CHOICE_2,CHOICE_3(10kΩ)`
  * `R2`: `KiVar.Rule` = `ASPECT_A CHOICE_3() *(-!)`
 
-###### Rule Definition
+##### Rule Definition
 
 A **rule definition** consists of multiple sections, separated by one or more (unescaped) _space_ characters.
 
@@ -168,7 +219,7 @@ Looking at `R1` of the illustration example, `ASPECT_A` is the aspect name, and 
 
 Follow the next sections for further explanations.
 
-###### Choice Definition
+##### Choice Definition
 
 A choice definition consists of two parts: One or more **choice names** (_comma_-separated), directly followed by a pair of parentheses containing the **choice arguments**.
 
@@ -188,7 +239,7 @@ For the illustration example the following assignments apply:
  * the already known `CHOICE_3` without arguments,
  * the default choice `*` (i.e. applies to `CHOICE_1` and `CHOICE_2`, see below) with argument `-!`.
 
-###### Choice Definition Arguments
+##### Choice Definition Arguments
 
 Each choice definition may contain the following choice argument types:
 
@@ -199,7 +250,7 @@ _Important:_ All arguments starting with an _unescaped_ `-` (dash) character are
 
 For the illustration example this means that the arguments `0Ω` and `10kΩ` are considered component values, while `-!` is considered an option.
 
-###### Supported Options
+##### Supported Options
 
 Currently only one type of option is supported:
 
@@ -211,13 +262,13 @@ Currently only one type of option is supported:
 
 If this option is _not_ provided for a specific choice, then the above attributes will be _cleared_ for that choice, i.e. the part will be "fitted" and hence marked as populated and included in position files and BoM.
 
-###### Optional Value Assignments
+##### Optional Value Assignments
 
 Assigning values to choices is optional for each component.  When a component's variation rule does not define values in _any_ of its choices, the value field for that component is not changed when assigning a variation.  This feature is useful for parts that always keep the same value and are only switched between _fitted_ and _unfitted_.
 
 _Note:_ It is important to understand that a component's variation rule must _either_ define **one value for every choice** _or_ **no value for any choice**.  Using a mixture of choices _including_ values and _not including_ values would lead to an inconsistent state of the component value field's content and will therefore raise an error during the plugin's enumeration stage.
 
-###### Default Choice Definitions
+##### Default Choice Definitions
 
 Default choices can be used to declare arguments that shall be applied to choices not explicitly defined in the current rule definition, but declared in any other rule definitions (i.e., in rules applied to other components).
 
@@ -235,7 +286,7 @@ A default choice definition can be placed anywhere in the list of choice definit
  * `FOO *(10kΩ) BAR,BAZ(47kΩ)` reads like _'Usually a 10kΩ resistor, but for the choices `BAR` or `BAZ`, this becomes a 47kΩ resistor' ('default' notation)._
  * `FOO BAR,BAZ(47kΩ) *(10kΩ)` reads like _'For `BAR` and `BAZ`, this is a 47kΩ resistor; for any other choice, this is a 10kΩ resistor' ('else' notation)._
 
-###### Illustration Example Resolution
+##### Illustration Example Resolution
 
 For the above illustration example, which was defined as ...
 
@@ -274,19 +325,19 @@ _Note:_ The same rules apply for aspect and choice names.  E.g., the rule `'Aspe
 
 _Note:_ When separating parts using the space character (rule definition sections or choice definition arguments), one or more space characters may be used per separation.
 
-##### Constraints
+#### Constraints
 
 KiVar uses **implicit declarations** for aspects and for choices.  That is, it is not required to maintain a dedicated list of available aspects or choices.  Simply mentioning an aspect or choice inside a rule definition is sufficient to declare them.
 
 _Note:_ Using implicit declarations carries the risk of creating undesired extra aspects or choices in case of spelling errors.  Also, this method may require a little more work in case aspects or choices are to be renamed.  However, the Schematic Editor's _Symbol Fields Table_ is a useful tool for bulk-editing KiVar rules.
 
-##### Real-World Examples
+#### Real-World Examples
 
 The following examples are taken from a real project and show a few configurable variation aspects, their possible choices along with a short explanation of the implementation.
 
 Each example is illustrated with a schematic snippet including the values of the `KiVar.Rule` field of each related symbol.
 
-###### Example 1: I²C Device Address Selection
+##### Example 1: I²C Device Address Selection
 
 This is a very simple example, used for address selection of an I²C device.  Address input A0 switches between device addresses 0x54 _(A0=0)_ and 0x55 _(A0=1)_.
 
@@ -302,7 +353,7 @@ How to read the rules:
 
 Alternatively, the rules in this example could explicitly list _those_ choices that make the corresponding parts _unfitted_.  However, with the above notation, the rules can be read more naturally.  That is, choice 0x55 is listed in the upper resistor and leads to high voltage level and choice 0x54 is listed in the lower resistor and leads to low voltage level.
 
-###### Example 2: Boot Source Selection
+##### Example 2: Boot Source Selection
 
 This is used for the boot source device selection for an NXP i.MX6ULL SoC.
 
@@ -317,7 +368,7 @@ How to read the rules:
  * **R10**: For choices `SD`, `EMMC` and `JP` this part is unfitted, else (`NAND`) fitted.
  * **R11**: For choices `SD`, `NAND` and `JP` this part is unfitted, else (`EMMC`) fitted.
 
-###### Example 3: Undervoltage Trip Points
+##### Example 3: Undervoltage Trip Points
 
 Typical use-cases for variations are resistor divider networks, such as voltage regulator feedback dividers or — in this case — a voltage divider with two taps for a programmable hysteresis on an undervoltage lock-out (UVLO) circuit.
 
@@ -333,7 +384,7 @@ How to read the rules:
  * **R14**: For choice `2.41V/3.40V` the value is `309kΩ`, for choice `3.15V/3.57V`, the value is `100kΩ`.
  * **R15**: The value is always set to `750kΩ`.  Same explanation applies as for R13.
 
-###### Example 4: IC Variant Selection
+##### Example 4: IC Variant Selection
 
 This is used for selection of peripheral parts on a boost-buck-converter IC, which is available as _fixed_ (IRNZ suffix) and _adjustable_ (IRAZ suffix) voltage variants (just like many LDOs are, too).  Depending on the market availability of those IC variants, this variation aspect helps to quickly select between assembly options.
 
@@ -352,7 +403,7 @@ _Note:_ The rule for **R16** is the _only_ rule explicitly mentioning the choice
 
 _Note:_ In this example, the IC itself keeps its original value (part number without IC variant suffix).  In its current state KiVar can only change part values, no other fields (e.g. ordering information).  If you want to switch between different part types (with different symbols or ordering information) or footprints, you need to use multiple _alternate_ symbol instances with each one defining its own set of relevant fields and only one of them actually fitted (refer to next example).
 
-###### Example 5: IC Type and Address Selection
+##### Example 5: IC Type and Address Selection
 
 This is used for selection of an I/O expander IC type (953**5** vs. 953**9**) along with its I²C address.  Different (footprint-compatible!) IC types interpret the input on pin 3 differently ("A2" vs. "/RESET").  See the text callout in the figure for details.
 
@@ -387,7 +438,7 @@ How to read the rules:
  * **U4**: This rule explicitly lists all choices for which this part is unfitted: `9539/0x74`.  For other choices the part will be fitted.
  * **U5**: This rule explicitly lists all choices for which this part is unfitted: `9535/0x20` and `9539/0x74`.  For other choices the part will be fitted.
 
-###### Example 6: Backlight LED Maximum Constant Current Selection
+##### Example 6: Backlight LED Maximum Constant Current Selection
 
 In this example a combination of resistor networks determines the maximum constant current for an LED backlight (_maximum_ because the used current regulator also has a PWM input, which is later controlled via software).
 
