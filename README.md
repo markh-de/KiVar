@@ -34,7 +34,7 @@ Key concepts of KiVar are:
 
 KiVar releases 0.2.0 and later require at least **KiCad release 8**.
 
-Earlier versions of KiVar also supported KiCad 7, but in a very restricted way.  Hence, after the official release of KiCad 8, KiVar support for KiCad 7 was dropped.
+Earlier versions of KiVar also supported KiCad 7, but in a very restricted way.  Hence, after the release of KiCad 8, KiVar support for KiCad 7 was dropped.
 
 ## Installation
 
@@ -73,38 +73,67 @@ If the installation does not work for you this way, consider reporting your prob
 
 The process of writing and assigning rules to components (i.e. symbols and footprints) is done manually using simple expressions.
 
-Once all relevant components are equipped with their variation rules, KiVar allows the selection of variation choices using either an easy-to-use dialog interface (when using the Action Plugin) or a command-line interface (when using the CLI application) and takes care of the automatic analysis and assignment of the corresponding component values and attributes.
+Once all relevant components are equipped with their variation rules, KiVar allows the selection of variation choices using either an easy-to-use dialog interface (when using the Action Plugin) or a command-line interface (when using the CLI application) and takes care of the automatic analysis and assignment of the corresponding component values, fields and attributes.
 
-The following sections describe the process of configuring your schematic or board and, after that, selecting a variation configuration from the previously configured variation choices.
+The following sections describe the process of configuring your schematic or board and - after that - selecting a variation configuration from the previously configured variation choices.
 
 ### Component Variation Setup
 
 The following sub-sections describe the variation rules setup procedure.
 
-While it is recommended to define variation rules in the schematic (i.e. in symbol fields) and propagate them to the board, it is also possible to define those rules in the board (i.e. in footprint fields) and propagate them back to the schematic.  Either way, in the end the rules must be present in the footprint fields, as KiVar works as a pcbnew plugin and can therefore only operate on board (not schematic) data.  Changes performed by KiVar must then be propagated back to the schematic as described below.
+While it is recommended to define variation rules in the schematic (i.e. in symbol fields) and propagate them to the board, it is also possible to define those rules directly in the board (i.e. in footprint fields) and propagate them back to the schematic.  Either way, in the end the rules must be present in the footprint fields, as KiVar uses the _pcbnew_ API wrapper and can therefore only operate on board (not schematic) data, which must then be propagated back to the schematic as described in later sections. (TODO link)
 
 #### Definition of Terms
 
 As mentioned before, KiVar supports multiple independent _variation aspects_ per board.  For each of these variation aspects, one _variation choice_ can be made later during the selection process.  The result of selecting a specific set of choices for a given set of aspects forms a _variation configuration_.
 
-Terms used in this document:
+Basic terms used in this document:
 
- * **Aspect:**
-   A dimension of variation changes, which are defined by _Choices_ (see below).
+ * **Aspect:**  
+   A dimension of variation changes, which are defined by _Choices_ (see below).  One PCB design can refer to multiple aspects.  Each component, which makes use of KiVar variations, must refer to exactly one aspect identifier.
  
- * **Choice:**
-   A set of values and attributes related to a specific _Aspect_ and to be assigned to specific components.
+ * **Choice:**  
+   A set of values (component values or field contents) and/or properties to be assigned to specific components.  A Choice is always related to a specific _Aspect_.
 
- * **Configuration:**
-   A combination of specific _Choices_ for _all_ available _Aspects_.  In other words: The resulting board state after applying a fully defined set of _Aspect_ _Choices_.
-
-**TODO** new and changed terms
+ * **Configuration:**  
+   A fully defined set of specific _Choices_ for _all_ available _Aspects_.  In other words, one specific board assembly variant state.
 
 #### Variation Rules
 
-Variation rules are defined in fields of the component (symbol and/or footprint) they relate to.  Multiple components may (and usually will) refer to the same aspects and choices.
+Each component (which uses KiVar variation rules) must refer to exactly one **Aspect**.  The **Choices** defined or refered to in the component are always related to that Aspect.
 
-Variation rules can be defined in different ways, depending on the user's preferences and requirements:
+Component variation rules are specified in **Choice Expressions** (short: _CX_), which are defined in the fields of the component (i.e. symbol and/or footprint) they relate to.  Multiple components may (and usually will) refer to the same aspects and choices.
+
+There are two basic types of Choice Expressions:
+
+1. **Base Choice Expressions**  
+  _define_ or _extend_ the set of available choices for a given aspect, and assign component **values** and **properties**.
+
+3. **Auxiliary Choice Expressions**  
+  _refer to_ defined aspect choices, and assign values to specific custom **fields** (other than the _Value_ field).
+
+Furthermore, Choice Expressions can be defined in different ways, depending on the user's preferences and requirements.
+
+There are two methods of specifying Choice Expressions:
+
+1. **Flat Choice Expressions**  
+  use one component field to specify exactly one Choice Expression.
+
+2. **Combined Choice Expressions**  
+  allow combining multiple Choice Expressions using only a single component field (optionally allowing the Aspect identifier to be passed along in Base Choice Expressions).
+
+With these two expression types and two specification methods, the following four kinds of Choice Expressions are supported:
+
+1. **** TODO ****
+
+
+As mentioned above, each component that uses of KiVar variation rules must refer to exactly one Aspect.  There are two methods of passing the Aspect identifier:
+
+1. Using a **dedicated component field** (see below), or
+
+2. Passing the Aspect identifier inside a **Combined Base Choice Expression**
+
+-----------------
 
 The **aspect** name can be defined in a dedicated field, or as part of ... **TODO**
 
