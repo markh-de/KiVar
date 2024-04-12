@@ -213,7 +213,7 @@ With these two expression types and two expression formats, the following four k
 4. **Combined Auxiliary Choice Expressions** (CACE)  
    use the field `<CUSTOMFIELD>.Var` with field content in [CCE](#CCE) format (with no Aspect identifier allowed) to assign values for the component's custom field `<CUSTOMFIELD>` to one or more choice lists.
 
-As mentioned above, each component that uses of KiVar variation rules must refer to exactly one Aspect.
+As mentioned above, each component that provides KiVar variation rules must refer to exactly one Aspect.
 
 There are two methods of passing the **Aspect identifier**:
 
@@ -226,24 +226,8 @@ Details and examples can be found in the following sections.
 
 As mentioned above, Choice Expressions can be specified in various ways, providing flexibility to cover the most important user requirements.
 
-The following sub-sections will describe the utilized field names and required syntax for each method.  The content formats are explained in later sections.
 
-##### Simple Base Choice Expression (SBCE)
-
-Field              | Content Format
------------------- | --------------
-`Var(<CHOICE>)`    | [SCE](#...)
-
-
-
-
-
-2. **Combined Base Choice Expressions** (CBCE)
-3. **Simple Auxiliary Choice Expressions** (SACE)
-4. **Combined Auxiliary Choice Expressions** (CACE)
-
-##### 
-
+(TODO SCE, CCE in sub-sections, link here from above)
 
 
 
