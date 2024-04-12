@@ -25,7 +25,7 @@ Back-propagation of modified component data from the PCB to the schematic can be
 
 Key concepts of KiVar are:
 
- * Support for **multiple** independent variation aspects (i.e. dimensions or degrees of freedom) per design.
+ * A single design may use **multiple** independent variation **aspects** (i.e. dimensions or degrees of freedom).
  * Variation rules are **fully contained** in component fields of native design files (no external configuration files) and **portable** (i.e. copying components to another design keeps their variation specification intact).
  * Component values and attributes are modified **in place**, enabling compatibility with all exporters that work on the actual component data.
  * **No external state information** is stored, i.e. all currently selected/matching variation choices are detected automatically.
@@ -148,34 +148,59 @@ Basic terms used in this document:
  * **Configuration:**  
    A fully defined set of specific _Choices_ for _all_ available _Aspects_.  In other words, one specific board assembly variant state.
 
-#### Variation Rules
+#### Basic Rules Structure
 
-Each component (which uses KiVar variation rules) must refer to exactly one **Aspect**.  The **Choices** defined or refered to in the component are always related to that Aspect.
+Each component (which uses KiVar variation rules) must refer to exactly one **Aspect**.  The **Choices** defined or referred to in the component are always related to that Aspect.
 
-Component variation rules are specified in **Choice Expressions** (short: _CX_), which are defined in the fields of the component (i.e. symbol and/or footprint) they relate to.  Multiple components may (and usually will) refer to the same aspects and choices.
+There can exist multiple Aspects per design, and for each Aspect there can exist multiple Choices.
+
+Example:
+
+ * Aspect `DEV_ADDR`
+   * Choice `0x50`
+   * Choice `0x51`
+   * Choice `0x52`
+
+ * Aspect `BOOT_SRC`
+   * Choice `EMMC`
+   * Choice `SDCARD`
+   * Choice `NAND`
+
+ * Aspect `VIO_LEVEL`
+   * Choice `1.8V`
+   * Choice `2.5V`
+   * Choice `3.3V`
+
+KiVar computes such sets of Aspect and Choice definitions internally by checking each component's field data.  For this to work as expected, the user must provide the variation data in the components' fields.  This process is explained in the following sections.
+
+#### Rules Specification
+
+Component variation rules are specified in **Choice Expressions** (short: _CE_), which are defined in the fields of the component (i.e. symbol and/or footprint) they relate to.  Multiple components may (and usually will) refer to the same aspects and choices.
+
+One component may only relate to a single aspect, but to an unlimited number of choices for that aspect.
 
 There are two basic types of Choice Expressions:
 
-1. **Base Choice Expressions** (BCX)  
+1. **Base Choice Expressions** (BCE)  
    _define_ or _extend_ the set of available choices for a given aspect, and assign component **values** and **properties**.
 
-3. **Auxiliary Choice Expressions** (ACX)  
-   _refer to_ defined aspect choices, and assign values to specific custom **fields** (other than the _Value_ field).
+2. **Auxiliary Choice Expressions** (ACE)  
+   _refer to_ already defined aspect choices, and assign values to specific custom **fields** (other than the _Value_ field).
 
 Furthermore, Choice Expressions can be defined in different ways, depending on the user's preferences and requirements.  There are two different Choice Expression formats:
 
-1. **Simple Choice Expressions** (SCX)  
+1. **Simple Choice Expressions** (SCE)  
    specify a single Choice Expression using one specific component field per expression.
 
-2. **Combined Choice Expressions** (CCX)  
+2. **Combined Choice Expressions** (CCE)  
    allow combining multiple Choice Expressions in a single single component field (also, for Base Choice Expressions, optionally accepting the Aspect identifier).
 
 With these two expression types and two expression formats, the following four kinds of Choice Expressions can be specified:
 
-1. **Simple Base Choice Expressions** (SBCX)
-2. **Combined Base Choice Expressions** (CBCX)
-3. **Simple Auxiliary Choice Expressions** (SACX)
-4. **Combined Auxiliary Choice Expressions** (CACX)
+1. **Simple Base Choice Expressions** (SBCE)
+2. **Combined Base Choice Expressions** (CBCE)
+3. **Simple Auxiliary Choice Expressions** (SACE)
+4. **Combined Auxiliary Choice Expressions** (CACE)
 
 As mentioned above, each component that uses of KiVar variation rules must refer to exactly one Aspect.
 
