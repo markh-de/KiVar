@@ -205,20 +205,20 @@ With these two expression types and two expression formats, the following four k
    use the field `Var(<CHOICELIST>)` with field content in [SCE](#SCE) format to assign component value and properties to a specific choice list `<CHOICELIST>`.
 
 2. **Combined Base Choice Expressions** (CBCE)  
-   use the field `Var` with field content in [CCE](#CCE) format to assign component values and properties to one or more choice lists.
+   use the field `Var` with field content in [CCE](#CCE) format (with an Aspect identifier allowed) to assign component values and properties to one or more choice lists.
 
 3. **Simple Auxiliary Choice Expressions** (SACE)  
    use the field `<CUSTOMFIELD>.Var(<CHOICELIST>)` with field content in [SCE](#SCE) format to assign a specific value for the component's custom field `<CUSTOMFIELD>` to a specific choice list `<CHOICELIST>`.
 
 4. **Combined Auxiliary Choice Expressions** (CACE)  
-   use the field `<CUSTOMFIELD>.Var` with field content in [CCE](#CCE) format to assign values for the component's custom field `<CUSTOMFIELD>` to one or more choice lists.
+   use the field `<CUSTOMFIELD>.Var` with field content in [CCE](#CCE) format (with no Aspect identifier allowed) to assign values for the component's custom field `<CUSTOMFIELD>` to one or more choice lists.
 
 As mentioned above, each component that uses of KiVar variation rules must refer to exactly one Aspect.
 
 There are two methods of passing the **Aspect identifier**:
 
-1. Using a _dedicated component field_, or
-2. as part of a _Combined Base Choice Expression_.
+1. Using the _dedicated component field_ `Var.Aspect`, or
+2. as part of a _Combined Base Choice Expression_ (see above).
 
 Details and examples can be found in the following sections.
 
