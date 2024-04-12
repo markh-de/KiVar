@@ -171,7 +171,11 @@ Example:
    * Choice `2.5V`
    * Choice `3.3V`
 
-KiVar computes such sets of Aspect and Choice definitions internally by checking each component's field data.  For this to work as expected, the user must provide the variation data in the components' fields.  This process is explained in the following sections.
+One possible example _Configuration_ for these Aspects and Choices:
+
+`DEV_ADDR=0x52 BOOT_SRC=NAND VIO_LEVEL=1.8V`
+
+KiVar computes such sets of Aspect and Choice definitions internally by checking each component's field data.  For this to work, the user must provide the variation data in the components' fields.  This process is explained in the following sections.
 
 #### Rules Specification
 
@@ -197,10 +201,17 @@ Furthermore, Choice Expressions can be defined in different ways, depending on t
 
 With these two expression types and two expression formats, the following four kinds of Choice Expressions can be specified:
 
-1. **Simple Base Choice Expressions** (SBCE)
-2. **Combined Base Choice Expressions** (CBCE)
-3. **Simple Auxiliary Choice Expressions** (SACE)
-4. **Combined Auxiliary Choice Expressions** (CACE)
+1. **Simple Base Choice Expressions** (SBCE)  
+   use the field `Var(<CHOICELIST>)` with field content in [SCE](#SCE) format to assign component value and properties to a specific choice list `<CHOICELIST>`.
+
+2. **Combined Base Choice Expressions** (CBCE)  
+   use the field `Var` with field content in [CCE](#CCE) format to assign component values and properties to one or more choice lists.
+
+3. **Simple Auxiliary Choice Expressions** (SACE)  
+   use the field `<CUSTOMFIELD>.Var(<CHOICELIST>)` with field content in [SCE](#SCE) format to assign a specific value for the component's custom field `<CUSTOMFIELD>` to a specific choice list `<CHOICELIST>`.
+
+4. **Combined Auxiliary Choice Expressions** (CACE)  
+   use the field `<CUSTOMFIELD>.Var` with field content in [CCE](#CCE) format to assign values for the component's custom field `<CUSTOMFIELD>` to one or more choice lists.
 
 As mentioned above, each component that uses of KiVar variation rules must refer to exactly one Aspect.
 
@@ -211,16 +222,40 @@ There are two methods of passing the **Aspect identifier**:
 
 Details and examples can be found in the following sections.
 
-#### Rule Processing
+#### Definition Syntax
 
-For each component that defines choices for a specific aspect, KiVar enhances its internally computed set of choices for that aspect to provide the user interface for the variation selection or analysis, and to collect the values, fields and attributes to be assigned to each related component for each aspect choice.
+As mentioned above, Choice Expressions can be specified in various ways, providing flexibility to cover the most important user requirements.
 
-The syntax of variation rules is described in the following sections.
+The following sub-sections will describe the utilized field names and required syntax for each method.  The content formats are explained in later sections.
+
+##### Simple Base Choice Expression (SBCE)
+
+Field              | Content Format
+------------------ | --------------
+`Var(<CHOICE>)`    | [SCE](#...)
+
+
+
+
+
+2. **Combined Base Choice Expressions** (CBCE)
+3. **Simple Auxiliary Choice Expressions** (SACE)
+4. **Combined Auxiliary Choice Expressions** (CACE)
+
+##### 
+
+
+
+
+
 
 (TODO move this)
 _Hint:_ It is recommended to add `Var` and **TODO** as project field name templates (configured under _File &rarr; Schematic Setup... &rarr; General &rarr; Field Name Templates_), so that rules can easily be created without manually adding those fields and their names for each affected symbol.
 
-#### Definition Syntax
+
+
+
+
 
 The following figure summarises the structure of a rule definition.  Each part of it is explained in more detail in the following sections. 
 
