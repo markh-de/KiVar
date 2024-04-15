@@ -33,7 +33,7 @@ def build_vardict_wrapper(fpdict):
     vardict, errors = build_vardict(fpdict)
     if len(errors) > 0:
         print_err(f'Errors ({len(errors)}):')
-        for ref, error in sorted(errors, key=lambda x: natural_sort_key(fpdict[x[0]][Key.REF])):
+        for uuid, order, error in sorted(errors, key=lambda x: natural_sort_key(x[1])):
             print_err('    ' + error)
         return None
     if len(vardict) == 0:
@@ -156,7 +156,7 @@ def check_command(board=None, verbose=False):
         print_err(f'Check passed. All {len(sel)} aspect(s) have a matching choice.')
     return True
 
-def set_command(board=None, assign=None, dry_run=False, verify=False, verbose=False):
+def set_command(board=None, assign=None, dry_run=False, verbose=False):
     # TODO how to handle errors? ignore failing assignments, or abort?
     #      collect errors, then print & return?
     if assign is None:
@@ -190,15 +190,8 @@ def set_command(board=None, assign=None, dry_run=False, verify=False, verbose=Fa
     if len(changes) > 0:
         if dry_run or verbose:
             print_err(f'Changes ({len(changes)}):')
-            for ref, change in sorted(changes, key=lambda x: natural_sort_key(fpdict[x[0]][Key.REF])):
+            for uuid, order, change in sorted(changes, key=lambda x: natural_sort_key(x[1])):
                 print('    ' + change)
-        if verify:
-            new_sel = detect_current_choices(fpdict, vardict)
-            if new_sel == sel:
-                print('Info: Verification passed.') # TODO test this!
-            else:
-                print('Error: Verification failed. Probably caused by ambiguous rules.') # TODO test this!
-                return False
         if not dry_run:
             store_fpdict(b, fpdict)
             if save_board(board, b):
@@ -240,7 +233,6 @@ def main():
     set_parser = subparsers.add_parser("set", help="assign choices to aspects")
     set_parser.add_argument("-A", "--assign",  action="append",     help="assign choice to aspect ('str' format: \"aspect=choice\")", metavar="str")
     set_parser.add_argument("-D", "--dry-run", action="store_true", help="only print assignments, do not really perform/save them")
-    set_parser.add_argument("-V", "--verify",  action="store_true", help="verify unambiguity of assignments, exit with error if check fails")
     set_parser.add_argument("-v", "--verbose", action="store_true", help="verbose output")
     set_parser.add_argument("board", help="KiCad PCB file name")
 
@@ -267,7 +259,7 @@ def main():
             elif cmd == "check":
                 if not check_command(board=args.board): exitcode = 1
             elif cmd == "set":
-                if not set_command(board=args.board, assign=args.assign, dry_run=args.dry_run, verify=args.verify, verbose=args.verbose): exitcode = 1
+                if not set_command(board=args.board, assign=args.assign, dry_run=args.dry_run, verbose=args.verbose): exitcode = 1
             else:
                 print_err(f'Error: Missing command. Use "-h" or "--help" for help.')
                 exitcode = 2

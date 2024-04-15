@@ -14,7 +14,7 @@ from kivar import build_fpdict, build_vardict, version, get_choice_dict, detect_
 
 class KiVarPlugin(pcbnew.ActionPlugin):
     def defaults(self):
-        self.name = 'KiVar'
+        self.name = 'KiVar' # TODO add plugin description (will appear on button)
         self.category = 'Assembly Variants'
         self.description = 'Switches predefined assembly variant choices'
         self.icon_file_name      = os_path.join(os_path.dirname(__file__), 'de_markh_kivar-icon-light.png')
@@ -178,7 +178,7 @@ class VariantDialog(wx.Dialog):
 
     def update_list(self):
         changes = apply_selection(self.fpdict, self.vardict, self.selections(), True)
-        self.changes_list.set_item_list(sorted(changes, key=lambda x: natural_sort_key(x[1]))) # sort by text
+        self.changes_list.set_item_list(sorted(changes, key=lambda x: natural_sort_key(x[1])))
 
 def show_missing_rules_dialog():
     dialog = MissingRulesDialog()
@@ -227,7 +227,7 @@ class PcbItemListBox(wx.ListBox):
         self.Clear()
         for item in item_list:
             self.uuids.append(item[0])
-            self.Append(item[1])
+            self.Append(item[2])
 
     def on_list_item_selected(self, event):
         if self.board is not None:
