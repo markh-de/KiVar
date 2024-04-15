@@ -33,7 +33,7 @@ def build_vardict_wrapper(fpdict):
     vardict, errors = build_vardict(fpdict)
     if len(errors) > 0:
         print_err(f'Errors ({len(errors)}):')
-        for ref, error in sorted(errors, key=lambda x: natural_sort_key(fpdict[x[0]][Key.REF])):
+        for uuid, order, error in sorted(errors, key=lambda x: natural_sort_key(x[1])):
             print_err('    ' + error)
         return None
     if len(vardict) == 0:
@@ -190,7 +190,7 @@ def set_command(board=None, assign=None, dry_run=False, verify=False, verbose=Fa
     if len(changes) > 0:
         if dry_run or verbose:
             print_err(f'Changes ({len(changes)}):')
-            for ref, change in sorted(changes, key=lambda x: natural_sort_key(fpdict[x[0]][Key.REF])):
+            for uuid, order, change in sorted(changes, key=lambda x: natural_sort_key(x[1])):
                 print('    ' + change)
         if verify:
             new_sel = detect_current_choices(fpdict, vardict)
