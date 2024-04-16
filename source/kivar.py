@@ -29,7 +29,7 @@ from copy import deepcopy
     # Update R2 fields.
 
 def version():
-    return '0.2.0-dev28'
+    return '0.2.0-dev29'
 
 def pcbnew_compatibility_error():
     ver = pcbnew.GetMajorMinorPatchVersion()
@@ -556,20 +556,24 @@ def build_vardict(fpdict):
                 # TODO cook and quote names in error message, refine wording
                 for e in fin_errors: errors.append([uuid, ref, f"{ref}: In aux rule for field '{field}': {e}."])
                 continue
-    # Check for ambiguous choices
-    for aspect in sorted(all_choices, key=natural_sort_key):
-        choices = sorted(all_choices[aspect], key=natural_sort_key)
-        for choice_a in choices:
-            fpdict_a = deepcopy(fpdict)
-            apply_selection(fpdict_a, vardict, {aspect: choice_a})
-            ambiguous = []
-            for choice_b in choices:
-                if choice_a == choice_b: continue
-                fpdict_b = deepcopy(fpdict)
-                apply_selection(fpdict_b, vardict, {aspect: choice_b})
-                if fpdict_a == fpdict_b: ambiguous.append(f"'{escape_str(choice_b)}'")
-            if ambiguous:
-                errors.append([None, '0', f"Ambiguous rules: Aspect '{escape_str(aspect)}' choice '{escape_str(choice_a)}' is identical with choice(s) {', '.join(ambiguous)}."])
+    if not errors:
+        # Check for ambiguous choices (only if data is valid so far)
+        for aspect in sorted(all_choices, key=natural_sort_key):
+            choices = sorted(all_choices[aspect], key=natural_sort_key)
+            for choice_a in choices:
+                fpdict_a = deepcopy(fpdict)
+                apply_selection(fpdict_a, vardict, {aspect: choice_a})
+                ambiguous = []
+                for choice_b in choices:
+                    if choice_a == choice_b:
+                        if ambiguous: break
+                        else: continue
+                    fpdict_b = deepcopy(fpdict)
+                    apply_selection(fpdict_b, vardict, {aspect: choice_b})
+                    if fpdict_a == fpdict_b: ambiguous.append(f"'{escape_str(choice_b)}'")
+                if ambiguous:
+                    errors.append([None, '0', f"Ambiguous rules: Aspect '{escape_str(aspect)}' choice '{escape_str(choice_a)}' is identical with choice(s) {', '.join(ambiguous)}."])
+                    break
     if errors: vardict = {} # make sure an incomplete vardict cannot be used by the caller
     return vardict, errors
 
