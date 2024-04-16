@@ -19,6 +19,7 @@ class KiVarPlugin(pcbnew.ActionPlugin):
         self.description = 'Switch between predefined assembly variant choices'
         self.icon_file_name      = os_path.join(os_path.dirname(__file__), 'de_markh_kivar-icon-light.png')
         self.dark_icon_file_name = os_path.join(os_path.dirname(__file__), 'de_markh_kivar-icon-dark.png')
+        self.show_toolbar_button = True
 
     def Run(self):
         compatibility_problem = pcbnew_compatibility_error()
