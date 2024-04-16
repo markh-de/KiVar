@@ -29,7 +29,7 @@ from copy import deepcopy
     # Update R2 fields.
 
 def version():
-    return '0.2.0-dev29'
+    return '0.2.0-dev30'
 
 def pcbnew_compatibility_error():
     ver = pcbnew.GetMajorMinorPatchVersion()
