@@ -14,9 +14,9 @@ from kivar import build_fpdict, build_vardict, version, get_choice_dict, detect_
 
 class KiVarPlugin(pcbnew.ActionPlugin):
     def defaults(self):
-        self.name = 'KiVar' # TODO add plugin description (will appear on button)
+        self.name = 'KiVar: Switch Assembly Variants'
         self.category = 'Assembly Variants'
-        self.description = 'Switches predefined assembly variant choices'
+        self.description = 'Switch between predefined assembly variant choices'
         self.icon_file_name      = os_path.join(os_path.dirname(__file__), 'de_markh_kivar-icon-light.png')
         self.dark_icon_file_name = os_path.join(os_path.dirname(__file__), 'de_markh_kivar-icon-dark.png')
 
