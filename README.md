@@ -237,23 +237,28 @@ Details and examples can be found in the following sections.
 
 As mentioned above, Choice Expressions can be specified in various ways to cover most user requirements.
 
-The following sub-sections explain how and when to use which Choice Expression types and provide examples for the **following example use-case**:
+The following sub-sections explain how and when to use which Choice Expression types.  Although the basic syntax rules are covered in later sections, examples are used below for illustrative purposes.
+
+##### Example use-case
+
+For the upcoming sections, assume the following hypothetical use-case:
 
 KiVar shall allow switching between two IC types for component _U1_.  For this the following two choices are declared:
- * `9535` (for IC type TI TCA9535PWR) and
- * `9539` (for IC type TI TCA9539PWR).
+ * `9535` (for IC type _TCA953**5**PWR_) and
+ * `9539` (for IC type _TCA953**9**PWR_).
 
 Both ICs are I²C port expanders that are mostly pin-compatible.  Provided the schematic is designed correctly, both ICs are interchangeable without any changes to the PCB layout.
 
 As KiVar allows multiple aspects, the above choices must be assigned to an aspect, forming a group for both choices.  The aspect identifier for the above choices shall be `IOEXP_TYPE`.
 
-The following assignments shall be done by KiVar when selecting one of the choices:
+The following field content assignments shall be performed by KiVar for each choice:
 
-|        | For Choice `9535` | For Choice `9539` |
-|--------|-------------------|-------------------|
-|`Value` | `TCA9535PWR` | `TCA9539PWR` |
-|`Datasheet` | `http://www.ti.com/lit/ds/symlink/tca9535.pdf` | `http://www.ti.com/lit/ds/symlink/tca9539.pdf` |
-|`MPN` | `TCA9535PWR` | `TCA9539PWR` |
+Field Name    | Content for Choice `9535`                      | Content for Choice `9539`
+--------------|------------------------------------------------|--------------------------
+`Value`       | `TCA9535PWR`                                   | `TCA9539PWR`
+`MPN`         | `TCA9535PWR`                                   | `TCA9539PWR`
+`I2C Address` | `0x20`                                         | `0x74`
+`Datasheet`   | `http://www.ti.com/lit/ds/symlink/tca9535.pdf` | `http://www.ti.com/lit/ds/symlink/tca9539.pdf`
 
 ##### Simple Choice Expression (SCE)
 
@@ -263,39 +268,61 @@ As described above, SCEs can be used for Base and Auxiliary CEs (as SBCE and SAC
 
 According to our example use-case, the _Value_ field of component _U1_ shall be changed.  For this we need Simple _Base_ Choice Expressions (SBCE), which allow declaring and defining choices and the component values (and properties) associated with them.  For component _U1_ we add the following data:
 
-Field Name | Field Content
------------|--------------
+Field Name  | Field Content
+------------|--------------
 `Var(9535)` | `TCA9535PWR`
 `Var(9539)` | `TCA9539PWR`
 
 As SCEs do not allow specifying the aspect identifier, we need to add an additional field to specify the aspect to which the above choices apply:
 
-Field Name | Field Content
------------|--------------
+Field Name   | Field Content
+-------------|--------------
 `Var.Aspect` | `IOEXP_TYPE`
 
 Now that we have declared and defined the choices `9535` and `9539` for aspect `IOEXP_TYPE`, we can refer to them in Auxiliary expressions, which are used for defining _custom field_ contents (i.e. fields other than the component's _Value_ field).  So to assign data to the _MPN_ field, depending on the selected choice, we now use Simple Auxiliary Choice Expressions (SACE):
 
-Field Name | Field Content
------------|--------------
+Field Name      | Field Content
+----------------|--------------
 `MPN.Var(9535)` | `TCA9535PWR`
 `MPN.Var(9539)` | `TCA9539PWR`
 
-For assigning such short and simple field contents, CCEs would be 
+Depending on the selected choice, the effective I²C address should be assigned to a custom component field, for information purposes only.  That information can later be added to the schematic symbol instance to be visible in the schematic.  This is very helpful when checking for potential address conflicts. 
+ The address assignment can be done with these additional Auxiliary expressions:
+
+Field Name              | Field Content
+------------------------|--------------
+`I2C Address.Var(9535)` | `0x20`
+`I2C Address.Var(9535)` | `0x74`
+
 While SCEs can also be used to assign such short and simple field contents, they are much better suited for longer contents that would make a CCE (see below) too long or too complicated, such as the datasheet URL in the following Auxiliary expressions:
 
-Field Name | Field Content
------------|--------------
+Field Name            | Field Content
+----------------------|--------------
 `Datasheet.Var(9535)` | `http://www.ti.com/lit/ds/symlink/tca9535.pdf`
 `Datasheet.Var(9539)` | `http://www.ti.com/lit/ds/symlink/tca9539.pdf`
 
 ##### Combined Choice Expressions (CCE)
 
-CCE allow specifying multiple Choice Expressions per component field.  They enable much more compact expressions.
+CCEs allow specifying multiple Choice Expressions per component field, even along the aspect identifier (for Base expressions).  CCEs enable much more compact expressions.
 
-(TODO SCE, CCE in sub-sections, link here from above)
+The above expressions can be implemented in a much more compact fashion when using CCEs instead.  For component _U1_, the following rules would have the same effect as the above SCEs and fulfill our example use-case:
 
+Field Name        | Field Content
+------------------|--------------
+`Var`             | `9535(TCA9535PWR) 9539(TCA9539PWR) IOEXP_TYPE`
+`MPN.Var`         | `9535(TCA9535PWR) 9539(TCA9539PWR)`
+`I2C Address.Var` | `9535(0x20) 9539(0x74)`
+`Datasheet.Var`   | `9535('http://www.ti.com/lit/ds/symlink/tca9535.pdf') 9539('http://www.ti.com/lit/ds/symlink/tca9539.pdf')`
 
+Note how the aspect identifier is passed inside the CBCE (field `Var`).  Inside a CBCE KiVar recognizes the aspect identifier by the missing round brackets.
+
+Another benefit of using CCEs is that the variety of different field names used in your schematic is kept low, because the different choice names are not part of the field name.  If there are many different field names, the Symbol Fields Table in the schematic editor can become quite cluttered.
+
+However, for assignments containing very long or complex strings (such as URLs), SBEs may be a better choice.
+
+Also note the usage of string quoting (discussed later) around the URLs.  Although it is not strictly required in this example, it is good practice to quote complex strings that may contain special characters that could be recognized by the parser.
+
+As noted above, SBEs and CBEs can be mixed.
 
 
 
@@ -307,7 +334,7 @@ _Hint:_ It is recommended to add `Var` and **TODO** as project field name templa
 
 
 
-The following figure summarises the structure of a rule definition.  Each part of it is explained in more detail in the following sections. 
+The following figure summarizes the structure of a rule definition.  Each part of it is explained in more detail in the following sections. 
 
 ***TODO*** new example, more specific aspect and choice names. LED color (red/green/yellow/white) and matching resistors? optionally changing the LED MPN?
 
