@@ -174,15 +174,17 @@ One possible example _Configuration_ for these Aspects and Choices:
 
 `DEV_ADDR=0x52 BOOT_SRC=NAND VIO_LEVEL=1.8V`
 
-KiVar computes such sets of Aspect and Choice definitions internally by checking each component's field data.  For this to work, the user must provide the variation data in the components' fields.  This process is explained in the following sections.
+KiVar computes such sets of Aspect and Choice definitions internally by checking each component's field data for KiVar _Choice Expressions_, which are explained in the following sections.
 
-#### Rules Specification
+#### Choice Expressions
 
-Component variation rules are specified in **Choice Expressions** (short: _CE_), which are defined in the fields of the component (i.e. symbol and/or footprint) they relate to.  Multiple components may (and usually will) refer to the same aspects and choices.
+Component variation rules are specified in **Choice Expressions** (short: _CE_), which are defined in the fields of each component (i.e. symbol and/or footprint) they relate to.  Multiple components may (and usually will) refer to the same aspects and choices.
 
-One component may only relate to a single aspect, but to an unlimited number of choices for that aspect.
+One component must relate to a single aspect, but can relate to an unlimited number of choices for that aspect.
 
-There are two basic types of Choice Expressions:
+##### Choice Expression Scopes
+
+There are two basic scopes of Choice Expressions:
 
 1. **Base Choice Expressions** (BCE)
    * assign component **values** and **properties** while they
@@ -192,15 +194,21 @@ There are two basic types of Choice Expressions:
    * assign values to specific custom **fields** (other than the _Value_ field) while they
    * _refer to_ already defined aspect choices.
 
+##### Choice Expression Formats
+
 Furthermore, Choice Expressions can be defined in different ways, depending on the user's preferences and requirements.  There are two different Choice Expression formats:
 
-1. **Simple Choice Expressions** (SCE)  
-   specify a single Choice Expression using one specific component field per expression.
+1. **Simple Choice Expressions** (SCE)
+   * specify a single Choice Expression using
+   * one specific component field per expression.
 
-2. **Combined Choice Expressions** (CCE)  
-   allow combining multiple Choice Expressions in a single single component field (also, for Base Choice Expressions, optionally accepting the Aspect identifier).
+2. **Combined Choice Expressions** (CCE)
+   * allow combining multiple Choice Expressions in a
+   * single component field (also, for Base Choice Expressions, optionally accepting the Aspect identifier).
 
-With these two expression types and two expression formats, the following four kinds of Choice Expressions can be specified:
+##### Choice Expression Types
+
+The combination of both expression scopes and both expression formats allow for the following four Choice Expression types:
 
 1. **Simple Base Choice Expressions** (SBCE)  
    use the field `Var(<CHOICELIST>)` with field content in [SCE](#SCE) format to assign component value and properties to a specific choice list `<CHOICELIST>`.
@@ -214,12 +222,14 @@ With these two expression types and two expression formats, the following four k
 4. **Combined Auxiliary Choice Expressions** (CACE)  
    use the field `<CUSTOMFIELD>.Var` with field content in [CCE](#CCE) format (with no Aspect identifier allowed) to assign values for the component's custom field `<CUSTOMFIELD>` to one or more choice lists.
 
+##### Aspect Identifier Specification
+
 As mentioned above, each component that provides KiVar variation rules must refer to exactly one Aspect.
 
 There are two methods of passing the **Aspect identifier**:
 
 1. Using the _dedicated component field_ `Var.Aspect`, or
-2. as part of a _Combined Base Choice Expression_ (see above).
+2. as part of a _Combined Base Choice Expression_.
 
 Details and examples can be found in the following sections.
 
@@ -227,6 +237,61 @@ Details and examples can be found in the following sections.
 
 As mentioned above, Choice Expressions can be specified in various ways to cover most user requirements.
 
+The following sub-sections explain how and when to use which Choice Expression types and provide examples for the **following example use-case**:
+
+KiVar shall allow switching between two IC types for component _U1_.  For this the following two choices are declared:
+ * `9535` (for IC type TI TCA9535PWR) and
+ * `9539` (for IC type TI TCA9539PWR).
+
+Both ICs are I²C port expanders that are mostly pin-compatible.  Provided the schematic is designed correctly, both ICs are interchangeable without any changes to the PCB layout.
+
+As KiVar allows multiple aspects, the above choices must be assigned to an aspect, forming a group for both choices.  The aspect identifier for the above choices shall be `IOEXP_TYPE`.
+
+The following assignments shall be done by KiVar when selecting one of the choices:
+
+|        | For Choice `9535` | For Choice `9539` |
+|--------|-------------------|-------------------|
+|`Value` | `TCA9535PWR` | `TCA9539PWR` |
+|`Datasheet` | `http://www.ti.com/lit/ds/symlink/tca9535.pdf` | `http://www.ti.com/lit/ds/symlink/tca9539.pdf` |
+|`MPN` | `TCA9535PWR` | `TCA9539PWR` |
+
+##### Simple Choice Expression (SCE)
+
+SCEs specify a single Choice Expression per component field.  In a typical use-case, multiple such expressions will be used to describe multiple values, properties or field contents of the corresponding component.  They can be mixed with CCE (see below) to form a complete set of Choice Expressions.
+
+As described above, SCEs can be used for Base and Auxiliary CEs (as SBCE and SACE).
+
+According to our example use-case, the _Value_ field of component _U1_ shall be changed.  For this we need Simple _Base_ Choice Expressions (SBCE), which allow declaring and defining choices and the component values (and properties) associated with them.  For component _U1_ we add the following data:
+
+Field Name | Field Content
+-----------|--------------
+`Var(9535)` | `TCA9535PWR`
+`Var(9539)` | `TCA9539PWR`
+
+As SCEs do not allow specifying the aspect identifier, we need to add an additional field to specify the aspect to which the above choices apply:
+
+Field Name | Field Content
+-----------|--------------
+`Var.Aspect` | `IOEXP_TYPE`
+
+Now that we have declared and defined the choices `9535` and `9539` for aspect `IOEXP_TYPE`, we can refer to them in Auxiliary expressions, which are used for defining _custom field_ contents (i.e. fields other than the component's _Value_ field).  So to assign data to the _MPN_ field, depending on the selected choice, we now use Simple Auxiliary Choice Expressions (SACE):
+
+Field Name | Field Content
+-----------|--------------
+`MPN.Var(9535)` | `TCA9535PWR`
+`MPN.Var(9539)` | `TCA9539PWR`
+
+For assigning such short and simple field contents, CCEs would be 
+While SCEs can also be used to assign such short and simple field contents, they are much better suited for longer contents that would make a CCE (see below) too long or too complicated, such as the datasheet URL in the following Auxiliary expressions:
+
+Field Name | Field Content
+-----------|--------------
+`Datasheet.Var(9535)` | `http://www.ti.com/lit/ds/symlink/tca9535.pdf`
+`Datasheet.Var(9539)` | `http://www.ti.com/lit/ds/symlink/tca9539.pdf`
+
+##### Combined Choice Expressions (CCE)
+
+CCE allow specifying multiple Choice Expressions per component field.  They enable much more compact expressions.
 
 (TODO SCE, CCE in sub-sections, link here from above)
 
