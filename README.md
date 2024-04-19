@@ -258,7 +258,7 @@ Field Name    | Content for Choice `9535`                      | Content for Cho
 `Value`       | `TCA9535PWR`                                   | `TCA9539PWR`
 `MPN`         | `TCA9535PWR`                                   | `TCA9539PWR`
 `I2C Address` | `0x20`                                         | `0x74`
-`Datasheet`   | `http://www.ti.com/lit/ds/symlink/tca9535.pdf` | `http://www.ti.com/lit/ds/symlink/tca9539.pdf`
+`Datasheet`   | `https://www.ti.com/lit/ds/symlink/tca9535.pdf` | `https://www.ti.com/lit/ds/symlink/tca9539.pdf`
 
 ##### Simple Choice Expression (SCE)
 
@@ -298,8 +298,8 @@ While SCEs can also be used to assign such short and simple field contents, they
 
 Field Name            | Field Content
 ----------------------|--------------
-`Datasheet.Var(9535)` | `http://www.ti.com/lit/ds/symlink/tca9535.pdf`
-`Datasheet.Var(9539)` | `http://www.ti.com/lit/ds/symlink/tca9539.pdf`
+`Datasheet.Var(9535)` | `https://www.ti.com/lit/ds/symlink/tca9535.pdf`
+`Datasheet.Var(9539)` | `https://www.ti.com/lit/ds/symlink/tca9539.pdf`
 
 ##### Combined Choice Expressions (CCE)
 
@@ -312,7 +312,7 @@ Field Name        | Field Content
 `Var`             | `9535(TCA9535PWR) 9539(TCA9539PWR) IOEXP_TYPE`
 `MPN.Var`         | `9535(TCA9535PWR) 9539(TCA9539PWR)`
 `I2C Address.Var` | `9535(0x20) 9539(0x74)`
-`Datasheet.Var`   | `9535('http://www.ti.com/lit/ds/symlink/tca9535.pdf') 9539('http://www.ti.com/lit/ds/symlink/tca9539.pdf')`
+`Datasheet.Var`   | `9535('https://www.ti.com/lit/ds/symlink/tca9535.pdf') 9539('https://www.ti.com/lit/ds/symlink/tca9539.pdf')`
 
 Note how the aspect identifier is passed inside the CBCE (field `Var`).  Inside a CBCE KiVar recognizes the aspect identifier by the missing round brackets.
 
