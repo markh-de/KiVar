@@ -51,7 +51,7 @@ Required steps:
 1. Start the _Plugin and Content Manager_ from the KiCad main window.
 2. Find _KiVar_ in the **Plugins** section.
 3. Mark it for installation and apply the pending changes.
-4. _Optional:_ For quick access, start the PCB Editor (pcbnew) and add the KiVar launcher button to your main toolbar under _Preferences &rarr; Preferences... &rarr; PCB Editor &rarr; Action Plugins_ by clicking the corresponding checkbox in the _Show button_ column.
+4. The _Kivar_ plugin icon should now appear in the PCB Editor (pcbnew) toolbar.
 
 #### Using Manual Archive Extraction
 
@@ -60,8 +60,7 @@ Required steps:
 1. Open the KiCad PCB Editor (pcbnew).
 2. In the PCB Editor, choose the menu option _Tools &rarr; External Plugins &rarr; Open Plugin Directory_.  This will open a file browser at the location of your KiCad plugin directory.
 3. Unzip the contents of an official [KiVar release archive](https://github.com/markh-de/KiVar/releases) (the ZIP file _without_ the `-pcm` suffix) to that KiCad plugin directory you opened in the previous step.  _Important:_ Do not create another directory inside the target plugin directory, but only place the files from the release archive directly in the plugin directory.
-4. Switch back to the PCB Editor and choose the menu option _Tools &rarr; External Plugins &rarr; Refresh Plugins_.  Now _KiVar_ should appear in the plugin list under _Tools &rarr; External Plugins_.
-5. _Optional:_ For quick access, add the KiVar launcher button to your main toolbar under _Preferences &rarr; Preferences... &rarr; PCB Editor &rarr; Action Plugins_ by clicking the corresponding checkbox in the _Show button_ column.
+4. Switch back to the PCB Editor and choose the menu option _Tools &rarr; External Plugins &rarr; Refresh Plugins_.  The _KiVar_ plugin icon should now appear in the toolbar and in the plugin list under _Tools &rarr; External Plugins_.
 
 If the installation does not work for you this way, consider reporting your problem as an issue in the KiVar bug tracker.
 
@@ -185,11 +184,13 @@ One component may only relate to a single aspect, but to an unlimited number of 
 
 There are two basic types of Choice Expressions:
 
-1. **Base Choice Expressions** (BCE)  
-   _define_ or _extend_ the set of available choices for a given aspect, and assign component **values** and **properties**.
+1. **Base Choice Expressions** (BCE)
+   * assign component **values** and **properties** while they
+   * _define_ or _extend_ the set of available choices for a given aspect.
 
-2. **Auxiliary Choice Expressions** (ACE)  
-   _refer to_ already defined aspect choices, and assign values to specific custom **fields** (other than the _Value_ field).
+2. **Auxiliary Choice Expressions** (ACE)
+   * assign values to specific custom **fields** (other than the _Value_ field) while they
+   * _refer to_ already defined aspect choices.
 
 Furthermore, Choice Expressions can be defined in different ways, depending on the user's preferences and requirements.  There are two different Choice Expression formats:
 
@@ -224,7 +225,7 @@ Details and examples can be found in the following sections.
 
 #### Definition Syntax
 
-As mentioned above, Choice Expressions can be specified in various ways, providing flexibility to cover the most important user requirements.
+As mentioned above, Choice Expressions can be specified in various ways to cover most user requirements.
 
 
 (TODO SCE, CCE in sub-sections, link here from above)
