@@ -29,7 +29,7 @@ from copy import deepcopy
     # Update R2 fields.
 
 def version():
-    return '0.2.0-dev30'
+    return '0.2.0-dev31'
 
 def pcbnew_compatibility_error():
     ver = pcbnew.GetMajorMinorPatchVersion()
@@ -437,7 +437,12 @@ def parse_rule_fields(fpdict_uuid_branch):
             base_rule_string = value
         elif len(parts) > 1 and parts[-1] == FieldID.BASE:
             target_field = '.'.join(parts[0:-1])
-            aux_rule_strings.append([target_field, value])
+            if target_field in fpdict_uuid_branch[Key.FIELDS]:
+                aux_rule_strings.append([target_field, value])
+            else:
+                # TODO refine error message (distinguish from similar error below?)
+                errors.append(f"Aux rule string for non-existing field name '{target_field}'") # TODO escape field name?
+                continue
         else:
             try: prefix, name_list = split_parens(parts[-1])
             except: continue
@@ -451,7 +456,11 @@ def parse_rule_fields(fpdict_uuid_branch):
                     base_choice_sets.append([name_list, value])
                 else:
                     target_field = '.'.join(parts[0:-1])
-                    aux_choice_sets.append([target_field, name_list, value])
+                    if target_field in fpdict_uuid_branch[Key.FIELDS]:
+                        aux_choice_sets.append([target_field, name_list, value])
+                    else:
+                        errors.append(f"Aux rule string for non-existing field name '{target_field}'") # TODO escape field name?
+                        continue
     return errors, aspect, base_rule_string, base_choice_sets, aux_rule_strings, aux_choice_sets
 
 def build_vardict(fpdict):
@@ -509,10 +518,6 @@ def build_vardict(fpdict):
             continue
         valid = False
         for field, rule_str in aux_rule_strings:
-            if not field in fpdict[uuid][Key.FIELDS]:
-                # TODO move this check to the fields parser?
-                errors.append([uuid, ref, f"{ref}: Aux rule string for non-existing field name '{field}'."]) # TODO escape field name?
-                continue
             if rule_str is None or rule_str == '': continue
             parse_errors, aspects, choice_sets = parse_rule_str(rule_str)
             if parse_errors:
