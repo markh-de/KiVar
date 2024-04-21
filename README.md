@@ -178,9 +178,54 @@ KiVar computes such sets of Aspect and Choice definitions internally by checking
 
 #### Choice Expressions
 
-Component variation rules are specified in **Choice Expressions** (short: _CE_), which are defined in the fields of each component (i.e. symbol and/or footprint) they relate to.  Multiple components may (and usually will) refer to the same aspects and choices.
+Component variation rules are specified in **Choice Expression**s (short: _CE_), which are defined in the fields of each component (i.e. symbol and/or footprint) they relate to.  Multiple components may (and usually will) refer to the same aspects and choices.
 
 One component must relate to a single aspect, but can relate to an unlimited number of choices for that aspect.
+
+A Choice Expression consists of several parts, which are described in the following sections from the innermost to the outermost elements.
+
+#### Choice Arguments
+
+The elements to be assigned to a component for a specific choice are called **Choice Argument**s (short: _CA_).
+
+Such Choice Arguments are always specified as part of a **Choice Argument List** (short: _CAL_), in which they are listed as a space-separated array of strings.
+
+Each _Choice Argument_ if the _Choice Argument List_ can be of one of two possible types:
+ * a part of the **content** to be assigned as the component _value_ or a specific _field_ or
+ * a **property** assignment specifier (to mark a component _(un)fitted_, _(not) in BoM_, _(not) in position files_).
+
+The following sub-sections will explain the possible types of Choice Arguments.
+
+##### Content Choice Arguments
+
+(TODO)
+
+##### Property Choice Arguments
+
+(TODO)
+
+##### Examples
+
+The following table provides some examples along with their results when applied and explanations for each case.
+
+CAL            | Resulting content | Resulting property states | Explanation
+---|---|---|---
+`a list of words` | `a list of words` | | The content results in all arguments joined with a space character.
+`just   like in   html` | `just like in html` | | Similar, but note that multiple separation spaces in the CAL result in a single space in the content.
+`This is ' a  verbatim string'` | `This is  a  verbatim string` | | In quoted parts, spaces (and other special characters) are preserved.
+(TODO) more, with quoted prop specs ...
+
+(TODO) table with examples of CALs, resulting content and properties, along with explanation
+
+#### Choice Identifiers
+
+(TODO) as part of CIL
+
+##### Examples
+
+(TODO) multiple components, to illustrate default choice behavior
+
+(TODO) following sections one heading level up
 
 ##### Choice Expression Scopes
 
