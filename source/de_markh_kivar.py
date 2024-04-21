@@ -37,7 +37,7 @@ class KiVarPlugin(pcbnew.ActionPlugin):
             show_selection_dialog(board, fpdict, vardict)
 
 def help_url():
-    return 'https://help.kivar.markh.de'
+    return 'https://help.kivar.markh.de#usage'
 
 def show_selection_dialog(board, fpdict, vardict):
     dlg = VariantDialog(board, fpdict, vardict)
