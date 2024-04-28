@@ -66,6 +66,14 @@ If the installation does not work for you this way, consider reporting your prob
 
 ### KiVar Command Line Application
 
+#### Using PyPI
+
+To install the KiVar CLI using the official PyPI repository, open a shell and run:
+
+```
+pip install kivar
+```
+
 **TODO**
 
 ## Usage
@@ -182,15 +190,13 @@ Component variation rules are specified in **Choice Expression**s (short: _CE_),
 
 One component must relate to a single aspect, but can relate to an unlimited number of choices for that aspect.
 
-A Choice Expression consists of several parts, which are described in the following sections from the innermost to the outermost elements.
+Choice expressions can be noted in various formats, which are described in the following sections from their innermost to the outermost elements.
 
 #### Choice Arguments
 
-The elements to be assigned to a component for a specific choice are called **Choice Argument**s (short: _CA_).
+In its simplest form, a Choice Expression consists only of a **Choice Argument List** (short: _CAL_), which is just a list of _space_-separated **Choice Argument**s (short: _CA_) to be assigned to a component for a specific choice.
 
-Such Choice Arguments are always specified as part of a **Choice Argument List** (short: _CAL_), in which they are listed as a space-separated array of strings.
-
-Each _Choice Argument_ if the _Choice Argument List_ can be of one of two possible types:
+Each _Choice Argument_ of the _Choice Argument List_ can be of one of two possible types:
  * a part of the **content** to be assigned as the component _value_ or a specific _field_ or
  * a **property** assignment specifier (to mark a component _(un)fitted_, _(not) in BoM_, _(not) in position files_).
 
