@@ -204,9 +204,11 @@ Argument types are distinguished by their first (unescaped) character and will b
 
 ##### Content Choice Arguments
 
-Each argument beginning with a character _other than_ `-` and `+` is classified as part of the content.  Such arguments are concatenated with a single space character between each argument.
+Each argument beginning with a character _other than_ `-` and `+` is interpreted as a **Content Specifier**.  All Content Specifiers of a Choice Expression are concatenated (from left to right) with one space character between each argument to form the final content to be assigned when the corresponding choice is selected.
 
-_Note:_ As arguments can be separated by any number of _space_ characters, each separation using multiple spaces will result in a single space character in the final content.  For strings that shall be assigned in a verbatim way (such as a URL), it is highly recommended to use quoting techniques (discussed later).
+(TODO) multiple CS per CE allowed, but only one CE with CS per choice per component
+
+_Note:_ As arguments can be separated by _any_ number of space characters, each separation that uses multiple spaces will result in a single space character in the final content.  For strings that shall be assigned in a verbatim way (such as a URL), it is highly recommended to use quoting techniques (discussed later).
 
 Examples:
 
@@ -219,13 +221,21 @@ Choice Argument List input | Resulting content string | Explanation
 `470µF   10%`              | `470µF 10%`              | Multiple separator characters will be converted to a single separator. As the text is uncritical, this conversion may even be desired.
 `'https://kivar.markh.de/datasheet/abc123.pdf'` | `https://kivar.markh.de/datasheet/abc123.pdf` | Strings to be used verbatim should always be enclosed in quote characters.
 `'abc   def ' 123   456`   | `abc   def  123 456`     | Mixed type of quoted and unquoted representation.  Note how the trailing space after `def` remains contained in the result.
+`abc "def 'ghi' jkl" mno`  | `abc def 'ghi' jkl mno`  | Outer double quotes encapsulate inner single quotes, which are part of the verbatim string.
+`abc 'def "ghi" jkl' mno`  | `abc def "ghi" jkl mno`  | Outer single quotes encapsulate inner double quotes, which are part of the verbatim string.
+`abc \d\e\f\ \ ghi\'jkl\\mno` | `abc def  ghi'jkl\mno` | Escaping (prepending a backslash) ensures that the following character is interpreted verbatim, not as a special character.  To create a backslash (the escape character) string, use a double backslash (i.e. escape the backslash).
+
+
+
+(TODO) move these to the examples for both content and props
+```
 `abc +p -b def`            | `abc def`                | (TODO) Properties are discussed below.
 `abc \+p '-b' def`         | `abc def`                | (TODO) Properties are discussed below.
-`abc "def 'ghi' jkl" mno`  | ...
+```
 
 ##### Property Choice Arguments
 
-(TODO)
+Each argument beginning with a `-` or `+` is interpreted as a **Property Specifier**.  All Property Specifiers are included in the calculation of the final property states. (TODO) explain better
 
 ##### Examples
 
