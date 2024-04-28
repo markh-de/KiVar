@@ -200,9 +200,17 @@ Each _Choice Argument_ of the _Choice Argument List_ can be of one of two possib
  * a part of the **content** to be assigned as the component _value_ or a specific _field_ or
  * a **property** assignment specifier (to mark a component _(un)fitted_, _(not) in BoM_, _(not) in position files_).
 
-The following sub-sections will explain the possible types of Choice Arguments.
+Argument types are distinguished by their first (unescaped) character and will be explained in more detail in the followin sub-sections.
 
 ##### Content Choice Arguments
+
+Each argument beginning with a character _other than_ `-` and `+` is classified as part of the content.  Such arguments are concatenated with a single space character between each argument.
+
+_Note:_ As arguments can be separated by any number of _space_ characters, each separation using multiple spaces will result in a single space character in the final content.  For strings that shall be assigned in a verbatim way (such as a URL), it is highly recommended to use quoting techniques (discussed later).
+
+Examples:
+
+The following input Choice Argument Lists will be interpreted as described in the following table:
 
 (TODO)
 
