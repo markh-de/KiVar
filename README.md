@@ -210,9 +210,18 @@ _Note:_ As arguments can be separated by any number of _space_ characters, each 
 
 Examples:
 
-The following input Choice Argument Lists will be interpreted as described in the following table:
+The following input Choice Argument Lists will result in the following content strings (other resulting data ignored for now):
 
-(TODO)
+Choice Argument List input | Resulting content string | Explanation
+-------------------------- | ------------------------ | -----------
+`100nF`                    | `100nF`                  | Simple single arguments can be noted without escaping or quoting as long as they don't contain certain special characters (discussed later).
+`470µF 10%`                | `470µF 10%`              | Uncritical text, no verbatim adoption of the arguments required.
+`470µF   10%`              | `470µF 10%`              | Multiple separator characters will be converted to a single separator. As the text is uncritical, this conversion may even be desired.
+`'https://kivar.markh.de/datasheet/abc123.pdf'` | `https://kivar.markh.de/datasheet/abc123.pdf` | Strings to be used verbatim should always be enclosed in quote characters.
+`'abc   def ' 123   456`   | `abc   def  123 456`     | Mixed type of quoted and unquoted representation.  Note how the trailing space after `def` remains contained in the result.
+`abc +p -b def`            | `abc def`                | (TODO) Properties are discussed below.
+`abc \+p '-b' def`         | `abc def`                | (TODO) Properties are discussed below.
+`abc "def 'ghi' jkl" mno`  | ...
 
 ##### Property Choice Arguments
 
