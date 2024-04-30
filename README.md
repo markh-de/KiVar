@@ -41,6 +41,7 @@ Earlier versions of KiVar also supported KiCad 7, but in a very restricted way. 
 ### KiVar Action Plugin
 
 The KiVar Action Plugin uses the Python API wrapper for pcbnew, the KiCad PCB Editor.
+TODO: so does the CLI. move this text to general info.
 
 The recommended installation method is to use KiCad's integrated **Plugin and Content Manager**.  KiVar is included in the official PCM repository, allowing a smooth and safe installation experience.  For manual installation users can also choose to download the plugin archive packages.
 
@@ -78,7 +79,7 @@ pip install kivar
 
 ## Usage
 
-The process of writing and assigning rules to components (i.e. symbols and footprints) is done manually using simple expressions.
+The process of writing and assigning rules to components (i.e. symbols and footprints) is done manually using simple text expressions.
 
 Once all relevant components are equipped with their variation rules, KiVar allows the selection of variation choices using either an easy-to-use dialog interface (when using the Action Plugin) or a command-line interface (when using the CLI application) and takes care of the automatic analysis and assignment of the corresponding component values, fields and attributes.
 
@@ -219,7 +220,7 @@ Choice Argument List input | Resulting content string | Explanation
 `100nF`                    | `100nF`                  | Simple single arguments can be noted without escaping or quoting as long as they don't contain certain special characters (discussed later).
 `470µF 10%`                | `470µF 10%`              | Uncritical text, no verbatim adoption of the arguments required.
 `470µF   10%`              | `470µF 10%`              | Multiple separator characters will be converted to a single separator. As the text is uncritical, this conversion may even be desired.
-`'https://kivar.markh.de/datasheet/abc123.pdf'` | `https://kivar.markh.de/datasheet/abc123.pdf` | Strings to be used verbatim should always be enclosed in quote characters.
+`'https://kivar.markh.de/ds/abc123.pdf'` | `https://kivar.markh.de/ds/abc123.pdf` | Strings to be used verbatim should always be enclosed in quote characters.
 `'abc   def ' 123   456`   | `abc   def  123 456`     | Mixed type of quoted and unquoted representation.  Note how the trailing space after `def` remains contained in the result.
 `abc "def 'ghi' jkl" mno`  | `abc def 'ghi' jkl mno`  | Outer double quotes encapsulate inner single quotes, which are part of the verbatim string.
 `abc 'def "ghi" jkl' mno`  | `abc def "ghi" jkl mno`  | Outer single quotes encapsulate inner double quotes, which are part of the verbatim string.
