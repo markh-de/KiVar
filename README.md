@@ -253,13 +253,11 @@ The Property Specifiers in the following input Choice Argument Lists will result
 
 Choice Argument List input | Resulting Property states | Explanation
 -------------------------- | ------------------------- | -----------
-`-f`                       |  _not_ Fitted           | The `-` causes _false_ to be assigned to the subsequent properties, i.e. _Fitted_.  The footprint's attribute _Do not populate_ will be set to _true_.
-`-fbp`                     |  _not_ Fitted, _not_ inBom, _not_ inPos | todo ....
-
-
-
-
-
+`-f`                       |  _not_ Fitted             | The `-` causes _false_ to be assigned to the subsequent properties, i.e. _Fitted_.  The footprint's attribute _Do not populate_ will be set to _true_.
+`-fbp`                     |  _not_ Fitted, _not_ inBom, _not_ inPos | One modifier (`-`) can be used for any number of subsequent identifiers.
+`-!`                       |  _not_ Fitted, _not_ inBom, _not_ inPos | Equivalent to prior example.
+`-! +b`                    |  _not_ Fitted, inBom, _not_ inPos | After setting `f`, `b`, `p` to false, `b` is set to true again.
+`-!+b`                     |  _not_ Fitted, inBom, _not_ inPos | Equivalent to prior example.  Multiple modifiers can appear inside a single specifier.
 
 ##### Examples
 
