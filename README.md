@@ -211,11 +211,11 @@ Each argument beginning with a character _other than_ `-` and `+` is interpreted
 
 _Note:_ As arguments can be separated by _any_ number of space characters, each separation that uses multiple spaces will result in a single space character in the final content.  For strings that shall be assigned in a verbatim way (such as a URL), it is highly recommended to use quoting techniques (discussed later).
 
-Examples:
+_Examples_
 
-The following input Choice Argument Lists will result in the following content strings (other resulting data ignored for now):
+The Content Specifiers in the following input Choice Argument Lists will result in the following Content strings:
 
-Choice Argument List input | Resulting content string | Explanation
+Choice Argument List input | Resulting Content string | Explanation
 -------------------------- | ------------------------ | -----------
 `100nF`                    | `100nF`                  | Simple single arguments can be noted without escaping or quoting as long as they don't contain certain special characters (discussed later).
 `470µF 10%`                | `470µF 10%`              | Uncritical text, no verbatim adoption of the arguments required.
@@ -226,7 +226,42 @@ Choice Argument List input | Resulting content string | Explanation
 `abc 'def "ghi" jkl' mno`  | `abc def "ghi" jkl mno`  | Outer single quotes encapsulate inner double quotes, which are part of the verbatim string.
 `abc \d\e\f\ \ ghi\'jkl\\mno` | `abc def  ghi'jkl\mno` | Escaping (prepending a backslash) ensures that the following character is interpreted verbatim, not as a special character.  To create a backslash (the escape character) string, use a double backslash (i.e. escape the backslash).
 
+##### Property Choice Arguments
 
+To modify component attributes, such as _Do not populate_, _Not in Position Files_ or _Not in BoM_, KiVar provides a set of **Properties** that can be assigned to choices.
+
+Each argument beginning with a `-` or `+` is interpreted as a **Property Specifier**, which is a combination of **Property Modifiers** and **Property Identifiers**.
+
+All Property Specifiers inside a Choice Expression are evaluated from left to right, resulting in a set of Property states for the corresponding component and choice.  Properties not defined in any of the component's Choices are kept in their original state. 
+
+Each Property Specifier must start with a Property Modifier, defining the state (_true_ or _false_, represented by `+` or `-`, respectively) to be assigned to the Properties subsequently specified by their corresponding Property Identifiers (examples below). ***TODO*** <- wording technically correct?
+
+The following Properties are available:
+
+ * **Fitted** (property identifier `f`).  
+   This property specifies whether a component shall be fitted (property _true_) or unfitted (property _false_).  This property is linked to the pcbnew footprint attribute _Do not populate_ with inverted polarity.
+ * **inPos** (property identifier `p`).  
+   This property specifies whether a component shall be included in the component placement/position files (property _true_) or excluded (property _false_).  This property is linked to the pcbnew footprint attribute _Not in Position Files_ with inverted polarity.
+ * **inBom** (property identifier `b`).  
+   This property specifies whether a component shall be included in the Bill of Materials (property _true_) or excluded (property _false_).  This property is linked to the pcbnew footprint attribute _Not in BoM_ with inverted polarity.
+
+***TODO*** explain `!`, which acts as bfp, and can be overridden later
+
+_Examples_
+
+The Property Specifiers in the following input Choice Argument Lists will result in the following Property states:
+
+Choice Argument List input | Resulting Property states | Explanation
+-------------------------- | ------------------------- | -----------
+`-f`                       |  _not_ Fitted           | The `-` causes _false_ to be assigned to the subsequent properties, i.e. _Fitted_.  The footprint's attribute _Do not populate_ will be set to _true_.
+`-fbp`                     |  _not_ Fitted, _not_ inBom, _not_ inPos | todo ....
+
+
+
+
+
+
+##### Examples
 
 (TODO) move these to the examples for both content and props
 ```
@@ -234,11 +269,7 @@ Choice Argument List input | Resulting content string | Explanation
 `abc \+p '-b' def`         | `abc def`                | (TODO) Properties are discussed below.
 ```
 
-##### Property Choice Arguments
 
-Each argument beginning with a `-` or `+` is interpreted as a **Property Specifier**.  All Property Specifiers are included in the calculation of the final property states. (TODO) explain better
-
-##### Examples
 
 The following table provides some examples along with their results when applied and explanations for each case.
 
