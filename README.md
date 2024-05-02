@@ -119,7 +119,7 @@ Severity: Critical.
 
 Severity: Critical.
 
-While being party backwards-compatible, the `-!` statement is now no longer an option, but a property modifier.
+While being partly backwards-compatible, the `-!` statement is now no longer an option, but a property modifier.
 
 ***TODO***
 
