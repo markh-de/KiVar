@@ -213,7 +213,7 @@ To assign a string to the component value or to any (custom) component field (su
 
 Each argument beginning with a character _other than_ `-` and `+` is interpreted as a **Content Specifier**.
 
-(TODO) multiple CS per CE allowed, but only one CE with CS per choice per component
+> TODO: multiple CS per CE allowed, but only one CE with CS per choice per component
 
 _Note:_ As arguments can be separated by _any_ number of space characters, each separation that uses multiple spaces will result in a single space character in the final content.  For strings that shall be assigned in a verbatim way (such as a URL), it is highly recommended to use quoting techniques (discussed later).
 
@@ -235,7 +235,7 @@ Choice Argument List input | Resulting Content string | Explanation
 `abc "def 'ghi' jkl" mno`  | `abc def 'ghi' jkl mno`  | Outer double quotes encapsulate inner single quotes, which are part of the verbatim string.
 `abc 'def "ghi" jkl' mno`  | `abc def "ghi" jkl mno`  | Outer single quotes encapsulate inner double quotes, which are part of the verbatim string.
 `abc \d\e\f\ \ ghi\'jkl\\mno` | `abc def  ghi'jkl\mno` | Escaping (prepending a backslash) ensures that the following character is interpreted verbatim, not as a special character.  To create a backslash (the escape character) string, use a double backslash (i.e. escape the backslash).
-`\\+10% \\-5% \\-12V \\+5V` | `+10% -5% -12V +5V`     | If the first character of a Content Specifier is a `-` or `+`, the corresponding Choice Argument must be prepended with a backslash (`\`) character or be part of a verbatim string (see next example).
+`\+10% \-5% \-12V \+5V`    | `+10% -5% -12V +5V`      | If the first character of a Content Specifier is a `-` or `+`, the corresponding Choice Argument must be prepended with a backslash (`\`) character or be part of a verbatim string (see next example).
 `"+10%" '-5%' "-"12V '+'5V` | `+10% -5% -12V +5V`     | If the first character of a Content Specifier is a `-` or `+`, the corresponding Choice Argument must be part of a verbatim string or be prepended with a backslash (`\`) character (see previous example).
 
 ##### Property Choice Arguments
@@ -265,9 +265,9 @@ The following effective Properties are available:
 
 ###### Virtual Properties
 
-(TODO find a better name for virtual ... placeholder ...?)
+> TODO: find a better name for virtual ... placeholder ...?
 
-***TODO*** explain `!`, which acts as bfp, and can be overridden later
+> TODO: explain `!`, which acts as bfp, and can be overridden later
 
 ###### Examples
 
@@ -363,7 +363,7 @@ There are two methods of passing the **Aspect identifier**:
 
 Details and examples can be found in the following sections.
 
-***TODO*** revise next sections, move? rewrite? obsolete? syntax is now covered from inside to outside!
+> ***TODO*** revise next sections, move? rewrite? obsolete? syntax is now covered from inside to outside!
 
 ---
 
