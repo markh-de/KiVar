@@ -617,6 +617,8 @@ The following examples are taken from a real project and show a few configurable
 
 Each example is illustrated with a schematic snippet including the values of the `KiVar.Rule` field of each related symbol.
 
+> ***TODO*** try using SVG scm plotting (and clipping in inkscape!) again, try a different color scheme, try without background color
+
 ##### Example 1: I²C Device Address Selection
 
 This is a very simple example, used for address selection of an I²C device.  Address input A0 switches between device addresses 0x54 _(A0=0)_ and 0x55 _(A0=1)_.
