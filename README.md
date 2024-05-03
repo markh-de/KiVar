@@ -205,13 +205,23 @@ Argument types are distinguished by their first (unescaped) character and will b
 
 ##### Content Choice Arguments
 
-Each argument beginning with a character _other than_ `-` and `+` is interpreted as a **Content Specifier**.  All Content Specifiers of a Choice Expression are concatenated (from left to right) with one space character between each argument to form the final content to be assigned when the corresponding choice is selected.
+###### Purpose
+
+To assign a string to the component value or to any (custom) component field (such as _Manufacturer_, _MPN_, ...), .... ***TODO***
+
+###### Syntax
+
+Each argument beginning with a character _other than_ `-` and `+` is interpreted as a **Content Specifier**.
 
 (TODO) multiple CS per CE allowed, but only one CE with CS per choice per component
 
 _Note:_ As arguments can be separated by _any_ number of space characters, each separation that uses multiple spaces will result in a single space character in the final content.  For strings that shall be assigned in a verbatim way (such as a URL), it is highly recommended to use quoting techniques (discussed later).
 
-_Examples_
+###### Evaluation
+
+All Content Specifiers of a Choice Expression are evaluated from left to right and concatenated with one space character between each argument to form the final content string to be assigned when the corresponding choice is selected.
+
+###### Examples
 
 The Content Specifiers in the following input Choice Argument Lists will result in the following Content strings:
 
@@ -230,15 +240,21 @@ Choice Argument List input | Resulting Content string | Explanation
 
 ##### Property Choice Arguments
 
-To modify component attributes, such as _Do not populate_, _Not in Position Files_ or _Not in BoM_, KiVar provides a set of **Properties** that can be assigned to choices.
+To modify component attributes, such as _Do not populate_, _Not in Position Files_ or _Not in BoM_, KiVar provides a set of component **Properties** that can be assigned to choices.
+
+###### Syntax
 
 Each argument beginning with a `-` or `+` is interpreted as a **Property Specifier**, which is a combination of **Property Modifiers** and **Property Identifiers**.
 
-All Property Specifiers inside a Choice Expression are evaluated from left to right, resulting in a set of Property states for the corresponding component and choice.  Properties not defined in any of the component's Choices are kept in their original state. 
+Each Property Specifier must start with a Property Modifier, defining the state (_true_ or _false_, represented by `+` or `-`, respectively) to be assigned to the Properties subsequently specified by their corresponding Property Identifiers.
 
-Each Property Specifier must start with a Property Modifier, defining the state (_true_ or _false_, represented by `+` or `-`, respectively) to be assigned to the Properties subsequently specified by their corresponding Property Identifiers (examples below). ***TODO*** <- wording technically correct?
+###### Evaluation
 
-The following Properties are available:
+All Property Specifiers inside a Choice Expression are evaluated from left to right, resulting in a set of defined Property states for the corresponding component and choice.  Properties not defined in any of the component's Choices are kept in their original state. 
+
+###### Effective Properties
+
+The following effective Properties are available:
 
  * **Fitted** (property identifier `f`).  
    This property specifies whether a component shall be fitted (property _true_) or unfitted (property _false_).  This property is linked to the pcbnew footprint attribute _Do not populate_ with inverted polarity.
@@ -247,9 +263,13 @@ The following Properties are available:
  * **inBom** (property identifier `b`).  
    This property specifies whether a component shall be included in the Bill of Materials (property _true_) or excluded (property _false_).  This property is linked to the pcbnew footprint attribute _Not in BoM_ with inverted polarity.
 
+###### Virtual Properties
+
+(TODO find a better name for virtual ... placeholder ...?)
+
 ***TODO*** explain `!`, which acts as bfp, and can be overridden later
 
-_Examples_
+###### Examples
 
 The Property Specifiers in the following input Choice Argument Lists will result in the following Property states:
 
@@ -261,15 +281,15 @@ Choice Argument List input | Resulting Property states | Explanation
 `-! +b`                    |  _not_ Fitted, inBom, _not_ inPos | After setting `f`, `b`, `p` to false, `b` is set to true again.
 `-!+b`                     |  _not_ Fitted, inBom, _not_ inPos | Equivalent to prior example.  Multiple modifiers can appear inside a single specifier.
 
-##### Examples
+##### Combined Examples
+
+The following examples ... ***TODO***
 
 (TODO) move these to the examples for both content and props
 ```
 `abc +p -b def`            | `abc def`                | (TODO) Properties are discussed below.
 `abc \+p '-b' def`         | `abc def`                | (TODO) Properties are discussed below.
 ```
-
-
 
 The following table provides some examples along with their results when applied and explanations for each case.
 
