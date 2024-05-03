@@ -312,7 +312,7 @@ CAL            | Resulting content | Resulting property states | Explanation
 
 (TODO) following sections one heading level up
 
-##### Choice Expression Scopes
+#### Choice Expression Scopes
 
 There are two basic scopes of Choice Expressions:
 
@@ -324,7 +324,7 @@ There are two basic scopes of Choice Expressions:
    * assign values to specific custom **fields** (other than the _Value_ field) while they
    * _refer to_ already defined aspect choices.
 
-##### Choice Expression Formats
+#### Choice Expression Formats
 
 Furthermore, Choice Expressions can be defined in different ways, depending on the user's preferences and requirements.  There are two different Choice Expression formats:
 
@@ -336,7 +336,7 @@ Furthermore, Choice Expressions can be defined in different ways, depending on t
    * allow combining multiple Choice Expressions in a
    * single component field (also, for Base Choice Expressions, optionally accepting the Aspect identifier).
 
-##### Choice Expression Types
+#### Choice Expression Types
 
 The combination of both expression scopes and both expression formats allow for the following four Choice Expression types:
 
@@ -352,7 +352,7 @@ The combination of both expression scopes and both expression formats allow for 
 4. **Combined Auxiliary Choice Expressions** (CACE)  
    use the field `<CUSTOMFIELD>.Var` with field content in [CCE](#CCE) format (with no Aspect identifier allowed) to assign values for the component's custom field `<CUSTOMFIELD>` to one or more choice lists.
 
-##### Aspect Identifier Specification
+#### Aspect Identifier Specification
 
 As mentioned above, each component that provides KiVar variation rules must refer to exactly one Aspect.
 
@@ -362,6 +362,10 @@ There are two methods of passing the **Aspect identifier**:
 2. as part of a _Combined Base Choice Expression_.
 
 Details and examples can be found in the following sections.
+
+***TODO*** revise next sections, move? rewrite? obsolete? syntax is now covered from inside to outside!
+
+---
 
 #### Definition Syntax
 
@@ -459,7 +463,7 @@ As noted above, SBEs and CBEs can be mixed.
 (TODO move this)
 _Hint:_ It is recommended to add `Var` and **TODO** as project field name templates (configured under _File &rarr; Schematic Setup... &rarr; General &rarr; Field Name Templates_), so that rules can easily be created without manually adding those fields and their names for each affected symbol.
 
-
+---
 
 
 
