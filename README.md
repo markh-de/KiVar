@@ -317,6 +317,8 @@ CAL            | Resulting content | Resulting property states | Explanation
 
 #### Choice Expression Scopes
 
+> ***TODO*** instead of numbered lists, use sub-sections (here and below). describe syntax, explain pro/con, when to use, examples. real usage examples can then be found in the real-world examples section below.
+
 There are two basic scopes of Choice Expressions:
 
 1. **Base Choice Expressions** (BCE)
