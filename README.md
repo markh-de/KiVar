@@ -77,7 +77,10 @@ pip install kivar
 
 **TODO**
 
+<a name="?"></a>
 ## Usage
+
+> ***TODO*** revise document structure and headings levels!
 
 The process of writing and assigning rules to components (i.e. symbols and footprints) is done manually using simple text expressions.
 
