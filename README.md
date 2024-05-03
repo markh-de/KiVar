@@ -25,10 +25,10 @@ Back-propagation of modified component data from the PCB to the schematic can be
 
 Key concepts of KiVar are:
 
- * A single design may use **multiple** independent variation **aspects** (i.e. dimensions or degrees of freedom).
+ * A design may contain **multiple** independent variation **aspects** (i.e. dimensions or degrees of freedom).
  * Variation rules are **fully contained** in component fields of native design files (no external configuration files) and **portable** (i.e. copying components to another design keeps their variation specification intact).
  * Component values and attributes are modified **in place**, enabling compatibility with all exporters that work on the actual component data.
- * **No external state information** is stored, i.e. all currently selected/matching variation choices are detected automatically.
+ * **No external state information** is stored; currently matching variation choices are detected automatically.
 
 ## Supported KiCad Versions
 
@@ -225,6 +225,8 @@ Choice Argument List input | Resulting Content string | Explanation
 `abc "def 'ghi' jkl" mno`  | `abc def 'ghi' jkl mno`  | Outer double quotes encapsulate inner single quotes, which are part of the verbatim string.
 `abc 'def "ghi" jkl' mno`  | `abc def "ghi" jkl mno`  | Outer single quotes encapsulate inner double quotes, which are part of the verbatim string.
 `abc \d\e\f\ \ ghi\'jkl\\mno` | `abc def  ghi'jkl\mno` | Escaping (prepending a backslash) ensures that the following character is interpreted verbatim, not as a special character.  To create a backslash (the escape character) string, use a double backslash (i.e. escape the backslash).
+`\\+10% \\-5% \\-12V \\+5V` | `+10% -5% -12V +5V`     | If the first character of a Content Specifier is a `-` or `+`, the corresponding Choice Argument must be prepended with a backslash (`\`) character or be part of a verbatim string (see next example).
+`"+10%" '-5%' "-"12V '+'5V` | `+10% -5% -12V +5V`     | If the first character of a Content Specifier is a `-` or `+`, the corresponding Choice Argument must be part of a verbatim string or be prepended with a backslash (`\`) character (see previous example).
 
 ##### Property Choice Arguments
 
