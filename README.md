@@ -334,34 +334,42 @@ CAL            | Resulting content | Resulting property states | Explanation
 #### Choice Expression Scopes
 
 The data defined in Choice Expressions can be applied to either
- * the component's basic properties (_value_ and _attributes_), or to
- * custom fields (such as _Manufacturer_, _MPN_, ...).
+ * the component's basic properties (i.e. component _value_ and _attributes_), or to
+ * custom component fields (such as _Manufacturer_, _MPN_, ...).
 
-For each of them there exists a dedicated **Choice Expression Scope**, as explained in the following sub-sections.
+For each of them there exists a dedicated **Choice Expression Scope**.  Both scopes are explained in the following sub-sections.
 
 ##### Base Choice Expressions
 
 ###### Purpose
 
-**Base Choice Expressions** (BCE) 
- * assign component **values** and **properties** while they
- * _define_ or _extend_ the set of available choices for a given aspect.
+**Base Choice Expressions** (BCE) are used to assign component **values** (using Content Choice Arguments) and **attributes** (using Content Property Arguments).
+
+Also, they **declare** and **define** choices for a given aspect.
 
 ###### Typical Use
 
-> TODO assign value, attribs
+BCEs are used to assign component values, such as `10kΩ`, `0.1µF` or `74HC595`.  Content Choice Arguments are mapped to the component value.
+
+They are also used to modity component attributes, e.g. when a component shall change its _DNP_ (do not populate) state or when it shall or shall not be included in position files or the bill of materials.  Property Choice Arguments are mapped to the component attributes.
+
+BCEs can not modify custom fields.  For this, ACEs must be used (see below).
 
 ###### Examples
 
-> TODO value, 1kΩ, dnp ...
+> TODO content and properties ... how are they mapped to the component data
 
 ##### Auxiliary Choice Expressions
 
 ###### Purpose
 
-**Auxiliary Choice Expressions** (ACE)
- * assign values to specific custom **fields** (other than the _Value_ field) while they
- * _refer to_ already defined aspect choices.
+**Auxiliary Choice Expressions** (ACE) assign values to specific component **custom fields** (using Content Choice Arguments).
+
+They do _not_ declare additional choices, but can **only refer** to aspect choices declared in Base Choice Expressions.
+
+Each Choice Identifier used in an ACE must therefore be declared in a dedicated ACE, even if no change of the component value or attributes is required (***TODO*** link to CI declaration w/o definition).
+
+Also, ACEs do not support specifying properties, as they do not refer to the component itself, but to dedicated fields within it.
 
 ###### Typical Use
 
