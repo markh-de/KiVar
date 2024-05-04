@@ -333,45 +333,148 @@ CAL            | Resulting content | Resulting property states | Explanation
 
 #### Choice Expression Scopes
 
-> ***TODO*** instead of numbered lists, use sub-sections (here and below). describe syntax, explain pro/con, when to use, examples. real usage examples can then be found in the real-world examples section below.
+The data defined in Choice Expressions can be applied to either
+ * the component's basic properties (_value_ and _attributes_), or to
+ * custom fields (such as _Manufacturer_, _MPN_, ...).
 
-There are two basic scopes of Choice Expressions:
+For each of them there exists a dedicated **Choice Expression Scope**, as explained in the following sub-sections.
 
-1. **Base Choice Expressions** (BCE)
-   * assign component **values** and **properties** while they
-   * _define_ or _extend_ the set of available choices for a given aspect.
+##### Base Choice Expressions
 
-2. **Auxiliary Choice Expressions** (ACE)
-   * assign values to specific custom **fields** (other than the _Value_ field) while they
-   * _refer to_ already defined aspect choices.
+###### Purpose
+
+**Base Choice Expressions** (BCE) 
+ * assign component **values** and **properties** while they
+ * _define_ or _extend_ the set of available choices for a given aspect.
+
+###### Typical Use
+
+> TODO assign value, attribs
+
+###### Examples
+
+> TODO value, 1kΩ, dnp ...
+
+##### Auxiliary Choice Expressions
+
+###### Purpose
+
+**Auxiliary Choice Expressions** (ACE)
+ * assign values to specific custom **fields** (other than the _Value_ field) while they
+ * _refer to_ already defined aspect choices.
+
+###### Typical Use
+
+> TODO assign field content, mfr, mpn ...
+
+###### Examples
+
+> TODO value, Example Electronics Corp., i2c address info (see examples below)
 
 #### Choice Expression Formats
 
-Furthermore, Choice Expressions can be defined in different ways, depending on the user's preferences and requirements.  There are two different Choice Expression formats:
+Furthermore, Choice Expressions can be noted in different ways, depending on the user's preferences and requirements.
 
-1. **Simple Choice Expressions** (SCE)
-   * specify a single Choice Expression using
-   * one specific component field per expression.
+There two different **Choice Expression Formats** are described in the following sub-sections.
 
-2. **Combined Choice Expressions** (CCE)
-   * allow combining multiple Choice Expressions in a
-   * single component field (also, for Base Choice Expressions, optionally accepting the Aspect identifier).
+##### Simple Choice Expressions
+
+###### Purpose
+
+**Simple Choice Expressions** (SCE)
+ * specify a single Choice Expression using
+ * one specific component field per expression.
+
+###### Typical Use
+
+> TODO
+
+###### Examples
+
+> TODO
+
+##### Combined Choice Expressions
+
+**Combined Choice Expressions** (CCE)
+ * allow combining multiple Choice Expressions in a
+ * single component field (also, for Base Choice Expressions, optionally accepting the Aspect identifier).
+
+###### Typical Use
+
+> TODO
+
+###### Examples
+
+> TODO
 
 #### Choice Expression Types
 
-The combination of both expression scopes and both expression formats allow for the following four Choice Expression types:
+The combination of the above two Expression Scopes and two Expression Formats allow for the following four Choice Expression Types discussed in the following sub-sections.
 
-1. **Simple Base Choice Expressions** (SBCE)  
-   use the field `Var(<CHOICELIST>)` with field content in [SCE](#SCE) format to assign component value and properties to a specific choice list `<CHOICELIST>`.
+##### Simple Base Choice Expressions
 
-2. **Combined Base Choice Expressions** (CBCE)  
-   use the field `Var` with field content in [CCE](#CCE) format (with an Aspect identifier allowed) to assign component values and properties to one or more choice lists.
+###### Syntax
 
-3. **Simple Auxiliary Choice Expressions** (SACE)  
-   use the field `<CUSTOMFIELD>.Var(<CHOICELIST>)` with field content in [SCE](#SCE) format to assign a specific value for the component's custom field `<CUSTOMFIELD>` to a specific choice list `<CHOICELIST>`.
+**Simple Base Choice Expressions** (SBCE)  
+use the field `Var(<CHOICELIST>)` with field content in [SCE](#SCE) format to assign component value and properties to a specific choice list `<CHOICELIST>`.
 
-4. **Combined Auxiliary Choice Expressions** (CACE)  
-   use the field `<CUSTOMFIELD>.Var` with field content in [CCE](#CCE) format (with no Aspect identifier allowed) to assign values for the component's custom field `<CUSTOMFIELD>` to one or more choice lists.
+###### Typical Use
+
+> TODO
+
+###### Examples
+
+> TODO
+
+##### Combined Base Choice Expressions
+
+###### Syntax
+
+**Combined Base Choice Expressions** (CBCE)  
+use the field `Var` with field content in [CCE](#CCE) format (with an Aspect identifier allowed) to assign component values and properties to one or more choice lists.
+
+###### Typical Use
+
+> TODO
+
+###### Examples
+
+> TODO
+
+##### Simple Auxiliary Choice Expressions
+
+###### Syntax
+
+**Simple Auxiliary Choice Expressions** (SACE)  
+use the field `<CUSTOMFIELD>.Var(<CHOICELIST>)` with field content in [SCE](#SCE) format to assign a specific value for the component's custom field `<CUSTOMFIELD>` to a specific choice list `<CHOICELIST>`.
+
+###### Typical Use
+
+> TODO
+
+###### Examples
+
+> TODO
+
+##### Combined Auxiliary Choice Expressions
+
+###### Syntax
+
+**Combined Auxiliary Choice Expressions** (CACE)  
+use the field `<CUSTOMFIELD>.Var` with field content in [CCE](#CCE) format (with no Aspect identifier allowed) to assign values for the component's custom field `<CUSTOMFIELD>` to one or more choice lists.
+
+###### Typical Use
+
+> TODO
+
+###### Examples
+
+> TODO
+
+
+
+
+
 
 #### Aspect Identifier Specification
 
