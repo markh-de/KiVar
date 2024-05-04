@@ -243,6 +243,8 @@ Choice Argument List input | Resulting Content string | Explanation
 
 ##### Property Choice Arguments
 
+###### Purpose
+
 To modify component attributes, such as _Do not populate_, _Not in Position Files_ or _Not in BoM_, KiVar provides a set of component **Properties** that can be assigned to choices.
 
 ###### Syntax
