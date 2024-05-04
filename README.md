@@ -19,13 +19,13 @@ KiVar assigns PCB component **values** and **attributes** (such as _Do not popul
 
 Back-propagation of modified component data from the PCB to the schematic can be done in an extra step.
 
-**TODO** Add screenshot of plugin (same as below?), add screenshot of CLI app.
+> ***TODO*** Add screenshot of plugin (same as below?), add screenshot of CLI app.
 
 ## Concepts
 
 Key concepts of KiVar are:
 
- * A design may contain **multiple** independent variation **aspects** (i.e. dimensions or degrees of freedom).
+ * Designs may contain **multiple** independent variation **aspects** (i.e. dimensions or degrees of freedom).
  * Variation rules are **fully contained** in component fields of native design files (no external configuration files) and **portable** (i.e. copying components to another design keeps their variation specification intact).
  * Component values and attributes are modified **in place**, enabling compatibility with all exporters that work on the actual component data.
  * **No external state information** is stored; currently matching variation choices are detected automatically.
@@ -41,7 +41,8 @@ Earlier versions of KiVar also supported KiCad 7, but in a very restricted way. 
 ### KiVar Action Plugin
 
 The KiVar Action Plugin uses the Python API wrapper for pcbnew, the KiCad PCB Editor.
-TODO: so does the CLI. move this text to general info.
+
+> ***TODO*** ... so does the CLI. move this text to general info.
 
 The recommended installation method is to use KiCad's integrated **Plugin and Content Manager**.  KiVar is included in the official PCM repository, allowing a smooth and safe installation experience.  For manual installation users can also choose to download the plugin archive packages.
 
@@ -75,9 +76,8 @@ To install the KiVar CLI using the official PyPI repository, open a shell and ru
 pip install kivar
 ```
 
-**TODO**
+> ***TODO***
 
-<a name="?"></a>
 ## Usage
 
 > ***TODO*** revise document structure and headings levels!
@@ -116,7 +116,7 @@ The following sections will cover the details.
 
 Severity: Critical.
 
-***TODO*** add examples old -> new
+> ***TODO*** add examples old -> new
 
 ##### Implicit Default Properties
 
@@ -124,25 +124,25 @@ Severity: Critical.
 
 While being partly backwards-compatible, the `-!` statement is now no longer an option, but a property modifier.
 
-***TODO***
+> ***TODO***
 
 ##### Values As Multiple Words
 
 Severity: Not critical (relaxed rules).
 
-***TODO***
+> ***TODO***
 
 ##### Aspect Identifier Position
 
 Severity: Not critical (relaxed rules).
 
-***TODO***
+> ***TODO***
 
 ##### New Choice Expression Types and Formats
 
 Severity: Not critical (optional enhancements).
 
-***TODO***
+> ***TODO***
 
 #### Definition of Terms
 
@@ -210,13 +210,15 @@ Argument types are distinguished by their first (unescaped) character and will b
 
 ###### Purpose
 
-To assign a string to the component value or to any (custom) component field (such as _Manufacturer_, _MPN_, ...), .... ***TODO***
+To assign a string to the component value or to any (custom) component field (such as _Manufacturer_, _MPN_, ...), ....
+
+> ***TODO***
 
 ###### Syntax
 
 Each argument beginning with a character _other than_ `-` and `+` is interpreted as a **Content Specifier**.
 
-> TODO: multiple CS per CE allowed, but only one CE with CS per choice per component
+> ***TODO*** multiple CS per CE allowed, but only one CE with CS per choice per component
 
 _Note:_ As arguments can be separated by _any_ number of space characters, each separation that uses multiple spaces will result in a single space character in the final content.  For strings that shall be assigned in a verbatim way (such as a URL), it is highly recommended to use quoting techniques (discussed later).
 
@@ -270,9 +272,9 @@ The following effective Properties are available:
 
 ###### Virtual Properties
 
-> TODO: find a better name for virtual ... placeholder ...?
+> ***TODO*** find a better name for virtual ... placeholder ...?
 
-> TODO: explain `!`, which acts as bfp, and can be overridden later
+> ***TODO*** explain `!`, which acts as bfp, and can be overridden later
 
 ###### Examples
 
@@ -285,31 +287,6 @@ Choice Argument List input | Resulting Property states | Explanation
 `-!`                       |  _not_ Fitted, _not_ inBom, _not_ inPos | Equivalent to prior example.
 `-! +b`                    |  _not_ Fitted, inBom, _not_ inPos | After setting `f`, `b`, `p` to false, `b` is set to true again.
 `-!+b`                     |  _not_ Fitted, inBom, _not_ inPos | Equivalent to prior example.  Multiple modifiers can appear inside a single specifier.
-
----
-
-##### Choice Expression Examples
-
-The following examples ... ***TODO***
-
-(TODO) move these to the examples for both content and props
-```
-`abc +p -b def`            | `abc def`                | (TODO) Properties are discussed below.
-`abc \+p '-b' def`         | `abc def`                | (TODO) Properties are discussed below.
-```
-
-The following table provides some examples along with their results when applied and explanations for each case.
-
-CAL            | Resulting content | Resulting property states | Explanation
----|---|---|---
-`a list of words` | `a list of words` | | The content results in all arguments joined with a space character.
-`just   like in   html` | `just like in html` | | Similar, but note that multiple separation spaces in the CAL result in a single space in the content.
-`This is ' a  verbatim string'` | `This is  a  verbatim string` | | In quoted parts, spaces (and other special characters) are preserved.
-(TODO) more, with quoted prop specs ...
-
-(TODO) table with examples of CALs, resulting content and properties, along with explanation
-
----
 
 #### Choice Identifiers
 
@@ -331,9 +308,9 @@ CAL            | Resulting content | Resulting property states | Explanation
 
 ##### Examples
 
-(TODO) multiple components, to illustrate default choice behavior
+> TODO multiple components, to illustrate default choice behavior
 
-(TODO) following sections one heading level up
+> TODO following sections one heading level up
 
 #### Choice Expression Scopes
 
@@ -359,9 +336,13 @@ They are also used to modify component attributes, e.g. when a component shall c
 
 BCEs can _not_ modify custom fields.  For this, ACEs must be used (see below).
 
-###### Examples
+###### Data Assignment
 
 > TODO content and properties ... how are they mapped to the component data
+
+###### Examples
+
+As BCEs only specify an expression scope and not a real Choice Expression Type, examples are provided in the sections ***TODO link*** (SBCE) and ***TODO link*** (CBCE).
 
 ##### Auxiliary Choice Expressions
 
@@ -379,15 +360,19 @@ Also, ACEs do not support specifying properties, as they do not refer to the com
 
 ACEs are used to assign custom field values, such as a manufacturer name or a manufacturer product number (MPN) to be used in the bill of materials.  However, ACEs can also be used for other information, such as a choice-dependent device address.  That information can then be made visible in the schematic for informational purposes.  This can be used to automatically streamline schematic documentation.
 
+###### Data Assignment
+
+> TODO how is data mapped
+
 ###### Examples
 
-> TODO value, Example Electronics Corp., i2c address info (see examples below)
+As ACEs only specify an expression scope and not a real Choice Expression Type, examples are provided in the sections ***TODO link*** (SACE) and ***TODO link*** (CACE).
 
 #### Choice Expression Formats
 
 Furthermore, Choice Expressions can be noted in different ways, depending on the user's preferences and requirements.
 
-There two different **Choice Expression Formats** are described in the following sub-sections.
+The two different **Choice Expression Formats** are described in the following sub-sections.
 
 ##### Simple Choice Expressions
 
@@ -403,7 +388,7 @@ There two different **Choice Expression Formats** are described in the following
 
 ###### Examples
 
-> TODO
+As SCEs only specify an expression format and not a real Choice Expression Type, examples are provided in the sections ***TODO link*** (SBCE) and ***TODO link*** (SACE).
 
 ##### Combined Choice Expressions
 
@@ -417,11 +402,11 @@ There two different **Choice Expression Formats** are described in the following
 
 ###### Examples
 
-> TODO
+As CCEs only specify an expression format and not a real Choice Expression Type, examples are provided in the sections ***TODO link*** (CBCE) and ***TODO link*** (CACE).
 
 #### Choice Expression Types
 
-The combination of the above two Expression Scopes and two Expression Formats allow for the following four Choice Expression Types discussed in the following sub-sections.
+The combination of the above two Expression Scopes and two Expression Formats results in the following four **Choice Expression Types** discussed in the following sub-sections.
 
 ##### Simple Base Choice Expressions
 
