@@ -468,264 +468,34 @@ use the field `<CUSTOMFIELD>.Var` with field content in [CCE](#CCE) format (with
 
 > TODO
 
+#### Aspect Identifier
 
+##### Purpose
 
+> ***TODO***
 
-
-
-#### Aspect Identifier Specification
+##### Specification
 
 As mentioned above, each component that provides KiVar variation rules must refer to exactly one Aspect.
 
-There are two methods of passing the **Aspect identifier**:
+There are two methods of passing the **Aspect Identifier**:
 
 1. Using the _dedicated component field_ `Var.Aspect`, or
 2. as part of a _Combined Base Choice Expression_.
 
 Details and examples can be found in the following sections.
 
-> ***TODO*** revise next sections, move? rewrite? obsolete? syntax is now covered from inside to outside!
+> TODO more
 
----
 
-#### Definition Syntax
 
-As mentioned above, Choice Expressions can be specified in various ways to cover most user requirements.
 
-The following sub-sections explain how and when to use which Choice Expression types.  Although the basic syntax rules are covered in later sections, examples are used below for illustrative purposes.
+> ***TODO*** a **lot** of old stuff removed from here. re-insert sections that are still valid!
 
-##### Example use-case
 
-For the upcoming sections, assume the following hypothetical use-case:
+> ***TODO*** Usage tips section. when to use which ce type? some examples. more examples in the real-world section.
 
-KiVar shall allow switching between two IC types for component _U1_.  For this the following two choices are declared:
- * `9535` (for IC type _TCA953**5**PWR_) and
- * `9539` (for IC type _TCA953**9**PWR_).
-
-Both ICs are I²C port expanders that are mostly pin-compatible.  Provided the schematic is designed correctly, both ICs are interchangeable without any changes to the PCB layout.
-
-As KiVar allows multiple aspects, the above choices must be assigned to an aspect, forming a group for both choices.  The aspect identifier for the above choices shall be `IOEXP_TYPE`.
-
-The following field content assignments shall be performed by KiVar for each choice:
-
-Field Name    | Content for Choice `9535`                      | Content for Choice `9539`
---------------|------------------------------------------------|--------------------------
-`Value`       | `TCA9535PWR`                                   | `TCA9539PWR`
-`MPN`         | `TCA9535PWR`                                   | `TCA9539PWR`
-`I2C Address` | `0x20`                                         | `0x74`
-`Datasheet`   | `https://www.ti.com/lit/ds/symlink/tca9535.pdf` | `https://www.ti.com/lit/ds/symlink/tca9539.pdf`
-
-##### Simple Choice Expression (SCE)
-
-SCEs specify a single Choice Expression per component field.  In a typical use-case, multiple such expressions will be used to describe multiple values, properties or field contents of the corresponding component.  They can be mixed with CCE (see below) to form a complete set of Choice Expressions.
-
-As described above, SCEs can be used for Base and Auxiliary CEs (as SBCE and SACE).
-
-According to our example use-case, the _Value_ field of component _U1_ shall be changed.  For this we need Simple _Base_ Choice Expressions (SBCE), which allow declaring and defining choices and the component values (and properties) associated with them.  For component _U1_ we add the following data:
-
-Field Name  | Field Content
-------------|--------------
-`Var(9535)` | `TCA9535PWR`
-`Var(9539)` | `TCA9539PWR`
-
-As SCEs do not allow specifying the aspect identifier, we need to add an additional field to specify the aspect to which the above choices apply:
-
-Field Name   | Field Content
--------------|--------------
-`Var.Aspect` | `IOEXP_TYPE`
-
-Now that we have declared and defined the choices `9535` and `9539` for aspect `IOEXP_TYPE`, we can refer to them in Auxiliary expressions, which are used for defining _custom field_ contents (i.e. fields other than the component's _Value_ field).  So to assign data to the _MPN_ field, depending on the selected choice, we now use Simple Auxiliary Choice Expressions (SACE):
-
-Field Name      | Field Content
-----------------|--------------
-`MPN.Var(9535)` | `TCA9535PWR`
-`MPN.Var(9539)` | `TCA9539PWR`
-
-Depending on the selected choice, the effective I²C address should be assigned to a custom component field, for information purposes only.  That information can later be added to the schematic symbol instance to be visible in the schematic.  This is very helpful when checking for potential address conflicts. 
- The address assignment can be done with these additional Auxiliary expressions:
-
-Field Name              | Field Content
-------------------------|--------------
-`I2C Address.Var(9535)` | `0x20`
-`I2C Address.Var(9535)` | `0x74`
-
-While SCEs can also be used to assign such short and simple field contents, they are much better suited for longer contents that would make a CCE (see below) too long or too complicated, such as the datasheet URL in the following Auxiliary expressions:
-
-Field Name            | Field Content
-----------------------|--------------
-`Datasheet.Var(9535)` | `https://www.ti.com/lit/ds/symlink/tca9535.pdf`
-`Datasheet.Var(9539)` | `https://www.ti.com/lit/ds/symlink/tca9539.pdf`
-
-##### Combined Choice Expressions (CCE)
-
-CCEs allow specifying multiple Choice Expressions per component field, even along the aspect identifier (for Base expressions).  CCEs enable much more compact expressions.
-
-The above expressions can be implemented in a much more compact fashion when using CCEs instead.  For component _U1_, the following rules would have the same effect as the above SCEs and fulfill our example use-case:
-
-Field Name        | Field Content
-------------------|--------------
-`Var`             | `9535(TCA9535PWR) 9539(TCA9539PWR) IOEXP_TYPE`
-`MPN.Var`         | `9535(TCA9535PWR) 9539(TCA9539PWR)`
-`I2C Address.Var` | `9535(0x20) 9539(0x74)`
-`Datasheet.Var`   | `9535('https://www.ti.com/lit/ds/symlink/tca9535.pdf') 9539('https://www.ti.com/lit/ds/symlink/tca9539.pdf')`
-
-Note how the aspect identifier is passed inside the CBCE (field `Var`).  Inside a CBCE KiVar recognizes the aspect identifier by the missing round brackets.
-
-Another benefit of using CCEs is that the variety of different field names used in your schematic is kept low, because the different choice names are not part of the field name.  If there are many different field names, the Symbol Fields Table in the schematic editor can become quite cluttered.
-
-However, for assignments containing very long or complex strings (such as URLs), SBEs may be a better choice.
-
-Also note the usage of string quoting (discussed later) around the URLs.  Although it is not strictly required in this example, it is good practice to quote complex strings that may contain special characters that could be recognized by the parser.
-
-As noted above, SBEs and CBEs can be mixed.
-
-
-
-(TODO move this)
-_Hint:_ It is recommended to add `Var` and **TODO** as project field name templates (configured under _File &rarr; Schematic Setup... &rarr; General &rarr; Field Name Templates_), so that rules can easily be created without manually adding those fields and their names for each affected symbol.
-
----
-
-
-
-
-The following figure summarizes the structure of a rule definition.  Each part of it is explained in more detail in the following sections. 
-
-***TODO*** new example, more specific aspect and choice names. LED color (red/green/yellow/white) and matching resistors? optionally changing the LED MPN?
-
-![Variation Definition Composition](doc/rule.png)
-
-For the upcoming sections, the following simple example rules are used for illustration purposes (components `R1` and `R2`):
-
- * `R1`: `KiVar.Rule` = `ASPECT_A CHOICE_1(0Ω) CHOICE_2,CHOICE_3(10kΩ)`
- * `R2`: `KiVar.Rule` = `ASPECT_A CHOICE_3() *(-!)`
-
-##### Rule Definition
-
-A **rule definition** consists of multiple sections, separated by one or more (unescaped) _space_ characters.
-
-The **first** section of each rule definition contains the **aspect name**.
-
-**Any subsequent** sections contain **choice definitions**, which relate to the aspect name specified in the first section.
-
-Looking at `R1` of the illustration example, `ASPECT_A` is the aspect name, and the choice definitions _for that aspect_ are defined as:
-
- * `CHOICE_1(0Ω)` and
- * `CHOICE_2,CHOICE_3(10kΩ)`
-
-Follow the next sections for further explanations.
-
-##### Choice Definition
-
-A choice definition consists of two parts: One or more **choice names** (_comma_-separated), directly followed by a pair of parentheses containing the **choice arguments**.
-
-The _choice names_ declare to which variation choices the given choice arguments shall be applied.
-
-The _choice arguments_ contain any number of arguments (separated by unescaped _space_ characters) to be applied to each listed choice name.
-
-For the illustration example the following assignments apply:
-
-**R1** creates `ASPECT_A` with:
-
- * the new choice `CHOICE_1` with argument `0Ω`,
- * the new choices `CHOICE_2` and `CHOICE_3` with argument `10kΩ`, each.
-
-**R2** enhances `ASPECT_A` with:
-
- * the already known `CHOICE_3` without arguments,
- * the default choice `*` (i.e. applies to `CHOICE_1` and `CHOICE_2`, see below) with argument `-!`.
-
-##### Choice Definition Arguments
-
-Each choice definition may contain the following choice argument types:
-
- * a **value** (one at most) to be assigned to the footprint's value field when that choice is selected during the variation choice selection process, and
- * **options** (none or more) to be assigned to the applicable choice(s).
-
-_Important:_ All arguments starting with an _unescaped_ `-` (dash) character are considered **options**.  Any other arguments are considered **values**.
-
-For the illustration example this means that the arguments `0Ω` and `10kΩ` are considered component values, while `-!` is considered an option.
-
-##### Supported Options
-
-Currently only one type of option is supported:
-
-`!` — **Unfit component**.  If specified, sets the following attributes for the related footprint:
-
-  * _Do not populate_ (not yet supported in KiCad 7),
-  * _Exclude from position files_,
-  * _Exclude from Bill of Materials_.
-
-If this option is _not_ provided for a specific choice, then the above attributes will be _cleared_ for that choice, i.e. the part will be "fitted" and hence marked as populated and included in position files and BoM.
-
-##### Optional Value Assignments
-
-Assigning values to choices is optional for each component.  When a component's variation rule does not define values in _any_ of its choices, the value field for that component is not changed when assigning a variation.  This feature is useful for parts that always keep the same value and are only switched between _fitted_ and _unfitted_.
-
-_Note:_ It is important to understand that a component's variation rule must _either_ define **one value for every choice** _or_ **no value for any choice**.  Using a mixture of choices _including_ values and _not including_ values would lead to an inconsistent state of the component value field's content and will therefore raise an error during the plugin's enumeration stage.
-
-##### Default Choice Definitions
-
-Default choices can be used to declare arguments that shall be applied to choices not explicitly defined in the current rule definition, but declared in any other rule definitions (i.e., in rules applied to other components).
-
-As the list of possible aspect choices can be enhanced by other components' rules using the same aspect, not each component (or component variation rule) may be "aware" of the resulting full set of aspect choices built up during the footprint rules enumeration.  Also, defining all possible choices in each component's rule would be tedious and harder to maintain, as all related components' rules would need to be extended when new choices are introduced.  Therefore, default choices are a practical means to define default values and options without explicitly listing all choices they shall apply to.
-
-Default choices are defined in the same way as normal choices.  To indicate a default choice, the character `*` (asterisk) must be used as the choice name.
-
-Beware that default values and default options are applied differently:
-
- * A **value** listed in a default choice definition applies to _all choices that are not defined or are defined, but do not contain a value assignment_ within the same variation rule.
- * Any **options** listed in a default choice definition only apply to _all choices that are not defined_ within the same variation rule.  That is, if a specific choice is defined in a rule, that definition _always_ overrides all options of the default choice definition.  Options specified in the default choice definition will _not_ be inherited by specific (non-default) choices that are defined in any way inside the same variation rule definition, but only by choices that are exclusively declared (and defined) by _other_ rules (i.e., rules applied to _other components_, but referring to the same variation aspect).
-
-A default choice definition can be placed anywhere in the list of choice definitions, and can also be defined together with other choices (comma-separated notation).  Two recommended ways are to place the default either at the beginning _('default' notation)_ or the end _('else' notation)_ of the choice definitions.  The effect is the same.  It depends on the user's preference how the rule is worded.  For example,
-
- * `FOO *(10kΩ) BAR,BAZ(47kΩ)` reads like _'Usually a 10kΩ resistor, but for the choices `BAR` or `BAZ`, this becomes a 47kΩ resistor' ('default' notation)._
- * `FOO BAR,BAZ(47kΩ) *(10kΩ)` reads like _'For `BAR` and `BAZ`, this is a 47kΩ resistor; for any other choice, this is a 10kΩ resistor' ('else' notation)._
-
-##### Illustration Example Resolution
-
-For the above illustration example, which was defined as ...
-
- * `R1` &rarr; `ASPECT_A CHOICE_1(0Ω) CHOICE_2,CHOICE_3(10kΩ)`
- * `R2` &rarr; `ASPECT_A CHOICE_3() *(-!)`
-
-... the following resolution would be computed by KiVar:
-
-|Choice for aspect `ASPECT_A`|Component `R1`             |Component `R2`          |
-|----------------------------|---------------------------|------------------------|
-|`CHOICE_1`                  |Set value to `0Ω`, fitted  |keep value, **unfitted**|
-|`CHOICE_2`                  |Set value to `10kΩ`, fitted|keep value, **unfitted**|
-|`CHOICE_3`                  |Set value to `10kΩ`, fitted|keep value, fitted      |
-
-###### Quoting and Escaping
-
-Special characters used for separating parts of a rule definition, such as `,` ` ` `-` `(` `)` (comma, space, dash, parentheses) are **not** considered special (i.e. do not separate parts) when
-
- * they appear inside a quoted part of the definition, i.e. inside a matching pair of two unescaped `'` (single quotation mark) characters, or when
- * they are escaped, i.e. prepended with a `\` (backslash).
-
-_Note:_ Double quotation mark characters (`"`) are **not** accepted for quoting.
-
-To include any character as-is without being interpreted (e.g. _dash_ to be used as first character of a value, or _single quotation mark_ or _backslash_), that character must be _escaped_, i.e. preceded, with a _backslash_ character.
-
-_Hint:_ In many cases, quoting and escaping in KiVar works just like in a regular POSIX shell interpreter.
-
-_Examples:_
-
-* To assign the fictional value `don't care` (a string containing a single quotation mark and a space), the appropriate value argument in the choice definition would be either `'don\'t care'` or `don\'t\ care`.
-* To use `-12V` (a string starting with a dash) as a value, the choice definition arguments `'-12V'` or `\-12V` would be appropriate.  If the dash were not escaped, `-12V` would be interpreted as an (unknown) option.
-* To assign an empty component value, use an empty quoted string `''` as choice definition argument.
-* To assign a simple single-worded (not separated by a space character) component value, the value does not need to be quoted.  E.g., `10mH` or `'10mH'` are equivalent.
-
-_Note:_ The same rules apply for aspect and choice names.  E.g., the rule `'Aspect Name' 'Choice One'('Value One') Choice\ Two(Value\ Two)` is valid.
-
-_Note:_ When separating parts using the space character (rule definition sections or choice definition arguments), one or more space characters may be used per separation.
-
-#### Constraints
-
-KiVar uses **implicit declarations** for aspects and for choices.  That is, it is not required to maintain a dedicated list of available aspects or choices.  Simply mentioning an aspect or choice inside a rule definition is sufficient to declare them.
-
-_Note:_ Using implicit declarations carries the risk of creating undesired extra aspects or choices in case of spelling errors.  Also, this method may require a little more work in case aspects or choices are to be renamed.  However, the Schematic Editor's _Symbol Fields Table_ is a useful tool for bulk-editing KiVar rules.
+> ***TODO*** Q&A section that handles the most obvious questions
 
 #### Real-World Examples
 
