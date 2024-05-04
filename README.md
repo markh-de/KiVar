@@ -286,6 +286,8 @@ Choice Argument List input | Resulting Property states | Explanation
 `-! +b`                    |  _not_ Fitted, inBom, _not_ inPos | After setting `f`, `b`, `p` to false, `b` is set to true again.
 `-!+b`                     |  _not_ Fitted, inBom, _not_ inPos | Equivalent to prior example.  Multiple modifiers can appear inside a single specifier.
 
+---
+
 ##### Choice Expression Examples
 
 The following examples ... ***TODO***
@@ -306,6 +308,8 @@ CAL            | Resulting content | Resulting property states | Explanation
 (TODO) more, with quoted prop specs ...
 
 (TODO) table with examples of CALs, resulting content and properties, along with explanation
+
+---
 
 #### Choice Identifiers
 
@@ -349,11 +353,11 @@ Also, they **declare** and **define** choices for a given aspect.
 
 ###### Typical Use
 
-BCEs are used to assign component values, such as `10kΩ`, `0.1µF` or `74HC595`.  Content Choice Arguments are mapped to the component value.
+BCEs are used to assign component values, such as `10kΩ`, `0.1µF 50V` or `74HC595`.  The component value is defined by the choice content (assigned through Content Choice Arguments).
 
-They are also used to modity component attributes, e.g. when a component shall change its _DNP_ (do not populate) state or when it shall or shall not be included in position files or the bill of materials.  Property Choice Arguments are mapped to the component attributes.
+They are also used to modify component attributes, e.g. when a component shall change its _DNP_ (do not populate) state or when it shall or shall not be included in position files or the bill of materials.  Component attributes are defined by choice properties (assigned through Property Choice Arguments).
 
-BCEs can not modify custom fields.  For this, ACEs must be used (see below).
+BCEs can _not_ modify custom fields.  For this, ACEs must be used (see below).
 
 ###### Examples
 
@@ -367,13 +371,13 @@ BCEs can not modify custom fields.  For this, ACEs must be used (see below).
 
 They do _not_ declare additional choices, but can **only refer** to aspect choices declared in Base Choice Expressions.
 
-Each Choice Identifier used in an ACE must therefore be declared in a dedicated ACE, even if no change of the component value or attributes is required (***TODO*** link to CI declaration w/o definition).
+Each Choice Identifier used in an ACE must therefore be declared in a BCE, even if no change of the component value or attributes is required (***TODO*** link to CI declaration w/o definition).
 
 Also, ACEs do not support specifying properties, as they do not refer to the component itself, but to dedicated fields within it.
 
 ###### Typical Use
 
-> TODO assign field content, mfr, mpn ...
+ACEs are used to assign custom field values, such as a manufacturer name or a manufacturer product number (MPN) to be used in the bill of materials.  However, ACEs can also be used for other information, such as a choice-dependent device address.  That information can then be made visible in the schematic for informational purposes.  This can be used to automatically streamline schematic documentation.
 
 ###### Examples
 
