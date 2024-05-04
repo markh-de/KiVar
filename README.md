@@ -245,17 +245,17 @@ Choice Argument List input | Resulting Content string | Explanation
 
 ###### Purpose
 
-To modify component attributes, such as _Do not populate_, _Not in Position Files_ or _Not in BoM_, KiVar provides a set of component **Properties** that can be assigned to choices.
+To modify component attributes, such as _Do not populate_, _Not in Position Files_ or _Not in BoM_, KiVar provides a set of boolean component **Properties** that can be assigned to choices.
 
 ###### Syntax
 
 Each argument beginning with a `-` or `+` is interpreted as a **Property Specifier**, which is a combination of **Property Modifiers** and **Property Identifiers**.
 
-Each Property Specifier must start with a Property Modifier, defining the state (_true_ or _false_, represented by `+` or `-`, respectively) to be assigned to the Properties subsequently specified by their corresponding Property Identifiers.
+Each Property Specifier must start with a Property Modifier, defining the boolean state (_true_ or _false_, represented by `+` or `-`, respectively) to be assigned to the Properties subsequently specified by their corresponding Property Identifiers.
 
 ###### Evaluation
 
-All Property Specifiers inside a Choice Expression are evaluated from left to right, resulting in a set of defined Property states for the corresponding component and choice.  Properties not defined in any of the component's Choices are kept in their original state. 
+All Property Specifiers inside a Choice Expression are evaluated from left to right, resulting in a set of defined boolean Property states for the corresponding component and choice.  Properties not defined in any of the component's Choices are kept in their original state.
 
 ###### Effective Properties
 
@@ -286,7 +286,7 @@ Choice Argument List input | Resulting Property states | Explanation
 `-! +b`                    |  _not_ Fitted, inBom, _not_ inPos | After setting `f`, `b`, `p` to false, `b` is set to true again.
 `-!+b`                     |  _not_ Fitted, inBom, _not_ inPos | Equivalent to prior example.  Multiple modifiers can appear inside a single specifier.
 
-##### Combined Examples
+##### Choice Expression Examples
 
 The following examples ... ***TODO***
 
@@ -309,7 +309,21 @@ CAL            | Resulting content | Resulting property states | Explanation
 
 #### Choice Identifiers
 
-(TODO) as part of CIL
+##### Purpose
+
+> TODO
+
+##### Syntax
+
+> TODO, CIs are part of CILs ...
+
+##### Default Choices
+
+> TODO
+
+##### Implicit Defaults
+
+> TODO only for boolean values, such as properties
 
 ##### Examples
 
