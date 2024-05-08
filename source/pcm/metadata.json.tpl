@@ -22,7 +22,7 @@
         {
             "version": "<<VERSION>>",
             "status": "testing",
-            "kicad_version": "7.0"
+            "kicad_version": "8.0"
         }
     ]
 }
