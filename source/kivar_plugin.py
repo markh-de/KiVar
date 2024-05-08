@@ -2,7 +2,7 @@ from os import path as os_path
 import wx
 import wx.lib.agw.hyperlink as hyperlink
 import pcbnew
-from kivar import build_fpdict, build_vardict, version, get_choice_dict, detect_current_choices, natural_sort_key, apply_selection, store_fpdict, uuid_to_fp, pcbnew_compatibility_error
+from kivar_backend import build_fpdict, build_vardict, version, get_choice_dict, detect_current_choices, natural_sort_key, apply_selection, store_fpdict, uuid_to_fp, pcbnew_compatibility_error, legacy_expressions_found
 
 # TODO:
 #
@@ -32,12 +32,17 @@ class KiVarPlugin(pcbnew.ActionPlugin):
         if len(errors) > 0:
             show_error_dialog('Rule errors', errors, board)
         elif len(vardict) == 0:
-            show_missing_rules_dialog()
+            show_missing_rules_dialog(legacy_expressions_found(fpdict))
         else:
             show_selection_dialog(board, fpdict, vardict)
 
+# TODO link to release maintenance branch!
 def help_url():
     return 'https://help.kivar.markh.de#usage'
+
+# TODO add matching anchors to doc!
+def help_migrate_url():
+    return 'https://help.kivar.markh.de#migrate'
 
 def show_selection_dialog(board, fpdict, vardict):
     dlg = VariantDialog(board, fpdict, vardict)
@@ -181,20 +186,26 @@ class VariantDialog(wx.Dialog):
         changes = apply_selection(self.fpdict, self.vardict, self.selections(), True)
         self.changes_list.set_item_list(sorted(changes, key=lambda x: natural_sort_key(x[1])))
 
-def show_missing_rules_dialog():
-    dialog = MissingRulesDialog()
+def show_missing_rules_dialog(legacy_found=0):
+    dialog = MissingRulesDialog(legacy_found)
     dialog.ShowModal()
     dialog.Destroy()
 
 class MissingRulesDialog(wx.Dialog):
-    def __init__(self):
+    def __init__(self, legacy_found=0):
         super().__init__(pcbnew_parent_window(), title=f'KiVar {version()}: No rule definitions found', style=wx.DEFAULT_DIALOG_STYLE)
 
         sizer = wx.BoxSizer(wx.VERTICAL)
 
-        sizer.Add(wx.StaticText(self, label='Please consult the KiVar documentation to learn how to\nassign variation rules to symbols/footprints:'), 0, wx.ALL, 20)
+        if legacy_found:
+            text = f'KiVar could not find any valid rules in the current format.\n\nHowever, there were found {legacy_found} rule(s) in the legacy format, which\nis unsupported in this release.\n\nPlease consult the KiVar documentation to learn how to\nmigrate the rules of your existing designs to the current format:'
+            link = help_migrate_url()
+        else:
+            text = 'KiVar could not find any valid rules.\n\nPlease consult the KiVar documentation to learn how to\nassign variation rules to symbols/footprints:'
+            link = help_url()
+        sizer.Add(wx.StaticText(self, label=text), 0, wx.ALL, 20)
 
-        link = hyperlink.HyperLinkCtrl(self, -1, help_url(), URL='')
+        link = hyperlink.HyperLinkCtrl(self, -1, link, URL='')
         default_color = wx.Colour()
         link.SetColours(link=default_color, visited=default_color)
         link.SetToolTip('')
