@@ -1,10 +1,8 @@
-#!/usr/bin/env python3
-
 import os
 import sys
 import argparse
 import pcbnew
-from kivar import Key, version, build_vardict, natural_sort_key, build_fpdict, store_fpdict, detect_current_choices, quote_str, prop_abbrev, base_prop_codes, cook_raw_string, escape_str, get_choice_dict, split_raw_str, apply_selection, pcbnew_compatibility_error
+from .kivar_backend import Key, version, build_vardict, natural_sort_key, build_fpdict, store_fpdict, detect_current_choices, quote_str, prop_abbrev, base_prop_codes, cook_raw_string, escape_str, get_choice_dict, split_raw_str, apply_selection, pcbnew_compatibility_error
 
 # TODO for list, allow another structure: aspect -> component -> choice (in addition to current aspect -> choice -> component)
 # TODO make use of verbose options, where applicable
@@ -261,7 +259,8 @@ def main():
             elif cmd == "set":
                 if not set_command(board=args.board, assign=args.assign, dry_run=args.dry_run, verbose=args.verbose): exitcode = 1
             else:
-                print_err(f'Error: Missing command. Use "-h" or "--help" for help.')
+                print_err(f'This is the KiVar CLI, version {version()}.')
+                parser.print_usage()
                 exitcode = 2
 
     return exitcode

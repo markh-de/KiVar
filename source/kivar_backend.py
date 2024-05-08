@@ -29,7 +29,7 @@ from copy import deepcopy
     # Update R2 fields.
 
 def version():
-    return '0.2.0-dev31'
+    return '0.2.0-dev32'
 
 def pcbnew_compatibility_error():
     ver = pcbnew.GetMajorMinorPatchVersion()
@@ -45,6 +45,13 @@ def uuid_to_fp(board, uuid):
 
 def set_fp_field(fp, field, value):
     if not field.lower() in ['value', 'reference', 'footprint']: fp.SetField(field, value)
+
+def legacy_expressions_found(fpdict):
+    found = 0
+    for uuid in fpdict:
+        for field in fpdict[uuid][Key.FIELDS]:
+            if field == 'KiVar.Rule': found += 1
+    return found
 
 def build_fpdict(board):
     fpdict = {}
