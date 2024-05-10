@@ -68,7 +68,11 @@ If the installation does not work for you this way, consider reporting your prob
 
 ### KiVar Command Line Application
 
-#### Using PyPI
+#### Using pip
+
+The KiVar CLI Python package can be installed using the following methods.
+
+##### From the PyPI Repository
 
 To install the KiVar CLI using the official PyPI repository, open a shell and run:
 
@@ -76,7 +80,13 @@ To install the KiVar CLI using the official PyPI repository, open a shell and ru
 pip install kivar
 ```
 
-> ***TODO***
+##### From a Release Archive
+
+The KiVar CLI can also be installed using a downloaded (or locally created) Python Package:
+
+```
+pip install kivar-<VERSION>.tar.gz
+```
 
 ## Usage
 
@@ -96,53 +106,83 @@ While it is recommended to define variation rules in the schematic (i.e. in symb
 
 #### Migrating from KiVar 0.1.x
 
-KiVar 0.2.0 introduced changes and enhancements to the rule syntax.  The following sub-sections will support experienced users of KiVar 0.1.x with updating their legacy variation rules for current and upcoming KiVar releases.
+KiVar 0.2.0 introduced changes and enhancements to the rule syntax.  The following sub-sections will support experienced users of KiVar 0.1.x with updating their legacy variation rules for current and upcoming KiVar versions.
 
 ##### New Field Names
 
+Severity: **Critical**.
+
 While KiVar 0.1.x and earlier used a single field `KiVar.Rule`, current releases use `Var` for quite the same purpose.
 
-So as a first step you should move all legacy rules from `KiVar.Rule` to `Var`.  This can be achieved simply with copy & paste in the KiCad Schematic Editor's Symbol Fields Table.
+So as a first step users should move all legacy rules from `KiVar.Rule` to `Var`.  This can be achieved simply with copy & paste in the KiCad Schematic Editor's Symbol Fields Table.
 
 _Hint:_  In the Symbol Fields Table, sort by the legacy `KiVar.Rule` field, then copy & paste all relevant cells to the `Var` field.  Afterwards, remove all `KiVar.Rule` fields (can be done in the Symbol Fields Table dialog).
 
 ##### Basic Rule Format
 
-While the legacy rule format of the `KiVar.Rule` field is very similar to the current `Var` field expression format, there have been some changes that may (or may not) break your legacy rules.  You will need to review your legacy rules to be sure that they are parsed correctly with current (and upcoming) versions of KiVar.
+While the legacy rule format of the `KiVar.Rule` field is very similar to the current `Var` field expression format, there have been some changes that may (or may not) break your legacy rules.  Users will need to review their legacy rules to be sure that they are parsed correctly with current (and upcoming) versions of KiVar.
 
 The following sections will cover the details.
 
 ##### Property (Formerly Options) Inheritance
 
-Severity: Critical.
+Severity: **Critical**.
 
-> ***TODO*** add examples old -> new
+Before version 0.2.0, there were Options (actually only _one_ Option).  An Option always started with a `-` (dash) character, followed by the Option identifier.  The only Option supported was `!`, which resulted in the "Do not populate", "Exclude from Position Files", "Exclude from BoM" component attributes to be set.
 
-##### Implicit Default Properties
+An Option could either be specified or _not_ specified.  If an Option was specified in a Default choice (specified by the identifier `*`), it was **not inherited** by specific choice definitions, but would have to be specified again in the specific definitions in order to be effective for those choices.
+Values, however, were handled differently: They _were_ inherited from the Default choice definition.
+This (questionable) design decision was made because there was no way to reset an option specified in a Default choice when overriding that Default choice with a specific choice.  Hence, every choice declaration/definition caused all options to be reset for that specific choice, to allow providing a fresh set of options for specific choices.
 
-Severity: Critical.
+With version 0.2.0, this behavior has changed.  Default Choice inheritance has been streamlined and now applies to both Values (now called _Content_) and Options (now called _Properties_), thanks to the introduction of Property polarities.  Polarities (called _Property Modifiers_) allow overriding property states with both _set_ (modifier `+`) and _unset_ (modifier `-`) operations.  That is, after the Default Property states are applied (inherited), specific choices can (partially) override those states.
 
-While being partly backwards-compatible, the `-!` statement is now no longer an option, but a property modifier.
+There are now three supported effective Properties:
+ * "Fit" (identifier `f`): Component is fitted.  Unsets the "Do not populate" component attribute.
+ * "InPos" (identifier `p`): Component is listed in Position files.  Unsets the "Exclude from Position Files" component attribute.
+ * "InBom" (identifier `b`): Component is listed in Bill of Materials.  Unsets the "Exclude from BoM" component attribute.
 
-> ***TODO***
+There is also a virtual Property `!`, which resolves to "Fit", "InPos" and "InBom", making the `-!` _nearly_ backwards-compatible.  However, **special care must be taken when `-!` appears in Default choices, as those Properties are now inherited by specific choices**.
+
+The following examples try to illustrate the different handling:
+
+_Old behavior:_
+
+Rule String           | Resulting Choice1 Value | Resulting Choice1 Options | Resulting Choice2 Value | Resulting Choice2 Options |
+--------------------- | ----------------------- | ------------------------- | ----------------------- | ------------------------- |
+`*(10k -!) Choice2()` | `10k`                   | `-!`                      | `10k` (inheritance)     | _(none)_ (no inheritance) |
+
+_New behavior:_
+
+Rule String             | Resulting Choice1 Content | Resulting Choice1 Properties  | Resulting Choice2 Content | Resulting Choice2 Properties
+----------------------- | ------------------------- | ----------------------------- | ------------------------- | --------------------------------
+`*(10k -!) Choice2()`   | `10k`                     | `-!` (effectively `-f -b -p`) | `10k`                     | `-!` (effectively `-f -b -p`)
+`*(10k -!) Choice2(+b)` | `10k`                     | `-!` (effectively `-f -b -p`) | `10k`                     | `-! +b` (effectively `-f +b -p`)
+
+<!-- TODO mention implicit property defaults? should be backwards-compatible -->
 
 ##### Values As Multiple Words
 
-Severity: Not critical (relaxed rules).
+Severity: **Not critical** (backwards-compatible).
 
-> ***TODO***
+Before version 0.2.0 multiple Value arguments were forbidden inside a choice expression.  Starting with version 0.2.0, choice expressions can now contain multiple Value (now called _Content_) arguments, which are joined with a single ` ` (space) character inbetween.
+
+This change is fully backwards-compatible.  There is no need to adapt legacy rule strings.
 
 ##### Aspect Identifier Position
 
-Severity: Not critical (relaxed rules).
+Severity: **Not critical** (backwards-compatible).
 
-> ***TODO***
+Before version 0.2.0 the aspect identifier (name) had to be the first argument in every rule string.  From version 0.2.0 on, the aspect identifier can be specified at any position, or even left away and instead be specified in a different component field (`Var.Aspect`).
+
+This change is fully backwards-compatible.  There is no need to adapt legacy rule strings.
 
 ##### New Choice Expression Types and Formats
 
-Severity: Not critical (optional enhancements).
+Severity: **Not critical** (backwards-compatible).
 
-> ***TODO***
+Versions before 0.2.0 supported only a single rule format in the `KiVar.Rule` component field.  From version 0.2.0 on, multiple rule (now called _Choice Expression_) formats are supported, which can be specified in different component fields.
+
+This change is fully backwards-compatible.  There is no need to adapt legacy rule strings.
 
 #### Definition of Terms
 
