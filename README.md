@@ -163,13 +163,25 @@ Rule String             | Resulting Choice1 Content | Resulting Choice1 Properti
 
 _Note:_ It is also important to note that **component attributes** (DNP, Not in Pos, Not in BoM) **are now kept at their current state** (and ignored in the Choice match) **if their corresponding properties are not defined (neither enabled, nor disabled)**.  In pre-0.2.0 versions all three attributes were either set or unset, depending on the presence of the `-!` option.  Version 0.2.0 introduces much more flexibility in attribute management.
 
-<!-- TODO mention implicit property defaults? should be backwards-compatible -->
+##### Implicit Property Default States
+
+Severity: **Not critical** (backwards-compatible).
+
+Starting with version 0.2.0, users can choose to _only_ specify that Property State which makes a Choice unique and let the the KiVar rule compiler assume the opposite state to be the _implicit_ default State (if no default Property State is provided otherwise) for all remaining choices.
+
+For example, if a component is only fitted (Property Identifier `f`) in one Choice (of many), it is now sufficient to specify `+f` in that Choice Expression and leave the rest of the choices, and even the default choice (`*`) definition, untouched.  The implicit default state for the `f` (fitted) Property will then automatically assumed to be the opposite (`-f`) for any other Choices.
+
+_Note:_ Implicit Property States can only be used if there is only one State/Polarity (`+` exclusive-or `-`) assigned in any of the component's choices.
+
+_Note:_ Implicit default States only work for Property States, as they use boolean states (actually tri-state, but as soon as a Property is provided, it's either _true_ or _false_) and therefore have an (implicit) "opposite" value.
 
 ##### Values As Multiple Words
 
 Severity: **Not critical** (backwards-compatible).
 
-Before version 0.2.0 multiple Value arguments were forbidden inside a choice expression.  Starting with version 0.2.0, choice expressions can now contain multiple Value (now called _Content_) arguments, which are joined with a single ` ` (space) character inbetween.
+Prior to version 0.2.0 multiple Value arguments were forbidden inside a choice expression.  Only a single Value argument was allowed to be assigned to a Choice definition.  In case of multiple "words", the argument had to be quoted (with `'` (single-quote) characters) in order to be accepted as a single argument.
+
+Starting with version 0.2.0, choice expressions can now contain multiple Value (now called _Content_) arguments, which are joined with a single ` ` (space) character inbetween.
 
 This change is fully backwards-compatible.  There is no need to adapt legacy rule strings.
 
@@ -186,6 +198,16 @@ This change is fully backwards-compatible.  There is no need to adapt legacy rul
 Severity: **Not critical** (backwards-compatible).
 
 Versions before 0.2.0 supported only a single rule format in the `KiVar.Rule` component field.  From version 0.2.0 on, multiple rule (now called _Choice Expression_) formats are supported, which can be specified in different component fields.
+
+This change is fully backwards-compatible.  There is no need to adapt legacy rule strings.
+
+##### Double-Quote Characters Support
+
+Severity: **Not critical** (backwards-compatible).
+
+Prior to version 0.2.0 only `'` (single-quote) characters were supported for the purpose of quoting verbatim strings.
+
+Starting with version 0.2.0, `"` (double-quote) characters are also supported for quoting.  Single- and double-quote strings can be nested, e.g. the string `"hello 'world'"` would result in `hello 'world'`.
 
 This change is fully backwards-compatible.  There is no need to adapt legacy rule strings.
 
