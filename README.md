@@ -273,21 +273,21 @@ Each _Choice Argument_ of the _Choice Argument List_ can be of one of two possib
 
 Argument types are distinguished by their first (unescaped) character and will be explained in more detail in the followin sub-sections.
 
-##### Content Choice Arguments
+##### Content Specifiers
 
 ###### Purpose
 
-To assign a string to the component value or to any (custom) component field (such as _Manufacturer_, _MPN_, ...), ....
+One or more Content Specifiers can be used to assign a string to the component value or to any (custom) component field (such as _Manufacturer_, _MPN_, ...).
 
-> ***TODO***
+<!-- TODO more? -->
 
 ###### Syntax
 
 Each argument beginning with a character _other than_ `-` and `+` is interpreted as a **Content Specifier**.
 
-> ***TODO*** multiple CS per CE allowed, but only one CE with CS per choice per component
+There can be multiple Content Specifiers in each Choice Expression.  Their values will be concatenated with one ` ` (space) character as separator to form the resulting Content string.  However, each choice may have only a maximum of one resulting Content assigned.  For example: `Choice1("hello world"   foo bar)` will result in `Choice1` to be assigned the content `hello world foo bar`, but multiple assignments, such as `Choice1("hello world") Choice1(foo bar)` are invalid.
 
-_Note:_ As arguments can be separated by _any_ number of space characters, each separation that uses multiple spaces will result in a single space character in the final content.  For strings that shall be assigned in a verbatim way (such as a URL), it is highly recommended to use quoting techniques (discussed later).
+_Note:_ As arguments can be separated by _any_ number of space characters, each separation will result in a single space character in the final content, no matter how many spaces were used for the argument separation originally.  For strings that shall be assigned in a verbatim way (such as a URL), it is highly recommended to use quoting techniques (discussed later).
 
 ###### Evaluation
 
