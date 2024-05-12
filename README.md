@@ -623,9 +623,11 @@ How to read the rules:
 
 This is used for selection of peripheral parts on a boost-buck-converter IC, which is available as _fixed_ (IRNZ suffix) and _adjustable_ (IRAZ suffix) voltage variants (just like many LDOs are, too).  Depending on the market availability of those IC variants, this variation aspect helps to quickly select between assembly options.
 
-SVG TEST:
-
+<!-- TODO prefer native markdown syntax over HTML ... how to scale to 100% width?
 ![Switching between fixed and adjustable voltage IC variant](doc/vreg.svg)
+-->
+
+<img src="doc/vreg.svg" style="width:100%;">
 
 The fixed voltage IC variant requires a direct feedback of the output voltage to the FB pin, while the adjustable voltage IC variant requires a typical feedback resistor network, including a capacitance of 66pF for stabilization.
 
