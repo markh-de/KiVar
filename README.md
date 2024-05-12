@@ -112,15 +112,15 @@ KiVar 0.2.0 introduced changes and enhancements to the rule syntax.  The followi
 
 Severity: **Critical**.
 
-While KiVar 0.1.x and earlier used a single field `KiVar.Rule`, current releases use `Var` for quite the same purpose.
+While KiVar 0.1.x and earlier used a single field named `KiVar.Rule`, current releases use the field `Var` for quite the same purpose.
 
-So as a first step users should move all legacy rules from `KiVar.Rule` to `Var`.  This can be achieved simply with copy & paste in the KiCad Schematic Editor's Symbol Fields Table.
+So as a first step users should move all legacy rules from `KiVar.Rule` to `Var`.  This can be achieved by copying and pasting the values of the `KiVar.Rule` column over to the `Var` column in the KiCad Schematic Editor's Symbol Fields Table.
 
-_Hint:_  In the Symbol Fields Table, sort by the legacy `KiVar.Rule` field, then copy & paste all relevant cells to the `Var` field.  Afterwards, remove all `KiVar.Rule` fields (can be done in the Symbol Fields Table dialog).
+_Hint:_ To do this, open the Symbol Fields Table, sort by the legacy `KiVar.Rule` field, then copy & paste all relevant cells to the `Var` field (may need to be created first).  Afterwards, remove all `KiVar.Rule` fields (can be done in the Symbol Fields Table dialog).
 
 ##### Basic Rule Format
 
-While the legacy rule format of the `KiVar.Rule` field is very similar to the current `Var` field expression format, there have been some changes that may (or may not) break your legacy rules.  Users will need to review their legacy rules to be sure that they are parsed correctly with current (and upcoming) versions of KiVar.
+While the legacy format of the `KiVar.Rule` field is very similar to the current `Var` field expression format, there have been some changes that may (or may not) break your legacy rules.  Users will need to revise their legacy rules to be sure that they are parsed correctly with current (and upcoming) versions of KiVar.
 
 The following sections will cover the details.
 
@@ -128,11 +128,14 @@ The following sections will cover the details.
 
 Severity: **Critical**.
 
-Before version 0.2.0, there were Options (actually only _one_ Option).  An Option always started with a `-` (dash) character, followed by the Option identifier.  The only Option supported was `!`, which resulted in the "Do not populate", "Exclude from Position Files", "Exclude from BoM" component attributes to be set.
+Before version 0.2.0, there were Options (actually only _one_ Option).  An Option always started with a `-` (dash) character, followed by the Option identifier.  The only supported Option identifier was `!`, which resulted in the _Do not populate_, _Exclude from Position Files_ and _Exclude from BoM_ component attributes to be set (or cleared if the option was _not_ provided!).
 
-An Option could either be specified or _not_ specified.  If an Option was specified in a Default choice (specified by the identifier `*`), it was **not inherited** by specific choice definitions, but would have to be specified again in the specific definitions in order to be effective for those choices.
+An Option could either be specified or _not_ specified.  There was no way of removing/overriding an Option that was set via inheritance from a default Choice.
+
+If an Option was specified in a Default choice (specified by the choice identifier `*`), that Option was **not inherited** by specific choice definitions, but would have to be specified again in the specific definitions in order to be effective for those choices.
+This (questionable) design decision was made because, as mentioned above, there was no way to reset an option specified in a Default choice when overriding that Default choice with a specific choice.  Hence, every choice declaration/definition caused all options to be reset for that specific choice, to allow providing a fresh set of options for specific choices.
+
 Values, however, were handled differently: They _were_ inherited from the Default choice definition.
-This (questionable) design decision was made because there was no way to reset an option specified in a Default choice when overriding that Default choice with a specific choice.  Hence, every choice declaration/definition caused all options to be reset for that specific choice, to allow providing a fresh set of options for specific choices.
 
 With version 0.2.0, this behavior has changed.  Default Choice inheritance has been streamlined and now applies to both Values (now called _Content_) and Options (now called _Properties_), thanks to the introduction of Property polarities.  Polarities (called _Property Modifiers_) allow overriding property states with both _set_ (modifier `+`) and _unset_ (modifier `-`) operations.  That is, after the Default Property states are applied (inherited), specific choices can (partially) override those states.
 
@@ -157,6 +160,8 @@ Rule String             | Resulting Choice1 Content | Resulting Choice1 Properti
 ----------------------- | ------------------------- | ----------------------------- | ------------------------- | --------------------------------
 `*(10k -!) Choice2()`   | `10k`                     | `-!` (effectively `-f -b -p`) | `10k`                     | `-!` (effectively `-f -b -p`)
 `*(10k -!) Choice2(+b)` | `10k`                     | `-!` (effectively `-f -b -p`) | `10k`                     | `-! +b` (effectively `-f +b -p`)
+
+_Note:_ It is also important to note that **component attributes** (DNP, Not in Pos, Not in BoM) **are now kept at their current state** (and ignored in the Choice match) **if their corresponding properties are not defined (neither enabled, nor disabled)**.  In pre-0.2.0 versions all three attributes were either set or unset, depending on the presence of the `-!` option.  Version 0.2.0 introduces much more flexibility in attribute management.
 
 <!-- TODO mention implicit property defaults? should be backwards-compatible -->
 
