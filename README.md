@@ -1,4 +1,4 @@
-# KiVar − PCB Assembly Variants for KiCad
+![kivar-demo-Example 4: IC Variant Selection](https://github.com/markh-de/KiVar/assets/17851478/1ccba542-bb74-4c35-86d5-344865dd822e)# KiVar − PCB Assembly Variants for KiCad
 
 ## Introduction
 
@@ -623,7 +623,9 @@ How to read the rules:
 
 This is used for selection of peripheral parts on a boost-buck-converter IC, which is available as _fixed_ (IRNZ suffix) and _adjustable_ (IRAZ suffix) voltage variants (just like many LDOs are, too).  Depending on the market availability of those IC variants, this variation aspect helps to quickly select between assembly options.
 
-![Switching between fixed and adjustable voltage IC variant](doc/vreg.png)
+SVG TEST:
+
+![Switching between fixed and adjustable voltage IC variant](doc/vreg.svg)
 
 The fixed voltage IC variant requires a direct feedback of the output voltage to the FB pin, while the adjustable voltage IC variant requires a typical feedback resistor network, including a capacitance of 66pF for stabilization.
 
