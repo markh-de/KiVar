@@ -1,4 +1,4 @@
-![kivar-demo-Example 4: IC Variant Selection](https://github.com/markh-de/KiVar/assets/17851478/1ccba542-bb74-4c35-86d5-344865dd822e)# KiVar − PCB Assembly Variants for KiCad
+# KiVar − PCB Assembly Variants for KiCad
 
 ## Introduction
 
