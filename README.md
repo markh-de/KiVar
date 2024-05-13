@@ -142,28 +142,28 @@ Values, however, were handled differently: They _were_ inherited from the Defaul
 With version 0.2.0, this behavior has changed.  Default Choice inheritance has been streamlined and now applies to both Values (now called _Content_) and Options (now called _Properties_), thanks to the introduction of Property polarities.  Polarities (called _Property Modifiers_) allow overriding property states with both _set_ (modifier `+`) and _unset_ (modifier `-`) operations.  That is, after the Default Property states are applied (inherited), specific choices can (partially) override those states.
 
 There are now three supported effective Properties:
- * "Fit" (identifier `f`): Component is fitted.  Unsets the "Do not populate" component attribute.
- * "InPos" (identifier `p`): Component is listed in Position files.  Unsets the "Exclude from Position Files" component attribute.
- * "InBom" (identifier `b`): Component is listed in Bill of Materials.  Unsets the "Exclude from BoM" component attribute.
+ * **Fit** (identifier `f`): Component is fitted.  Unsets the "Do not populate" component attribute.
+ * **InPos** (identifier `p`): Component is listed in Position files.  Unsets the "Exclude from Position Files" component attribute.
+ * **InBom** (identifier `b`): Component is listed in Bill of Materials.  Unsets the "Exclude from BoM" component attribute.
 
 There is also a virtual Property `!`, which resolves to "Fit", "InPos" and "InBom", making the `-!` _nearly_ backwards-compatible.  However, **special care must be taken when `-!` appears in Default choices, as those Properties are now inherited by specific choices**.
 
 The following examples try to illustrate the different handling:
 
-_Old behavior:_
+_**Old** behavior:_
 
 Rule String           | Resulting Choice1 Value | Resulting Choice1 Options | Resulting Choice2 Value | Resulting Choice2 Options |
 --------------------- | ----------------------- | ------------------------- | ----------------------- | ------------------------- |
 `*(10k -!) Choice2()` | `10k`                   | `-!`                      | `10k` (inheritance)     | _(none)_ (no inheritance) |
 
-_New behavior:_
+_**New** behavior:_
 
 Rule String             | Resulting Choice1 Content | Resulting Choice1 Properties  | Resulting Choice2 Content | Resulting Choice2 Properties
 ----------------------- | ------------------------- | ----------------------------- | ------------------------- | --------------------------------
 `*(10k -!) Choice2()`   | `10k`                     | `-!` (effectively `-f -b -p`) | `10k`                     | `-!` (effectively `-f -b -p`)
 `*(10k -!) Choice2(+b)` | `10k`                     | `-!` (effectively `-f -b -p`) | `10k`                     | `-! +b` (effectively `-f +b -p`)
 
-_Note:_ It is also important to note that **component attributes** (DNP, Not in Pos, Not in BoM) **are now kept at their current state** (and ignored in the Choice match) **if their corresponding properties are not defined (neither enabled, nor disabled)**.  In pre-0.2.0 versions all three attributes were either set or unset, depending on the presence of the `-!` option.  Version 0.2.0 introduces much more flexibility in attribute management.
+_Note:_ It is also important to note that **component attributes** (DNP, Not in Pos, Not in BoM) **are now kept at their current state** (and ignored in the Choice match) **if their corresponding properties are not defined (neither enabled, nor disabled)**.  In pre-0.2.0 versions all three component attributes were either set or cleared, depending on the presence of the `-!` option.  They could not be set to different states, and none of them could be kept untouched for component with variation rules.  Version 0.2.0 introduces much more flexibility regarding attribute management.
 
 ##### Implicit Property Default States
 
@@ -230,7 +230,7 @@ Basic terms used in this document:
 
 #### Basic Rules Structure
 
-Each component (which uses KiVar variation rules) must refer to exactly one **Aspect**.  The **Choices** defined or referred to in the component are always related to that Aspect.
+Each component (which uses KiVar variation rules) must refer to exactly one **Aspect**, to which all **Choices** defined or referred to in that component always relate to.
 
 There can exist multiple Aspects per design, and for each Aspect there can exist multiple Choices.
 
