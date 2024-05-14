@@ -74,7 +74,7 @@ The KiVar CLI Python package can be installed using the following methods.
 
 ##### From the PyPI Repository
 
-To install the KiVar CLI using the official PyPI repository, open a shell and run:
+To install the latest KiVar CLI from the official KiVar PyPI repository, open a shell and run:
 
 ```
 pip install kivar
@@ -82,10 +82,10 @@ pip install kivar
 
 ##### From a Release Archive
 
-The KiVar CLI can also be installed using a downloaded (or locally created) Python Package:
+The KiVar CLI can also be installed using a downloaded (or locally created) Python Package (replace `${VERSION}` by the actual package version):
 
 ```
-pip install kivar-<VERSION>.tar.gz
+pip install kivar-${VERSION}.tar.gz
 ```
 
 ## Usage
