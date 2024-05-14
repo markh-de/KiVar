@@ -2,7 +2,10 @@ import os
 import sys
 import argparse
 import pcbnew
-from .kivar_backend import Key, version, build_vardict, natural_sort_key, build_fpdict, store_fpdict, detect_current_choices, quote_str, prop_abbrev, base_prop_codes, cook_raw_string, escape_str, get_choice_dict, split_raw_str, apply_selection, pcbnew_compatibility_error
+try:
+    from kivar_backend import Key, version, build_vardict, natural_sort_key, build_fpdict, store_fpdict, detect_current_choices, quote_str, prop_abbrev, base_prop_codes, cook_raw_string, escape_str, get_choice_dict, split_raw_str, apply_selection, pcbnew_compatibility_error
+except ModuleNotFoundError:
+    from .kivar_backend import Key, version, build_vardict, natural_sort_key, build_fpdict, store_fpdict, detect_current_choices, quote_str, prop_abbrev, base_prop_codes, cook_raw_string, escape_str, get_choice_dict, split_raw_str, apply_selection, pcbnew_compatibility_error
 
 # TODO for list, allow another structure: aspect -> component -> choice (in addition to current aspect -> choice -> component)
 # TODO make use of verbose options, where applicable

@@ -2,7 +2,10 @@ from os import path as os_path
 import wx
 import wx.lib.agw.hyperlink as hyperlink
 import pcbnew
-from kivar_backend import build_fpdict, build_vardict, version, get_choice_dict, detect_current_choices, natural_sort_key, apply_selection, store_fpdict, uuid_to_fp, pcbnew_compatibility_error, legacy_expressions_found
+try:
+    from kivar_backend import build_fpdict, build_vardict, version, get_choice_dict, detect_current_choices, natural_sort_key, apply_selection, store_fpdict, uuid_to_fp, pcbnew_compatibility_error, legacy_expressions_found
+except ModuleNotFoundError:
+    from .kivar_backend import build_fpdict, build_vardict, version, get_choice_dict, detect_current_choices, natural_sort_key, apply_selection, store_fpdict, uuid_to_fp, pcbnew_compatibility_error, legacy_expressions_found
 
 # TODO:
 #
