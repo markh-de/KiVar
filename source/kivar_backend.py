@@ -17,7 +17,7 @@ from copy import deepcopy
 
 # TODO in aux field parser, accept only target fields which are no KiVar fields themselves (avoid recursion!)
 
-# TODO cleaner object-oriented interface.
+# TODO wrap the backend with a class.
 
 # TODO more testing!
 
