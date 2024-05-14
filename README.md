@@ -142,11 +142,11 @@ Values, however, were handled differently: They _were_ inherited from the Defaul
 With version 0.2.0, this behavior has changed.  Default Choice inheritance has been streamlined and now applies to both Values (now called _Content_) and Options (now called _Properties_), thanks to the introduction of Property polarities.  Polarities (called _Property Modifiers_) allow overriding property states with both _set_ (modifier `+`) and _unset_ (modifier `-`) operations.  That is, after the Default Property states are applied (inherited), specific choices can (partially) override those states.
 
 There are now three supported effective Properties:
- * **Fit** (identifier `f`): Component is fitted.  Unsets the "Do not populate" component attribute.
- * **InPos** (identifier `p`): Component is listed in Position files.  Unsets the "Exclude from Position Files" component attribute.
- * **InBom** (identifier `b`): Component is listed in Bill of Materials.  Unsets the "Exclude from BoM" component attribute.
+ * **Fitted** (identifier `f`): Component is fitted.  Unsets the "Do not populate" component attribute.
+ * **inPos** (identifier `p`): Component is listed in Position files.  Unsets the "Exclude from Position Files" component attribute.
+ * **inBom** (identifier `b`): Component is listed in Bill of Materials.  Unsets the "Exclude from BoM" component attribute.
 
-There is also a virtual Property `!`, which resolves to "Fit", "InPos" and "InBom", making the `-!` _nearly_ backwards-compatible.  However, **special care must be taken when `-!` appears in Default choices, as those Properties are now inherited by specific choices**.
+There is also a virtual Property `!`, which resolves to "Fitted", "InPos" and "InBom", making the `-!` _nearly_ backwards-compatible.  However, **special care must be taken when `-!` appears in Default choices, as those Properties are now inherited by specific choices**.
 
 The following examples try to illustrate the different handling:
 
