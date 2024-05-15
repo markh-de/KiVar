@@ -592,7 +592,9 @@ Each example is illustrated with a schematic snippet including the values of the
 
 This is a very simple example, used for address selection of an I²C device.  Address input A0 switches between device addresses 0x54 _(A0=0)_ and 0x55 _(A0=1)_.
 
-![EEPROM Address Selection](doc/eeprom.png)
+![Example 1](doc/examples/1.svg)
+
+> ***TODO*** Fix the text description. Description does not yet match figure or demo project.
 
 The device address is selected by tying the IC input A0 to either +3V3 or GND, depending on the selected choice.  Inputs A1 and A2 are tied to fixed levels.
 
@@ -608,7 +610,9 @@ Alternatively, the rules in this example could explicitly list _those_ choices t
 
 This is used for the boot source device selection for an NXP i.MX6ULL SoC.
 
-![Boot Source Selection](doc/bootsrc.png)
+![Example 2](doc/examples/2.svg)
+
+> ***TODO*** Fix the text description. Description does not yet match figure or demo project.
 
 The variation choices provide selection between the boot sources `EMMC`, `SD` and `NAND`, as well as an extra choice `JP` (which leaves _all_ configuration resistors unfitted, so that the user can configure the board by manually shorting the solder bridges JP1, JP2, JP3).
 
@@ -623,7 +627,9 @@ How to read the rules:
 
 Typical use-cases for variations are resistor divider networks, such as voltage regulator feedback dividers or — in this case — a voltage divider with two taps for a programmable hysteresis on an undervoltage lock-out (UVLO) circuit.
 
-![UVLO low and high voltage trip points selection](doc/uvlo.png)
+![Example 3](doc/examples/3.svg)
+
+> ***TODO*** Fix the text description. Description does not yet match figure or demo project.
 
 The used variation aspect defines all four resistors (only two of them with varying values), allowing to select the lower (cut-off) and higher (recovery) voltage limits for the supply voltage monitor IC.
 
@@ -639,11 +645,9 @@ How to read the rules:
 
 This is used for selection of peripheral parts on a boost-buck-converter IC, which is available as _fixed_ (IRNZ suffix) and _adjustable_ (IRAZ suffix) voltage variants (just like many LDOs are, too).  Depending on the market availability of those IC variants, this variation aspect helps to quickly select between assembly options.
 
-<!-- TODO prefer native markdown syntax over HTML ... how to scale to 100% width?
-![Switching between fixed and adjustable voltage IC variant](doc/vreg.svg)
--->
+![Example 4](doc/examples/4.svg)
 
-<img src="doc/vreg.svg" style="width:100%;">
+> ***TODO*** Fix the text description. Description does not yet match figure or demo project.
 
 The fixed voltage IC variant requires a direct feedback of the output voltage to the FB pin, while the adjustable voltage IC variant requires a typical feedback resistor network, including a capacitance of 66pF for stabilization.
 
@@ -662,7 +666,9 @@ _Note:_ In this example, the IC itself keeps its original value (part number wit
 
 This is used for selection of an I/O expander IC type (953**5** vs. 953**9**) along with its I²C address.  Different (footprint-compatible!) IC types interpret the input on pin 3 differently ("A2" vs. "/RESET").  See the text callout in the figure for details.
 
-![Device and Address Selection](doc/ioexp.png)
+![Example 5](doc/examples/5.svg)
+
+> ***TODO*** Fix the text description. Description does not yet match figure or demo project.
 
 This example really implements two simple aspects in one variation aspect definition: The type of the IC and the device address.  As both aspects depend on each other and can only be defined in a combined way, all possible combinations must be defined.  It is recommended to use the same dedicated sub-aspect separation character (`/` used in this example) in the aspect name as well as the choice names to make it obvious to the user which sub-choice applies to which sub-aspect.
 
@@ -697,7 +703,9 @@ How to read the rules:
 
 In this example a combination of resistor networks determines the maximum constant current for an LED backlight (_maximum_ because the used current regulator also has a PWM input, which is later controlled via software).
 
-![Maximum LED backlight current selection](doc/backlight.png)
+![Example 6](doc/examples/6.svg)
+
+> ***TODO*** Fix the text description. Description does not yet match figure or demo project.
 
 The resistor network combination allows to select an LED current from 10mA to 150mA in steps of 10mA.  Also, like in example 2, there is an additional choice `JP`, which leaves all four configuration resistors unfitted, so that the user can manually select the current using the solder bridges.
 
@@ -777,4 +785,4 @@ To propagate the changes back to the schematic, use the PCB Editor menu item _To
 
 #### Using the KiVar Action Plugin
 
-***TODO*** copy some text from the plugin manual. for a start, simply recommend to use --help. ;)
+***TODO*** copy some text from the plugin manual. for a start, simply recommend to use `--help`. ;)
