@@ -210,6 +210,19 @@
 		)
 		(uuid "d3ee2723-c8ad-437c-b250-1cbc03be3e70")
 	)
+	(rectangle
+		(start 49.53 33.02)
+		(end 137.16 83.82)
+		(stroke
+			(width 0.254)
+			(type default)
+			(color 72 72 72 1)
+		)
+		(fill
+			(type none)
+		)
+		(uuid f8401ade-3d65-4dd1-b16c-f66112011d93)
+	)
 	(text_box "C1"
 		(exclude_from_sim no)
 		(at 92.71 67.945 0)
@@ -431,6 +444,29 @@
 			(justify left top)
 		)
 		(uuid "6a895d36-352c-49b6-b695-6522fee58438")
+	)
+	(text "TODO:\nAdapt drawings!"
+		(exclude_from_sim no)
+		(at 101.6 26.67 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+		(uuid "7c8b333d-5c12-4cb3-9a6e-a5590a8c3a49")
+	)
+	(text "Figure"
+		(exclude_from_sim no)
+		(at 49.53 85.09 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+				(italic yes)
+				(color 72 72 72 1)
+			)
+			(justify left top)
+		)
+		(uuid "8b4bd913-bcf6-412b-b1f2-82d6e683287d")
 	)
 	(text "One, Two, Three, Four"
 		(exclude_from_sim no)

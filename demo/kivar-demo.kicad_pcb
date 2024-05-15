@@ -90,7 +90,7 @@
 	(net 1 "+BATT")
 	(net 2 "GND")
 	(net 3 "+3V3")
-	(net 4 "/Example 4: IC Variant Selection/BB_FB")
+	(net 4 "Net-(U3-FB)")
 	(net 5 "/Example 6: Maximum LED Backlight Drive Current Selection/LED_A")
 	(net 6 "Net-(JP1-B)")
 	(net 7 "/Example 6: Maximum LED Backlight Drive Current Selection/SW")
@@ -119,27 +119,27 @@
 	(net 30 "/Example 1: I²C Device Address Selection/I2C.SCL")
 	(net 31 "/Example 3: Undervoltage Trip Points/EN_+3V3")
 	(net 32 "/Example 4: IC Variant Selection/EN_+3V3")
-	(net 33 "/Example 5: IC Type and Address Selection/P17")
-	(net 34 "/Example 5: IC Type and Address Selection/P02")
-	(net 35 "/Example 5: IC Type and Address Selection/P01")
-	(net 36 "/Example 5: IC Type and Address Selection/P11")
-	(net 37 "/Example 5: IC Type and Address Selection/P00")
+	(net 33 "unconnected-(U4-P17-Pad20)")
+	(net 34 "unconnected-(U4-P02-Pad6)")
+	(net 35 "unconnected-(U4-P01-Pad5)")
+	(net 36 "unconnected-(U4-P11-Pad14)")
+	(net 37 "unconnected-(U4-P00-Pad4)")
 	(net 38 "Net-(R12-Pad2)")
-	(net 39 "/Example 5: IC Type and Address Selection/P13")
-	(net 40 "/Example 5: IC Type and Address Selection/P12")
-	(net 41 "/Example 5: IC Type and Address Selection/P16")
+	(net 39 "unconnected-(U4-P13-Pad16)")
+	(net 40 "unconnected-(U4-P12-Pad15)")
+	(net 41 "unconnected-(U4-P16-Pad19)")
 	(net 42 "/Example 5: IC Type and Address Selection/I2C1.SDA")
 	(net 43 "/Example 5: IC Type and Address Selection/I2C1.SCL")
 	(net 44 "unconnected-(U3-NC-Pad16)")
-	(net 45 "/Example 5: IC Type and Address Selection/P06")
-	(net 46 "/Example 5: IC Type and Address Selection/P10")
-	(net 47 "/Example 5: IC Type and Address Selection/P07")
-	(net 48 "/Example 5: IC Type and Address Selection/~{INT}")
-	(net 49 "/Example 5: IC Type and Address Selection/P05")
-	(net 50 "/Example 5: IC Type and Address Selection/P14")
-	(net 51 "/Example 5: IC Type and Address Selection/P03")
-	(net 52 "/Example 5: IC Type and Address Selection/P15")
-	(net 53 "/Example 5: IC Type and Address Selection/P04")
+	(net 45 "unconnected-(U4-P06-Pad10)")
+	(net 46 "unconnected-(U4-P10-Pad13)")
+	(net 47 "unconnected-(U4-P07-Pad11)")
+	(net 48 "unconnected-(U4-~{INT}-Pad1)")
+	(net 49 "unconnected-(U4-P05-Pad9)")
+	(net 50 "unconnected-(U4-P14-Pad17)")
+	(net 51 "unconnected-(U4-P03-Pad7)")
+	(net 52 "unconnected-(U4-P15-Pad18)")
+	(net 53 "unconnected-(U4-P04-Pad8)")
 	(net 54 "Net-(R31-Pad2)")
 	(footprint "Resistor_SMD:R_0402_1005Metric"
 		(layer "F.Cu")
@@ -416,12 +416,25 @@
 				)
 			)
 		)
-		(property "Var" "ISL91127 IRNZ(-!)"
+		(property "Var" "IRAZ(+!)"
 			(at 0 0 -90)
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "2c720400-5e2a-466a-8eca-65df789bd2f0")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Var.Aspect" "ISL91127"
+			(at 0 0 -90)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "1d5e0385-d227-4112-8bc8-19bd277ae4a1")
 			(effects
 				(font
 					(size 1 1)
@@ -559,7 +572,7 @@
 			(size 0.56 0.62)
 			(layers "F.Cu" "F.Paste" "F.Mask")
 			(roundrect_rratio 0.25)
-			(net 4 "/Example 4: IC Variant Selection/BB_FB")
+			(net 4 "Net-(U3-FB)")
 			(pintype "passive")
 			(uuid "7cd19589-f7d3-4ee3-9d69-6a351bb5fe7d")
 		)
@@ -640,7 +653,7 @@
 				)
 			)
 		)
-		(property "Var" "'IOEXP_TYPE/ADDR' '9535/0x20'(+!)"
+		(property "Var" "IOEXP_TYPE/ADDR 9535/0x20(+!)"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -864,12 +877,25 @@
 				)
 			)
 		)
-		(property "Var" "UVLO_LO/HI '2.41V/3.40V'(0Ω) '3.15V/3.57V'(309kΩ)"
+		(property "Var" "'2.41V/3.40V'(0Ω) '3.15V/3.57V'(309kΩ)"
 			(at 0 0 180)
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "ec823b84-6b63-4d57-a852-495f1b8c3023")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Var.Aspect" "UVLO_LO/HI"
+			(at 0 0 180)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "8ca17356-e57b-4fd3-a50d-0a056982b0f7")
 			(effects
 				(font
 					(size 1 1)
@@ -1087,12 +1113,25 @@
 				)
 			)
 		)
-		(property "Var" "I_LED_MA 20,30,60,70,100,110,140,150(+!) JP()"
+		(property "Var" "20,30,60,70,100,110,140,150(+!)"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "903c0e95-9a84-43d8-8072-636b9921ed0c")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Var.Aspect" "I_LED_MA"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "dbe211dd-f2ff-42b1-901f-5d9e1116d95b")
 			(effects
 				(font
 					(size 1 1)
@@ -1311,12 +1350,25 @@
 				)
 			)
 		)
-		(property "Var" "UVLO_LO/HI '2.41V/3.40V'(309kΩ) '3.15V/3.57V'(100kΩ)"
+		(property "Var" "'2.41V/3.40V'(309kΩ) '3.15V/3.57V'(100kΩ)"
 			(at 0 0 90)
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "6590e9da-4e41-46a5-8d08-28912c41e7af")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Var.Aspect" "UVLO_LO/HI"
+			(at 0 0 90)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "de3d999d-a7a6-4dd7-a567-ca99141fc744")
 			(effects
 				(font
 					(size 1 1)
@@ -1487,7 +1539,7 @@
 				)
 			)
 		)
-		(property "Value" "ISL91127IR"
+		(property "Value" "ISL91127IRAZ"
 			(at 0 3.3 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -1511,7 +1563,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "https://www.renesas.com/us/en/document/dst/isl91127ir-datasheet"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -1535,12 +1587,90 @@
 				)
 			)
 		)
-		(property "KiVar.Rule" ""
+		(property "Manufacturer" "Renesas Electronics Corporation"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "96f581ee-e8a5-4a6e-955d-22415ff05376")
+			(uuid "f4847dde-deeb-44ec-92ff-b91498fbd731")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "MPN" "ISL91127IRAZ-T7A"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "b79a3200-37d2-4928-9c62-165f58e7bc8f")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Info" "Adjustable"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "af237d49-c629-4e39-871b-08293c7971e4")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Var.Aspect" "ISL91127"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "5124d7dd-0c73-4ea0-9c0f-2a30cdcab09b")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Var" "IRAZ(ISL91127IRAZ) IRNZ(ISL91127IRNZ)"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "f91d3c24-15c4-4e50-8541-8d854828a364")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "MPN.Var" "IRAZ(ISL91127IRAZ-T7A) IRNZ(ISL91127IRNZ-T7A)"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "173f1487-950d-4e4f-9193-f7e877b98041")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Info.Var" "IRAZ(Adjustable) IRNZ(Fixed)"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "b799983d-fcf6-4c0d-8596-534a86c63619")
 			(effects
 				(font
 					(size 1 1)
@@ -1897,7 +2027,7 @@
 			(size 0.825 0.25)
 			(layers "F.Cu" "F.Paste" "F.Mask")
 			(roundrect_rratio 0.25)
-			(net 4 "/Example 4: IC Variant Selection/BB_FB")
+			(net 4 "Net-(U3-FB)")
 			(pinfunction "FB")
 			(pintype "passive")
 			(uuid "a66faec7-f478-4ded-849b-b672634778fe")
@@ -2248,7 +2378,7 @@
 				)
 			)
 		)
-		(property "Var" "'IOEXP_TYPE/ADDR' '9535/0x24','9539/0x74'(+!)"
+		(property "Var" "IOEXP_TYPE/ADDR 9535/0x24,9539/0x74(+!)"
 			(at 0 0 180)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -2460,7 +2590,7 @@
 				)
 			)
 		)
-		(property "Description" "Solder Jumper, 2-pole, open"
+		(property "Description" " "
 			(at 0 0 90)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -2950,19 +3080,6 @@
 				)
 			)
 		)
-		(property "KiVar.Rule" ""
-			(at 0 0 -90)
-			(unlocked yes)
-			(layer "F.Fab")
-			(hide yes)
-			(uuid "34ddefeb-d94d-481f-a797-6862a9b34b98")
-			(effects
-				(font
-					(size 1 1)
-					(thickness 0.15)
-				)
-			)
-		)
 		(property ki_fp_filters "Choke_* *Coil* Inductor_* L_*")
 		(path "/b90e2ece-31a9-44a1-a7e2-4f98d0159cd7/f722a65b-1f94-46f6-ab17-5dfa3671d8a0")
 		(sheetname "Example 4: IC Variant Selection")
@@ -3214,12 +3331,25 @@
 				)
 			)
 		)
-		(property "Var" "BOOT_SRC SD,EMMC,JP(-!)"
+		(property "Var" "SD,EMMC,JP(-!)"
 			(at 0 0 90)
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "75873cfb-45bb-42c5-a330-fcff3ce5e38b")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Var.Aspect" "BOOT_SRC"
+			(at 0 0 90)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "85709540-fbb6-4f59-aade-a239c276b9fa")
 			(effects
 				(font
 					(size 1 1)
@@ -3438,12 +3568,25 @@
 				)
 			)
 		)
-		(property "Var" "ISL91127 IRNZ(0Ω) IRAZ(1MΩ)"
+		(property "Var" "IRNZ(0Ω) IRAZ(1MΩ)"
 			(at 0 0 -90)
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "47e0106b-d495-4433-af3b-92b714621d65")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Var.Aspect" "ISL91127"
+			(at 0 0 -90)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "9c96b736-7061-4872-a963-3237acf53ee6")
 			(effects
 				(font
 					(size 1 1)
@@ -3581,7 +3724,7 @@
 			(size 0.54 0.64)
 			(layers "F.Cu" "F.Paste" "F.Mask")
 			(roundrect_rratio 0.25)
-			(net 4 "/Example 4: IC Variant Selection/BB_FB")
+			(net 4 "Net-(U3-FB)")
 			(pintype "passive")
 			(uuid "c93c7bdc-cf9e-4e07-b4ee-68e4e41944b8")
 		)
@@ -3662,12 +3805,51 @@
 				)
 			)
 		)
-		(property "Var" "BOOT_SRC NAND,JP(-!)"
+		(property "Var" "NAND,JP(-!)"
 			(at 0 0 90)
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "f71a371e-b7d1-4684-abad-650883808899")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "ChoiceText" "SoM eMMC"
+			(at 0 0 90)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "8452f650-138b-4a01-bb2c-2ae45f747ac3")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "ChoiceText.Var" "SD(SD Card) EMMC(SoM eMMC) NAND(SoM NAND) JP(Manual)"
+			(at 0 0 90)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "35050be1-bf52-4a9d-b8a9-d06a30c51102")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Var.Aspect" "BOOT_SRC"
+			(at 0 0 90)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "03d1c357-c294-4ea1-a0b1-9c4b4546fdaf")
 			(effects
 				(font
 					(size 1 1)
@@ -3886,12 +4068,25 @@
 				)
 			)
 		)
-		(property "Var" "UVLO_LO/HI *(1MΩ)"
+		(property "Var" "*(1MΩ)"
 			(at 0 0 90)
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "580668f3-184d-4358-9ff9-209e9aae999d")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Var.Aspect" "UVLO_LO/HI"
+			(at 0 0 90)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "db9b2953-d605-483e-a3e5-35bb6f52f073")
 			(effects
 				(font
 					(size 1 1)
@@ -4584,12 +4779,25 @@
 				)
 			)
 		)
-		(property "Var" "I_LED_MA 40,50,60,70,120,130,140,150(+!) JP()"
+		(property "Var" "40,50,60,70,120,130,140,150(+!)"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "1fba31eb-bfd8-40a5-b91a-209b39334984")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Var.Aspect" "I_LED_MA"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "5800a893-b454-4a3d-b443-37dc71eb77c7")
 			(effects
 				(font
 					(size 1 1)
@@ -5019,12 +5227,25 @@
 				)
 			)
 		)
-		(property "Var" "UVLO_LO/HI *(750kΩ)"
+		(property "Var" "*(750kΩ)"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "404a2492-5504-41b0-a6c1-d59078a22313")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Var.Aspect" "UVLO_LO/HI"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "da3016b9-a8ee-4bdb-a461-34c7216383a6")
 			(effects
 				(font
 					(size 1 1)
@@ -5260,7 +5481,7 @@
 		(path "/819719b2-602e-433d-a771-1f2596d21337/3b6f2e16-d085-47da-9ab8-1a779fd78711")
 		(sheetname "Example 1: I²C Device Address Selection")
 		(sheetfile "example_1.kicad_sch")
-		(attr smd)
+		(attr smd exclude_from_pos_files exclude_from_bom dnp)
 		(fp_line
 			(start -0.153641 -0.38)
 			(end 0.153641 -0.38)
@@ -5467,12 +5688,25 @@
 				)
 			)
 		)
-		(property "Var" "ISL91127 IRNZ(-!)"
+		(property "Var" "IRAZ(+!)"
 			(at 0 0 -90)
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "ce2135fb-c62a-4673-8660-e95792203b5d")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Var.Aspect" "ISL91127"
+			(at 0 0 -90)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "350170c9-f239-4a5e-a15e-ada0e555031b")
 			(effects
 				(font
 					(size 1 1)
@@ -5610,7 +5844,7 @@
 			(size 0.56 0.62)
 			(layers "F.Cu" "F.Paste" "F.Mask")
 			(roundrect_rratio 0.25)
-			(net 4 "/Example 4: IC Variant Selection/BB_FB")
+			(net 4 "Net-(U3-FB)")
 			(pintype "passive")
 			(uuid "23ed73b4-f858-43cc-8ecd-66337cd1eec7")
 		)
@@ -5679,7 +5913,7 @@
 				)
 			)
 		)
-		(property "Description" "Solder Jumper, 2-pole, open"
+		(property "Description" " "
 			(at 0 0 90)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -6589,12 +6823,25 @@
 				)
 			)
 		)
-		(property "Var" "BOOT_SRC SD,NAND,JP(-!)"
+		(property "Var" "SD,NAND,JP(-!)"
 			(at 0 0 90)
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "866010a9-e266-433c-877d-3a004fb87836")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Var.Aspect" "BOOT_SRC"
+			(at 0 0 90)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "d4356450-7cec-4bd5-b3bc-2d1a1db08381")
 			(effects
 				(font
 					(size 1 1)
@@ -6812,12 +7059,25 @@
 				)
 			)
 		)
-		(property "Var" "I_LED_MA 10,30,50,70,90,110,130,150(+!) JP()"
+		(property "Var" "10,30,50,70,90,110,130,150(+!)"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "9b387ffa-aa75-459c-b158-488c5ad55a67")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Var.Aspect" "I_LED_MA"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "855a7b31-724f-4c5d-83cc-51c456e72076")
 			(effects
 				(font
 					(size 1 1)
@@ -9445,6 +9705,45 @@
 				)
 			)
 		)
+		(property "Var" "EEPROM_ADDR"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "e6e992c8-1a16-4851-a1c3-4b14db72824c")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "I2C Address" "0x55"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "d25d9b5b-d639-4ced-b4aa-4df22d2e5230")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "I2C Address.Var" "0x54(0x54) 0x55(0x55)"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "9449e8ab-4970-4aaa-9777-0b835891952c")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
 		(property ki_fp_filters "TSSOP*4.4x3mm*P0.65mm*")
 		(path "/819719b2-602e-433d-a771-1f2596d21337/0826c068-c60e-4001-bf4d-d2122d1c6dca")
 		(sheetname "Example 1: I²C Device Address Selection")
@@ -10167,12 +10466,38 @@
 				)
 			)
 		)
-		(property "Var" "I_LED_MA 80,90,100,110,120,130,140,150(+!) JP()"
+		(property "Var" "80,90,100,110,120,130,140,150(+!)"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "aa7aac47-aa15-42ea-aabc-377f9be8451d")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Var.Aspect" "I_LED_MA"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "b664e435-43d9-4ce6-9cdd-c1f8f40391ff")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Var(JP)" ""
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "563acf77-f3ed-41d0-8f4e-5b3545e8075b")
 			(effects
 				(font
 					(size 1 1)
@@ -10391,7 +10716,7 @@
 				)
 			)
 		)
-		(property "Var" "'IOEXP_TYPE/ADDR' '9539/0x74'(-!)"
+		(property "Var" "*(TCA9535PWR) 9539/0x74(TCA9539PWR)"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -10404,11 +10729,128 @@
 				)
 			)
 		)
+		(property "Datasheet.Var(*)" "http://www.ti.com/lit/ds/symlink/tca9535.pdf"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "d2883e6e-c14a-4041-b1bc-77b9ac46033e")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Datasheet.Var(9539/0x74)" "http://www.ti.com/lit/ds/symlink/tca9539.pdf"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "58b29ac6-c9c3-4fa6-bbe6-b3cd921bac4e")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Manufacturer" "Texas Instruments"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "f9d67f66-7d1d-4048-997a-696c5f7a49d8")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "MPN" "TCA9535PWR"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "48ecbdf6-e14b-4db0-995b-028a3114a36e")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "MPN.Var(*)" "TCA9535PWR"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "8e406ee9-c53b-456f-9a80-a7a65951f1c7")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "MPN.Var(9539/0x74)" "TCA9539PWR"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "0fc8bec0-6e96-4ea9-8fe9-e2b3277a8204")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Var.Aspect" "IOEXP_TYPE/ADDR"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "279318e9-b139-4123-9555-1cc6834942b0")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "I2C Address" "0x24"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "1a3b9e92-5f20-4428-8ef9-ae5f0b57f9c0")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "I2C Address.Var" "9535/0x20(0x20) 9535/0x24(0x24) 9539/0x74(0x74)"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "4ceb9a97-b0a4-4480-a4c3-03a3543738a5")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
 		(property ki_fp_filters "TSSOP*4.4x7.8mm*P0.65mm*")
 		(path "/0e980ce9-433f-4ae1-b84f-fd5b1f452ede/3b9e0524-a02f-4202-b853-f7382c4f7196")
 		(sheetname "Example 5: IC Type and Address Selection")
 		(sheetfile "example_5.kicad_sch")
-		(attr smd exclude_from_pos_files exclude_from_bom dnp)
+		(attr smd)
 		(fp_line
 			(start 0 -4.035)
 			(end -3.6 -4.035)
@@ -10555,9 +10997,9 @@
 			(size 1.475 0.4)
 			(layers "F.Cu" "F.Paste" "F.Mask")
 			(roundrect_rratio 0.25)
-			(net 48 "/Example 5: IC Type and Address Selection/~{INT}")
+			(net 48 "unconnected-(U4-~{INT}-Pad1)")
 			(pinfunction "~{INT}")
-			(pintype "open_collector")
+			(pintype "open_collector+no_connect")
 			(uuid "81074168-223f-47d7-bfe0-c43792f6ac75")
 		)
 		(pad "2" smd roundrect
@@ -10585,9 +11027,9 @@
 			(size 1.475 0.4)
 			(layers "F.Cu" "F.Paste" "F.Mask")
 			(roundrect_rratio 0.25)
-			(net 37 "/Example 5: IC Type and Address Selection/P00")
+			(net 37 "unconnected-(U4-P00-Pad4)")
 			(pinfunction "P00")
-			(pintype "bidirectional")
+			(pintype "bidirectional+no_connect")
 			(uuid "24b83c06-2ded-4cd8-bc82-201255d7d65c")
 		)
 		(pad "5" smd roundrect
@@ -10595,9 +11037,9 @@
 			(size 1.475 0.4)
 			(layers "F.Cu" "F.Paste" "F.Mask")
 			(roundrect_rratio 0.25)
-			(net 35 "/Example 5: IC Type and Address Selection/P01")
+			(net 35 "unconnected-(U4-P01-Pad5)")
 			(pinfunction "P01")
-			(pintype "bidirectional")
+			(pintype "bidirectional+no_connect")
 			(uuid "145ef260-6ecb-4e3b-95e7-c270a01047d7")
 		)
 		(pad "6" smd roundrect
@@ -10605,9 +11047,9 @@
 			(size 1.475 0.4)
 			(layers "F.Cu" "F.Paste" "F.Mask")
 			(roundrect_rratio 0.25)
-			(net 34 "/Example 5: IC Type and Address Selection/P02")
+			(net 34 "unconnected-(U4-P02-Pad6)")
 			(pinfunction "P02")
-			(pintype "bidirectional")
+			(pintype "bidirectional+no_connect")
 			(uuid "09f136b5-4001-4655-9a20-fa006c3e27bb")
 		)
 		(pad "7" smd roundrect
@@ -10615,9 +11057,9 @@
 			(size 1.475 0.4)
 			(layers "F.Cu" "F.Paste" "F.Mask")
 			(roundrect_rratio 0.25)
-			(net 51 "/Example 5: IC Type and Address Selection/P03")
+			(net 51 "unconnected-(U4-P03-Pad7)")
 			(pinfunction "P03")
-			(pintype "bidirectional")
+			(pintype "bidirectional+no_connect")
 			(uuid "a1723fcd-0291-4e73-85ab-977946c5c2c3")
 		)
 		(pad "8" smd roundrect
@@ -10625,9 +11067,9 @@
 			(size 1.475 0.4)
 			(layers "F.Cu" "F.Paste" "F.Mask")
 			(roundrect_rratio 0.25)
-			(net 53 "/Example 5: IC Type and Address Selection/P04")
+			(net 53 "unconnected-(U4-P04-Pad8)")
 			(pinfunction "P04")
-			(pintype "bidirectional")
+			(pintype "bidirectional+no_connect")
 			(uuid "f85d6ec8-5ad4-41f6-926f-9c2fa77b12ca")
 		)
 		(pad "9" smd roundrect
@@ -10635,9 +11077,9 @@
 			(size 1.475 0.4)
 			(layers "F.Cu" "F.Paste" "F.Mask")
 			(roundrect_rratio 0.25)
-			(net 49 "/Example 5: IC Type and Address Selection/P05")
+			(net 49 "unconnected-(U4-P05-Pad9)")
 			(pinfunction "P05")
-			(pintype "bidirectional")
+			(pintype "bidirectional+no_connect")
 			(uuid "88138478-8550-4ec8-a92e-d99d960e257c")
 		)
 		(pad "10" smd roundrect
@@ -10645,9 +11087,9 @@
 			(size 1.475 0.4)
 			(layers "F.Cu" "F.Paste" "F.Mask")
 			(roundrect_rratio 0.25)
-			(net 45 "/Example 5: IC Type and Address Selection/P06")
+			(net 45 "unconnected-(U4-P06-Pad10)")
 			(pinfunction "P06")
-			(pintype "bidirectional")
+			(pintype "bidirectional+no_connect")
 			(uuid "4d610798-6a9c-486b-8398-5726348417bc")
 		)
 		(pad "11" smd roundrect
@@ -10655,9 +11097,9 @@
 			(size 1.475 0.4)
 			(layers "F.Cu" "F.Paste" "F.Mask")
 			(roundrect_rratio 0.25)
-			(net 47 "/Example 5: IC Type and Address Selection/P07")
+			(net 47 "unconnected-(U4-P07-Pad11)")
 			(pinfunction "P07")
-			(pintype "bidirectional")
+			(pintype "bidirectional+no_connect")
 			(uuid "677fedb1-9a00-42e3-bb22-70e744c0eef7")
 		)
 		(pad "12" smd roundrect
@@ -10675,9 +11117,9 @@
 			(size 1.475 0.4)
 			(layers "F.Cu" "F.Paste" "F.Mask")
 			(roundrect_rratio 0.25)
-			(net 46 "/Example 5: IC Type and Address Selection/P10")
+			(net 46 "unconnected-(U4-P10-Pad13)")
 			(pinfunction "P10")
-			(pintype "bidirectional")
+			(pintype "bidirectional+no_connect")
 			(uuid "55c90df7-d0db-41b5-885e-26f15b3d5f43")
 		)
 		(pad "14" smd roundrect
@@ -10685,9 +11127,9 @@
 			(size 1.475 0.4)
 			(layers "F.Cu" "F.Paste" "F.Mask")
 			(roundrect_rratio 0.25)
-			(net 36 "/Example 5: IC Type and Address Selection/P11")
+			(net 36 "unconnected-(U4-P11-Pad14)")
 			(pinfunction "P11")
-			(pintype "bidirectional")
+			(pintype "bidirectional+no_connect")
 			(uuid "1e25d6a7-a32f-4a5b-b1d0-bcffd2b67664")
 		)
 		(pad "15" smd roundrect
@@ -10695,9 +11137,9 @@
 			(size 1.475 0.4)
 			(layers "F.Cu" "F.Paste" "F.Mask")
 			(roundrect_rratio 0.25)
-			(net 40 "/Example 5: IC Type and Address Selection/P12")
+			(net 40 "unconnected-(U4-P12-Pad15)")
 			(pinfunction "P12")
-			(pintype "bidirectional")
+			(pintype "bidirectional+no_connect")
 			(uuid "3194c3a2-59bc-49ca-bf28-3ff0e63a1f30")
 		)
 		(pad "16" smd roundrect
@@ -10705,9 +11147,9 @@
 			(size 1.475 0.4)
 			(layers "F.Cu" "F.Paste" "F.Mask")
 			(roundrect_rratio 0.25)
-			(net 39 "/Example 5: IC Type and Address Selection/P13")
+			(net 39 "unconnected-(U4-P13-Pad16)")
 			(pinfunction "P13")
-			(pintype "bidirectional")
+			(pintype "bidirectional+no_connect")
 			(uuid "2e7c5934-2909-46d3-a4bb-55e01bfcd7b2")
 		)
 		(pad "17" smd roundrect
@@ -10715,9 +11157,9 @@
 			(size 1.475 0.4)
 			(layers "F.Cu" "F.Paste" "F.Mask")
 			(roundrect_rratio 0.25)
-			(net 50 "/Example 5: IC Type and Address Selection/P14")
+			(net 50 "unconnected-(U4-P14-Pad17)")
 			(pinfunction "P14")
-			(pintype "bidirectional")
+			(pintype "bidirectional+no_connect")
 			(uuid "9dc5d8e9-6e6d-4b52-bf3b-18c035bbed32")
 		)
 		(pad "18" smd roundrect
@@ -10725,9 +11167,9 @@
 			(size 1.475 0.4)
 			(layers "F.Cu" "F.Paste" "F.Mask")
 			(roundrect_rratio 0.25)
-			(net 52 "/Example 5: IC Type and Address Selection/P15")
+			(net 52 "unconnected-(U4-P15-Pad18)")
 			(pinfunction "P15")
-			(pintype "bidirectional")
+			(pintype "bidirectional+no_connect")
 			(uuid "cdafcea5-6e78-483b-97c1-4e17acd8fa30")
 		)
 		(pad "19" smd roundrect
@@ -10735,9 +11177,9 @@
 			(size 1.475 0.4)
 			(layers "F.Cu" "F.Paste" "F.Mask")
 			(roundrect_rratio 0.25)
-			(net 41 "/Example 5: IC Type and Address Selection/P16")
+			(net 41 "unconnected-(U4-P16-Pad19)")
 			(pinfunction "P16")
-			(pintype "bidirectional")
+			(pintype "bidirectional+no_connect")
 			(uuid "3fbaf4b9-cd0e-49bf-be4f-1a0d1184d1d3")
 		)
 		(pad "20" smd roundrect
@@ -10745,9 +11187,9 @@
 			(size 1.475 0.4)
 			(layers "F.Cu" "F.Paste" "F.Mask")
 			(roundrect_rratio 0.25)
-			(net 33 "/Example 5: IC Type and Address Selection/P17")
+			(net 33 "unconnected-(U4-P17-Pad20)")
 			(pinfunction "P17")
-			(pintype "bidirectional")
+			(pintype "bidirectional+no_connect")
 			(uuid "05517241-b071-4f4d-9991-7db159235675")
 		)
 		(pad "21" smd roundrect
@@ -11974,12 +12416,25 @@
 				)
 			)
 		)
-		(property "Var" "ISL91127 IRNZ(-!)"
+		(property "Var" "IRAZ(+!)"
 			(at 0 0 90)
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "68ecbc50-2eb8-466d-9868-43a6bdd944a7")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Var.Aspect" "ISL91127"
+			(at 0 0 90)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "ad0ebe86-6336-430a-8a47-6f9f974a1561")
 			(effects
 				(font
 					(size 1 1)
@@ -12108,7 +12563,7 @@
 			(size 0.54 0.64)
 			(layers "F.Cu" "F.Paste" "F.Mask")
 			(roundrect_rratio 0.25)
-			(net 4 "/Example 4: IC Variant Selection/BB_FB")
+			(net 4 "Net-(U3-FB)")
 			(pintype "passive")
 			(uuid "89dfa5d5-8a4d-48f2-8e0e-e72618e8f2d6")
 		)
@@ -12332,482 +12787,6 @@
 			(uuid "f4f7cf11-e634-44ea-be44-2b83ffeb758b")
 		)
 		(model "${KICAD6_3DMODEL_DIR}/Resistor_SMD.3dshapes/R_0402_1005Metric.wrl"
-			(offset
-				(xyz 0 0 0)
-			)
-			(scale
-				(xyz 1 1 1)
-			)
-			(rotate
-				(xyz 0 0 0)
-			)
-		)
-	)
-	(footprint "Package_SO:TSSOP-24_4.4x7.8mm_P0.65mm"
-		(layer "F.Cu")
-		(uuid "e1b24a31-7fbf-4644-8366-633d0265893d")
-		(at 83.8 104.7)
-		(descr "TSSOP, 24 Pin (JEDEC MO-153 Var AD https://www.jedec.org/document_search?search_api_views_fulltext=MO-153), generated with kicad-footprint-generator ipc_gullwing_generator.py")
-		(tags "TSSOP SO")
-		(property "Reference" "U5"
-			(at 1.4 5.1 0)
-			(layer "F.SilkS")
-			(uuid "a110cee4-f8ad-48a4-aa3c-369c02fb210c")
-			(effects
-				(font
-					(size 1 1)
-					(thickness 0.15)
-				)
-			)
-		)
-		(property "Value" "TCA9539PWR"
-			(at 0 4.85 0)
-			(layer "F.Fab")
-			(hide yes)
-			(uuid "42ec87e1-68a6-4d8c-8a53-d79e7fbce9a9")
-			(effects
-				(font
-					(size 1 1)
-					(thickness 0.15)
-				)
-			)
-		)
-		(property "Footprint" "Package_SO:TSSOP-24_4.4x7.8mm_P0.65mm"
-			(at 0 0 0)
-			(unlocked yes)
-			(layer "F.Fab")
-			(hide yes)
-			(uuid "e87b8830-aa88-4cae-a7d6-551dfd39fc38")
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Datasheet" "http://www.ti.com/lit/ds/symlink/tca9539.pdf"
-			(at 0 0 0)
-			(unlocked yes)
-			(layer "F.Fab")
-			(hide yes)
-			(uuid "46063e08-9fc6-4f99-9135-c0c1470c014d")
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Description" ""
-			(at 0 0 0)
-			(unlocked yes)
-			(layer "F.Fab")
-			(hide yes)
-			(uuid "7f45d8fb-ed1e-41de-a01b-c77d087bdf73")
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Var" "'IOEXP_TYPE/ADDR' '9535/0x20','9535/0x24'(-!)"
-			(at 0 0 0)
-			(unlocked yes)
-			(layer "F.Fab")
-			(hide yes)
-			(uuid "bbcc6b0a-c310-4809-912b-268b6aeda413")
-			(effects
-				(font
-					(size 1 1)
-					(thickness 0.15)
-				)
-			)
-		)
-		(property ki_fp_filters "TSSOP*4.4x7.8mm*P0.65mm*")
-		(path "/0e980ce9-433f-4ae1-b84f-fd5b1f452ede/de08725d-1c09-4d54-a5b5-69848dce00e1")
-		(sheetname "Example 5: IC Type and Address Selection")
-		(sheetfile "example_5.kicad_sch")
-		(attr smd)
-		(fp_line
-			(start 0 -4.035)
-			(end -3.6 -4.035)
-			(stroke
-				(width 0.12)
-				(type solid)
-			)
-			(layer "F.SilkS")
-			(uuid "e133094e-cfc7-448a-9558-ce34e8bc2a27")
-		)
-		(fp_line
-			(start 0 -4.035)
-			(end 2.2 -4.035)
-			(stroke
-				(width 0.12)
-				(type solid)
-			)
-			(layer "F.SilkS")
-			(uuid "44b7b9f5-0777-4a24-b3a4-bc96df3c8eed")
-		)
-		(fp_line
-			(start 0 4.035)
-			(end -2.2 4.035)
-			(stroke
-				(width 0.12)
-				(type solid)
-			)
-			(layer "F.SilkS")
-			(uuid "982d2a78-523b-4b8e-98e9-cf058ca8d34e")
-		)
-		(fp_line
-			(start 0 4.035)
-			(end 2.2 4.035)
-			(stroke
-				(width 0.12)
-				(type solid)
-			)
-			(layer "F.SilkS")
-			(uuid "a70137c0-edea-407e-b769-8d014f15fbda")
-		)
-		(fp_line
-			(start -3.85 -4.15)
-			(end -3.85 4.15)
-			(stroke
-				(width 0.05)
-				(type solid)
-			)
-			(layer "F.CrtYd")
-			(uuid "90eb58d8-bf4d-4870-90b9-94c1beca6b8f")
-		)
-		(fp_line
-			(start -3.85 4.15)
-			(end 3.85 4.15)
-			(stroke
-				(width 0.05)
-				(type solid)
-			)
-			(layer "F.CrtYd")
-			(uuid "ceabbc1d-ba26-4b4e-8e39-cab994987b4d")
-		)
-		(fp_line
-			(start 3.85 -4.15)
-			(end -3.85 -4.15)
-			(stroke
-				(width 0.05)
-				(type solid)
-			)
-			(layer "F.CrtYd")
-			(uuid "ff8fb9a9-4d84-4615-a67c-317503969fc5")
-		)
-		(fp_line
-			(start 3.85 4.15)
-			(end 3.85 -4.15)
-			(stroke
-				(width 0.05)
-				(type solid)
-			)
-			(layer "F.CrtYd")
-			(uuid "9c10d48d-58b6-4a7a-a51c-04b177036218")
-		)
-		(fp_line
-			(start -2.2 -2.9)
-			(end -1.2 -3.9)
-			(stroke
-				(width 0.1)
-				(type solid)
-			)
-			(layer "F.Fab")
-			(uuid "121b23b3-f965-41c0-bd26-23ae58221f12")
-		)
-		(fp_line
-			(start -2.2 3.9)
-			(end -2.2 -2.9)
-			(stroke
-				(width 0.1)
-				(type solid)
-			)
-			(layer "F.Fab")
-			(uuid "cedcc904-b387-4cbf-824a-1468ea894e9b")
-		)
-		(fp_line
-			(start -1.2 -3.9)
-			(end 2.2 -3.9)
-			(stroke
-				(width 0.1)
-				(type solid)
-			)
-			(layer "F.Fab")
-			(uuid "0945b1f7-4ef2-43eb-b1f1-8ca1fcb5c997")
-		)
-		(fp_line
-			(start 2.2 -3.9)
-			(end 2.2 3.9)
-			(stroke
-				(width 0.1)
-				(type solid)
-			)
-			(layer "F.Fab")
-			(uuid "2c9b7c4e-6b53-4c83-b667-da514b9bc346")
-		)
-		(fp_line
-			(start 2.2 3.9)
-			(end -2.2 3.9)
-			(stroke
-				(width 0.1)
-				(type solid)
-			)
-			(layer "F.Fab")
-			(uuid "2fce1d79-d106-4169-8b4a-6d1417dbf029")
-		)
-		(fp_text user "${REFERENCE}"
-			(at 0 0 0)
-			(layer "F.Fab")
-			(uuid "b249868b-d3d8-41c1-8dbb-8ca29e8fba22")
-			(effects
-				(font
-					(size 1 1)
-					(thickness 0.15)
-				)
-			)
-		)
-		(pad "1" smd roundrect
-			(at -2.8625 -3.575)
-			(size 1.475 0.4)
-			(layers "F.Cu" "F.Paste" "F.Mask")
-			(roundrect_rratio 0.25)
-			(net 48 "/Example 5: IC Type and Address Selection/~{INT}")
-			(pinfunction "~{INT}")
-			(pintype "open_collector")
-			(uuid "8f88c3f8-7eec-405b-b492-2b96a05ed84b")
-		)
-		(pad "2" smd roundrect
-			(at -2.8625 -2.925)
-			(size 1.475 0.4)
-			(layers "F.Cu" "F.Paste" "F.Mask")
-			(roundrect_rratio 0.25)
-			(net 2 "GND")
-			(pinfunction "A1")
-			(pintype "input")
-			(uuid "d0bc88e3-aefe-4f19-8b1e-0a5c71ae964b")
-		)
-		(pad "3" smd roundrect
-			(at -2.8625 -2.275)
-			(size 1.475 0.4)
-			(layers "F.Cu" "F.Paste" "F.Mask")
-			(roundrect_rratio 0.25)
-			(net 26 "/Example 5: IC Type and Address Selection/A2{slash}~{RST}")
-			(pinfunction "~{RESET}")
-			(pintype "input")
-			(uuid "72482dc1-7f6a-41a7-a63d-2d0b328795b4")
-		)
-		(pad "4" smd roundrect
-			(at -2.8625 -1.625)
-			(size 1.475 0.4)
-			(layers "F.Cu" "F.Paste" "F.Mask")
-			(roundrect_rratio 0.25)
-			(net 37 "/Example 5: IC Type and Address Selection/P00")
-			(pinfunction "P00")
-			(pintype "bidirectional")
-			(uuid "b5997922-ffb1-410a-860f-2f650575a87e")
-		)
-		(pad "5" smd roundrect
-			(at -2.8625 -0.975)
-			(size 1.475 0.4)
-			(layers "F.Cu" "F.Paste" "F.Mask")
-			(roundrect_rratio 0.25)
-			(net 35 "/Example 5: IC Type and Address Selection/P01")
-			(pinfunction "P01")
-			(pintype "bidirectional")
-			(uuid "df733d92-9cc5-44ff-a043-6d94d4d27f1e")
-		)
-		(pad "6" smd roundrect
-			(at -2.8625 -0.325)
-			(size 1.475 0.4)
-			(layers "F.Cu" "F.Paste" "F.Mask")
-			(roundrect_rratio 0.25)
-			(net 34 "/Example 5: IC Type and Address Selection/P02")
-			(pinfunction "P02")
-			(pintype "bidirectional")
-			(uuid "f206bf23-a8ab-475d-8b92-19f47c3cbdc9")
-		)
-		(pad "7" smd roundrect
-			(at -2.8625 0.325)
-			(size 1.475 0.4)
-			(layers "F.Cu" "F.Paste" "F.Mask")
-			(roundrect_rratio 0.25)
-			(net 51 "/Example 5: IC Type and Address Selection/P03")
-			(pinfunction "P03")
-			(pintype "bidirectional")
-			(uuid "53512fa7-f751-496f-8bc6-bd6d08d487ea")
-		)
-		(pad "8" smd roundrect
-			(at -2.8625 0.975)
-			(size 1.475 0.4)
-			(layers "F.Cu" "F.Paste" "F.Mask")
-			(roundrect_rratio 0.25)
-			(net 53 "/Example 5: IC Type and Address Selection/P04")
-			(pinfunction "P04")
-			(pintype "bidirectional")
-			(uuid "e5be1123-55a8-45ef-8ba1-d514da89a542")
-		)
-		(pad "9" smd roundrect
-			(at -2.8625 1.625)
-			(size 1.475 0.4)
-			(layers "F.Cu" "F.Paste" "F.Mask")
-			(roundrect_rratio 0.25)
-			(net 49 "/Example 5: IC Type and Address Selection/P05")
-			(pinfunction "P05")
-			(pintype "bidirectional")
-			(uuid "01a5a64f-397f-4ad8-95be-4337dd8092b9")
-		)
-		(pad "10" smd roundrect
-			(at -2.8625 2.275)
-			(size 1.475 0.4)
-			(layers "F.Cu" "F.Paste" "F.Mask")
-			(roundrect_rratio 0.25)
-			(net 45 "/Example 5: IC Type and Address Selection/P06")
-			(pinfunction "P06")
-			(pintype "bidirectional")
-			(uuid "a96f838c-fa5a-4675-9923-b8a5e35147eb")
-		)
-		(pad "11" smd roundrect
-			(at -2.8625 2.925)
-			(size 1.475 0.4)
-			(layers "F.Cu" "F.Paste" "F.Mask")
-			(roundrect_rratio 0.25)
-			(net 47 "/Example 5: IC Type and Address Selection/P07")
-			(pinfunction "P07")
-			(pintype "bidirectional")
-			(uuid "6f95ad8e-cc45-4345-8992-f4b8ab66a306")
-		)
-		(pad "12" smd roundrect
-			(at -2.8625 3.575)
-			(size 1.475 0.4)
-			(layers "F.Cu" "F.Paste" "F.Mask")
-			(roundrect_rratio 0.25)
-			(net 2 "GND")
-			(pinfunction "GND")
-			(pintype "power_in")
-			(uuid "8fc32452-9645-4c52-83ff-b3ccd17b7770")
-		)
-		(pad "13" smd roundrect
-			(at 2.8625 3.575)
-			(size 1.475 0.4)
-			(layers "F.Cu" "F.Paste" "F.Mask")
-			(roundrect_rratio 0.25)
-			(net 46 "/Example 5: IC Type and Address Selection/P10")
-			(pinfunction "P10")
-			(pintype "bidirectional")
-			(uuid "7df9c10f-22d0-4116-9226-b4067e3ddc5c")
-		)
-		(pad "14" smd roundrect
-			(at 2.8625 2.925)
-			(size 1.475 0.4)
-			(layers "F.Cu" "F.Paste" "F.Mask")
-			(roundrect_rratio 0.25)
-			(net 36 "/Example 5: IC Type and Address Selection/P11")
-			(pinfunction "P11")
-			(pintype "bidirectional")
-			(uuid "0efd0bc3-19f0-4579-b43e-fb08e5bf5642")
-		)
-		(pad "15" smd roundrect
-			(at 2.8625 2.275)
-			(size 1.475 0.4)
-			(layers "F.Cu" "F.Paste" "F.Mask")
-			(roundrect_rratio 0.25)
-			(net 40 "/Example 5: IC Type and Address Selection/P12")
-			(pinfunction "P12")
-			(pintype "bidirectional")
-			(uuid "d29bbf65-eaa7-4276-b536-cc6e14899e93")
-		)
-		(pad "16" smd roundrect
-			(at 2.8625 1.625)
-			(size 1.475 0.4)
-			(layers "F.Cu" "F.Paste" "F.Mask")
-			(roundrect_rratio 0.25)
-			(net 39 "/Example 5: IC Type and Address Selection/P13")
-			(pinfunction "P13")
-			(pintype "bidirectional")
-			(uuid "ded94e5f-838e-4bc9-a36e-20fb0af82e13")
-		)
-		(pad "17" smd roundrect
-			(at 2.8625 0.975)
-			(size 1.475 0.4)
-			(layers "F.Cu" "F.Paste" "F.Mask")
-			(roundrect_rratio 0.25)
-			(net 50 "/Example 5: IC Type and Address Selection/P14")
-			(pinfunction "P14")
-			(pintype "bidirectional")
-			(uuid "6e86ceb3-4049-4494-8d4f-319c1aaa4cfc")
-		)
-		(pad "18" smd roundrect
-			(at 2.8625 0.325)
-			(size 1.475 0.4)
-			(layers "F.Cu" "F.Paste" "F.Mask")
-			(roundrect_rratio 0.25)
-			(net 52 "/Example 5: IC Type and Address Selection/P15")
-			(pinfunction "P15")
-			(pintype "bidirectional")
-			(uuid "3fe704e9-af77-4197-83dc-36ab753da2cd")
-		)
-		(pad "19" smd roundrect
-			(at 2.8625 -0.325)
-			(size 1.475 0.4)
-			(layers "F.Cu" "F.Paste" "F.Mask")
-			(roundrect_rratio 0.25)
-			(net 41 "/Example 5: IC Type and Address Selection/P16")
-			(pinfunction "P16")
-			(pintype "bidirectional")
-			(uuid "c689a4cb-30ca-4c34-9a1c-c2e2c83951c9")
-		)
-		(pad "20" smd roundrect
-			(at 2.8625 -0.975)
-			(size 1.475 0.4)
-			(layers "F.Cu" "F.Paste" "F.Mask")
-			(roundrect_rratio 0.25)
-			(net 33 "/Example 5: IC Type and Address Selection/P17")
-			(pinfunction "P17")
-			(pintype "bidirectional")
-			(uuid "3420069f-69a5-40f2-b56f-aab6d2fe3689")
-		)
-		(pad "21" smd roundrect
-			(at 2.8625 -1.625)
-			(size 1.475 0.4)
-			(layers "F.Cu" "F.Paste" "F.Mask")
-			(roundrect_rratio 0.25)
-			(net 2 "GND")
-			(pinfunction "A0")
-			(pintype "input")
-			(uuid "e95686da-ad6b-48b4-886c-b23f339c6436")
-		)
-		(pad "22" smd roundrect
-			(at 2.8625 -2.275)
-			(size 1.475 0.4)
-			(layers "F.Cu" "F.Paste" "F.Mask")
-			(roundrect_rratio 0.25)
-			(net 43 "/Example 5: IC Type and Address Selection/I2C1.SCL")
-			(pinfunction "SCL")
-			(pintype "input")
-			(uuid "d65e043e-452a-43cf-82bd-bc4de21565d9")
-		)
-		(pad "23" smd roundrect
-			(at 2.8625 -2.925)
-			(size 1.475 0.4)
-			(layers "F.Cu" "F.Paste" "F.Mask")
-			(roundrect_rratio 0.25)
-			(net 42 "/Example 5: IC Type and Address Selection/I2C1.SDA")
-			(pinfunction "SDA")
-			(pintype "bidirectional")
-			(uuid "30648f4b-90b3-42b0-8afb-058c983cc75b")
-		)
-		(pad "24" smd roundrect
-			(at 2.8625 -3.575)
-			(size 1.475 0.4)
-			(layers "F.Cu" "F.Paste" "F.Mask")
-			(roundrect_rratio 0.25)
-			(net 3 "+3V3")
-			(pinfunction "VCC")
-			(pintype "power_in")
-			(uuid "986a7b4d-3711-4ad1-9a50-9904ade66865")
-		)
-		(model "${KICAD6_3DMODEL_DIR}/Package_SO.3dshapes/TSSOP-24_4.4x7.8mm_P0.65mm.wrl"
 			(offset
 				(xyz 0 0 0)
 			)
@@ -13322,7 +13301,7 @@
 		(path "/819719b2-602e-433d-a771-1f2596d21337/6b3c9e5e-6b0a-47b4-95c1-5b04e0623345")
 		(sheetname "Example 1: I²C Device Address Selection")
 		(sheetfile "example_1.kicad_sch")
-		(attr smd exclude_from_pos_files exclude_from_bom dnp)
+		(attr smd)
 		(fp_line
 			(start -0.153641 0.38)
 			(end 0.153641 0.38)
@@ -13517,7 +13496,7 @@
 				)
 			)
 		)
-		(property "Description" "Solder Jumper, 2-pole, open"
+		(property "Description" " "
 			(at 0 0 90)
 			(unlocked yes)
 			(layer "F.Fab")

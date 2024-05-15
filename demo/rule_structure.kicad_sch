@@ -320,6 +320,42 @@
 		)
 		(uuid "f4dd74f0-4ab2-4472-bc0f-9ab5be982be9")
 	)
+	(rectangle
+		(start 62.23 45.72)
+		(end 148.59 78.74)
+		(stroke
+			(width 0.254)
+			(type default)
+			(color 72 72 72 1)
+		)
+		(fill
+			(type none)
+		)
+		(uuid f57c0af1-5b11-4b3f-8dec-8d70139b94a8)
+	)
+	(text "TODO:\nNew drawings!"
+		(exclude_from_sim no)
+		(at 104.14 38.1 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+		(uuid "6fb7a7af-1dcd-4930-8459-49e9516e39c9")
+	)
+	(text "Figure"
+		(exclude_from_sim no)
+		(at 62.23 80.01 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+				(italic yes)
+				(color 72 72 72 1)
+			)
+			(justify left top)
+		)
+		(uuid "742f224f-f693-4794-a1fe-ee3e29e55e65")
+	)
 	(text "Rule definition sections"
 		(exclude_from_sim no)
 		(at 86.5378 51.435 0)

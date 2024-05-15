@@ -768,15 +768,41 @@
 		)
 		(uuid "f20e13a4-d413-4cd5-a358-3d0a125e3250")
 	)
+	(rectangle
+		(start 59.69 38.1)
+		(end 152.4 90.17)
+		(stroke
+			(width 0.254)
+			(type default)
+			(color 72 72 72 1)
+		)
+		(fill
+			(type none)
+		)
+		(uuid a4399393-0544-4dcc-a512-81fadfd19879)
+	)
 	(text "TODO: Update component values according to real project."
 		(exclude_from_sim no)
-		(at 105.156 29.972 0)
+		(at 105.41 34.29 0)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
 		)
 		(uuid "29ab4dee-d045-4721-ab75-5d8beff384c5")
+	)
+	(text "Figure"
+		(exclude_from_sim no)
+		(at 59.69 91.44 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+				(italic yes)
+				(color 72 72 72 1)
+			)
+			(justify left top)
+		)
+		(uuid "856563cf-5e8a-458d-b4f7-44be78042fa0")
 	)
 	(label "EN_+3V3"
 		(at 147.955 64.77 180)
@@ -998,13 +1024,23 @@
 				(hide yes)
 			)
 		)
-		(property "Var" "UVLO_LO/HI '2.41V/3.40V'(309kΩ) '3.15V/3.57V'(100kΩ)"
+		(property "Var" "'2.41V/3.40V'(309kΩ) '3.15V/3.57V'(100kΩ)"
 			(at 106.68 71.1199 0)
 			(effects
 				(font
 					(size 1.27 1.27)
+					(italic yes)
 				)
 				(justify right)
+			)
+		)
+		(property "Var.Aspect" "UVLO_LO/HI"
+			(at 108.585 68.58 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
 			)
 		)
 		(pin "1"
@@ -1177,7 +1213,6 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(fields_autoplaced yes)
 		(uuid "54c95d51-ec8d-4420-b00a-f1ba680dfcf8")
 		(property "Reference" "R12"
 			(at 106.68 48.2599 0)
@@ -1224,13 +1259,26 @@
 				(hide yes)
 			)
 		)
-		(property "Var" "UVLO_LO/HI '2.41V/3.40V'(0Ω) '3.15V/3.57V'(309kΩ)"
+		(property "Var" "'2.41V/3.40V'(0Ω) '3.15V/3.57V'(309kΩ)"
 			(at 106.68 53.3399 0)
 			(effects
 				(font
 					(size 1.27 1.27)
+					(italic yes)
 				)
 				(justify left)
+			)
+		)
+		(property "Var.Aspect" "UVLO_LO/HI"
+			(at 62.23 41.91 0)
+			(show_name yes)
+			(do_not_autoplace yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+					(italic yes)
+				)
+				(justify right)
 			)
 		)
 		(pin "1"
@@ -1441,13 +1489,23 @@
 				(hide yes)
 			)
 		)
-		(property "Var" "UVLO_LO/HI *(750kΩ)"
+		(property "Var" "*(750kΩ)"
 			(at 106.68 80.0099 0)
 			(effects
 				(font
 					(size 1.27 1.27)
+					(italic yes)
 				)
 				(justify left)
+			)
+		)
+		(property "Var.Aspect" "UVLO_LO/HI"
+			(at 108.585 77.47 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
 			)
 		)
 		(pin "1"
@@ -1521,13 +1579,23 @@
 				(hide yes)
 			)
 		)
-		(property "Var" "UVLO_LO/HI *(1MΩ)"
+		(property "Var" "*(1MΩ)"
 			(at 106.68 62.2299 0)
 			(effects
 				(font
 					(size 1.27 1.27)
+					(italic yes)
 				)
 				(justify left)
+			)
+		)
+		(property "Var.Aspect" "UVLO_LO/HI"
+			(at 108.585 59.69 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
 			)
 		)
 		(pin "1"
