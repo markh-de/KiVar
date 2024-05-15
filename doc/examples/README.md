@@ -9,5 +9,5 @@ kicad-cli sch export svg -o plot -e kivar-demo.kicad_sch
 Then, open each SVG in Inkscape, click the Documentation Figure Frame,
 press "Ctrl+Shift+R", change the document scale to 0.5 user units per mm.
 
-Save as Plain SVG to "example_N.svg".
+Save as Plain SVG to "examples/${number}.svg".
 
