@@ -34,17 +34,15 @@ Key concepts of KiVar are:
 
 KiVar releases 0.2.0 and later require at least **KiCad release 8**.
 
-Earlier versions of KiVar also supported KiCad 7, but in a very restricted way.  Hence, after the release of KiCad 8, KiVar support for KiCad 7 was dropped.
+Earlier versions of KiVar also supported KiCad 7, but in a very restricted way.  Hence, after the release of KiCad 8, KiVar support for KiCad 7 has been dropped.
+
+KiVar uses the Python API wrapper for pcbnew, the KiCad PCB Editor.
 
 ## Installation
 
 ### KiVar Action Plugin
 
-The KiVar Action Plugin uses the Python API wrapper for pcbnew, the KiCad PCB Editor.
-
-> ***TODO*** ... so does the CLI. move this text to general info.
-
-The recommended installation method is to use KiCad's integrated **Plugin and Content Manager**.  KiVar is included in the official PCM repository, allowing a smooth and safe installation experience.  For manual installation users can also choose to download the plugin archive packages.
+The recommended plugin installation method is to use KiCad's integrated **Plugin and Content Manager**.  KiVar is included in the **official PCM repository**, allowing a smooth and safe installation and update experience.  For manual installation users can also choose to download the plugin archive package.
 
 #### Using the Plugin and Content Manager
 
@@ -74,7 +72,7 @@ The KiVar CLI Python package can be installed using the following methods.
 
 ##### From the PyPI Repository
 
-To install the KiVar CLI using the official PyPI repository, open a shell and run:
+To install the latest KiVar CLI from the official KiVar PyPI repository, open a shell and run:
 
 ```
 pip install kivar
@@ -82,15 +80,15 @@ pip install kivar
 
 ##### From a Release Archive
 
-The KiVar CLI can also be installed using a downloaded (or locally created) Python Package:
+The KiVar CLI can also be installed using a downloaded (or locally created) Python Package (replace `${VERSION}` by the actual package version):
 
 ```
-pip install kivar-<VERSION>.tar.gz
+pip install kivar-${VERSION}.tar.gz
 ```
 
 ## Usage
 
-> ***TODO*** revise document structure and headings levels!
+<!-- TODO: revise document structure and headings levels! -->
 
 The process of writing and assigning rules to components (i.e. symbols and footprints) is done manually using simple text expressions.
 
@@ -102,7 +100,9 @@ The following sections describe the process of configuring your schematic or boa
 
 The following sub-sections describe the variation rules setup procedure.
 
-While it is recommended to define variation rules in the schematic (i.e. in symbol fields) and propagate them to the board, it is also possible to define those rules directly in the board (i.e. in footprint fields) and propagate them back to the schematic.  Either way, in the end the rules must be present in the footprint fields, as KiVar uses the _pcbnew_ API wrapper and can therefore only operate on board (not schematic) data, which must then be propagated back to the schematic as described in later sections. (TODO link)
+While it is recommended to define variation rules in the schematic (i.e. in symbol fields) and propagate them to the board, it is also possible to define those rules directly in the board (i.e. in footprint fields) and propagate them back to the schematic.  Either way, in the end the rules must be present in the footprint fields, as KiVar uses the _pcbnew_ API wrapper and can therefore only operate on board (not schematic) data, which must then be propagated back to the schematic as described in later sections. (***TODO*** link)
+
+<a name="migrate"></a>
 
 #### Migrating from KiVar 0.1.x
 
@@ -133,35 +133,35 @@ Before version 0.2.0, there were Options (actually only _one_ Option).  An Optio
 An Option could either be specified or _not_ specified.  There was no way of removing/overriding an Option that was set via inheritance from a default Choice.
 
 If an Option was specified in a Default choice (specified by the choice identifier `*`), that Option was **not inherited** by specific choice definitions, but would have to be specified again in the specific definitions in order to be effective for those choices.
-This (questionable) design decision was made because, as mentioned above, there was no way to reset an option specified in a Default choice when overriding that Default choice with a specific choice.  Hence, every choice declaration/definition caused all options to be reset for that specific choice, to allow providing a fresh set of options for specific choices.
+This (questionable) design decision had been made because, as mentioned above, there was no way to reset an option specified in a Default choice when overriding that Default choice with a specific choice.  Hence, every choice declaration/definition caused all options to be reset for that specific choice, to allow providing a fresh set of options for specific choices.
 
 Values, however, were handled differently: They _were_ inherited from the Default choice definition.
 
 With version 0.2.0, this behavior has changed.  Default Choice inheritance has been streamlined and now applies to both Values (now called _Content_) and Options (now called _Properties_), thanks to the introduction of Property polarities.  Polarities (called _Property Modifiers_) allow overriding property states with both _set_ (modifier `+`) and _unset_ (modifier `-`) operations.  That is, after the Default Property states are applied (inherited), specific choices can (partially) override those states.
 
 There are now three supported effective Properties:
- * "Fit" (identifier `f`): Component is fitted.  Unsets the "Do not populate" component attribute.
- * "InPos" (identifier `p`): Component is listed in Position files.  Unsets the "Exclude from Position Files" component attribute.
- * "InBom" (identifier `b`): Component is listed in Bill of Materials.  Unsets the "Exclude from BoM" component attribute.
+ * **Fitted** (identifier `f`): Component is fitted.  Unsets the "Do not populate" component attribute.
+ * **inPos** (identifier `p`): Component is listed in Position files.  Unsets the "Exclude from Position Files" component attribute.
+ * **inBom** (identifier `b`): Component is listed in Bill of Materials.  Unsets the "Exclude from BoM" component attribute.
 
-There is also a virtual Property `!`, which resolves to "Fit", "InPos" and "InBom", making the `-!` _nearly_ backwards-compatible.  However, **special care must be taken when `-!` appears in Default choices, as those Properties are now inherited by specific choices**.
+There is also a virtual Property `!`, which resolves to "Fitted", "InPos" and "InBom", making the `-!` _nearly_ backwards-compatible.  However, **special care must be taken when `-!` appears in Default choices, as those Properties are now inherited by specific choices**.
 
 The following examples try to illustrate the different handling:
 
-_Old behavior:_
+_**Old** behavior:_
 
 Rule String           | Resulting Choice1 Value | Resulting Choice1 Options | Resulting Choice2 Value | Resulting Choice2 Options |
 --------------------- | ----------------------- | ------------------------- | ----------------------- | ------------------------- |
 `*(10k -!) Choice2()` | `10k`                   | `-!`                      | `10k` (inheritance)     | _(none)_ (no inheritance) |
 
-_New behavior:_
+_**New** behavior:_
 
 Rule String             | Resulting Choice1 Content | Resulting Choice1 Properties  | Resulting Choice2 Content | Resulting Choice2 Properties
 ----------------------- | ------------------------- | ----------------------------- | ------------------------- | --------------------------------
 `*(10k -!) Choice2()`   | `10k`                     | `-!` (effectively `-f -b -p`) | `10k`                     | `-!` (effectively `-f -b -p`)
 `*(10k -!) Choice2(+b)` | `10k`                     | `-!` (effectively `-f -b -p`) | `10k`                     | `-! +b` (effectively `-f +b -p`)
 
-_Note:_ It is also important to note that **component attributes** (DNP, Not in Pos, Not in BoM) **are now kept at their current state** (and ignored in the Choice match) **if their corresponding properties are not defined (neither enabled, nor disabled)**.  In pre-0.2.0 versions all three attributes were either set or unset, depending on the presence of the `-!` option.  Version 0.2.0 introduces much more flexibility in attribute management.
+_Note:_ It is also important to note that **component attributes** (DNP, Not in Pos, Not in BoM) **are now kept at their current state** (and ignored in the Choice match) **if their corresponding properties are not defined (neither enabled, nor disabled)**.  In pre-0.2.0 versions all three component attributes were either set or cleared, depending on the presence of the `-!` option.  They could not be set to different states, and none of them could be kept untouched for component with variation rules.  Version 0.2.0 introduces much more flexibility regarding attribute management.
 
 ##### Implicit Property Default States
 
@@ -228,7 +228,7 @@ Basic terms used in this document:
 
 #### Basic Rules Structure
 
-Each component (which uses KiVar variation rules) must refer to exactly one **Aspect**.  The **Choices** defined or referred to in the component are always related to that Aspect.
+Each component (which uses KiVar variation rules) must refer to exactly one **Aspect**, to which all **Choices** defined or referred to in that component always relate to.
 
 There can exist multiple Aspects per design, and for each Aspect there can exist multiple Choices.
 
@@ -387,6 +387,8 @@ The data defined in Choice Expressions can be applied to either
 
 For each of them there exists a dedicated **Choice Expression Scope**.  Both scopes are explained in the following sub-sections.
 
+<a name="bce"></a>
+
 ##### Base Choice Expressions
 
 ###### Purpose
@@ -410,6 +412,8 @@ BCEs can _not_ modify custom fields.  For this, ACEs must be used (see below).
 ###### Examples
 
 As BCEs only specify an expression scope and not a real Choice Expression Type, examples are provided in the sections ***TODO link*** (SBCE) and ***TODO link*** (CBCE).
+
+<a name="ace"></a>
 
 ##### Auxiliary Choice Expressions
 
@@ -441,6 +445,8 @@ Furthermore, Choice Expressions can be noted in different ways, depending on the
 
 The two different **Choice Expression Formats** are described in the following sub-sections.
 
+<a name="sce"></a>
+
 ##### Simple Choice Expressions
 
 ###### Purpose
@@ -456,6 +462,8 @@ The two different **Choice Expression Formats** are described in the following s
 ###### Examples
 
 As SCEs only specify an expression format and not a real Choice Expression Type, examples are provided in the sections ***TODO link*** (SBCE) and ***TODO link*** (SACE).
+
+<a name="cce"></a>
 
 ##### Combined Choice Expressions
 
@@ -475,6 +483,8 @@ As CCEs only specify an expression format and not a real Choice Expression Type,
 
 The combination of the above two Expression Scopes and two Expression Formats results in the following four **Choice Expression Types** discussed in the following sub-sections.
 
+<a name="sbce"></a>
+
 ##### Simple Base Choice Expressions
 
 ###### Syntax
@@ -489,6 +499,8 @@ use the field `Var(<CHOICELIST>)` with field content in [SCE](#SCE) format to as
 ###### Examples
 
 > TODO
+
+<a name="cbce"></a>
 
 ##### Combined Base Choice Expressions
 
@@ -505,6 +517,8 @@ use the field `Var` with field content in [CCE](#CCE) format (with an Aspect ide
 
 > TODO
 
+<a name="sace"></a>
+
 ##### Simple Auxiliary Choice Expressions
 
 ###### Syntax
@@ -519,6 +533,8 @@ use the field `<CUSTOMFIELD>.Var(<CHOICELIST>)` with field content in [SCE](#SCE
 ###### Examples
 
 > TODO
+
+<a name="cace"></a>
 
 ##### Combined Auxiliary Choice Expressions
 
@@ -695,29 +711,31 @@ How to read the rules:
 
 ### Rules Application
 
-After setting up the rules for each relevant symbol (or footprint), variations can finally be switched using the _KiVar_ plugin.
+After setting up the rules for each relevant symbol (or footprint), variations can finally be switched using the _KiVar_ plugin or CLI.
 
-#### Update the PCB
+#### Using the KiVar Action Plugin
+
+##### Update the PCB
 
 If the rules were set up in the Schematic Editor (eeschema), they need to be updated to the PCB Editor first (menu item _Tools &rarr; Update PCB from Schematic..._).
 
-#### Start the Plugin
+##### Run the Plugin
 
-To run the plugin, choose the _KiVar_ menu item under _Tools &rarr; External Plugins_ or simply click the KiVar plugin icon in the main toolbar (if configured so).
+To open the plugin dialog, simply click the KiVar plugin icon in the main toolbar, or choose the _KiVar_ menu item under _Tools &rarr; External Plugins_.
 
-#### Configuration Identification
+##### Configuration Identification
 
 Upon start, during the enumeration stage, KiVar automatically detects the current variation configuration, i.e., it tries to find a definite choice for each configured variation, based on the currently assigned values and attributes for each related footprint.
 
 If the values and attributes do not exactly match one definite choice (for a variation aspect), then the corresponding variation choice selector is preset to the entry _'\<unset>'_.  This will probably happen before applying a specific choice for the first time or after editing rules, because not all of the currently assigned footprint attributes may perfectly match one of the defined variation choices.
 
-#### Possible Error Messages
+##### Possible Error Messages
 
 In case the defined variation rules cannot be parsed and enumerated without problems, an error message window with a list of problems will appear.  Each of these problems must then be fixed in order to successfully start the plugin.
 
 _Hint:_ You can click each error message to focus the corresponding footprint on the _pcbnew_ canvas in the background (KiCad 8 and later only).
 
-#### Variation Choices Selection
+##### Variation Choices Selection
 
 If all rules can be parsed without problems, the main dialog window appears.
 
@@ -739,7 +757,7 @@ After selecting a few different variation choices, the dialog window may look li
 
 When clicking the _Update PCB_ button, KiVar sets the values and attributes for all relevant footprints as previewed in the information text box.
 
-#### Visible Changes
+##### Visible Changes
 
 The performed changes will immediately be visible in the PCB Editor (e.g. for shown footprint values) and the 3D Viewer window (immediately or after refresh, depending on the preferences setting).
 
@@ -751,10 +769,12 @@ The following images show the 3D board view for the original settings:
 
 ![3D Board View With Changes](doc/pcb-change.png)
 
-#### Updating the Schematic
+##### Updating the Schematic
 
 All changes by the plugin are only performed in the board, as KiVar is a plugin for _pcbnew_ (_eeschema_ does not yet have a plugin interface).  That is, the performed changes must be propagated back from the board to the schematic in order to be visible there (e.g. for changed values and DNP markings).
 
 To propagate the changes back to the schematic, use the PCB Editor menu item _Tools &rarr; Update Schematic from PCB..._ and make sure to select the checkboxes _Values_ and _Attributes_\*.  If you have modified the KiVar rules inside the PCB Editor, i.e. edited the footprint fields\* instead of the symbol fields, then also select the checkbox _Other fields_\*, in order to propagate your KiVar rules to the schematic.
 
-\* _KiCad release 7 does not yet use the concept of footprint fields and can only propagate the footprint value back to the corresponding symbol value.  Also, footprints do not yet have a 'Do not populate' footprint attribute and back-propagation of attributes is not yet supported in release 7.  That is, the 'DNP' state of a schematic symbol can **not** be changed using the 'Update Schematic from PCB...' mechanism.  KiCad releases 8 and later **do** support all of these feartures and therefore provide support for all features currently required by KiVar.  Refer to section '[Supported KiCad Versions](#supported-kicad-versions)' for details._
+#### Using the KiVar Action Plugin
+
+***TODO*** copy some text from the plugin manual. for a start, simply recommend to use --help. ;)
