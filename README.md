@@ -34,7 +34,7 @@ Key concepts of KiVar are:
 
 KiVar releases 0.2.0 and later require at least **KiCad release 8**.
 
-Earlier versions of KiVar also supported KiCad 7, but in a very restricted way.  Hence, after the release of KiCad 8, KiVar support for KiCad 7 was dropped.
+Earlier versions of KiVar also supported KiCad 7, but in a very restricted way.  Hence, after the release of KiCad 8, KiVar support for KiCad 7 has been dropped.
 
 KiVar uses the Python API wrapper for pcbnew, the KiCad PCB Editor.
 
@@ -88,7 +88,7 @@ pip install kivar-${VERSION}.tar.gz
 
 ## Usage
 
-> ***TODO*** revise document structure and headings levels!
+<!-- TODO: revise document structure and headings levels! -->
 
 The process of writing and assigning rules to components (i.e. symbols and footprints) is done manually using simple text expressions.
 
@@ -133,7 +133,7 @@ Before version 0.2.0, there were Options (actually only _one_ Option).  An Optio
 An Option could either be specified or _not_ specified.  There was no way of removing/overriding an Option that was set via inheritance from a default Choice.
 
 If an Option was specified in a Default choice (specified by the choice identifier `*`), that Option was **not inherited** by specific choice definitions, but would have to be specified again in the specific definitions in order to be effective for those choices.
-This (questionable) design decision was made because, as mentioned above, there was no way to reset an option specified in a Default choice when overriding that Default choice with a specific choice.  Hence, every choice declaration/definition caused all options to be reset for that specific choice, to allow providing a fresh set of options for specific choices.
+This (questionable) design decision had been made because, as mentioned above, there was no way to reset an option specified in a Default choice when overriding that Default choice with a specific choice.  Hence, every choice declaration/definition caused all options to be reset for that specific choice, to allow providing a fresh set of options for specific choices.
 
 Values, however, were handled differently: They _were_ inherited from the Default choice definition.
 
