@@ -791,7 +791,7 @@ If all rules can be parsed without problems, the main dialog window appears.
 
 For the above [real-world examples](#real-world-examples), the selection dialog window may look similar to the following:
 
-![Variant Selection Dialog Without Changes](doc/selection-nochange.png)
+![Variant Selection Dialog Without Changes](doc/plugin-empty.svg)
 
 For each of the listed variation aspects a variation choice can now be selected.
 
@@ -803,7 +803,7 @@ _Hint:_ You can click each entry in the change list to focus the corresponding f
 
 After selecting a few different variation choices, the dialog window may look like the following:
 
-![Variant Selection Dialog With Changes](doc/selection-change.png)
+![Variant Selection Dialog With Changes](doc/plugin-changes.svg)
 
 When clicking the _Update PCB_ button, KiVar sets the values and attributes for all relevant footprints as previewed in the information text box.
 
@@ -827,4 +827,4 @@ To propagate the changes back to the schematic, use the PCB Editor menu item _To
 
 #### Using the KiVar Action Plugin
 
-***TODO*** copy some text from the plugin manual. for a start, simply recommend to use `--help`. ;)
+***TODO*** copy some text from the plugin manual. for a start, simply recommend using `--help`. ;)
