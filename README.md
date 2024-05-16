@@ -19,7 +19,49 @@ KiVar assigns PCB component **values** and **attributes** (such as _Do not popul
 
 Back-propagation of modified component data from the PCB to the schematic can be done in an extra step.
 
-> ***TODO*** Add screenshot of plugin (same as below?), add screenshot of CLI app.
+Example selection dialog of the **KiVar Action Plugin for KiCad**:
+
+![KiVar Action Plugin Example](doc/plugin-changes.svg)
+
+Example usage of the **KiVar Command Line Interface app**:
+
+```
+$ kivar list --selection kivar-demo.kicad_pcb 
+BOOT_SRC: [EMMC] JP NAND SD
+EEPROM_ADDR: 0x54 [0x55]
+I_LED_MA: 10 20 30 40 50 60 70 80 90 [100] 110 120 130 140 150 JP
+IOEXP_TYPE/ADDR: 9535/0x20 [9535/0x24] 9539/0x74
+ISL91127: [IRAZ] IRNZ
+UVLO_LO/HI: 2.41V/3.40V [3.15V/3.57V]
+
+$ kivar set --assign 'I_LED_MA=60' --assign 'BOOT_SRC=NAND' --verbose kivar-demo.kicad_pcb 
+Changes (16):
+    Change R9 'Do not populate' from 'false' to 'true' (BOOT_SRC=NAND).
+    Change R9 'Exclude from bill of materials' from 'false' to 'true' (BOOT_SRC=NAND).
+    Change R9 'Exclude from position files' from 'false' to 'true' (BOOT_SRC=NAND).
+    Change R9 field 'ChoiceText' from 'SoM eMMC' to 'SoM NAND' (BOOT_SRC=NAND).
+    Change R10 'Do not populate' from 'true' to 'false' (BOOT_SRC=NAND).
+    Change R10 'Exclude from bill of materials' from 'true' to 'false' (BOOT_SRC=NAND).
+    Change R10 'Exclude from position files' from 'true' to 'false' (BOOT_SRC=NAND).
+    Change R11 'Do not populate' from 'false' to 'true' (BOOT_SRC=NAND).
+    Change R11 'Exclude from bill of materials' from 'false' to 'true' (BOOT_SRC=NAND).
+    Change R11 'Exclude from position files' from 'false' to 'true' (BOOT_SRC=NAND).
+    Change R21 'Do not populate' from 'false' to 'true' (I_LED_MA=60).
+    Change R21 'Exclude from bill of materials' from 'false' to 'true' (I_LED_MA=60).
+    Change R21 'Exclude from position files' from 'false' to 'true' (I_LED_MA=60).
+    Change R22 'Do not populate' from 'true' to 'false' (I_LED_MA=60).
+    Change R22 'Exclude from bill of materials' from 'true' to 'false' (I_LED_MA=60).
+    Change R22 'Exclude from position files' from 'true' to 'false' (I_LED_MA=60).
+Board saved to file "kivar-demo.kicad_pcb".
+
+$ kivar list --selection kivar-demo.kicad_pcb 
+BOOT_SRC: EMMC JP [NAND] SD
+EEPROM_ADDR: 0x54 [0x55]
+I_LED_MA: 10 20 30 40 50 [60] 70 80 90 100 110 120 130 140 150 JP
+IOEXP_TYPE/ADDR: 9535/0x20 [9535/0x24] 9539/0x74
+ISL91127: [IRAZ] IRNZ
+UVLO_LO/HI: 2.41V/3.40V [3.15V/3.57V]
+```
 
 ## Concepts
 
@@ -68,11 +110,11 @@ If the installation does not work for you this way, consider reporting your prob
 
 #### Using pip
 
-The KiVar CLI Python package can be installed using the following methods.
+The KiVar CLI (command line interface) Python package can be installed using the following methods.
 
 ##### From the PyPI Repository
 
-To install the latest KiVar CLI from the official KiVar PyPI repository, open a shell and run:
+To install the latest KiVar CLI app from the official KiVar PyPI repository, open a shell and run:
 
 ```
 pip install kivar
@@ -80,7 +122,7 @@ pip install kivar
 
 ##### From a Release Archive
 
-The KiVar CLI can also be installed using a downloaded (or locally created) Python Package (replace `${VERSION}` by the actual package version):
+The KiVar CLI app can also be installed using a downloaded (or locally created) Python Package (replace `${VERSION}` by the actual package version):
 
 ```
 pip install kivar-${VERSION}.tar.gz
@@ -92,7 +134,7 @@ pip install kivar-${VERSION}.tar.gz
 
 The process of writing and assigning rules to components (i.e. symbols and footprints) is done manually using simple text expressions.
 
-Once all relevant components are equipped with their variation rules, KiVar allows the selection of variation choices using either an easy-to-use dialog interface (when using the Action Plugin) or a command-line interface (when using the CLI application) and takes care of the automatic analysis and assignment of the corresponding component values, fields and attributes.
+Once all relevant components are equipped with their variation rules, KiVar allows the selection of variation choices using either an easy-to-use dialog interface (when using the Action Plugin) or a command-line interface (when using the CLI app) and takes care of the automatic analysis and assignment of the corresponding component values, fields and attributes.
 
 The following sections describe the process of configuring your schematic or board and - after that - selecting a variation configuration from the previously configured variation choices.
 
@@ -719,7 +761,7 @@ How to read the rules:
 
 ### Rules Application
 
-After setting up the rules for each relevant symbol (or footprint), variations can finally be switched using the _KiVar_ plugin or CLI.
+After setting up the rules for each relevant symbol (or footprint), variations can finally be switched using the _KiVar_ plugin or CLI app.
 
 #### Using the KiVar Action Plugin
 
