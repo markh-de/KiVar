@@ -381,7 +381,7 @@ The following effective Properties are available:
 
 ###### Virtual Properties
 
-> ***TODO*** find a better name for virtual ... placeholder ...?
+<!-- ***TODO*** find a better name for virtual ... placeholder ...? -->
 
 > ***TODO*** explain `!`, which acts as bfp, and can be overridden later
 
@@ -597,7 +597,7 @@ use the field `<CUSTOMFIELD>.Var` with field content in [CCE](#CCE) format (with
 
 ##### Purpose
 
-> ***TODO***
+> TODO
 
 ##### Specification
 
@@ -612,23 +612,17 @@ Details and examples can be found in the following sections.
 
 > TODO more
 
+<!-- ***TODO*** a **lot** of old stuff removed from here. re-insert sections that are still valid! -->
 
+<!-- ***TODO*** Usage tips section. when to use which ce type? some examples. more examples in the real-world section. -->
 
-
-> ***TODO*** a **lot** of old stuff removed from here. re-insert sections that are still valid!
-
-
-> ***TODO*** Usage tips section. when to use which ce type? some examples. more examples in the real-world section.
-
-> ***TODO*** Q&A section that handles the most obvious questions
+<!-- ***TODO*** Q&A section that handles the most obvious questions -->
 
 #### Real-World Examples
 
 The following examples are taken from a real project and show a few configurable variation aspects, their possible choices along with a short explanation of the implementation.
 
 Each example is illustrated with a schematic snippet including the values of the `KiVar.Rule` field of each related symbol.
-
-> ***TODO*** try using SVG scm plotting (and clipping in inkscape!) again, try a different color scheme, try without background color
 
 ##### Example 1: I²C Device Address Selection
 
