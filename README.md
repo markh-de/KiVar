@@ -2,7 +2,7 @@
 
 ## Introduction
 
-<img align='right' width='92' src='doc/kivar-icon.inkscape.svg'>
+<img align='right' style='width:6em;' src='doc/kivar-icon.inkscape.svg'>
 
 KiVar is a tool for **KiCad PCB Assembly Variant selection**, available as
 
