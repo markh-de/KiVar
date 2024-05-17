@@ -460,9 +460,9 @@ For each of them there exists a dedicated **Choice Expression Scope**.  Both sco
 
 ###### Purpose
 
-**Base Choice Expressions** (BCE) assign component **values** (using [Content Specifiers](#content-specifiers)) and **attributes** (using [Property Specifiers](#property-specifiers)).
-
-They also **declare** and **define** [Choice Identifiers](#choice-identifiers) inside the scope of a corresponding [Aspect Identifier](#aspect-identifier).
+**Base Choice Expressions** (BCE) are used to
+ * assign component **values** (using [Content Specifiers](#content-specifiers)) and **attributes** (using [Property Specifiers](#property-specifiers)), and to
+ * **declare** and **define** [Choice Identifiers](#choice-identifiers) inside the scope of a corresponding [Aspect Identifier](#aspect-identifier).
 
 ###### Typical Use
 
