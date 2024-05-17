@@ -328,7 +328,7 @@ Argument types are distinguished by their first (unescaped) character and will b
 
 ###### Purpose
 
-One or more Content Specifiers can be used to assign a string to the component value or to any (custom) component field (such as _Manufacturer_, _MPN_, ...).
+One or more **Content Specifiers** can be used to assign a string to the component value or to any (custom) component field (such as _Manufacturer_, _MPN_, ...).
 
 <!-- TODO more? -->
 
@@ -362,11 +362,11 @@ Choice Argument List input | Resulting Content string | Explanation
 `\+10% \-5% \-12V \+5V`    | `+10% -5% -12V +5V`      | If the first character of a Content Specifier is a `-` or `+`, the corresponding Choice Argument must be prepended with a backslash (`\`) character or be part of a verbatim string (see next example).
 `"+10%" '-5%' "-"12V '+'5V` | `+10% -5% -12V +5V`     | If the first character of a Content Specifier is a `-` or `+`, the corresponding Choice Argument must be part of a verbatim string or be prepended with a backslash (`\`) character (see previous example).
 
-##### Property Choice Arguments
+##### Property Specifiers
 
 ###### Purpose
 
-To modify component attributes, such as _Do not populate_, _Not in Position Files_ or _Not in BoM_, KiVar provides a set of boolean component **Properties** that can be assigned to choices.
+KiVar provides a set of boolean component _Properties_ that allow controlling certain component attributes, such as _Do not populate_, _Not in Position Files_ or _Not in BoM_. <!-- TODO add feature properties ... as soon as they are implemented -->
 
 ###### Syntax
 
@@ -426,7 +426,7 @@ Choice Argument List input | Resulting Property states | Explanation
 
 ##### Purpose
 
-> TODO
+**Choice identifiers** are used to specify all choices to which the corresponding arguments are to be assigned.
 
 ##### Syntax
 
