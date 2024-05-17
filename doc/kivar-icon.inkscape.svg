@@ -43,14 +43,14 @@
      inkscape:bbox-nodes="true"
      inkscape:bbox-paths="true"
      inkscape:zoom="22.0625"
-     inkscape:cx="12.441926"
-     inkscape:cy="13.575071"
+     inkscape:cx="15.342776"
+     inkscape:cy="13.303116"
      inkscape:window-width="1920"
      inkscape:window-height="1029"
      inkscape:window-x="1080"
      inkscape:window-y="576"
      inkscape:window-maximized="1"
-     inkscape:current-layer="layer4"
+     inkscape:current-layer="g7252"
      showguides="false">
     <inkscape:grid
        type="xygrid"
@@ -369,7 +369,7 @@
      inkscape:groupmode="layer"
      id="layer5"
      inkscape:label="Bottom"
-     style="display:none" />
+     style="display:inline" />
   <g
      inkscape:groupmode="layer"
      id="layer3"
