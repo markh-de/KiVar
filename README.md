@@ -394,11 +394,14 @@ The following Properties allow controlling various component features:
    This property controls application of solder paste to the pads of a component's footprint.  Solder paste can be enabled (property _true_) or disabled (property _false_).  For both cases, user-defined footprint-specific solder paste clearances are maintained.  _Important:_ As usual for KiCad solder paste clearance settings, this property has only effect for pads on copper layers, but _not_ for _SMD Aperture_ pads!
 -->
 
-###### Virtual Properties
+###### Placeholder Properties
 
-<!-- ***TODO*** find a better name for virtual ... placeholder ...? -->
+The following Property allows grouping frequently used attribute properties for user convenience:
 
-> ***TODO*** explain `!`, which acts as bfp, and can be overridden later
+ * **All** (property identifier `!`).  
+   This placeholder property represents all three attribute properties **Fitted**, **inPos** and **inBom** (`f`, `p`, `b`).  It can be used as a shortcut to save space, as most of the times, all three attributes are controlled together and set to the same state.  However, if finer control is desired, the state of individual attribute properties can still be overridden.  Examples can be found in the next section.
+
+<!-- TODO really name it "all"? yes, all attributes, but there will be more than attributes to be controlled with properties -->
 
 ###### Examples
 
@@ -409,8 +412,9 @@ Choice Argument List input | Resulting Property states | Explanation
 `-f`                       |  _not_ Fitted             | The `-` causes _false_ to be assigned to the subsequent properties, i.e. _Fitted_.  The footprint's attribute _Do not populate_ will be set to _true_.
 `-fbp`                     |  _not_ Fitted, _not_ inBom, _not_ inPos | One modifier (`-`) can be used for any number of subsequent identifiers.
 `-!`                       |  _not_ Fitted, _not_ inBom, _not_ inPos | Equivalent to prior example.
-`-! +b`                    |  _not_ Fitted, inBom, _not_ inPos | After setting `f`, `b`, `p` to false, `b` is set to true again.
-`-!+b`                     |  _not_ Fitted, inBom, _not_ inPos | Equivalent to prior example.  Multiple modifiers can appear inside a single specifier.
+`+!`                       |  Fitted, inBom, inPos     | Place this component to the board, include it in the BoM and in position files.
+`-! +b`                    |  _not_ Fitted, inBom, _not_ inPos | After setting `f`, `b`, `p` to false, `b` is set to true again.  Useful if you want your BoM to include unfitted parts, that are otherwise marked "DNP".
+`-!+b`                     |  _not_ Fitted, inBom, _not_ inPos | Equivalent to prior example.  Multiple modifiers may appear inside a single specifier argument.
 
 #### Choice Identifiers
 
