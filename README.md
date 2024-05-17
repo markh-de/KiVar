@@ -2,7 +2,7 @@
 
 ## Introduction
 
-<img align='right' width='92' src='doc/kivar-icon.inkscape.svg'>
+<img align='right' style='width:6em;' src='doc/kivar-icon.inkscape.svg'>
 
 KiVar is a tool for **KiCad PCB Assembly Variant selection**, available as
 
@@ -93,7 +93,7 @@ Required steps:
 1. Start the _Plugin and Content Manager_ from the KiCad main window.
 2. Find _KiVar_ in the **Plugins** section.
 3. Mark it for installation and apply the pending changes.
-4. The _Kivar_ plugin icon should now appear in the PCB Editor (pcbnew) toolbar.
+4. The _KiVar_ plugin icon should now appear in the PCB Editor (pcbnew) toolbar.
 
 #### Using Manual Archive Extraction
 
@@ -130,6 +130,10 @@ pip install kivar-${VERSION}.tar.gz
 
 ## Usage
 
+> **Important:**  
+> These instructions refer to the version **0.2.x** series of KiVar, which uses a slightly modified, but significantly extended rule syntax, and an enhanced range of functions compared to earlier versions.  
+> If you are using an older version, please consider [updating](#installation) and [migrating your variation rules to the new format](#migrate).
+
 <!-- TODO: revise document structure and headings levels! -->
 
 The process of writing and assigning rules to components (i.e. symbols and footprints) is done manually using simple text expressions.
@@ -158,7 +162,8 @@ While KiVar 0.1.x and earlier used a single field named `KiVar.Rule`, current re
 
 So as a first step users should move all legacy rules from `KiVar.Rule` to `Var`.  This can be achieved by copying and pasting the values of the `KiVar.Rule` column over to the `Var` column in the KiCad Schematic Editor's Symbol Fields Table.
 
-_Hint:_ To do this, open the Symbol Fields Table, sort by the legacy `KiVar.Rule` field, then copy & paste all relevant cells to the `Var` field (may need to be created first).  Afterwards, remove all `KiVar.Rule` fields (can be done in the Symbol Fields Table dialog).
+> **Hint:**  
+> To do this, open the Symbol Fields Table, sort by the legacy `KiVar.Rule` field, then copy & paste all relevant cells to the `Var` field (may need to be created first).  Afterwards, remove all `KiVar.Rule` fields (can be done in the Symbol Fields Table dialog).
 
 ##### Basic Rule Format
 
@@ -203,7 +208,9 @@ Rule String             | Resulting Choice1 Content | Resulting Choice1 Properti
 `*(10k -!) Choice2()`   | `10k`                     | `-!` (effectively `-f -b -p`) | `10k`                     | `-!` (effectively `-f -b -p`)
 `*(10k -!) Choice2(+b)` | `10k`                     | `-!` (effectively `-f -b -p`) | `10k`                     | `-! +b` (effectively `-f +b -p`)
 
-_Note:_ It is also important to note that **component attributes** (DNP, Not in Pos, Not in BoM) **are now kept at their current state** (and ignored in the Choice match) **if their corresponding properties are not defined (neither enabled, nor disabled)**.  In pre-0.2.0 versions all three component attributes were either set or cleared, depending on the presence of the `-!` option.  They could not be set to different states, and none of them could be kept untouched for component with variation rules.  Version 0.2.0 introduces much more flexibility regarding attribute management.
+> **Important:**  
+> Component attributes (DNP, Not in Pos, Not in BoM) are now **kept at their current state** (and ignored in the Choice match) if their corresponding properties are **not defined** (to _true_ or _false_).  
+> In pre-0.2.0 versions all three component attributes were either set or cleared, depending on the presence of the `-!` option.  They could not be set to different states, and none of them could be kept untouched for component with variation rules.  Version 0.2.0 introduces much more flexibility regarding attribute management.
 
 ##### Implicit Property Default States
 
@@ -213,9 +220,11 @@ Starting with version 0.2.0, users can choose to _only_ specify that Property St
 
 For example, if a component is only fitted (Property Identifier `f`) in one Choice (of many), it is now sufficient to specify `+f` in that Choice Expression and leave the rest of the choices, and even the default choice (`*`) definition, untouched.  The implicit default state for the `f` (fitted) Property will then automatically assumed to be the opposite (`-f`) for any other Choices.
 
-_Note:_ Implicit Property States can only be used if there is only one State/Polarity (`+` exclusive-or `-`) assigned in any of the component's choices.
+> **Note:**  
+> Implicit Property States can only be used if there is only **one** type of State/Polarity (either `+` or `-`) assigned in any of the component's choices.
 
-_Note:_ Implicit default States only work for Property States, as they use boolean states (actually tri-state, but as soon as a Property is provided, it's either _true_ or _false_) and therefore have an (implicit) "opposite" value.
+> **Note:**  
+> Implicit default States only work for Property States, as they use _boolean_ states (actually tri-state, but as soon as a Property is provided, it's either _true_ or _false_) and therefore have an (implicit) "opposite" value.
 
 ##### Values As Multiple Words
 
@@ -319,7 +328,7 @@ Argument types are distinguished by their first (unescaped) character and will b
 
 ###### Purpose
 
-One or more Content Specifiers can be used to assign a string to the component value or to any (custom) component field (such as _Manufacturer_, _MPN_, ...).
+One or more **Content Specifiers** can be used to assign a string to the component value or to any (custom) component field (such as _Manufacturer_, _MPN_, ...).
 
 <!-- TODO more? -->
 
@@ -329,7 +338,8 @@ Each argument beginning with a character _other than_ `-` and `+` is interpreted
 
 There can be multiple Content Specifiers in each Choice Expression.  Their values will be concatenated with one ` ` (space) character as separator to form the resulting Content string.  However, each choice may have only a maximum of one resulting Content assigned.  For example: `Choice1("hello world"   foo bar)` will result in `Choice1` to be assigned the content `hello world foo bar`, but multiple content assignments to the same Choice, such as `Choice1("hello world") Choice1(foo bar)`, are invalid.  This restriction is due to the fact that Choice Expressions can be provided in several ways (fields) and there is no guaranteed processing (concatenation) order.
 
-_Note:_ As arguments can be separated by _any_ number of space characters, each separation will result in a single space character in the final content, no matter how many spaces were used for the argument separation originally.  For strings that shall be assigned in a verbatim way (such as a URL), it is highly recommended to use quoting techniques (discussed later).
+> **Note:**
+> As arguments can be separated by _any_ number of space characters, each separation will result in a single space character in the final content, no matter how many spaces were used for the argument separation originally.  For strings that shall be assigned in a verbatim way (such as a URL), it is highly recommended to use quoting techniques (discussed later).
 
 ###### Evaluation
 
@@ -352,11 +362,11 @@ Choice Argument List input | Resulting Content string | Explanation
 `\+10% \-5% \-12V \+5V`    | `+10% -5% -12V +5V`      | If the first character of a Content Specifier is a `-` or `+`, the corresponding Choice Argument must be prepended with a backslash (`\`) character or be part of a verbatim string (see next example).
 `"+10%" '-5%' "-"12V '+'5V` | `+10% -5% -12V +5V`     | If the first character of a Content Specifier is a `-` or `+`, the corresponding Choice Argument must be part of a verbatim string or be prepended with a backslash (`\`) character (see previous example).
 
-##### Property Choice Arguments
+##### Property Specifiers
 
 ###### Purpose
 
-To modify component attributes, such as _Do not populate_, _Not in Position Files_ or _Not in BoM_, KiVar provides a set of boolean component **Properties** that can be assigned to choices.
+KiVar provides a set of boolean component _Properties_ that allow controlling certain component attributes, such as _Do not populate_, _Not in Position Files_ or _Not in BoM_. <!-- TODO add feature properties ... as soon as they are implemented -->
 
 ###### Syntax
 
@@ -368,9 +378,9 @@ Each Property Specifier must start with a Property Modifier, defining the boolea
 
 All Property Specifiers inside a Choice Expression are evaluated from left to right, resulting in a set of defined boolean Property states for the corresponding component and choice.  Properties not defined in any of the component's Choices are kept in their original state.
 
-###### Effective Properties
+###### Attribute Properties
 
-The following effective Properties are available:
+The following Properties allow modification of component attributes:
 
  * **Fitted** (property identifier `f`).  
    This property specifies whether a component shall be fitted (property _true_) or unfitted (property _false_).  This property is linked to the pcbnew footprint attribute _Do not populate_ with inverted polarity.
@@ -379,11 +389,25 @@ The following effective Properties are available:
  * **inBom** (property identifier `b`).  
    This property specifies whether a component shall be included in the Bill of Materials (property _true_) or excluded (property _false_).  This property is linked to the pcbnew footprint attribute _Not in BoM_ with inverted polarity.
 
-###### Virtual Properties
+<!-- FUTURE FEATURES
+###### Feature Properties
 
-> ***TODO*** find a better name for virtual ... placeholder ...?
+The following Properties allow controlling various component features:
 
-> ***TODO*** explain `!`, which acts as bfp, and can be overridden later
+ * **Model** (property identifier `mN`, with `N` being an integer number).  
+   This property controls visibility of a dedicated 3D model of the corresponding component.  It can be used to show (property _true_) or hide (property _false_) 3D models.  An integer number must be provided directly following the first character of the property identifier, representing the index of the model to be shown or hidden.  The index starts at 1.
+ * **Solderpaste** (property identifier `s`).  
+   This property controls application of solder paste to the pads of a component's footprint.  Solder paste can be enabled (property _true_) or disabled (property _false_).  For both cases, user-defined footprint-specific solder paste clearances are maintained.  _Important:_ As usual for KiCad solder paste clearance settings, this property has only effect for pads on copper layers, but _not_ for _SMD Aperture_ pads!
+-->
+
+###### Placeholder Properties
+
+The following Property allows grouping frequently used attribute properties for user convenience:
+
+ * **All** (property identifier `!`).  
+   This placeholder property represents all three attribute properties **Fitted**, **inPos** and **inBom** (`f`, `p`, `b`).  It can be used as a shortcut to save space, as most of the times, all three attributes are controlled together and set to the same state.  However, if finer control is desired, the state of individual attribute properties can still be overridden.  Examples can be found in the next section.
+
+<!-- TODO really name it "all"? yes, all attributes, but there will be more than attributes to be controlled with properties -->
 
 ###### Examples
 
@@ -394,14 +418,15 @@ Choice Argument List input | Resulting Property states | Explanation
 `-f`                       |  _not_ Fitted             | The `-` causes _false_ to be assigned to the subsequent properties, i.e. _Fitted_.  The footprint's attribute _Do not populate_ will be set to _true_.
 `-fbp`                     |  _not_ Fitted, _not_ inBom, _not_ inPos | One modifier (`-`) can be used for any number of subsequent identifiers.
 `-!`                       |  _not_ Fitted, _not_ inBom, _not_ inPos | Equivalent to prior example.
-`-! +b`                    |  _not_ Fitted, inBom, _not_ inPos | After setting `f`, `b`, `p` to false, `b` is set to true again.
-`-!+b`                     |  _not_ Fitted, inBom, _not_ inPos | Equivalent to prior example.  Multiple modifiers can appear inside a single specifier.
+`+!`                       |  Fitted, inBom, inPos     | Place this component to the board, include it in the BoM and in position files.
+`-! +b`                    |  _not_ Fitted, inBom, _not_ inPos | After setting `f`, `b`, `p` to false, `b` is set to true again.  Useful if you want your BoM to include unfitted parts, that are otherwise marked "DNP".
+`-!+b`                     |  _not_ Fitted, inBom, _not_ inPos | Equivalent to prior example.  Multiple modifiers may appear inside a single specifier argument.
 
 #### Choice Identifiers
 
 ##### Purpose
 
-> TODO
+To specify the list of choice names (identifiers), to which the corresponding arguments are to be assigned, **Choice Identifiers** are used.
 
 ##### Syntax
 
@@ -435,9 +460,9 @@ For each of them there exists a dedicated **Choice Expression Scope**.  Both sco
 
 ###### Purpose
 
-**Base Choice Expressions** (BCE) are used to assign component **values** (using Content Choice Arguments) and **attributes** (using Content Property Arguments).
-
-Also, they **declare** and **define** choices for a given aspect.
+**Base Choice Expressions** (BCE) are used to
+ * assign component **values** (using [Content Specifiers](#content-specifiers)) and **attributes** (using [Property Specifiers](#property-specifiers)), and to
+ * **declare** and **define** [Choice Identifiers](#choice-identifiers) inside the scope of a corresponding [Aspect Identifier](#aspect-identifier).
 
 ###### Typical Use
 
@@ -463,7 +488,7 @@ As BCEs only specify an expression scope and not a real Choice Expression Type, 
 
 **Auxiliary Choice Expressions** (ACE) assign values to specific component **custom fields** (using Content Choice Arguments).
 
-They do _not_ declare additional choices, but can **only refer** to aspect choices declared in Base Choice Expressions.
+They do _not_ declare additional choices, but can **only refer** to aspect choices declared in [Base Choice Expressions](#bce).
 
 Each Choice Identifier used in an ACE must therefore be declared in a BCE, even if no change of the component value or attributes is required (***TODO*** link to CI declaration w/o definition).
 
@@ -597,7 +622,7 @@ use the field `<CUSTOMFIELD>.Var` with field content in [CCE](#CCE) format (with
 
 ##### Purpose
 
-> ***TODO***
+> TODO
 
 ##### Specification
 
@@ -612,23 +637,17 @@ Details and examples can be found in the following sections.
 
 > TODO more
 
+<!-- ***TODO*** a **lot** of old stuff removed from here. re-insert sections that are still valid! -->
 
+<!-- ***TODO*** Usage tips section. when to use which ce type? some examples. more examples in the real-world section. -->
 
-
-> ***TODO*** a **lot** of old stuff removed from here. re-insert sections that are still valid!
-
-
-> ***TODO*** Usage tips section. when to use which ce type? some examples. more examples in the real-world section.
-
-> ***TODO*** Q&A section that handles the most obvious questions
+<!-- ***TODO*** Q&A section that handles the most obvious questions -->
 
 #### Real-World Examples
 
 The following examples are taken from a real project and show a few configurable variation aspects, their possible choices along with a short explanation of the implementation.
 
 Each example is illustrated with a schematic snippet including the values of the `KiVar.Rule` field of each related symbol.
-
-> ***TODO*** try using SVG scm plotting (and clipping in inkscape!) again, try a different color scheme, try without background color
 
 ##### Example 1: I²C Device Address Selection
 
@@ -700,9 +719,11 @@ How to read the rules:
  * **R16**: For choice `IRNZ` the value is `0Ω` (fixed version using direct output voltage feedback), for choice `IRAZ` the value is `1MΩ` (adjustable version using a voltage divider for feedback).
  * **R17**: For choice `IRNZ` this part is unfitted (fixed version only has direct feedback, no resistor network), else (`IRAZ`) it is fitted (adjustable version using a voltage divider for feedback).
 
-_Note:_ The rule for **R16** is the _only_ rule explicitly mentioning the choice `IRAZ`, declaring that choice name for all rules that refer to the same variation aspect (`ISL91127`).  For every aspect, you need at least one rule explicitly mentioning a choice for the choice name to be declared and selectable.
+> **Note:**  
+> The rule for **R16** is the _only_ rule explicitly mentioning the choice `IRAZ`, declaring that choice name for all rules that refer to the same variation aspect (`ISL91127`).  For every aspect, you need at least one rule explicitly mentioning a choice for the choice name to be declared and selectable.
 
-_Note:_ In this example, the IC itself keeps its original value (part number without IC variant suffix).  In its current state KiVar can only change part values, no other fields (e.g. ordering information).  If you want to switch between different part types (with different symbols or ordering information) or footprints, you need to use multiple _alternate_ symbol instances with each one defining its own set of relevant fields and only one of them actually fitted (refer to next example).
+> **Note:**  
+> In this example, the IC itself keeps its original value (part number without IC variant suffix).  In its current state KiVar can only change part values, no other fields (e.g. ordering information).  If you want to switch between different part types (with different symbols or ordering information) or footprints, you need to use multiple _alternate_ symbol instances with each one defining its own set of relevant fields and only one of them actually fitted (refer to next example).
 
 ##### Example 5: IC Type and Address Selection
 
@@ -718,7 +739,8 @@ In order to **switch the full set of ordering information or symbol and footprin
 
 In general, this variation technique can be used to switch between symbols that refer to either the same footprint (as in this example) or a different footprint shape (e.g. SMT vs. THT, or different SMT package sizes), which can exist side by side or even overlaid in the same spot of the PCB (only the footprints, _not_ the actual components!).
 
-_Hint:_ Should you decide to use multiple overlapping footprint instances (of course, only one of them fitted with the actual component), the following custom DRC rule might become handy:
+> **Hint:**  
+> Should you decide to use multiple overlapping footprint instances (of course, only one of them fitted with the actual component), the following custom DRC rule might become handy:
 
     (version 1)
 
@@ -727,7 +749,8 @@ _Hint:_ Should you decide to use multiple overlapping footprint instances (of co
         (constraint courtyard_clearance (min -1mm))
     )
 
-_Note:_ If copper pads of multiple _alternate(!)_ footprints do overlap, it is important to assign the same net to each set of overlapping pads, in order to avoid DRC errors.  Some overlapping pads of alternate footprints will be applied the same net anyway (as in this example), but _unconnected_ symbol pins will automatically be applied calculated net names which will naturally conflict with those of alternate symbols if their corresponding copper pads overlap in the PCB.  It is then required to connect the unconnected pins with each other in the schematic (using wires or labels).  In the above example, visually distinguishable labels (P00..P17) were chosen for such connections that are otherwise without function.
+> **Note:**  
+> If copper pads of multiple _alternate(!)_ footprints do overlap, it is important to assign the same net to each set of overlapping pads, in order to avoid DRC errors.  Some overlapping pads of alternate footprints will be applied the same net anyway (as in this example), but _unconnected_ symbol pins will automatically be applied calculated net names which will naturally conflict with those of alternate symbols if their corresponding copper pads overlap in the PCB.  It is then required to connect the unconnected pins with each other in the schematic (using wires or labels).  In the above example, visually distinguishable labels (P00..P17) were chosen for such connections that are otherwise without function.
 
 How to read the sub-aspects:
 
@@ -783,7 +806,8 @@ If the values and attributes do not exactly match one definite choice (for a var
 
 In case the defined variation rules cannot be parsed and enumerated without problems, an error message window with a list of problems will appear.  Each of these problems must then be fixed in order to successfully start the plugin.
 
-_Hint:_ You can click each error message to focus the corresponding footprint on the _pcbnew_ canvas in the background (KiCad 8 and later only).
+> **Hint:**  
+> Error messages can be clicked to focus the corresponding footprint on the _pcbnew_ canvas in the background.
 
 ##### Variation Choices Selection
 
@@ -791,7 +815,9 @@ If all rules can be parsed without problems, the main dialog window appears.
 
 For the above [real-world examples](#real-world-examples), the selection dialog window may look similar to the following:
 
-![Variant Selection Dialog Without Changes](doc/selection-nochange.png)
+> TODO Match choices in the following dialogs with the changes performed in the 3D views below!
+
+![Variant Selection Dialog Without Changes](doc/plugin-empty.svg)
 
 For each of the listed variation aspects a variation choice can now be selected.
 
@@ -799,11 +825,12 @@ If the values and attributes of the footprint(s) related to a variation aspect s
 
 The change list section below the selection area summarizes all component value and attribute changes to be performed for each related footprint if the current variation configuration is applied.
 
-_Hint:_ You can click each entry in the change list to focus the corresponding footprint on the _pcbnew_ canvas in the background (KiCad 8 and later only).
+> **Hint:**  
+> Entries in the change list can be clicked to focus the corresponding footprint on the _pcbnew_ canvas in the background.
 
 After selecting a few different variation choices, the dialog window may look like the following:
 
-![Variant Selection Dialog With Changes](doc/selection-change.png)
+![Variant Selection Dialog With Changes](doc/plugin-changes.svg)
 
 When clicking the _Update PCB_ button, KiVar sets the values and attributes for all relevant footprints as previewed in the information text box.
 
@@ -827,4 +854,4 @@ To propagate the changes back to the schematic, use the PCB Editor menu item _To
 
 #### Using the KiVar Action Plugin
 
-***TODO*** copy some text from the plugin manual. for a start, simply recommend to use `--help`. ;)
+> ***TODO*** copy some text from the plugin manual. for a start, simply recommend using `--help`. ;)
