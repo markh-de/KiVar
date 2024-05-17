@@ -372,9 +372,9 @@ Each Property Specifier must start with a Property Modifier, defining the boolea
 
 All Property Specifiers inside a Choice Expression are evaluated from left to right, resulting in a set of defined boolean Property states for the corresponding component and choice.  Properties not defined in any of the component's Choices are kept in their original state.
 
-###### Effective Properties
+###### Attribute Properties
 
-The following effective Properties are available:
+The following Properties allow modification of component attributes:
 
  * **Fitted** (property identifier `f`).  
    This property specifies whether a component shall be fitted (property _true_) or unfitted (property _false_).  This property is linked to the pcbnew footprint attribute _Do not populate_ with inverted polarity.
@@ -382,6 +382,17 @@ The following effective Properties are available:
    This property specifies whether a component shall be included in the component placement/position files (property _true_) or excluded (property _false_).  This property is linked to the pcbnew footprint attribute _Not in Position Files_ with inverted polarity.
  * **inBom** (property identifier `b`).  
    This property specifies whether a component shall be included in the Bill of Materials (property _true_) or excluded (property _false_).  This property is linked to the pcbnew footprint attribute _Not in BoM_ with inverted polarity.
+
+<!-- FUTURE FEATURES
+###### Feature Properties
+
+The following Properties allow controlling various component features:
+
+ * **Model** (property identifier `mN`, with `N` being an integer number).  
+   This property controls visibility of a dedicated 3D model of the corresponding component.  It can be used to show (property _true_) or hide (property _false_) 3D models.  An integer number must be provided directly following the first character of the property identifier, representing the index of the model to be shown or hidden.  The index starts at 1.
+ * **Solderpaste** (property identifier `s`).  
+   This property controls application of solder paste to the pads of a component's footprint.  Solder paste can be enabled (property _true_) or disabled (property _false_).  For both cases, user-defined footprint-specific solder paste clearances are maintained.  _Important:_ As usual for KiCad solder paste clearance settings, this property has only effect for pads on copper layers, but _not_ for _SMD Aperture_ pads!
+-->
 
 ###### Virtual Properties
 
