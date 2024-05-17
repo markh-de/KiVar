@@ -815,8 +815,6 @@ If all rules can be parsed without problems, the main dialog window appears.
 
 For the above [real-world examples](#real-world-examples), the selection dialog window may look similar to the following:
 
-> TODO Match choices in the following dialogs with the changes performed in the 3D views below!
-
 ![Variant Selection Dialog Without Changes](doc/plugin-empty.svg)
 
 For each of the listed variation aspects a variation choice can now be selected.
