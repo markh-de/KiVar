@@ -649,27 +649,26 @@ Details and examples can be found in the following sections.
 
 #### Real-World Examples
 
-The following examples are taken from a real project and show a few configurable variation aspects, their possible choices along with a short explanation of the implementation.
+The following examples are taken from real commercial projects.  They show a few configurable variation aspects, their possible choices along with a short explanation of the implementation.
 
-Each example is illustrated with a schematic snippet including the values of the `KiVar.Rule` field of each related symbol.
+To further explore these examples and learn the recommended ways of implementing KiVar rules, check out the <!-- TODO link! --> **[demo project](demo/)**.
+
+In the following sections, each example is illustrated with a schematic snippet including the values of the relevant fields for each related symbol.
 
 ##### Example 1: I²C Device Address Selection
 
-This is a very simple example, used for address selection of an I²C device.  Address input A0 switches between device addresses 0x54 _(A0=0)_ and 0x55 _(A0=1)_.
+In this very simple example, KiVar is used for address selection of an I²C device.  Address input A0 switches between device addresses 0x54 _(A0=GND)_ and 0x55 _(A0=+3V3)_.
 
 ![Example 1](doc/examples/1.svg)
 
-> ***TODO*** Fix the text description. Description does not yet match figure or demo project.
-
-The device address is selected by tying the IC input A0 to either +3V3 or GND, depending on the selected choice.  Inputs A1 and A2 are tied to fixed levels.
+The device address is selected by tying the IC input A0 to either GND or +3V3, depending on the selected choice.  Inputs A1 and A2 are tied to fixed levels.
 
 How to read the rules:
 
- * Variation aspect is `EEPROM_ADDR` (with choice `0x54` currently applied in the figure).
- * **R1**: For choice `0x55` this part will be fitted (empty definition, hence fitted), else unfitted (per default choice).
- * **R2**: Similarly, for choice `0x54` this part will be fitted, else unfitted.
-
-Alternatively, the rules in this example could explicitly list _those_ choices that make the corresponding parts _unfitted_.  However, with the above notation, the rules can be read more naturally.  That is, choice 0x55 is listed in the upper resistor and leads to high voltage level and choice 0x54 is listed in the lower resistor and leads to low voltage level.
+ * Variation aspect is `EEPROM_ADDR` (with choice `0x55` currently applied in the figure).
+ * **R1**: For choice `0x55` this part will be fitted (`+!`, resolving to `+fpb`).  There is no default choice required, as implicit defaults (opposite property states, i.e. `-fpb`) are assumed automatically.
+ * **R2**: Likewise, for choice `0x54` this part will be fitted, else unfitted (same explanation as for R1).
+ * **U1**: A purely informational field called `I2C Address` is assigned the value `0x54` or `0x55`, depending on the choice.  This field can then either be made visible directly, or referenced by other symbols or text boxes within the schematic (using `${U1:I2C Address}`).
 
 ##### Example 2: Boot Source Selection
 
