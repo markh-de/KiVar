@@ -132,7 +132,7 @@ pip install kivar-${VERSION}.tar.gz
 
 > **Important:**  
 > These instructions refer to the version **0.2.x** series of KiVar, which uses a slightly modified, but significantly extended rule syntax, and an enhanced range of functions compared to earlier versions.  
-> If you are using an older version, please consider [updating](#installation) and [migrating your variation rules to the new format](#migrate).
+> If you are using an older version, please consider [updating](#installation) and [migrating](#migrate) your variation rules to the new format.
 
 <!-- TODO: revise document structure and headings levels! -->
 
@@ -250,7 +250,7 @@ Severity: **Not critical** (backwards-compatible).
 
 Versions before 0.2.0 supported only a single rule format in the `KiVar.Rule` component field.  From version 0.2.0 on, multiple rule (now called _Choice Expression_) formats are supported, which can be specified in different component fields.
 
-This change is fully backwards-compatible.  There is no need to adapt legacy rule strings.
+This change is fully backwards-compatible.  Apart from the changes discussed above, there is no need to change the format of legacy rule strings.
 
 ##### Double-Quote Characters Support
 
@@ -260,7 +260,7 @@ Prior to version 0.2.0 only `'` (single-quote) characters were supported for the
 
 Starting with version 0.2.0, `"` (double-quote) characters are also supported for quoting.  Single- and double-quote strings can be nested, e.g. the string `"hello 'world'"` would result in `hello 'world'`.
 
-This change is fully backwards-compatible.  There is no need to adapt legacy rule strings.
+This change is mostly backwards-compatible.  If your legacy string do not use double-quote characters that are supposed to be used in a verbatim fashion themselves, there is no need to adapt legacy rule strings.
 
 #### Definition of Terms
 
@@ -275,7 +275,7 @@ Basic terms used in this document:
    A set of values (component values or field contents) and/or properties to be assigned to specific components.  A Choice is always related to a specific _Aspect_.
 
  * **Configuration:**  
-   A fully defined set of specific _Choices_ for _all_ available _Aspects_.  In other words, one specific board assembly variant state.
+   A fully defined selection of _specific_ _Choices_ for _all_ available _Aspects_.  In other words, one specific board assembly variant state.
 
 #### Basic Rules Structure
 
@@ -283,7 +283,7 @@ Each component (which uses KiVar variation rules) must refer to exactly one **As
 
 There can exist multiple Aspects per design, and for each Aspect there can exist multiple Choices.
 
-Example:
+_Example:_
 
  * Aspect `DEV_ADDR`
    * Choice `0x50`
@@ -466,19 +466,21 @@ For each of them there exists a dedicated **Choice Expression Scope**.  Both sco
 
 ###### Typical Use
 
-BCEs are used to assign component values, such as `10kΩ`, `0.1µF 50V` or `74HC595`.  The component value is defined by the choice content (assigned through Content Choice Arguments).
+BCEs are used to assign basic component values, such as `10kΩ`, `0.1µF 50V` or `74HC595`.  The component value is passed via [Content Specifiers](#content-specifiers).
 
-They are also used to modify component attributes, e.g. when a component shall change its _DNP_ (do not populate) state or when it shall or shall not be included in position files or the bill of materials.  Component attributes are defined by choice properties (assigned through Property Choice Arguments).
+They are also used to modify component attributes, e.g. when a component shall change its _DNP_ (do not populate) state or when it shall or shall not be included in position files or the bill of materials.  Component attributes are defined by choice properties (assigned through [Property Specifiers](#property-specifiers)).
 
-BCEs can _not_ modify custom fields.  For this, ACEs must be used (see below).
+BCEs can _not_ modify custom fields.  For this, [ACEs](#ace) must be used (next section).
 
+<!--
 ###### Data Assignment
 
 > TODO content and properties ... how are they mapped to the component data
+-->
 
 ###### Examples
 
-As BCEs only specify an expression scope and not a real Choice Expression Type, examples are provided in the sections ***TODO link*** (SBCE) and ***TODO link*** (CBCE).
+As BCEs only specify an expression scope and not a specific Choice Expression Type, examples are discussed later in the [SBCE](#sbce) and [CBCE](#cbce) sections.
 
 <a name="ace"></a>
 
@@ -486,25 +488,27 @@ As BCEs only specify an expression scope and not a real Choice Expression Type, 
 
 ###### Purpose
 
-**Auxiliary Choice Expressions** (ACE) assign values to specific component **custom fields** (using Content Choice Arguments).
+**Auxiliary Choice Expressions** (ACE) are used to assign values to specific component **custom fields** (using [Content Specifiers](#content-specifiers)).
 
-They do _not_ declare additional choices, but can **only refer** to aspect choices declared in [Base Choice Expressions](#bce).
+Unlike [Base Choice Expressions](#bce), Auxiliary Choice Expressions do _not_ declare additional choices, but **only refer** to aspect choices declared in [Base Choice Expressions](#bce).
 
-Each Choice Identifier used in an ACE must therefore be declared in a BCE, even if no change of the component value or attributes is required (***TODO*** link to CI declaration w/o definition).
+Each Choice Identifier used in an ACE must therefore be declared in a [BCE](#bce), even if no change of the component value or attributes is required (***TODO*** link to CI declaration w/o definition).
 
 Also, ACEs do not support specifying properties, as they do not refer to the component itself, but to dedicated fields within it.
 
 ###### Typical Use
 
-ACEs are used to assign custom field values, such as a manufacturer name or a manufacturer product number (MPN) to be used in the bill of materials.  However, ACEs can also be used for other information, such as a choice-dependent device address.  That information can then be made visible in the schematic for informational purposes.  This can be used to automatically streamline schematic documentation.
+ACEs are used to assign custom field values, such as a manufacturer name or a manufacturer product number (MPN) to be used in the bill of materials.  Furthermore, ACEs can be used for other information, such as a choice-dependent text information, made visible anywhere in the schematic for informational purposes.  This technique can be used to automatically streamline schematic documentation.
 
+<!--
 ###### Data Assignment
 
 > TODO how is data mapped
+-->
 
 ###### Examples
 
-As ACEs only specify an expression scope and not a real Choice Expression Type, examples are provided in the sections ***TODO link*** (SACE) and ***TODO link*** (CACE).
+As ACEs only specify an expression scope and not a specific Choice Expression Type, examples are discussed later in the the [SACE](#sace) and [CACE](#cace) sections
 
 #### Choice Expression Formats
 
