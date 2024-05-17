@@ -93,7 +93,7 @@ Required steps:
 1. Start the _Plugin and Content Manager_ from the KiCad main window.
 2. Find _KiVar_ in the **Plugins** section.
 3. Mark it for installation and apply the pending changes.
-4. The _Kivar_ plugin icon should now appear in the PCB Editor (pcbnew) toolbar.
+4. The _KiVar_ plugin icon should now appear in the PCB Editor (pcbnew) toolbar.
 
 #### Using Manual Archive Extraction
 
@@ -426,7 +426,7 @@ Choice Argument List input | Resulting Property states | Explanation
 
 ##### Purpose
 
-**Choice identifiers** are used to specify all choices to which the corresponding arguments are to be assigned.
+To specify the list of choice names (identifiers), to which the corresponding arguments are to be assigned, **Choice Identifiers** are used.
 
 ##### Syntax
 
@@ -460,9 +460,9 @@ For each of them there exists a dedicated **Choice Expression Scope**.  Both sco
 
 ###### Purpose
 
-**Base Choice Expressions** (BCE) are used to assign component **values** (using Content Choice Arguments) and **attributes** (using Content Property Arguments).
+**Base Choice Expressions** (BCE) assign component **values** (using [Content Specifiers](#content-specifiers)) and **attributes** (using [Property Specifiers](#property-specifiers)).
 
-Also, they **declare** and **define** choices for a given aspect.
+They also **declare** and **define** [Choice Identifiers](#choice-identifiers) inside the scope of a corresponding [Aspect Identifier](#aspect-identifier).
 
 ###### Typical Use
 
@@ -488,7 +488,7 @@ As BCEs only specify an expression scope and not a real Choice Expression Type, 
 
 **Auxiliary Choice Expressions** (ACE) assign values to specific component **custom fields** (using Content Choice Arguments).
 
-They do _not_ declare additional choices, but can **only refer** to aspect choices declared in Base Choice Expressions.
+They do _not_ declare additional choices, but can **only refer** to aspect choices declared in [Base Choice Expressions](#bce).
 
 Each Choice Identifier used in an ACE must therefore be declared in a BCE, even if no change of the component value or attributes is required (***TODO*** link to CI declaration w/o definition).
 
