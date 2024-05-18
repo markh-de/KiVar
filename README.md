@@ -462,9 +462,9 @@ The reserved Choice Identifier used for Default Choices is "`*`".
 
 For each assignment target, the Content (component value or field content) specified in the Default Choice applies to all Choices that **do not provide** their own Content definition for the same assignment.
 
-The following table explains Content inheritance rules using an example Choice Identifier `c1` and some example Content.
+The following table explains Content inheritance rules using an example Choice Identifier `A` and some example Content.
 
-Default Choice (`*`) Content | Specific Choice (`c1`) Content | Resulting Specific Choice (`c1`) Content
+Default Choice (`*`) Content | Specific Choice (`A`) Content  | Resulting Specific Choice (`A`) Content
 ---------------------------- | ------------------------------ | ----------------------------------------
 _(none)_                     | _(none)_                       | _(none)_
 _(none)_                     | `123`                          | `def`
@@ -475,9 +475,9 @@ _(none)_                     | `123`                          | `def`
 
 For each assignment target, the state of each Property specified in the Default Choice is used as the **initial value** for _all_ Choices with the same assignment target.
 
-The following table explains Property state inheritance rules using an example Choice Identifier `c2` and some example Property states (with resulting Property states listed with [Property Specifier](#property-specifiers) syntax).
+The following table explains Property state inheritance rules using an example Choice Identifier `B` and some example Property states (with resulting Property states listed with [Property Specifier](#property-specifiers) syntax).
 
-Default Choice (`*`) Property Specifiers | Specific Choice (`c2`) Property Specifiers | Resulting Specific Choice (`c2`) Property states
+Default Choice (`*`) Property Specifiers | Specific Choice (`B`) Property Specifiers  | Resulting Specific Choice (`B`) Property states
 ---------------------------------------- | ------------------------------------------ | ------------------------------------------------
 _(none)_                                 | _(none)_                                   | _(none)_
 _(none)_                                 | `+f`                                       | `+f`
@@ -489,14 +489,31 @@ _(none)_                                 | `+f`                                 
 
 ##### Implicit Defaults
 
-> TODO only for boolean values, such as properties.
-> implicit defaults are _only_ used if no explicit defaults are provided.
+For Property assignments, it may not be required to explicitly specify a Default Choice, as for Properties, **Implicit Defaults** apply.  The following rule applies:
 
-##### Examples
+For each assignment target, whenever only _one_ state (i.e. either `+` _or_ `-`) is assigned to a specific Property, then the **opposite** state is used for this Property as the Implicit Default for that assignment.  The Implicit Default can be imagined as a "Default Default", i.e. the _Implicit_ Default state of a Property will be **overridden** by a state specified in an _explicit_ (usual) Default Choice.
 
-> TODO multiple components, to illustrate default choice behavior
+Implicit Defaults are only used for Properties, _not_ for Content, as Properties are boolean values and therefore have an "opposite" value that can be assumed as the desired Default state.
 
-> TODO following sections one heading level up
+> TODO The following table explains Property state inheritance rules using an example Choice Identifier `c2` and some example Property states (with resulting Property states listed with [Property Specifier](#property-specifiers) syntax).  Abbreviation "PS" stands for "Property Specifiers", "RPS" stands for "Resulting Property States" (again, listed in Property Specifier syntax).  C3 is not defined, but declared, hence its Property states will be assigned a value if Default states exist.
+
+Choice `C1` PS | Choice `C2` PS | Implicit Default PS              | Default (`*`) PS | `C1` RPS  | `C2` RPS  | `C3` RPS
+-------------- | -------------- | -------------------------------- | ---------------- | --------- | --------- | ---------
+_(none)_       | _(none)_       | _(none)_                         | _(none)_         | _(none)_  | _(none)_  | _(none)_
+`+f`           | _(none)_       | `-f` _(opposite of C1)_          | _(none)_         | `+f`      | `-f`      | `-f`
+`+f`           | `+f`           | `-f` _(opposite of C1/C2)_       | _(none)_         | `+f`      | `+f`      | `-f`
+`+f`           | `-f`           | _(none)_ _(C1/C2 contradicting)_ | _(none)_         | `+f`      | `-f`      | _(none)_ (Invalid!)
+`+f`           | `-p`           | `-f` `+p`                        | _(none)_         | `+f` `+p` | `-f` `-p` | `-f` `+p`
+`-!`           | _(none)_       | `+fbp` _(<!-- TODO link -->)_    | _(none)_         | `-fbp`    | `+fbp`    | `+fbp`
+`-!`           | `-p`           | `+fbp`                           | _(none)_         | `-fbp`    | `+fb` `-p`| `+fbp`
+`+f`           | _(none)_       | `-f`                             | `+b`             | `+f` `+b` | `-f` `+b` | `-f` `+b`
+`+!`           | _(none)_       | `-fbp`                           | `+b`             | `+f` `+b` | `-f` `+b` | `-f` `+b`
+
+<!-- TODO more (creative) examples -->
+
+<!-- TODO in the table, separate resulting PS with spaces -->
+
+<!-- TODO following sections one heading level up (?) -->
 
 #### Choice Expression Scopes
 
