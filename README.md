@@ -330,8 +330,6 @@ Argument types are distinguished by their first (unescaped) character and will b
 
 One or more **Content Specifiers** can be used to assign a string to the component value or to any (custom) component field (such as _Manufacturer_, _MPN_, ...).
 
-<!-- TODO more? -->
-
 ###### Syntax
 
 Each argument beginning with a character _other than_ `-` and `+` is interpreted as a **Content Specifier**.
@@ -434,6 +432,12 @@ Whether the mention of a Choice Identifier implicitly declares the Choice in its
 
 The special Choice Identifier `*` is used for specifying default content and attributes to be applied to Choices not explicitly listed in the corresponding component.  Refer to the [Default Choices](#default-choices) section below for details.
 
+##### Declaration and Definition
+
+<!-- TODO this is important to understand. explain how declaration of choices can be done by _any_ component's BCE in the same aspect scope and how the list of available choices is automatically extended. old text! update and use rule compiler figure from demo project? -->
+
+<!-- TODO update demo figure for each expression type, use same colors for identification of example elements. -->
+
 ##### Choice Identifier Lists
 
 When using Choice Identifiers in Choice Expressions, they are always specified as **Choice Identifier Lists**.  A Choice Identifier List consists of **one or more** Choice Identifiers.
@@ -442,11 +446,32 @@ A Choice Identifier List is a **comma-separated** list of Choice Identifiers, fo
 
 ##### Default Choices
 
+###### Purpose
+
+To follow the ["All-or-None" rule](#all-or-none), Content or Property assignments must be defined for _all_ choices involved (if at least one assignment is performed).
+
+As this would require each Choice Identifier to be listed along with its corresponding Content or Property assignments.  Modifying the list of available Choice Identifiers (i.e. adding or removing Choices) in _one_ component would require the Choice Expressions of _all_ components in the same Aspect scope to be adapted as well.
+
+To avoid listing each possible Choice Identifier for each assignment, **Default Choices** can be used.  The Content and Property assignments specified for a Default Choice apply as described below.
+
+###### Syntax
+
+The reserved Choice Identifier used for Default Choices is "`*`".
+
+###### Default Content Inheritance
+
+The Content (component value or field content) specified in a Default Choice ... 
+
+> TODO
+
+###### Default Property Inheritance
+
 > TODO
 
 ##### Implicit Defaults
 
-> TODO only for boolean values, such as properties
+> TODO only for boolean values, such as properties.
+> implicit defaults are _only_ used if no explicit defaults are provided.
 
 ##### Examples
 
@@ -639,12 +664,38 @@ Details and examples can be found in the following sections.
 
 <!-- ***TODO*** a **lot** of old stuff removed from here. re-insert sections that are still valid! -->
 
+<!-- TODO escaping and quoting rules. check old text. -->
+
 <!-- ***TODO*** Usage tips section. when to use which ce type? some examples. more examples in the real-world section. -->
 
-<!-- ***TODO*** Q&A section that handles the most obvious questions 
-* why is there no gui for rules setup?
-* ...
+<a name="all-or-none"></a>
+
+#### Fully Defined Assignments (The "All-or-None" Rule)
+
+##### Purpose
+
+One of the key concepts of KiVar requires all Configurations (sets of Choice selections) to be unambiguous with regard to their outcome.  This is required in order to be able to detect, i.e. map the assigned outcome back to an unambiguous set of Choices.
+
+<!-- TODO each content and property assignment must be fully defined for all choices involved in the assignment.
+if a value, field or attribute is defined for at least one choice, it must be defined for all choices (within the aspect scope).
 -->
+
+<!-- TODO check old text -->
+
+##### Content Scope
+
+<!-- TODO use default choice -->
+
+##### Property Scope
+
+<!-- TODO often no default required thanks to implicit defaults. if implicit defaults cannot be used, because different (+/-) states are assigned, explicit defaults must be used. -->
+
+#### Quoting and Escaping
+
+##### Purpose
+
+<!-- TODO separation characters used by the parser. to avoid misinterpretation, escaping or quoting must be used ... old text! -->
+<!-- TODO examples (old text?) -->
 
 #### Real-World Examples
 
@@ -855,3 +906,8 @@ To propagate the changes back to the schematic, use the PCB Editor menu item _To
 #### Using the KiVar Action Plugin
 
 > ***TODO*** copy some text from the plugin manual. for a start, simply recommend using `--help`. ;)
+
+<!-- ***TODO*** Q&A section that handles the most obvious questions 
+* why is there no gui for rules setup?
+* ...
+-->
