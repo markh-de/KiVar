@@ -312,7 +312,7 @@ Component variation rules are specified in **Choice Expression**s (short: _CE_),
 
 One component must relate to a single aspect, but can relate to an unlimited number of choices for that aspect.
 
-Choice expressions can be noted in various formats, which are described in the following sections from their innermost to the outermost elements.
+Choice expressions can be noted in various formats, which are described in the following sections from their **innermost to outermost** elements.
 
 #### Choice Arguments
 
@@ -426,11 +426,19 @@ Choice Argument List input | Resulting Property states | Explanation
 
 ##### Purpose
 
-To specify the list of choice names (identifiers), to which the corresponding arguments are to be assigned, **Choice Identifiers** are used.
+Each Choice must have a unique name withing its Aspect scope.  This name can be any string.
 
-##### Syntax
+For referring to a Choice name, **Choice Identifiers** are used.  They are basically the same as the name itself, but <!-- TODO link --> rules for quoting and escaping of special characters apply.  Choice Identifiers are **case-sensitive**.
 
-> TODO, CIs are part of CILs ...
+Whether the mention of a Choice Identifier implicitly declares the Choice in its Aspect scope depends on the context in which the identifier is used.  In short: [BCEs](#bce) can declare (new) choice identifiers, while [ACEs](#ace) can only refer to Choice Identifiers declared by a [BCE](#bce) (in the same or another component).
+
+The special Choice Identifier `*` is used for specifying default content and attributes to be applied to Choices not explicitly listed in the corresponding component.  Refer to the [Default Choices](#default-choices) section below for details.
+
+##### Choice Identifier Lists
+
+When using Choice Identifiers in Choice Expressions, they are always specified as **Choice Identifier Lists**.  A Choice Identifier List consists of **one or more** Choice Identifiers.
+
+A Choice Identifier List is a **comma-separated** list of Choice Identifiers, for example `ChoiceId_1,ChoiceId_2,ChoiceId_3`.  No space is allowed around the separating comma.
 
 ##### Default Choices
 
@@ -468,15 +476,9 @@ For each of them there exists a dedicated **Choice Expression Scope**.  Both sco
 
 BCEs are used to assign basic component values, such as `10kΩ`, `0.1µF 50V` or `74HC595`.  The component value is passed via [Content Specifiers](#content-specifiers).
 
-They are also used to modify component attributes, e.g. when a component shall change its _DNP_ (do not populate) state or when it shall or shall not be included in position files or the bill of materials.  Component attributes are defined by choice properties (assigned through [Property Specifiers](#property-specifiers)).
+They are also used to modify component attributes, e.g. when a component shall change its _DNP_ (do not populate) state or when it shall or shall not be included in position files or the bill of materials.  Component attributes are specified using choice properties (through the use of [Property Specifiers](#property-specifiers)).
 
 BCEs can _not_ modify custom fields.  For this, [ACEs](#ace) must be used (next section).
-
-<!--
-###### Data Assignment
-
-> TODO content and properties ... how are they mapped to the component data
--->
 
 ###### Examples
 
@@ -499,12 +501,6 @@ Also, ACEs do not support specifying properties, as they do not refer to the com
 ###### Typical Use
 
 ACEs are used to assign custom field values, such as a manufacturer name or a manufacturer product number (MPN) to be used in the bill of materials.  Furthermore, ACEs can be used for other information, such as a choice-dependent text information, made visible anywhere in the schematic for informational purposes.  This technique can be used to automatically streamline schematic documentation.
-
-<!--
-###### Data Assignment
-
-> TODO how is data mapped
--->
 
 ###### Examples
 
@@ -645,13 +641,16 @@ Details and examples can be found in the following sections.
 
 <!-- ***TODO*** Usage tips section. when to use which ce type? some examples. more examples in the real-world section. -->
 
-<!-- ***TODO*** Q&A section that handles the most obvious questions -->
+<!-- ***TODO*** Q&A section that handles the most obvious questions 
+* why is there no gui for rules setup?
+* ...
+-->
 
 #### Real-World Examples
 
 The following examples are taken from real commercial projects.  They show a few configurable variation aspects, their possible choices along with a short explanation of the implementation.
 
-To further explore these examples and learn the recommended ways of implementing KiVar rules, check out the <!-- TODO link! --> **[demo project](demo/)**.
+To further explore these examples and learn the recommended ways of implementing KiVar rules, check out the [demo project](demo/).
 
 In the following sections, each example is illustrated with a schematic snippet including the values of the relevant fields for each related symbol.
 
