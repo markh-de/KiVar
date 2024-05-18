@@ -450,7 +450,7 @@ A Choice Identifier List is a **comma-separated** list of Choice Identifiers, fo
 
 To follow the ["All-or-None" rule](#all-or-none), Content or Property assignments must be defined for _all_ choices involved (if at least one assignment is performed).
 
-As this would require each Choice Identifier to be listed along with its corresponding Content or Property assignments.  Modifying the list of available Choice Identifiers (i.e. adding or removing Choices) in _one_ component would require the Choice Expressions of _all_ components in the same Aspect scope to be adapted as well.
+As this would require each Choice Identifier to be listed along with its corresponding Content or Property assignments.  Also, any modification of available Choice Identifiers (i.e. adding, removing, renaming Choices) in _one_ component would require the Choice Expressions of _all_ components in the same Aspect scope to be adapted as well.
 
 To avoid listing each possible Choice Identifier for each assignment, **Default Choices** can be used.  The Content and Property assignments specified for a Default Choice apply as described below.
 
@@ -460,13 +460,32 @@ The reserved Choice Identifier used for Default Choices is "`*`".
 
 ###### Default Content Inheritance
 
-The Content (component value or field content) specified in a Default Choice ... 
+For each assignment target, the Content (component value or field content) specified in the Default Choice applies to all Choices that **do not provide** their own Content definition for the same assignment.
 
-> TODO
+The following table explains Content inheritance rules using an example Choice Identifier `c1` and some example Content.
+
+Default Choice (`*`) Content | Specific Choice (`c1`) Content | Resulting Specific Choice (`c1`) Content
+---------------------------- | ------------------------------ | ----------------------------------------
+_(none)_                     | _(none)_                       | _(none)_
+_(none)_                     | `123`                          | `def`
+`abc`                        | _(none)_                       | `abc`
+`abc`                        | `123`                          | `123`
 
 ###### Default Property Inheritance
 
-> TODO
+For each assignment target, the state of each Property specified in the Default Choice is used as the **initial value** for _all_ Choices with the same assignment target.
+
+The following table explains Property state inheritance rules using an example Choice Identifier `c2` and some example Property states (with resulting Property states listed with [Property Specifier](#property-specifiers) syntax).
+
+Default Choice (`*`) Property Specifiers | Specific Choice (`c2`) Property Specifiers | Resulting Specific Choice (`c2`) Property states
+---------------------------------------- | ------------------------------------------ | ------------------------------------------------
+_(none)_                                 | _(none)_                                   | _(none)_
+_(none)_                                 | `+f`                                       | `+f`
+`+f`                                     | _(none)_                                   | `+f`
+`+!`                                     | _(none)_                                   | `+fbp` _(see <!-- TODO link -->...)
+`+!`                                     | `-p`                                       | `+fb` `-p`
+`+f`                                     | `-b`                                       | `+f` `-b`
+`+f +b`                                  | `-b`                                       | `+f` `-b`
 
 ##### Implicit Defaults
 
