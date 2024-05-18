@@ -495,19 +495,21 @@ For each assignment target, whenever only _one_ state (i.e. either `+` _or_ `-`)
 
 Implicit Defaults are only used for Properties, _not_ for Content, as Properties are boolean values and therefore have an "opposite" value that can be assumed as the desired Default state.
 
-> TODO The following table explains Property state inheritance rules using an example Choice Identifier `c2` and some example Property states (with resulting Property states listed with [Property Specifier](#property-specifiers) syntax).  Abbreviation "PS" stands for "Property Specifiers", "RPS" stands for "Resulting Property States" (again, listed in Property Specifier syntax).  C3 is not defined, but declared, hence its Property states will be assigned a value if Default states exist.
+The following table explains Property state inheritance rules using an example Choice Identifier `c2` and some example Property states (with resulting Property states listed with [Property Specifier](#property-specifiers) syntax).  Abbreviation "PS" stands for "Property Specifiers", "RPS" stands for "Resulting Property States" (again, listed in Property Specifier syntax).  C3 is not defined, but declared, hence its Property states will be assigned a value if Default states exist.
 
 Choice `C1` PS | Choice `C2` PS | Implicit Default PS              | Default (`*`) PS | `C1` RPS  | `C2` RPS  | `C3` RPS
 -------------- | -------------- | -------------------------------- | ---------------- | --------- | --------- | ---------
 _(none)_       | _(none)_       | _(none)_                         | _(none)_         | _(none)_  | _(none)_  | _(none)_
 `+f`           | _(none)_       | `-f` _(opposite of C1)_          | _(none)_         | `+f`      | `-f`      | `-f`
 `+f`           | `+f`           | `-f` _(opposite of C1/C2)_       | _(none)_         | `+f`      | `+f`      | `-f`
-`+f`           | `-f`           | _(none)_ _(C1/C2 contradicting)_ | _(none)_         | `+f`      | `-f`      | _(none)_ (Invalid!)
+`+f`           | `-f`           | _(none)_ _(C1/C2 contradicting)_ | _(none)_         | `+f`      | `-f`      | _(none)_ (Invalid! `f` missing!)
+`+f`           | `-f`           | _(none)_                         | `-f`             | `+f`      | `-f`      | `-f`
 `+f`           | `-p`           | `-f` `+p`                        | _(none)_         | `+f` `+p` | `-f` `-p` | `-f` `+p`
 `-!`           | _(none)_       | `+fbp` _(<!-- TODO link -->)_    | _(none)_         | `-fbp`    | `+fbp`    | `+fbp`
 `-!`           | `-p`           | `+fbp`                           | _(none)_         | `-fbp`    | `+fb` `-p`| `+fbp`
 `+f`           | _(none)_       | `-f`                             | `+b`             | `+f` `+b` | `-f` `+b` | `-f` `+b`
-`+!`           | _(none)_       | `-fbp`                           | `+b`             | `+f` `+b` | `-f` `+b` | `-f` `+b`
+`-!`           | `+p`           | `+fb` _(`p` contradicting)_      | _(none)_         | `-fbp     | `+fb` `+p`| `+fb` (Invalid! `p` missing!)
+`-!`           | `+p`           | `+fb`                            | `-p`             | `-fbp     | `+fb` `+p`| `+fb` `-p`
 
 <!-- TODO more (creative) examples -->
 
