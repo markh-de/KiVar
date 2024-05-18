@@ -495,7 +495,7 @@ For each assignment target, whenever only _one_ state (i.e. either `+` _or_ `-`)
 
 Implicit Defaults are only used for Properties, _not_ for Content, as Properties are boolean values and therefore have an "opposite" value that can be assumed as the desired Default state.
 
-The following table explains Property state inheritance rules using an example Choice Identifier `c2` and some example Property states (with resulting Property states listed with [Property Specifier](#property-specifiers) syntax).  Abbreviation "PS" stands for "Property Specifiers", "RPS" stands for "Resulting Property States" (again, listed in Property Specifier syntax).  C3 is not defined, but declared, hence its Property states will be assigned a value if Default states exist.
+The following table explains Implicit Default state inheritance rules using the example Choice Identifiers `C1`, `C2`, `C3`.  `C3` is not defined, but declared, hence its Property states (PS) will be assigned a value if Default states (implicit or explicit) exist.  Resulting Property states ("RPS") are listed with [Property Specifier](#property-specifiers) syntax).
 
 Choice `C1` PS | Choice `C2` PS | Implicit Default PS              | Default (`*`) PS | `C1` RPS  | `C2` RPS  | `C3` RPS
 -------------- | -------------- | -------------------------------- | ---------------- | --------- | --------- | ---------
