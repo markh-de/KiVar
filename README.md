@@ -661,11 +661,13 @@ Being [Combined Choice Expressions](#cce), CBCEs define the component's Value co
 
 ###### Examples
 
-The following single entry serves the same purpose as the above [SBCE](#sbce) example.  Note how even the Aspect Identifier is included in the expression.
+The following single entry serves the same purpose as the above [SBCE](#sbce) example.  Note how even the Aspect Identifier is included in the same single expression.
 
 Field name     | Field content
 -------------- | -------------
 `Var`          | `Capacitance Low(10µF) Medium(100µF) High(470µF) None,*(-! DNP)`
+
+The same explanation applies as for the above [SBCE](#sbce) example.
 
 <a name="sace"></a>
 
@@ -683,7 +685,7 @@ Being [Auxiliary Choice Expressions](#ace), SACEs define the content of a specif
 
 ###### Examples
 
-The following entries could be used to define the MPN, description and datasheet URL for an imaginary LDO component.  Note that the target field names must exist.
+The following entries could be used to define the MPN, description and datasheet URL for an imaginary LDO component.  Note that the target field names "Description", "MPN" and "Datasheet" must exist.
 
 Field name                    | Field content
 ----------------------------- | -------------
@@ -698,14 +700,12 @@ Field name                    | Field content
 
 This defines the Choice Identifiers "1.8V", "3.3V" and "adjustable", which define different field content for the target fields "Description", "MPN" and "Datasheet".  Note how this example does not make use of the Default Choice Identifier "*", as there are no sensible defaults that could be assigned for yet unknown Choices that may be declared by other components.
 
-As ACEs are not allowed to _declare_ Choice Identifiers themselves (they rely on declarations from [BCEs](#bce)), there must exist at least the following Choice declarations (or definitions) in the same or another component that uses the same Aspect Identifier ("Voltage" assumed here), listed in SCE format here (SBCE type):
+As ACEs are not allowed to _declare_ Choice Identifiers themselves (they rely on declarations from [BCEs](#bce)), there must exist _at least_ the following Choice declarations in the same or another component that uses the same Aspect Identifier ("Voltage" assumed here).  These Choice declarations are noted as [SBCEs](#sbce), but Choices can be declared in any BCE format (i.e. SBCE or CBCE types), even intermixed.
 
 Field name                    | Field content
 ----------------------------- | -------------
-
-
-
-
+`Var.Aspect`                  | `Voltage`
+`Var(1.8V,3.3V,adjustable)`   | ``
 
 <a name="cace"></a>
 
@@ -723,7 +723,21 @@ Being [Auxiliary Choice Expressions](#ace), CACEs define the content of a specif
 
 ###### Examples
 
-> TODO
+The following few entries serve the same purpose as the above [SACE](#sace) example.
+
+Field name              | Field content
+----------------------- | -------------
+`Description.Var`       | `1.8V(Fixed voltage 1.8V 200mA LDO) 3.3V(Fixed voltage 3.3V 200mA LDO) adjustable(Adjustable voltage 200mA LDO)`
+`MPN.Var`               | `1.8V(ALDO200V18) 3.3V(ALDO200V33) adjustable(ALDO200ADJ)`
+`Datasheet.Var          | `1.8V,3.3V("https://example.kivar.markh.de/products/aldo200v.pdf") adjustable("https://example.kivar.markh.de/products/aldo200a.pdf")`
+
+The same explanation applies as for the above [CACE](#cace) example.
+
+As explained above, ACEs are not allowed to _declare_ Choice Identifiers.  Hence, there must exist at least the following Choice declarations in the same or another component that uses the same Aspect Identifier.  These Choice declarations are noted as [CBCEs](#cbce).
+
+Field name             | Field content
+---------------------- | -------------
+`Var`                  | `Voltage 1.8V,3.3V,adjustable()`
 
 #### Aspect Identifier
 
