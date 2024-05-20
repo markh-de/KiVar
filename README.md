@@ -643,7 +643,9 @@ Field name            | Field content
 `Var(High)`           | `470µF`
 `Var(None,*)`         | `-! DNP`
 
-This defines an Aspect Identifier "Capacitance" including (at least, depending on the definitions used in other components) the Choice Identifiers "Low", "Medium", "High", which define capacitance values, as well as "None", which assigns the (capacitance) value "DNP" and also makes the component unfitted and excluded from position files and BoM.  Note how the Default Choice Identifier "*" is used to also match the "None" Choice to any Choice that may be defined outside this component (this may or may not be a good idea).
+This defines an Aspect Identifier _"Capacitance"_ including (at least, depending on the definitions used in other components) the Choice Identifiers _"Low"_, _"Medium"_, _"High"_, which define capacitance values, as well as _"None"_, which assigns the (capacitance) value `DNP` and also makes the component unfitted and excluded from position files and BoM.
+
+Note how the Default Choice Identifier _"*"_ is used to also match the _"None"_ Choice to any Choice that may be defined outside this component (this may or may not be a good idea).
 
 <a name="cbce"></a>
 
@@ -698,14 +700,14 @@ Field name                    | Field content
 `Datasheet.Var(1.8V,3.3V)     | `"https://example.kivar.markh.de/products/aldo200v.pdf"`
 `Datasheet.Var(adjustable)    | `"https://example.kivar.markh.de/products/aldo200a.pdf"`
 
-This defines the Choice Identifiers "1.8V", "3.3V" and "adjustable", which define different field content for the target fields "Description", "MPN" and "Datasheet".  Note how this example does not make use of the Default Choice Identifier "*", as there are no sensible defaults that could be assigned for yet unknown Choices that may be declared by other components.
+This defines the Choice Identifiers _"1.8V"_, _"3.3V"_ and _"adjustable"_, which define different field content for the target fields _"Description"_, _"MPN"_ and _"Datasheet"_.  Note how this example does not make use of the Default Choice Identifier _"*"_, as there are no sensible defaults that could be assigned for yet unknown Choices that may be declared by other components.
 
-As ACEs are not allowed to _declare_ Choice Identifiers themselves (they rely on declarations from [BCEs](#bce)), there must exist _at least_ the following Choice declarations in the same or another component that uses the same Aspect Identifier ("Voltage" assumed here).  These Choice declarations are noted as [SBCEs](#sbce), but Choices can be declared in any BCE format (i.e. SBCE or CBCE types), even intermixed.
+As ACEs are not allowed to _declare_ Choice Identifiers themselves (they rely on declarations from [BCEs](#bce)), there must exist _at least_ the following Choice declarations in the same or another component that uses the same Aspect Identifier (_"Voltage"_ assumed here).  These Choice declarations are noted as [SBCEs](#sbce), but Choices can be declared in any BCE format (i.e. SBCE or CBCE types), even intermixed.
 
 Field name                    | Field content
 ----------------------------- | -------------
 `Var.Aspect`                  | `Voltage`
-`Var(1.8V,3.3V,adjustable)`   | ``
+`Var(1.8V,3.3V,adjustable)`   |
 
 <a name="cace"></a>
 
@@ -729,7 +731,7 @@ Field name              | Field content
 ----------------------- | -------------
 `Description.Var`       | `1.8V(Fixed voltage 1.8V 200mA LDO) 3.3V(Fixed voltage 3.3V 200mA LDO) adjustable(Adjustable voltage 200mA LDO)`
 `MPN.Var`               | `1.8V(ALDO200V18) 3.3V(ALDO200V33) adjustable(ALDO200ADJ)`
-`Datasheet.Var          | `1.8V,3.3V("https://example.kivar.markh.de/products/aldo200v.pdf") adjustable("https://example.kivar.markh.de/products/aldo200a.pdf")`
+`Datasheet.Var`         | `1.8V,3.3V("https://example.kivar.markh.de/products/aldo200v.pdf") adjustable("https://example.kivar.markh.de/products/aldo200a.pdf")`
 
 The same explanation applies as for the above [CACE](#cace) example.
 
