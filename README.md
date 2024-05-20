@@ -605,7 +605,7 @@ As SCEs only specify an expression format and not a real Choice Expression Type,
 ###### Typical Use
 
 CCEs
- * are recommended for shorter, simpler Content, such as a simple symbol Value, a short MPN or manufacturer name,
+ * are recommended for shorter, simpler Content, such as a simple component Value, a short MPN or manufacturer name,
  * allow specifying multiple Choice Expressions in a compact way,
  * therefore save space when many Choices need to be declared or defined.
 
@@ -615,7 +615,7 @@ As CCEs only specify an expression format and not a real Choice Expression Type,
 
 #### Choice Expression Types
 
-The combination of the above two Expression Scopes and two Expression Formats results in the following four **Choice Expression Types** discussed in the following sub-sections.
+The **combination** of the above two **Expression Scopes** and two **Expression Formats** results in the following four **Choice Expression Types** discussed in the following sub-sections.
 
 <a name="sbce"></a>
 
@@ -624,11 +624,12 @@ The combination of the above two Expression Scopes and two Expression Formats re
 ###### Syntax
 
 **Simple Base Choice Expressions** (SBCE)  
-use the field `Var(<CHOICELIST>)` with field content in [SCE](#SCE) format to assign component value and properties to a specific choice list `<CHOICELIST>`.
+use the _field name_ `Var(<CIL>)` with _field content_ in [SCE](#SCE) format to assign a component value and/or properties to a specific Choice Identifier List `<CIL>`.
 
 ###### Typical Use
 
-> TODO
+Being [Base Choice Expressions](#bce), SBCEs define the component's Value content and/or component attributes and features.
+[Content](#content-specifiers) and [Property](#property-specifiers) specifiers use the [Simple Choice Expression Format](#sce).
 
 ###### Examples
 
@@ -641,9 +642,12 @@ use the field `Var(<CHOICELIST>)` with field content in [SCE](#SCE) format to as
 ###### Syntax
 
 **Combined Base Choice Expressions** (CBCE)  
-use the field `Var` with field content in [CCE](#CCE) format (with an Aspect identifier allowed) to assign component values and properties to one or more choice lists.
+use the field name `Var` with field content in [CCE](#CCE) format (with an Aspect identifier allowed) to assign component values and properties to one or more choice lists.
 
 ###### Typical Use
+
+Being [Combined Choice Expressions](#cce), CBCEs define the component's Value content, component attributes and features and/or the Aspect Identifier.
+[Content](#content-specifiers) and [Property](#property-specifiers) specifiers use the [Combined Choice Expression Format](#cce).
 
 > TODO
 
@@ -662,7 +666,8 @@ use the field `<CUSTOMFIELD>.Var(<CHOICELIST>)` with field content in [SCE](#SCE
 
 ###### Typical Use
 
-> TODO
+Being [Auxiliary Choice Expressions](#ace), SACEs define the content of a specified existing component field.
+[Content](#content-specifiers) and [Property](#property-specifiers) specifiers use the [Simple Choice Expression Format](#sce).
 
 ###### Examples
 
@@ -679,7 +684,8 @@ use the field `<CUSTOMFIELD>.Var` with field content in [CCE](#CCE) format (with
 
 ###### Typical Use
 
-> TODO
+Being [Auxiliary Choice Expressions](#ace), CACEs define the content of a specified existing component field.
+[Content](#content-specifiers) and [Property](#property-specifiers) specifiers use the [Combined Choice Expression Format](#cce).
 
 ###### Examples
 
@@ -689,11 +695,9 @@ use the field `<CUSTOMFIELD>.Var` with field content in [CCE](#CCE) format (with
 
 ##### Purpose
 
-> TODO
+To define to which aspect (i.e. group/dimension/degree of freedom) a component's Choice Identifiers relate to, an **Aspect Identifier** must be specified for every component that uses one or more Choice Expressions.
 
 ##### Specification
-
-As mentioned above, each component that provides KiVar variation rules must refer to exactly one Aspect.
 
 There are two methods of passing the **Aspect Identifier**:
 
