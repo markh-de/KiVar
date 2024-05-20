@@ -633,7 +633,17 @@ Being [Base Choice Expressions](#bce), SBCEs define the component's Value conten
 
 ###### Examples
 
-> TODO
+The following entries could be used for a capacitor.  Note how the Aspect Identifier must be passed with a dedicated entry, as SBCEs cannot include the Aspect Identifier, as is possible for [CBCEs](#cbce).
+
+Field name            | Field content
+--------------------- | -------------
+`Var.Aspect`          | `Capacitance`
+`Var(Low)`            | `10µF`
+`Var(Medium)`         | `100µF`
+`Var(High)`           | `470µF`
+`Var(None,*)`         | `-! DNP`
+
+This defines an Aspect Identifier "Capacitance" including (at least, depending on the definitions used in other components) the Choice Identifiers "Low", "Medium", "High", which define capacitance values, as well as "None", which assigns the (capacitance) value "DNP" and also makes the component unfitted and excluded from position files and BoM.  Note how the Default Choice Identifier "*" is used to also match the "None" Choice to any Choice that may be defined outside this component (this may or may not be a good idea).
 
 <a name="cbce"></a>
 
@@ -649,11 +659,13 @@ use the field name `Var` with field content in [CCE](#CCE) format (with an Aspec
 Being [Combined Choice Expressions](#cce), CBCEs define the component's Value content, component attributes and features and/or the Aspect Identifier.
 [Content](#content-specifiers) and [Property](#property-specifiers) specifiers use the [Combined Choice Expression Format](#cce).
 
-> TODO
-
 ###### Examples
 
-> TODO
+The following single entry serves the same purpose as the above [SBCE](#sbce) example.  Note how even the Aspect Identifier is included in the expression.
+
+Field name     | Field content
+-------------- | -------------
+`Var`          | `Capacitance Low(10µF) Medium(100µF) High(470µF) None,*(-! DNP)`
 
 <a name="sace"></a>
 
@@ -671,7 +683,29 @@ Being [Auxiliary Choice Expressions](#ace), SACEs define the content of a specif
 
 ###### Examples
 
-> TODO
+The following entries could be used to define the MPN, description and datasheet URL for an imaginary LDO component.  Note that the target field names must exist.
+
+Field name                    | Field content
+----------------------------- | -------------
+`Description.Var(1.8V)`       | `Fixed voltage 1.8V 200mA LDO`
+`Description.Var(3.3V)`       | `Fixed voltage 3.3V 200mA LDO`
+`Description.Var(adjustable)` | `Adjustable voltage 200mA LDO`
+`MPN.Var(1.8V)`               | `ALDO200V18`
+`MPN.Var(3.3V)`               | `ALDO200V33`
+`MPN.Var(adjustable)`         | `ALDO200ADJ`
+`Datasheet.Var(1.8V,3.3V)     | `"https://example.kivar.markh.de/products/aldo200v.pdf"`
+`Datasheet.Var(adjustable)    | `"https://example.kivar.markh.de/products/aldo200a.pdf"`
+
+This defines the Choice Identifiers "1.8V", "3.3V" and "adjustable", which define different field content for the target fields "Description", "MPN" and "Datasheet".  Note how this example does not make use of the Default Choice Identifier "*", as there are no sensible defaults that could be assigned for yet unknown Choices that may be declared by other components.
+
+As ACEs are not allowed to _declare_ Choice Identifiers themselves (they rely on declarations from [BCEs](#bce)), there must exist at least the following Choice declarations (or definitions) in the same or another component that uses the same Aspect Identifier ("Voltage" assumed here), listed in SCE format here (SBCE type):
+
+Field name                    | Field content
+----------------------------- | -------------
+
+
+
+
 
 <a name="cace"></a>
 
