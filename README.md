@@ -256,7 +256,7 @@ This change is fully backwards-compatible.  Apart from the changes discussed abo
 
 Severity: **Not critical** (backwards-compatible).
 
-Prior to version 0.2.0 only `'` (single-quote) characters were supported for the purpose of quoting verbatim strings.
+Prior to version 0.2.0 only `'` (single-quote) characters could be used for the purpose of quoting verbatim strings.
 
 Starting with version 0.2.0, `"` (double-quote) characters are also supported for quoting.  Single- and double-quote strings can be nested, e.g. the string `"hello 'world'"` would result in `hello 'world'`.
 
@@ -448,9 +448,9 @@ A Choice Identifier List is a **comma-separated** list of Choice Identifiers, fo
 
 ###### Purpose
 
-To follow the ["All-or-None" rule](#all-or-none), Content or Property assignments must be defined for _all_ choices involved (if at least one assignment is performed).
+To follow the ["All-or-None" rule](#all-or-none), Content or Property assignments must be defined for _all_ choices involved if at least one assignment is performed.
 
-As this would require each Choice Identifier to be listed along with its corresponding Content or Property assignments.  Also, any modification of available Choice Identifiers (i.e. adding, removing, renaming Choices) in _one_ component would require the Choice Expressions of _all_ components in the same Aspect scope to be adapted as well.
+This would require each Choice Identifier to be listed along with its corresponding Content or Property assignments.  Also, any modification of available Choice Identifiers (i.e. adding, removing, renaming Choices) in _one_ component would require the Choice Expressions of _all_ components in the same Aspect scope to be adapted as well.
 
 To avoid listing each possible Choice Identifier for each assignment, **Default Choices** can be used.  The Content and Property assignments specified for a Default Choice apply as described below.
 
@@ -512,8 +512,6 @@ _(none)_       | _(none)_       | _(none)_                         | _(none)_   
 `-!`           | `+p`           | `+fb`                            | `-p`             | `-fbp     | `+fb` `+p`| `+fb` `-p`
 
 <!-- TODO more (creative) examples -->
-
-<!-- TODO in the table, separate resulting PS with spaces -->
 
 <!-- TODO following sections one heading level up (?) -->
 
@@ -587,11 +585,14 @@ The two different **Choice Expression Formats** are described in the following s
 
 ###### Typical Use
 
-> TODO
+SCEs
+ * are recommended for longer, more complex (or verbatim) Content, such as a datasheet or purchase URL or a complex "Value" field content,
+ * can be useful when referencing a dedicated set of Choice Arguments using text variables that are embedded at another location of the schematic (see examples),
+ * have the drawback that, due to the diversity of the symbol field names they occupy, each unique used field name adds to the list of field names available in total, for example when using the Symbol Fields Editor.
 
 ###### Examples
 
-As SCEs only specify an expression format and not a real Choice Expression Type, examples are provided in the sections ***TODO link*** (SBCE) and ***TODO link*** (SACE).
+As SCEs only specify an expression format and not a real Choice Expression Type, examples are provided in the [SBCE](#sbce) and [SACE](#sace) sections.
 
 <a name="cce"></a>
 
@@ -599,15 +600,18 @@ As SCEs only specify an expression format and not a real Choice Expression Type,
 
 **Combined Choice Expressions** (CCE)
  * allow combining multiple Choice Expressions in a
- * single component field (also, for Base Choice Expressions, optionally accepting the Aspect identifier).
+ * single component field (also, for Base Choice Expressions, optionally accepting the Aspect Identifier).
 
 ###### Typical Use
 
-> TODO
+CCEs
+ * are recommended for shorter, simpler Content, such as a simple symbol Value, a short MPN or manufacturer name,
+ * allow specifying multiple Choice Expressions in a compact way,
+ * therefore save space when many Choices need to be declared or defined.
 
 ###### Examples
 
-As CCEs only specify an expression format and not a real Choice Expression Type, examples are provided in the sections ***TODO link*** (CBCE) and ***TODO link*** (CACE).
+As CCEs only specify an expression format and not a real Choice Expression Type, examples are provided in the [CBCE](#cbce) and [CACE](#cace) sections.
 
 #### Choice Expression Types
 
