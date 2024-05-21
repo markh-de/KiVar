@@ -428,13 +428,13 @@ Each Choice must have a unique name withing its Aspect scope.  This name can be 
 
 For referring to a Choice name, **Choice Identifiers** are used.  They are basically the same as the name itself, but <!-- TODO link --> rules for quoting and escaping of special characters apply.  Choice Identifiers are **case-sensitive**.
 
-Whether the mention of a Choice Identifier implicitly declares the Choice in its Aspect scope depends on the context in which the identifier is used.  In short: [BCEs](#bce) can declare (new) choice identifiers, while [ACEs](#ace) can only refer to Choice Identifiers declared by a [BCE](#bce) (in the same or another component).
+Whether the mention of a Choice Identifier implicitly declares the Choice in its Aspect depends on the scope in which the identifier is used: In [Base Scope](#base), expressions can declare (new) choice identifiers, while in [Aux. Scope](#aux), expressions can only refer to Choice Identifiers declared in [Base Scope](#base) (in the same or another component).
 
 The special Choice Identifier `*` is used for specifying default content and attributes to be applied to Choices not explicitly listed in the corresponding component.  Refer to the [Default Choices](#default-choices) section below for details.
 
 ##### Declaration and Definition
 
-<!-- TODO this is important to understand. explain how declaration of choices can be done by _any_ component's BCE in the same aspect scope and how the list of available choices is automatically extended. old text! update and use rule compiler figure from demo project? -->
+<!-- TODO this is important to understand. explain how declaration of choices can be done by _any_ component's Base Scope expression in the same aspect scope and how the list of available choices is automatically extended. old text! update and use rule compiler figure from demo project? -->
 
 <!-- TODO update demo figure for each expression type, use same colors for identification of example elements. -->
 
@@ -523,117 +523,119 @@ The data defined in Choice Expressions can be applied to either
 
 For each of them there exists a dedicated **Choice Expression Scope**.  Both scopes are explained in the following sub-sections.
 
-<a name="bce"></a>
+<a name="base"></a>
 
-##### Base Choice Expressions
+##### Base Scope
 
 ###### Purpose
 
-**Base Choice Expressions** (BCE) are used to
+Expressions in **Base Scope** are used to
  * assign component **values** (using [Content Specifiers](#content-specifiers)) and **attributes** (using [Property Specifiers](#property-specifiers)), and to
  * **declare** and **define** [Choice Identifiers](#choice-identifiers) inside the scope of a corresponding [Aspect Identifier](#aspect-identifier).
 
 ###### Typical Use
 
-BCEs are used to assign basic component values, such as `10kΩ`, `0.1µF 50V` or `74HC595`.  The component value is passed via [Content Specifiers](#content-specifiers).
+The Base Scope is used to assign basic component values, such as `10kΩ`, `0.1µF 50V` or `74HC595`.  The component value is passed via [Content Specifiers](#content-specifiers).
 
-They are also used to modify component attributes, e.g. when a component shall change its _DNP_ (do not populate) state or when it shall or shall not be included in position files or the bill of materials.  Component attributes are specified using choice properties (through the use of [Property Specifiers](#property-specifiers)).
+Also, the Base Scope is used to modify component attributes, e.g. when a component shall change its _DNP_ (do not populate) state or when it shall or shall not be included in position files or the bill of materials.  Component attributes are specified using choice properties (through the use of [Property Specifiers](#property-specifiers)).
 
-BCEs can _not_ modify custom fields.  For this, [ACEs](#ace) must be used (next section).
+The Base Scope can _not_ modify custom fields.  For this, the [Auxiliary Scope](#aux) must be used (see next section).
 
-###### Examples
+Examples using the Base Scope are discussed later in the [SBE](#sbe) and [CBE](#cbe) sections.
 
-As BCEs only specify an expression scope and not a specific Choice Expression Type, examples are discussed later in the [SBCE](#sbce) and [CBCE](#cbce) sections.
+<a name="aux"></a>
 
-<a name="ace"></a>
-
-##### Auxiliary Choice Expressions
+##### Auxiliary Scope
 
 ###### Purpose
 
-**Auxiliary Choice Expressions** (ACE) are used to assign values to specific component **custom fields** (using [Content Specifiers](#content-specifiers)).
+Expressions in **Auxiliary Scope** (or short: Aux. Scope) are used for assigning values to specific component **custom fields** (called target fields) with the use of [Content Specifiers](#content-specifiers).
 
-Unlike [Base Choice Expressions](#bce), Auxiliary Choice Expressions do _not_ declare additional choices, but **only refer** to aspect choices declared in [Base Choice Expressions](#bce).
+Unlike in [Base Scope](#base), in Auxiliary Scope expressions do _not_ declare additional choices, but **only refer** to aspect choices declared in [Base Scope](#base).
 
-Each Choice Identifier used in an ACE must therefore be declared in a [BCE](#bce), even if no change of the component value or attributes is required (***TODO*** link to CI declaration w/o definition).
+Each Choice Identifier used in an Aux. Scope must therefore be declared in [Base Scope](#base), even if no change of the component value or attributes is required.
 
-Also, ACEs do not support specifying properties, as they do not refer to the component itself, but to dedicated fields within it.
+Also, Aux. Scope does not support specifying properties, as expressions in Aux. Scope do not refer to the component itself, but to dedicated target fields within it.
 
 ###### Typical Use
 
-ACEs are used to assign custom field values, such as a manufacturer name or a manufacturer product number (MPN) to be used in the bill of materials.  Furthermore, ACEs can be used for other information, such as a choice-dependent text information, made visible anywhere in the schematic for informational purposes.  This technique can be used to automatically streamline schematic documentation.
+The Aux. Scope is used to assign custom field values, such as a manufacturer name or a manufacturer product number (MPN), for example, to be used in the bill of materials.
+
+Aux. Scope expressions can also be used to specify other information, such as a choice-dependent text information that can be made visible anywhere in the schematic for documentation purposes.
 
 ###### Examples
 
-As ACEs only specify an expression scope and not a specific Choice Expression Type, examples are discussed later in the the [SACE](#sace) and [CACE](#cace) sections
+Examples using the Aux. Scope are discussed later in the [SAE](#sae) and [CAE](#cae) sections.
 
 #### Choice Expression Formats
 
-Furthermore, Choice Expressions can be noted in different ways, depending on the user's preferences and requirements.
+Furthermore, Choice Expressions can use different notations, depending on the user's preferences and requirements.
 
 The two different **Choice Expression Formats** are described in the following sub-sections.
 
-<a name="sce"></a>
+<a name="simple"></a>
 
-##### Simple Choice Expressions
+##### Simple Format
 
 ###### Purpose
 
-**Simple Choice Expressions** (SCE)
+The **Simple Format** is particularly well suited to
  * specify a single Choice Expression using
  * one specific component field per expression.
 
 ###### Typical Use
 
-SCEs
+Expressions noted in Simple Format
  * are recommended for longer, more complex (or verbatim) Content, such as a datasheet or purchase URL or a complex "Value" field content,
  * can be useful when referencing a dedicated set of Choice Arguments using text variables that are embedded at another location of the schematic (see examples),
  * have the drawback that, due to the diversity of the symbol field names they occupy, each unique used field name adds to the list of field names available in total, for example when using the Symbol Fields Editor.
 
 ###### Examples
 
-As SCEs only specify an expression format and not a real Choice Expression Type, examples are provided in the [SBCE](#sbce) and [SACE](#sace) sections.
+Examples using the Simple Format are provided in the [SBE](#sbe) and [SAE](#sae) sections.
 
-<a name="cce"></a>
+<a name="combined"></a>
 
-##### Combined Choice Expressions
+##### Combined Format
 
-**Combined Choice Expressions** (CCE)
- * allow combining multiple Choice Expressions in a
- * single component field (also, for Base Choice Expressions, optionally accepting the Aspect Identifier).
+The **Combined Format** is particularly well suited to
+ * allow combining multiple Choice Expressions in
+ * a single component field (also, in Base Scope, optionally accepting the Aspect Identifier).
 
 ###### Typical Use
 
-CCEs
+Expressions noted in Combined Format
  * are recommended for shorter, simpler Content, such as a simple component Value, a short MPN or manufacturer name,
  * allow specifying multiple Choice Expressions in a compact way,
  * therefore save space when many Choices need to be declared or defined.
 
 ###### Examples
 
-As CCEs only specify an expression format and not a real Choice Expression Type, examples are provided in the [CBCE](#cbce) and [CACE](#cace) sections.
+Examples using the Combined Format are provided in the [CBE](#cbe) and [CAE](#cae) sections.
 
 #### Choice Expression Types
 
 The **combination** of the above two **Expression Scopes** and two **Expression Formats** results in the following four **Choice Expression Types** discussed in the following sub-sections.
 
-<a name="sbce"></a>
+<a name="sbe"></a>
 
-##### Simple Base Choice Expressions
-
-###### Syntax
-
-**Simple Base Choice Expressions** (SBCE)  
-use the _field name_ `Var(<CIL>)` with _field content_ in [SCE](#SCE) format to assign a component value and/or properties to a specific Choice Identifier List `<CIL>`.
+##### Simple Base Expressions
 
 ###### Typical Use
 
-Being [Base Choice Expressions](#bce), SBCEs define the component's Value content and/or component attributes and features.
-[Content](#content-specifiers) and [Property](#property-specifiers) specifiers use the [Simple Choice Expression Format](#sce).
+Using the [Base Scope](#base), SBEs define the component's Value content and/or component attributes and features.
+
+[Content](#content-specifiers) and [Property](#property-specifiers) specifiers use the [Simple Format](#simple).
+
+###### Syntax
+
+**Field name**: `Var(<CIL>)` (with `<CIL>` being the Choice Identifier List)
+
+**Field content**: Expression in [Simple Format](#simple)
 
 ###### Examples
 
-The following entries could be used for a capacitor.  Note how the Aspect Identifier must be passed with a dedicated entry, as SBCEs cannot include the Aspect Identifier, as is possible for [CBCEs](#cbce).
+The following entries could be used for a capacitor.  Note how the Aspect Identifier must be passed with a dedicated entry, as SBEs cannot include the Aspect Identifier, as is possible for [CBEs](#cbe).
 
 Field name            | Field content
 --------------------- | -------------
@@ -645,45 +647,49 @@ Field name            | Field content
 
 This defines an Aspect Identifier _"Capacitance"_ including (at least, depending on the definitions used in other components) the Choice Identifiers _"Low"_, _"Medium"_, _"High"_, which define capacitance values, as well as _"None"_, which assigns the (capacitance) value `DNP` and also makes the component unfitted and excluded from position files and BoM.
 
-Note how the Default Choice Identifier _"*"_ is used to also match the _"None"_ Choice to any Choice that may be defined outside this component (this may or may not be a good idea).
+Note how the Default Choice Identifier _"*"_ is used to also match the _"None"_ Choice to any Choice that may be defined outside this component (this may or may not be a good idea, depending on the safety vs. convenience policy).
 
-<a name="cbce"></a>
+<a name="cbe"></a>
 
-##### Combined Base Choice Expressions
-
-###### Syntax
-
-**Combined Base Choice Expressions** (CBCE)  
-use the field name `Var` with field content in [CCE](#CCE) format (with an Aspect identifier allowed) to assign component values and properties to one or more choice lists.
+##### Combined Base Expressions
 
 ###### Typical Use
 
-Being [Combined Choice Expressions](#cce), CBCEs define the component's Value content, component attributes and features and/or the Aspect Identifier.
-[Content](#content-specifiers) and [Property](#property-specifiers) specifiers use the [Combined Choice Expression Format](#cce).
+Using the [Base Scope](#base), CBEs define the component's Value content, component attributes and features and/or the Aspect Identifier.
+
+[Content](#content-specifiers) and [Property](#property-specifiers) specifiers use the [Combined Format](#combined).
+
+###### Syntax
+
+**Field name**: `Var`
+
+**Field content**: Expression in [Combined Format](#combined)
 
 ###### Examples
 
-The following single entry serves the same purpose as the above [SBCE](#sbce) example.  Note how even the Aspect Identifier is included in the same single expression.
+The following single entry serves the same purpose as the above [SBE](#sbe) example.  Note how even the Aspect Identifier is included in the same single expression.
 
 Field name     | Field content
 -------------- | -------------
 `Var`          | `Capacitance Low(10µF) Medium(100µF) High(470µF) None,*(-! DNP)`
 
-The same explanation applies as for the above [SBCE](#sbce) example.
+The same explanation applies as for the above [SBE](#sbe) example.
 
-<a name="sace"></a>
+<a name="sae"></a>
 
-##### Simple Auxiliary Choice Expressions
-
-###### Syntax
-
-**Simple Auxiliary Choice Expressions** (SACE)  
-use the field `<CUSTOMFIELD>.Var(<CHOICELIST>)` with field content in [SCE](#SCE) format to assign a specific value for the component's custom field `<CUSTOMFIELD>` to a specific choice list `<CHOICELIST>`.
+##### Simple Auxiliary Expressions
 
 ###### Typical Use
 
-Being [Auxiliary Choice Expressions](#ace), SACEs define the content of a specified existing component field.
-[Content](#content-specifiers) and [Property](#property-specifiers) specifiers use the [Simple Choice Expression Format](#sce).
+Using the [Auxiliary Scope](#aux), SAEs define the content of a specified existing component field.
+
+[Content](#content-specifiers) and [Property](#property-specifiers) specifiers use the [Simple Format](#simple).
+
+###### Syntax
+
+**Field name**: `<TARGET_FIELD_NAME>.Var(<CIL>)` (with `<TARGET_FIELD_NAME>` being the name of the custom target field to assign the content to, and `<CIL>` being the Choice Identifier List
+
+**Field content**: Expression in [Simple Format](#simple)
 
 ###### Examples
 
@@ -702,30 +708,32 @@ Field name                    | Field content
 
 This defines the Choice Identifiers _"1.8V"_, _"3.3V"_ and _"adjustable"_, which define different field content for the target fields _"Description"_, _"MPN"_ and _"Datasheet"_.  Note how this example does not make use of the Default Choice Identifier _"*"_, as there are no sensible defaults that could be assigned for yet unknown Choices that may be declared by other components.
 
-As ACEs are not allowed to _declare_ Choice Identifiers themselves (they rely on declarations from [BCEs](#bce)), there must exist _at least_ the following Choice declarations in the same or another component that uses the same Aspect Identifier (_"Voltage"_ assumed here).  These Choice declarations are noted as [SBCEs](#sbce), but Choices can be declared in any BCE format (i.e. SBCE or CBCE types), even intermixed.
+As it is not possible to _declare_ Choice Identifiers in the Auxiliary Scope (they rely on declarations in the [Base Scope](#base)), there must exist _at least_ the following Choice declarations in the same or another component that uses the same Aspect Identifier (_"Voltage"_ assumed here).  These Choice declarations are noted as [SBEs](#sbe), but Choices can be declared in any Expression Format (i.e. SBE or CBE types), even intermixed.
 
 Field name                    | Field content
 ----------------------------- | -------------
 `Var.Aspect`                  | `Voltage`
-`Var(1.8V,3.3V,adjustable)`   |
+`Var(1.8V,3.3V,adjustable)`   | _(empty)_
 
-<a name="cace"></a>
+<a name="cae"></a>
 
-##### Combined Auxiliary Choice Expressions
-
-###### Syntax
-
-**Combined Auxiliary Choice Expressions** (CACE)  
-use the field `<CUSTOMFIELD>.Var` with field content in [CCE](#CCE) format (with no Aspect identifier allowed) to assign values for the component's custom field `<CUSTOMFIELD>` to one or more choice lists.
+##### Combined Auxiliary Expressions
 
 ###### Typical Use
 
-Being [Auxiliary Choice Expressions](#ace), CACEs define the content of a specified existing component field.
-[Content](#content-specifiers) and [Property](#property-specifiers) specifiers use the [Combined Choice Expression Format](#cce).
+Using the [Auxiliary Scope](#aux), CAEs define the content of a specified existing component field.
+
+[Content](#content-specifiers) and [Property](#property-specifiers) specifiers use the [Combined Format](#combined).
+
+###### Syntax
+
+**Field name**: `<TARGET_FIELD_NAME>.Var` (with `<TARGET_FIELD_NAME>` being the name of the custom target field to assign the content to
+
+**Field content**: Expression in [Combined Format](#combined)
 
 ###### Examples
 
-The following few entries serve the same purpose as the above [SACE](#sace) example.
+The following few entries serve the same purpose as the above [SAE](#sae) example.
 
 Field name              | Field content
 ----------------------- | -------------
@@ -733,9 +741,9 @@ Field name              | Field content
 `MPN.Var`               | `1.8V(ALDO200V18) 3.3V(ALDO200V33) adjustable(ALDO200ADJ)`
 `Datasheet.Var`         | `1.8V,3.3V("https://example.kivar.markh.de/products/aldo200v.pdf") adjustable("https://example.kivar.markh.de/products/aldo200a.pdf")`
 
-The same explanation applies as for the above [CACE](#cace) example.
+The same explanation applies as for the above [CAE](#cae) example.
 
-As explained above, ACEs are not allowed to _declare_ Choice Identifiers.  Hence, there must exist at least the following Choice declarations in the same or another component that uses the same Aspect Identifier.  These Choice declarations are noted as [CBCEs](#cbce).
+As explained above, _declaring_ Choice Identifiers is not allowed from the [Auxiliary Scope](#aux).  Hence, there must exist at least the following Choice declarations in the same or another component that uses the same Aspect Identifier.  These Choice declarations are noted as [CBCs](#cbe).
 
 Field name             | Field content
 ---------------------- | -------------
