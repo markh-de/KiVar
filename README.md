@@ -4,10 +4,10 @@
 
 <img align='right' style='width:6em;' src='doc/kivar-icon.inkscape.svg'>
 
-KiVar is a tool for **KiCad PCB Assembly Variant selection**, available as
+KiVar is a tool for **KiCad PCB Assembly Variant selection**, provided as platform-independent
 
  * **KiCad Action Plugin** and
- * **Command Line Application** (Python).
+ * **Command Line Application**.
 
 PCB component variation rules are defined in component (i.e. symbol or footprint) fields.  This allows for the complete variant configuration to be contained in the schematic and board files without requiring external data from outside the native KiCad design files.
 
@@ -15,13 +15,19 @@ The name _KiVar_ (for _KiCad Variants_, obviously) can also be read as an acrony
 
 ## Features
 
-KiVar assigns PCB component **values** and **attributes** (such as _Do not populate_, _Not in position files_, _Not in BoM_) according to variation rules specified in footprint fields.  When applying those rules, component values and attributes are modified _in place_, allowing for immediate update of the PCB design as well as the 3D view and enabling compatibility with _any_ exporter.
+KiVar assigns PCB component **values**, **field content** and **attributes** (such as _Do not populate_, _Not in position files_, _Not in BoM_) according to variation rules specified in footprint fields.  When applying those rules, components are modified _in place_, allowing for immediate update of the PCB design as well as the 3D view and enabling compatibility with _any_ exporter.
 
 Back-propagation of modified component data from the PCB to the schematic can be done in an extra step.
+
+## What to Expect
+
+### KiCad Action Plugin
 
 Example selection dialog of the **KiVar Action Plugin for KiCad**:
 
 ![KiVar Action Plugin Example](doc/plugin-changes.svg)
+
+### Command Line Interface Application
 
 Example usage of the **KiVar Command Line Interface app**:
 
@@ -131,10 +137,8 @@ pip install kivar-${VERSION}.tar.gz
 ## Usage
 
 > **Important:**  
-> These instructions refer to the version **0.2.x** series of KiVar, which uses a slightly modified, but significantly extended rule syntax, and an enhanced range of functions compared to earlier versions.  
+> The following instructions refer to the version **0.2.x** series of KiVar, which uses a slightly modified, but significantly extended rule syntax, and an enhanced range of functions compared to earlier versions.  
 > If you are using an older version, please consider [updating](#installation) and [migrating](#migrate) your variation rules to the new format.
-
-<!-- TODO: revise document structure and headings levels! -->
 
 The process of writing and assigning rules to components (i.e. symbols and footprints) is done manually using simple text expressions.
 
@@ -146,13 +150,13 @@ The following sections describe the process of configuring your schematic or boa
 
 The following sub-sections describe the variation rules setup procedure.
 
-While it is recommended to define variation rules in the schematic (i.e. in symbol fields) and propagate them to the board, it is also possible to define those rules directly in the board (i.e. in footprint fields) and propagate them back to the schematic.  Either way, in the end the rules must be present in the footprint fields, as KiVar uses the _pcbnew_ API wrapper and can therefore only operate on board (not schematic) data, which must then be propagated back to the schematic as described in later sections. (***TODO*** link)
+While it is recommended to define variation rules in the schematic (i.e. in symbol fields) and propagate them to the board, it is also possible to define those rules directly in the board (i.e. in footprint fields) and propagate them back to the schematic.  Either way, in order for KiVar to utilize the variation rules, they must be present in the footprint fields, as KiVar uses the _pcbnew_ API wrapper and can therefore only operate on the board (not schematic) data, which must then be propagated back to the schematic as described in later sections. <!-- todo link -->
 
 <a name="migrate"></a>
 
 #### Migrating from KiVar 0.1.x
 
-KiVar 0.2.0 introduced changes and enhancements to the rule syntax.  The following sub-sections will support experienced users of KiVar 0.1.x with updating their legacy variation rules for current and upcoming KiVar versions.
+KiVar 0.2.0 introduces changes and enhancements to the rule syntax.  The following sub-sections will support experienced users of KiVar 0.1.x with updating their legacy variation rules for current and upcoming KiVar versions.
 
 ##### New Field Names
 
@@ -163,11 +167,13 @@ While KiVar 0.1.x and earlier used a single field named `KiVar.Rule`, current re
 So as a first step users should move all legacy rules from `KiVar.Rule` to `Var`.  This can be achieved by copying and pasting the values of the `KiVar.Rule` column over to the `Var` column in the KiCad Schematic Editor's Symbol Fields Table.
 
 > **Hint:**  
-> To do this, open the Symbol Fields Table, sort by the legacy `KiVar.Rule` field, then copy & paste all relevant cells to the `Var` field (may need to be created first).  Afterwards, remove all `KiVar.Rule` fields (can be done in the Symbol Fields Table dialog).
+> To do this, open the Symbol Fields Table, sort by the legacy `KiVar.Rule` field, then copy & paste all relevant cells to the `Var` field (which may need to be created first).  Afterwards, remove all `KiVar.Rule` fields (can be done in the Symbol Fields Table dialog).
+
+Further reading: [Choice Expressions](#choice-expressions).
 
 ##### Basic Rule Format
 
-While the legacy format of the `KiVar.Rule` field is very similar to the current `Var` field expression format, there have been some changes that may (or may not) break your legacy rules.  Users will need to revise their legacy rules to be sure that they are parsed correctly with current (and upcoming) versions of KiVar.
+While the legacy format of the `KiVar.Rule` field is very similar to the current "[Combined Base Expression Type](#cbe)" (using the `Var` field), there have been some changes that may (or may not) break existing legacy rules.  Users will need to revise their legacy rules to be sure that they are parsed as expected with current (and upcoming) versions of KiVar.
 
 The following sections will cover the details.
 
@@ -175,23 +181,24 @@ The following sections will cover the details.
 
 Severity: **Critical**.
 
-Before version 0.2.0, there were Options (actually only _one_ Option).  An Option always started with a `-` (dash) character, followed by the Option identifier.  The only supported Option identifier was `!`, which resulted in the _Do not populate_, _Exclude from Position Files_ and _Exclude from BoM_ component attributes to be set (or cleared if the option was _not_ provided!).
+Prior to version 0.2.0, KiVar supported "Option" arguments.  An Option always started with a `-` (dash) character, followed by the Option identifier.  The only supported Option identifier was `!`, which resulted in the _Do not populate_, _Exclude from Position Files_ and _Exclude from BoM_ component attributes to be set (or cleared if the option was _not_ provided!).
 
-An Option could either be specified or _not_ specified.  There was no way of removing/overriding an Option that was set via inheritance from a default Choice.
+<!-- An Option could either be specified or _not_ specified.  There was no way of "overriding" an Option that was set via inheritance from a default Choice. -->
 
-If an Option was specified in a Default choice (specified by the choice identifier `*`), that Option was **not inherited** by specific choice definitions, but would have to be specified again in the specific definitions in order to be effective for those choices.
-This (questionable) design decision had been made because, as mentioned above, there was no way to reset an option specified in a Default choice when overriding that Default choice with a specific choice.  Hence, every choice declaration/definition caused all options to be reset for that specific choice, to allow providing a fresh set of options for specific choices.
+If an Option was specified in a [Default Choice](#default-choices) (specified by the Choice Identifier `*`), that Option was **not inherited** by specific Choice Expressions, but would have to be specified again in all specific expression in order to be effective for those choices.
 
-Values, however, were handled differently: They _were_ inherited from the Default choice definition.
+This (questionable) design decision had been made because <!--, as mentioned above,--> there was no way to reset an Option specified in a Default Choice when overriding that Default Choice with a specific Choice.  Hence, every Choice declaration/definition caused all Options to be reset for that specific Choice, to allow for providing a fresh set of Options for specific Choices.
 
-With version 0.2.0, this behavior has changed.  Default Choice inheritance has been streamlined and now applies to both Values (now called _Content_) and Options (now called _Properties_), thanks to the introduction of Property polarities.  Polarities (called _Property Modifiers_) allow overriding property states with both _set_ (modifier `+`) and _unset_ (modifier `-`) operations.  That is, after the Default Property states are applied (inherited), specific choices can (partially) override those states.
+Values, however, were handled differently: They _were_ inherited from the Default choice definition and used as long as no Value was passed in a specific rule.
+
+With version 0.2.0, this behavior has changed.  Default Choice inheritance has been streamlined and now applies to both Values (now called _Content_) and Options (now called _Properties_), thanks to the introduction of enhanced [Property Specifiers](#property-specifiers).  _Property Modifiers_ now allow overriding property states with either _set_ (modifier `+`) or _clear_ (modifier `-`) operations.  That is, after the Default Property states are applied (inherited), specific choices can (partially) override those states.
 
 There are now three supported effective Properties:
- * **Fitted** (identifier `f`): Component is fitted.  Unsets the "Do not populate" component attribute.
- * **inPos** (identifier `p`): Component is listed in Position files.  Unsets the "Exclude from Position Files" component attribute.
- * **inBom** (identifier `b`): Component is listed in Bill of Materials.  Unsets the "Exclude from BoM" component attribute.
+ * **Fitted** (identifier `f`): Component is fitted.  Clears the "Do not populate" component attribute.
+ * **inPos** (identifier `p`): Component is listed in Position files.  Clears the "Exclude from Position Files" component attribute.
+ * **inBom** (identifier `b`): Component is listed in Bill of Materials.  Clears the "Exclude from BoM" component attribute.
 
-There is also a virtual Property `!`, which resolves to "Fitted", "InPos" and "InBom", making the `-!` _nearly_ backwards-compatible.  However, **special care must be taken when `-!` appears in Default choices, as those Properties are now inherited by specific choices**.
+There is also a [Placeholder Property](#placeholder-properties) `!`, which resolves to "Fitted", "InPos" and "InBom", being _nearly_ backwards-compatible to the old `-!` Option.  However, **special care must be taken when `-!` appears in Default choices, as those Properties are now inherited by specific choices**.
 
 The following examples try to illustrate the different handling:
 
@@ -210,21 +217,25 @@ Rule String             | Resulting Choice1 Content | Resulting Choice1 Properti
 
 > **Important:**  
 > Component attributes (DNP, Not in Pos, Not in BoM) are now **kept at their current state** (and ignored in the Choice match) if their corresponding properties are **not defined** (to _true_ or _false_).  
-> In pre-0.2.0 versions all three component attributes were either set or cleared, depending on the presence of the `-!` option.  They could not be set to different states, and none of them could be kept untouched for component with variation rules.  Version 0.2.0 introduces much more flexibility regarding attribute management.
+> In versions prior to 0.2.0 all three component attributes were either set or cleared, depending on the presence of the `-!` option.  They could not be set to different states, and none of them could be kept untouched for component with variation rules.  Version 0.2.0 introduces much more flexibility regarding attribute management.
+
+Further reading: [Default Choices](#default-choices).
 
 ##### Implicit Property Default States
 
 Severity: **Not critical** (backwards-compatible).
 
-Starting with version 0.2.0, users can choose to _only_ specify that Property State which makes a Choice unique and let the the KiVar rule compiler assume the opposite state to be the _implicit_ default State (if no default Property State is provided otherwise) for all remaining choices.
+Starting with version 0.2.0, users can choose to _only_ specify the Property State that makes a Choice unique and let the the KiVar rule compiler assume the opposite state to be the [_Implicit_ Default](#implicit-defaults) state (if no default Property State is provided otherwise) for other choices of the same assignment.
 
-For example, if a component is only fitted (Property Identifier `f`) in one Choice (of many), it is now sufficient to specify `+f` in that Choice Expression and leave the rest of the choices, and even the default choice (`*`) definition, untouched.  The implicit default state for the `f` (fitted) Property will then automatically assumed to be the opposite (`-f`) for any other Choices.
+For example, if a component is only fitted (Property Identifier `f`) in one Choice (of many), it is now sufficient to specify `+f` in _that_ Choice Expression and leave the rest of the assignment choices and the [Default Choice](#default-choices) (`*`) without a definition for the `f` Property.  The implicit default state for the `f` (fitted) Property will then automatically assumed to be the opposite (`-f`) for any other Choices.
 
 > **Note:**  
-> Implicit Property States can only be used if there is only **one** type of State/Polarity (either `+` or `-`) assigned in any of the component's choices.
+> Implicit Property States can only be used if there is only **one** type of State/Polarity (either `+` or `-`) assigned in any of the assignment's choices.
 
 > **Note:**  
 > Implicit default States only work for Property States, as they use _boolean_ states (actually tri-state, but as soon as a Property is provided, it's either _true_ or _false_) and therefore have an (implicit) "opposite" value.
+
+Further reading: [Implicit Defaults](#implicit-defaults).
 
 ##### Values As Multiple Words
 
@@ -236,6 +247,8 @@ Starting with version 0.2.0, Choice Expressions can now contain multiple Value (
 
 This change is fully backwards-compatible.  There is no need to adapt legacy rule strings.
 
+Further reading: [Content Specifiers](#content-specifiers).
+
 ##### Aspect Identifier Position
 
 Severity: **Not critical** (backwards-compatible).
@@ -244,6 +257,8 @@ Before version 0.2.0 the aspect identifier (name) had to be the first argument i
 
 This change is fully backwards-compatible.  There is no need to adapt legacy rule strings.
 
+Further reading: [Aspect Identifier](#aspect-identifier).
+
 ##### New Choice Expression Types and Formats
 
 Severity: **Not critical** (backwards-compatible).
@@ -251,6 +266,8 @@ Severity: **Not critical** (backwards-compatible).
 Versions before 0.2.0 supported only a single rule format in the `KiVar.Rule` component field.  From version 0.2.0 on, multiple rule (now called _Choice Expression_) formats are supported, which can be specified in different component fields.
 
 This change is fully backwards-compatible.  Apart from the changes discussed above, there is no need to change the format of legacy rule strings.
+
+Further reading: [Choice Expressions](#choice-expressions).
 
 ##### Double-Quote Characters Support
 
@@ -262,9 +279,13 @@ Starting with version 0.2.0, `"` (double-quote) characters are also supported fo
 
 This change is mostly backwards-compatible.  If your legacy string do not use double-quote characters that are supposed to be used in a verbatim fashion themselves, there is no need to adapt legacy rule strings.
 
+Further reading: [Quoting and Escaping](#quoting-and-escaping).
+
 #### Definition of Terms
 
+<!-- don't repeat
 As mentioned before, KiVar supports multiple independent _variation aspects_ per board.  For each of these variation aspects, one _variation choice_ can be made later during the selection process.  The result of selecting a specific set of choices for a given set of aspects forms a _variation configuration_.
+-->
 
 Basic terms used in this document:
 
