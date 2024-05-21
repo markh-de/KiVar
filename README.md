@@ -428,7 +428,7 @@ Each Choice must have a unique name withing its Aspect scope.  This name can be 
 
 For referring to a Choice name, **Choice Identifiers** are used.  They are basically the same as the name itself, but <!-- TODO link --> rules for quoting and escaping of special characters apply.  Choice Identifiers are **case-sensitive**.
 
-Whether the mention of a Choice Identifier implicitly declares the Choice in its Aspect depends on the scope in which the identifier is used: In [Base Scope](#base), expressions can declare (new) choice identifiers, while in [Aux. Scope](#aux), expressions can only refer to Choice Identifiers declared in [Base Scope](#base) (in the same or another component).
+Whether the mention of a Choice Identifier implicitly declares the Choice in its Aspect depends on the scope in which the identifier is used: In [Base Scope](#base), expressions can declare (new) choice identifiers, while in [Auxiliary Scope](#aux), expressions can only refer to Choice Identifiers declared in [Base Scope](#base) (in the same or another component).
 
 The special Choice Identifier `*` is used for specifying default content and attributes to be applied to Choices not explicitly listed in the corresponding component.  Refer to the [Default Choices](#default-choices) section below for details.
 
@@ -549,23 +549,23 @@ Examples using the Base Scope are discussed later in the [SBE](#sbe) and [CBE](#
 
 ###### Purpose
 
-Expressions in **Auxiliary Scope** (or short: Aux. Scope) are used for assigning values to specific component **custom fields** (called target fields) with the use of [Content Specifiers](#content-specifiers).
+Expressions in **Auxiliary Scope** (or short: _Aux Scope_) are used for assigning values to specific component **custom fields** (called target fields) with the use of [Content Specifiers](#content-specifiers).
 
 Unlike in [Base Scope](#base), in Auxiliary Scope expressions do _not_ declare additional choices, but **only refer** to aspect choices declared in [Base Scope](#base).
 
-Each Choice Identifier used in an Aux. Scope must therefore be declared in [Base Scope](#base), even if no change of the component value or attributes is required.
+Each Choice Identifier used in an Aux Scope must therefore be declared in [Base Scope](#base), even if no change of the component value or attributes is required.
 
-Also, Aux. Scope does not support specifying properties, as expressions in Aux. Scope do not refer to the component itself, but to dedicated target fields within it.
+Also, Aux Scope does not support specifying properties, as expressions in Aux Scope do not refer to the component itself, but to dedicated target fields within it.
 
 ###### Typical Use
 
-The Aux. Scope is used to assign custom field values, such as a manufacturer name or a manufacturer product number (MPN), for example, to be used in the bill of materials.
+The Aux Scope is used to assign custom field values, such as a manufacturer name or a manufacturer product number (MPN), for example, to be used in the bill of materials.
 
-Aux. Scope expressions can also be used to specify other information, such as a choice-dependent text information that can be made visible anywhere in the schematic for documentation purposes.
+Aux Scope expressions can also be used to specify other information, such as a choice-dependent text information that can be made visible anywhere in the schematic for documentation purposes.
 
 ###### Examples
 
-Examples using the Aux. Scope are discussed later in the [SAE](#sae) and [CAE](#cae) sections.
+Examples using the Aux Scope are discussed later in the [SAE](#sae) and [CAE](#cae) sections.
 
 #### Choice Expression Formats
 
