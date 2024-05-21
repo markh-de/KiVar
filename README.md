@@ -230,9 +230,9 @@ For example, if a component is only fitted (Property Identifier `f`) in one Choi
 
 Severity: **Not critical** (backwards-compatible).
 
-Prior to version 0.2.0 multiple Value arguments were forbidden inside a choice expression.  Only a single Value argument was allowed to be assigned to a Choice definition.  In case of multiple "words", the argument had to be quoted (with `'` (single-quote) characters) in order to be accepted as a single argument.
+Prior to version 0.2.0 multiple Value arguments were forbidden inside a Choice Expression.  Only a single Value argument was allowed to be assigned to a Choice definition.  In case of multiple "words", the argument had to be quoted (with `'` (single-quote) characters) in order to be accepted as a single argument.
 
-Starting with version 0.2.0, choice expressions can now contain multiple Value (now called _Content_) arguments, which are joined with a single ` ` (space) character inbetween.
+Starting with version 0.2.0, Choice Expressions can now contain multiple Value (now called _Content_) arguments, which are joined with a single ` ` (space) character inbetween.
 
 This change is fully backwards-compatible.  There is no need to adapt legacy rule strings.
 
@@ -312,7 +312,7 @@ Component variation rules are specified in **Choice Expression**s, which are def
 
 One component must relate to a single aspect, but can relate to an unlimited number of choices for that aspect.
 
-Choice expressions can be noted in various formats, which are described in the following sections from their **innermost to outermost** elements.
+Choice Expressions can use various notations, depending on their Scope and Format.  Choice Expression syntax is described in the following sections from their **innermost to outermost** elements.
 
 #### Choice Arguments
 
