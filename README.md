@@ -308,7 +308,7 @@ KiVar computes such sets of Aspect and Choice definitions internally by checking
 
 #### Choice Expressions
 
-Component variation rules are specified in **Choice Expression**s (short: _CE_), which are defined in the fields of each component (i.e. symbol and/or footprint) they relate to.  Multiple components may (and usually will) refer to the same aspects and choices.
+Component variation rules are specified in **Choice Expression**s, which are defined in the fields of each component (i.e. symbol and/or footprint) they relate to.  Multiple components may (and usually will) refer to the same aspects and choices.
 
 One component must relate to a single aspect, but can relate to an unlimited number of choices for that aspect.
 
@@ -316,7 +316,7 @@ Choice expressions can be noted in various formats, which are described in the f
 
 #### Choice Arguments
 
-In its simplest form, a Choice Expression consists only of a **Choice Argument List** (short: _CAL_), which is just a list of _space_-separated **Choice Argument**s (short: _CA_) to be assigned to a component for a specific choice.
+In its simplest form, a Choice Expression consists only of a **Choice Argument List**, which is just a list of _space_-separated **Choice Argument**s to be assigned to a component for a specific choice.
 
 Each _Choice Argument_ of the _Choice Argument List_ can be of one of two possible types:
  * a part of the **content** to be assigned as the component _value_ or a specific _field_ or
