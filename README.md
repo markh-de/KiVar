@@ -336,7 +336,7 @@ Each argument beginning with a character _other than_ `-` and `+` is interpreted
 
 There can be multiple Content Specifiers in each Choice Expression.  Their values will be concatenated with one ` ` (space) character as separator to form the resulting Content string.  However, each choice may have only a maximum of one resulting Content assigned.  For example: `Choice1("hello world"   foo bar)` will result in `Choice1` to be assigned the content `hello world foo bar`, but multiple content assignments to the same Choice, such as `Choice1("hello world") Choice1(foo bar)`, are invalid.  This restriction is due to the fact that Choice Expressions can be provided in several ways (fields) and there is no guaranteed processing (concatenation) order.
 
-> **Note:**
+> **Note:**  
 > As arguments can be separated by _any_ number of space characters, each separation will result in a single space character in the final content, no matter how many spaces were used for the argument separation originally.  For strings that shall be assigned in a verbatim way (such as a URL), it is highly recommended to use quoting techniques (discussed later).
 
 ###### Evaluation
@@ -659,6 +659,9 @@ Using the [Base Scope](#base), CBEs define the component's Value content, compon
 
 [Content](#content-specifiers) and [Property](#property-specifiers) specifiers use the [Combined Format](#combined).
 
+> **Note:**  
+> This Choice Expression type probably seems familiar, as it is very similar to the classic notation used in versions prior to 0.2.0 of KiVar.
+
 ###### Syntax
 
 **Field name**: `Var`
@@ -778,10 +781,10 @@ It is therefore required for **each Content or Property assignment** that there 
 
 In short, assignments must be done for **either none or all** Choices.  There must be no sparsely defined assignments, because they would lead to inconsistent states when switching Choices.
 
-> **Note:**
+> **Note:**  
 > To avoid undefined assignments, Default Choices can be used.  For example, the Default Choice Identifier (`*`) can be added to the Choice Identifier List of an appropriate Choice Expression for that expression to also apply to otherwise undefined Choices.
 
-> **Note:**
+> **Note:**  
 > The KiVar Choice Expression compiler will stop with an error if a sparse definitions are detected.
 
 <!-- todo?
@@ -805,7 +808,7 @@ Single and double quotation mark characters (`'` and `"`) can be nested.  The in
 
 To include any character as-is without being interpreted (e.g. `-` or `+` to be used as first character of a Content string, or a _quotation mark_ or _backslash_), that character must be _escaped_, i.e. preceded, with a _backslash_ character.
 
-> **Hint:**
+> **Hint:**  
 > For many cases, quoting and escaping in KiVar works just like in a regular POSIX shell interpreter.
 
 _Examples:_
@@ -816,8 +819,15 @@ _Examples:_
 * To assign a list of simple words or values as Content (e.g. value specifications such as `47µF 35V 10% X7R`), the Content Specifiers can be naturally listed without quoting or escaping.
 * To keep consecutive space characters, they must be escaped or quoted, e.g. to assign the Content string `three   spaces` the Content Specifier `three\ \ \ spaces`, `"three   spaces"` or `three'   'spaces` could be used.
 
-> **Note:**
+> **Note:**  
 > The same quoting and escaping rules apply for Aspect and Choice Identifiers.
+
+#### Expression Processing Example
+
+The following figure illustrates the processing of some example Choice Expressions using [Combined Base Expressions](#cbe) (the classic expression type).
+
+![Expression 
+
 
 #### Real-World Examples
 
