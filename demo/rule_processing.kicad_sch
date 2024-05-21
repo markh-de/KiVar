@@ -211,8 +211,8 @@
 		(uuid "d3ee2723-c8ad-437c-b250-1cbc03be3e70")
 	)
 	(rectangle
-		(start 49.53 33.02)
-		(end 137.16 83.82)
+		(start 48.26 33.02)
+		(end 135.89 83.82)
 		(stroke
 			(width 0.254)
 			(type default)
@@ -323,7 +323,7 @@
 		)
 		(uuid "54760d29-0db6-463a-a2f5-f7c82d04c02d")
 	)
-	(text_box "KiVar Rule Compiler"
+	(text_box "KiVar Choice Expression Compiler"
 		(exclude_from_sim no)
 		(at 71.755 54.61 0)
 		(size 60.96 9.525)
@@ -409,7 +409,7 @@
 		)
 		(uuid "1ba64b71-db13-4aff-af22-c68e411d34a5")
 	)
-	(text "Two(33pF)\nFour(100pF -!)\n*(470pF)"
+	(text "Two(33pF)\nFour(100pF -f)\n*(470pF)"
 		(exclude_from_sim no)
 		(at 93.345 44.45 0)
 		(effects
@@ -433,7 +433,7 @@
 		)
 		(uuid "4e726c43-feea-4e83-b64b-5f1f63afd715")
 	)
-	(text "Three(1mH -!)\nFour(-!)\n*(10mH)"
+	(text "Three(1mH -f)\nFour(-f)\n*(10mH)"
 		(exclude_from_sim no)
 		(at 114.3 44.45 0)
 		(effects
@@ -445,19 +445,9 @@
 		)
 		(uuid "6a895d36-352c-49b6-b695-6522fee58438")
 	)
-	(text "TODO:\nAdapt drawings!"
-		(exclude_from_sim no)
-		(at 101.6 26.67 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-		)
-		(uuid "7c8b333d-5c12-4cb3-9a6e-a5590a8c3a49")
-	)
 	(text "Figure"
 		(exclude_from_sim no)
-		(at 49.53 85.09 0)
+		(at 48.26 85.09 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -479,7 +469,7 @@
 		)
 		(uuid "960f15b2-96fb-44f9-baaa-4d34f7675cd9")
 	)
-	(text "One: 0Ω\nTwo: 10kΩ\nThree: 10kΩ unfit\nFour: 10kΩ unfit"
+	(text "One: 0Ω unfit\nTwo: 10kΩ\nThree: 10kΩ unfit\nFour: 10kΩ unfit"
 		(exclude_from_sim no)
 		(at 72.39 72.39 0)
 		(effects
@@ -504,7 +494,7 @@
 		)
 		(uuid "ae1d8ec5-2f8d-4198-ba33-cf738998e168")
 	)
-	(text "Resulting value\nand attribute\nassignments:"
+	(text "Resulting Content\nand Property\nassignments:"
 		(exclude_from_sim no)
 		(at 69.215 68.58 0)
 		(effects
@@ -517,7 +507,7 @@
 		)
 		(uuid "cab26815-2b7f-43ec-a032-513ef3ed2966")
 	)
-	(text "Choice definitions\nin rules:"
+	(text "Choice Expressions:"
 		(exclude_from_sim no)
 		(at 69.215 40.64 0)
 		(effects
@@ -530,7 +520,7 @@
 		)
 		(uuid "cf54357c-5c54-408d-8bec-2a66c13474a6")
 	)
-	(text "One(0Ω)\nTwo()\n*(10kΩ -!)"
+	(text "One(0Ω)\nTwo(+f)\n*(10kΩ -f)"
 		(exclude_from_sim no)
 		(at 72.39 44.45 0)
 		(effects
