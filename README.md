@@ -927,26 +927,32 @@ This is used for selection of an I/O expander IC type (953**5** vs. 953**9**) al
 
 ![Example 5](doc/examples/5.svg)
 
-> ***TODO*** Fix the text description. Description does not yet match figure or demo project.
+This example really implements two simple sub-aspects in a single variation aspect:
+ * the type of the IC and
+ * the device address.
 
-This example really implements two simple aspects in one variation aspect definition: The type of the IC and the device address.  As both aspects depend on each other and can only be defined in a combined way, all possible combinations must be defined.  It is recommended to use the same dedicated sub-aspect separation character (`/` used in this example) in the aspect name as well as the choice names to make it obvious to the user which sub-choice applies to which sub-aspect.
+As both sub-aspects depend on each other and can only be defined in a combined way, all sensible combinations (there are only three) must be defined for the combined aspect.  It is recommended to use the same dedicated sub-aspect separation character (`/` used in this example) in the Aspect Identifier as well as the Choice Identifiers to make it obvious to the user which sub-choice applies to which sub-aspect.
 
+<!-- Add another example, which uses the classic technique (Infineon BTG PROFETs, for example)! Useful when the solder paste switch feature is implemented. As alternate, use 3D model switching and position offset switching (e.g. for JLCPCB).
 In order to **switch the full set of ordering information or symbol and footprint library references** stored in the symbol fields, this example selects one of two alternate symbol instances, each using a slightly different symbol drawing (note the difference on pin 3).
 
 In general, this variation technique can be used to switch between symbols that refer to either the same footprint (as in this example) or a different footprint shape (e.g. SMT vs. THT, or different SMT package sizes), which can exist side by side or even overlaid in the same spot of the PCB (only the footprints, _not_ the actual components!).
 
 > **Hint:**  
 > Should you decide to use multiple overlapping footprint instances (of course, only one of them fitted with the actual component), the following custom DRC rule might become handy:
-
-    (version 1)
-
-    (rule "Allow overlapping courtyards for DNP parts"
-        (condition "A.Type == 'Footprint' && B.Type == 'Footprint' && A.Do_not_populate")
-        (constraint courtyard_clearance (min -1mm))
-    )
+>
+> ```
+> (version 1)
+>
+> (rule "Allow overlapping courtyards for DNP parts"
+>     (condition "A.Type == 'Footprint' && B.Type == 'Footprint' && A.Do_not_populate")
+>     (constraint courtyard_clearance (min -1mm))
+> )
+> ```
 
 > **Note:**  
 > If copper pads of multiple _alternate(!)_ footprints do overlap, it is important to assign the same net to each set of overlapping pads, in order to avoid DRC errors.  Some overlapping pads of alternate footprints will be applied the same net anyway (as in this example), but _unconnected_ symbol pins will automatically be applied calculated net names which will naturally conflict with those of alternate symbols if their corresponding copper pads overlap in the PCB.  It is then required to connect the unconnected pins with each other in the schematic (using wires or labels).  In the above example, visually distinguishable labels (P00..P17) were chosen for such connections that are otherwise without function.
+-->
 
 How to read the sub-aspects:
 
@@ -955,10 +961,12 @@ This example uses variation aspect `IOEXP_TYPE/ADDR` (read as: sub-aspects `IOEX
 How to read the rules:
 
  * Variation aspect is `IOEXP_TYPE/ADDR` (see above).
- * **R18**: This is unfitted by default (i.e. for each choice not defined otherwise in this rule).  For choices `9535/0x24` and `9539/0x74` this part will be fitted (the empty choice definition overrides all options of the default choice, i.e. no "unfit" option set for these specific choices).
- * **R19**: This is unfitted by default (like R18).  For choice `9535/0x20` this part will be fitted (same reason as for R18).
- * **U4**: This rule explicitly lists all choices for which this part is unfitted: `9539/0x74`.  For other choices the part will be fitted.
- * **U5**: This rule explicitly lists all choices for which this part is unfitted: `9535/0x20` and `9539/0x74`.  For other choices the part will be fitted.
+ * **R18**: For choices `9535/0x24` and `9539/0x74` this part will be fitted, else (`9535/0x20`, handled by [Implicit Defaults](#implicit-defaults)) unfitted.
+ * **R19**: For choice `9535/0x20` this part will be fitted, else (`9535/0x24`, `9539/0x74`) unfitted.
+ * **U4**: The I²C address information field `I2C Address` is set according to the resulting address, depending on the selected choice.  Also, the `MPN` and `Datasheet` fields are set accordingly (expression not shown in the schematic, check out the demo project).
+
+> **Note:**  
+> Depending on the available space in the schematic, the Aspect Identifier can be moved into the dedicated `Var.Aspect` field (and shown or hidden), as for U4, or be part of the Choice Expression, as for R18 and R19.
 
 ##### Example 6: Backlight LED Maximum Constant Current Selection
 
