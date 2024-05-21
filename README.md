@@ -784,18 +784,15 @@ It is therefore required for **each Content or Property assignment** that there 
  * either **no definition** for **any** Choice involved (i.e. keep all Content or Property states in their original state)
  * or a **dedicated definition** for **every** Choice involved (i.e. set all Content or Property states to a defined state).
 
-In short, assignments must be done for **either none or all** Choices.  There must be no partially (i.e. sparsely) defined cases, because they would lead to inconsistent states when switching Choices.
+In short, assignments must be done for **either none or all** Choices.  There must be no sparsely defined assignments, because they would lead to inconsistent states when switching Choices.
 
-<!--
-todo!
 > **Note:**
-> To define CThe KiVar Choice Expression compiler will stop with an error if a sparse definitions are detected.
--->
+> To avoid undefined assignments, Default Choices can be used.  For example, the Default Choice Identifier (`*`) can be added to the Choice Identifier List of an appropriate Choice Expression for that expression to also apply to otherwise undefined Choices.
 
 > **Note:**
 > The KiVar Choice Expression compiler will stop with an error if a sparse definitions are detected.
 
-<!-- more text
+<!-- todo?
 ##### Content Scope
 
 ... TODO use default choice ...
