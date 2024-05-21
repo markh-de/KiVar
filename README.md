@@ -864,12 +864,15 @@ The variation choices provide selection between the boot sources `EMMC`, `SD` an
 
 How to read the rules:
 
- * Variation aspect is `BOOT_SRC` (with choice `EMMC` currently applied in the figure).  The Aspect Identifier is specified in a dedicated field for each involved component, so that the (visible) Expressions are short.  
-   The Aspect Identifier field (`Var.Aspect`) is kept invisible, except for component R9, where it is moved to the top of the figure for documentation purposes.  
-   _Hint:_ Uncheck the "Allow automatic placement" option for such moved fields.
+ * Variation aspect is `BOOT_SRC` (with choice `EMMC` currently applied in the figure).
  * **R9**: For choices `NAND` and `JP` this part is unfitted, else (`SD` and `EMMC`, handled by [Implicit Defaults](#implicit-defaults)) fitted.
  * **R10**: For choices `SD`, `EMMC` and `JP` this part is unfitted, else (`NAND`) fitted.
  * **R11**: For choices `SD`, `NAND` and `JP` this part is unfitted, else (`EMMC`) fitted.
+
+> **Note:**  
+> The Aspect Identifier is specified in a dedicated field for each involved component, so that the (visible) Expressions can be kept short.  
+> The Aspect Identifier field (`Var.Aspect`) is kept invisible, except for component R9, from where it is moved to the top of the figure for documentation purposes.  
+> _Hint:_ In the Schematic Editor, uncheck the "Allow automatic placement" option for such moved fields.
 
 This example uses only classic [Combined Format](#combined) Expressions.
 
@@ -878,8 +881,6 @@ This example uses only classic [Combined Format](#combined) Expressions.
 Typical use-cases for variations are resistor divider networks, such as voltage regulator feedback dividers or — in this case — a voltage divider with two taps for a programmable hysteresis on an undervoltage lock-out (UVLO) circuit.
 
 ![Example 3](doc/examples/3.svg)
-
-> ***TODO*** Fix the text description. Description does not yet match figure or demo project.
 
 The used variation aspect defines all four resistors (only two of them with varying values), allowing to select the lower (cut-off) and higher (recovery) voltage limits for the supply voltage monitor IC.
 
@@ -891,28 +892,34 @@ How to read the rules:
  * **R14**: For choice `2.41V/3.40V` the value is `309kΩ`, for choice `3.15V/3.57V`, the value is `100kΩ`.
  * **R15**: The value is always set to `750kΩ`.  Same explanation applies as for R13.
 
+> **Note:**  
+> The Aspect Identifier is handled similarly to example 2 above.
+
 ##### Example 4: IC Variant Selection
 
 This is used for selection of peripheral parts on a boost-buck-converter IC, which is available as _fixed_ (IRNZ suffix) and _adjustable_ (IRAZ suffix) voltage variants (just like many LDOs are, too).  Depending on the market availability of those IC variants, this variation aspect helps to quickly select between assembly options.
 
 ![Example 4](doc/examples/4.svg)
 
-> ***TODO*** Fix the text description. Description does not yet match figure or demo project.
-
-The fixed voltage IC variant requires a direct feedback of the output voltage to the FB pin, while the adjustable voltage IC variant requires a typical feedback resistor network, including a capacitance of 66pF for stabilization.
+The fixed voltage IC variant requires direct feedback of the output voltage to the FB pin, while the adjustable voltage IC variant requires a typical feedback resistor network, including a capacitance of 66pF for stabilization.
 
 How to read the rules:
 
  * Variation aspect is `ISL91127` (with choice `IRAZ` currently applied in the figure).
- * **C5**, **C6**: For choice `IRNZ` this part is unfitted, else (`IRAZ`) fitted.
- * **R16**: For choice `IRNZ` the value is `0Ω` (fixed version using direct output voltage feedback), for choice `IRAZ` the value is `1MΩ` (adjustable version using a voltage divider for feedback).
- * **R17**: For choice `IRNZ` this part is unfitted (fixed version only has direct feedback, no resistor network), else (`IRAZ`) it is fitted (adjustable version using a voltage divider for feedback).
+ * **C5**, **C6**: For choice `IRAZ` this part is fitted, else (`IRAZ`, handled by [Implicit Defaults](#implicit-defaults)) unfitted.
+ * **R16**: For choice `IRAZ` the value is `1MΩ` (adjustable version using a voltage divider for feedback), for choice `IRNZ` the value is `0Ω` (fixed version using direct output voltage feedback).
+ * **R17**: For choice `IRAZ` this part is fitted, else (`IRNZ`) it is unfitted.
+ * **U3**: For choice `IRAZ`, set the component value to `ISL91127IRAZ`, for choice `IRNZ` set it to `ISL91127IRNZ`.  Also, set the `MPN` field accordingly (expression not shown in the schematic, check out the demo project).  
+   Furthermore, for choice `IRAZ`, set the (visible) `Info` field content to `Adjustable`, for choice `IRNZ` set it to `Fixed` for documentation purposes.
 
 > **Note:**  
-> The rule for **R16** is the _only_ rule explicitly mentioning the choice `IRAZ`, declaring that choice name for all rules that refer to the same variation aspect (`ISL91127`).  For every aspect, you need at least one rule explicitly mentioning a choice for the choice name to be declared and selectable.
+> The Aspect Identifier is referenced by a text field from component U3 using the text variable `${U3:Var.Aspect}`.  Using this technique, the pure Aspect Identifier can be placed inside any text for documentation purposes.
 
+<!-- obsolete, U3 also mentions it... also this is fundamental knowledge and should not only be a side-note in the examples.
 > **Note:**  
-> In this example, the IC itself keeps its original value (part number without IC variant suffix).  In its current state KiVar can only change part values, no other fields (e.g. ordering information).  If you want to switch between different part types (with different symbols or ordering information) or footprints, you need to use multiple _alternate_ symbol instances with each one defining its own set of relevant fields and only one of them actually fitted (refer to next example).
+> The Choice Expression in R16 is the _only_ one explicitly mentioning the Choice Identifier `IRNZ`, declaring that choice name for all rules that refer to the same Aspect Identifier (`ISL91127`).  
+> You need at least one Choice Expression explicitly mentioning a Choice Identifier for it to be declared and available.
+-->
 
 ##### Example 5: IC Type and Address Selection
 
