@@ -132,7 +132,7 @@ pip install kivar-${VERSION}.tar.gz
 
 > **Important:**  
 > These instructions refer to the version **0.2.x** series of KiVar, which uses a slightly modified, but significantly extended rule syntax, and an enhanced range of functions compared to earlier versions.  
-> If you are using an older version, please consider [updating](#installation) and [migrating your variation rules to the new format](#migrate).
+> If you are using an older version, please consider [updating](#installation) and [migrating](#migrate) your variation rules to the new format.
 
 <!-- TODO: revise document structure and headings levels! -->
 
@@ -230,9 +230,9 @@ For example, if a component is only fitted (Property Identifier `f`) in one Choi
 
 Severity: **Not critical** (backwards-compatible).
 
-Prior to version 0.2.0 multiple Value arguments were forbidden inside a choice expression.  Only a single Value argument was allowed to be assigned to a Choice definition.  In case of multiple "words", the argument had to be quoted (with `'` (single-quote) characters) in order to be accepted as a single argument.
+Prior to version 0.2.0 multiple Value arguments were forbidden inside a Choice Expression.  Only a single Value argument was allowed to be assigned to a Choice definition.  In case of multiple "words", the argument had to be quoted (with `'` (single-quote) characters) in order to be accepted as a single argument.
 
-Starting with version 0.2.0, choice expressions can now contain multiple Value (now called _Content_) arguments, which are joined with a single ` ` (space) character inbetween.
+Starting with version 0.2.0, Choice Expressions can now contain multiple Value (now called _Content_) arguments, which are joined with a single ` ` (space) character inbetween.
 
 This change is fully backwards-compatible.  There is no need to adapt legacy rule strings.
 
@@ -250,17 +250,17 @@ Severity: **Not critical** (backwards-compatible).
 
 Versions before 0.2.0 supported only a single rule format in the `KiVar.Rule` component field.  From version 0.2.0 on, multiple rule (now called _Choice Expression_) formats are supported, which can be specified in different component fields.
 
-This change is fully backwards-compatible.  There is no need to adapt legacy rule strings.
+This change is fully backwards-compatible.  Apart from the changes discussed above, there is no need to change the format of legacy rule strings.
 
 ##### Double-Quote Characters Support
 
 Severity: **Not critical** (backwards-compatible).
 
-Prior to version 0.2.0 only `'` (single-quote) characters were supported for the purpose of quoting verbatim strings.
+Prior to version 0.2.0 only `'` (single-quote) characters could be used for the purpose of quoting verbatim strings.
 
 Starting with version 0.2.0, `"` (double-quote) characters are also supported for quoting.  Single- and double-quote strings can be nested, e.g. the string `"hello 'world'"` would result in `hello 'world'`.
 
-This change is fully backwards-compatible.  There is no need to adapt legacy rule strings.
+This change is mostly backwards-compatible.  If your legacy string do not use double-quote characters that are supposed to be used in a verbatim fashion themselves, there is no need to adapt legacy rule strings.
 
 #### Definition of Terms
 
@@ -275,7 +275,7 @@ Basic terms used in this document:
    A set of values (component values or field contents) and/or properties to be assigned to specific components.  A Choice is always related to a specific _Aspect_.
 
  * **Configuration:**  
-   A fully defined set of specific _Choices_ for _all_ available _Aspects_.  In other words, one specific board assembly variant state.
+   A fully defined selection of _specific_ _Choices_ for _all_ available _Aspects_.  In other words, one specific board assembly variant state.
 
 #### Basic Rules Structure
 
@@ -283,7 +283,7 @@ Each component (which uses KiVar variation rules) must refer to exactly one **As
 
 There can exist multiple Aspects per design, and for each Aspect there can exist multiple Choices.
 
-Example:
+_Example:_
 
  * Aspect `DEV_ADDR`
    * Choice `0x50`
@@ -308,15 +308,15 @@ KiVar computes such sets of Aspect and Choice definitions internally by checking
 
 #### Choice Expressions
 
-Component variation rules are specified in **Choice Expression**s (short: _CE_), which are defined in the fields of each component (i.e. symbol and/or footprint) they relate to.  Multiple components may (and usually will) refer to the same aspects and choices.
+Component variation rules are specified in **Choice Expression**s, which are defined in the fields of each component (i.e. symbol and/or footprint) they relate to.  Multiple components may (and usually will) refer to the same aspects and choices.
 
 One component must relate to a single aspect, but can relate to an unlimited number of choices for that aspect.
 
-Choice expressions can be noted in various formats, which are described in the following sections from their innermost to the outermost elements.
+Choice Expressions can use various notations, depending on their Scope and Format.  Choice Expression syntax is described in the following sections from their **innermost to outermost** elements.
 
 #### Choice Arguments
 
-In its simplest form, a Choice Expression consists only of a **Choice Argument List** (short: _CAL_), which is just a list of _space_-separated **Choice Argument**s (short: _CA_) to be assigned to a component for a specific choice.
+In its simplest form, a Choice Expression consists only of a **Choice Argument List**, which is just a list of _space_-separated **Choice Argument**s to be assigned to a component for a specific choice.
 
 Each _Choice Argument_ of the _Choice Argument List_ can be of one of two possible types:
  * a part of the **content** to be assigned as the component _value_ or a specific _field_ or
@@ -329,8 +329,6 @@ Argument types are distinguished by their first (unescaped) character and will b
 ###### Purpose
 
 One or more **Content Specifiers** can be used to assign a string to the component value or to any (custom) component field (such as _Manufacturer_, _MPN_, ...).
-
-<!-- TODO more? -->
 
 ###### Syntax
 
@@ -426,25 +424,96 @@ Choice Argument List input | Resulting Property states | Explanation
 
 ##### Purpose
 
-To specify the list of choice names (identifiers), to which the corresponding arguments are to be assigned, **Choice Identifiers** are used.
+Each Choice must have a unique name withing its Aspect scope.  This name can be any string.
 
-##### Syntax
+For referring to a Choice name, **Choice Identifiers** are used.  They are basically the same as the name itself, but <!-- TODO link --> rules for quoting and escaping of special characters apply.  Choice Identifiers are **case-sensitive**.
 
-> TODO, CIs are part of CILs ...
+Whether the mention of a Choice Identifier implicitly declares the Choice in its Aspect depends on the scope in which the identifier is used: In [Base Scope](#base), expressions can declare (new) choice identifiers, while in [Auxiliary Scope](#aux), expressions can only refer to Choice Identifiers declared in [Base Scope](#base) (in the same or another component).
+
+The special Choice Identifier `*` is used for specifying default content and attributes to be applied to Choices not explicitly listed in the corresponding component.  Refer to the [Default Choices](#default-choices) section below for details.
+
+##### Declaration and Definition
+
+<!-- TODO this is important to understand. explain how declaration of choices can be done by _any_ component's Base Scope expression in the same aspect scope and how the list of available choices is automatically extended. old text! update and use rule compiler figure from demo project? -->
+
+<!-- TODO update demo figure for each expression type, use same colors for identification of example elements. -->
+
+##### Choice Identifier Lists
+
+When using Choice Identifiers in Choice Expressions, they are always specified as **Choice Identifier Lists**.  A Choice Identifier List consists of **one or more** Choice Identifiers.
+
+A Choice Identifier List is a **comma-separated** list of Choice Identifiers, for example `ChoiceId_1,ChoiceId_2,ChoiceId_3`.  No space is allowed around the separating comma.
 
 ##### Default Choices
 
-> TODO
+###### Purpose
+
+To follow the ["All-or-None" rule](#all-or-none), Content or Property assignments must be defined for _all_ choices involved if at least one assignment is performed.
+
+This would require each Choice Identifier to be listed along with its corresponding Content or Property assignments.  Also, any modification of available Choice Identifiers (i.e. adding, removing, renaming Choices) in _one_ component would require the Choice Expressions of _all_ components in the same Aspect scope to be adapted as well.
+
+To avoid listing each possible Choice Identifier for each assignment, **Default Choices** can be used.  The Content and Property assignments specified for a Default Choice apply as described below.
+
+###### Syntax
+
+The reserved Choice Identifier used for Default Choices is "`*`".
+
+###### Default Content Inheritance
+
+For each assignment target, the Content (component value or field content) specified in the Default Choice applies to all Choices that **do not provide** their own Content definition for the same assignment.
+
+The following table explains Content inheritance rules using an example Choice Identifier `A` and some example Content.
+
+Default Choice (`*`) Content | Specific Choice (`A`) Content  | Resulting Specific Choice (`A`) Content
+---------------------------- | ------------------------------ | ----------------------------------------
+_(none)_                     | _(none)_                       | _(none)_
+_(none)_                     | `123`                          | `def`
+`abc`                        | _(none)_                       | `abc`
+`abc`                        | `123`                          | `123`
+
+###### Default Property Inheritance
+
+For each assignment target, the state of each Property specified in the Default Choice is used as the **initial value** for _all_ Choices with the same assignment target.
+
+The following table explains Property state inheritance rules using an example Choice Identifier `B` and some example Property states (with resulting Property states listed with [Property Specifier](#property-specifiers) syntax).
+
+Default Choice (`*`) Property Specifiers | Specific Choice (`B`) Property Specifiers  | Resulting Specific Choice (`B`) Property states
+---------------------------------------- | ------------------------------------------ | ------------------------------------------------
+_(none)_                                 | _(none)_                                   | _(none)_
+_(none)_                                 | `+f`                                       | `+f`
+`+f`                                     | _(none)_                                   | `+f`
+`+!`                                     | _(none)_                                   | `+fbp` _(see <!-- TODO link -->...)
+`+!`                                     | `-p`                                       | `+fb` `-p`
+`+f`                                     | `-b`                                       | `+f` `-b`
+`+f +b`                                  | `-b`                                       | `+f` `-b`
 
 ##### Implicit Defaults
 
-> TODO only for boolean values, such as properties
+For Property assignments, it may not be required to explicitly specify a Default Choice, as for Properties, **Implicit Defaults** apply.  The following rule applies:
 
-##### Examples
+For each assignment target, whenever only _one_ state (i.e. either `+` _or_ `-`) is assigned to a specific Property, then the **opposite** state is used for this Property as the Implicit Default for that assignment.  The Implicit Default can be imagined as a "Default Default", i.e. the _Implicit_ Default state of a Property will be **overridden** by a state specified in an _explicit_ (usual) Default Choice.
 
-> TODO multiple components, to illustrate default choice behavior
+Implicit Defaults are only used for Properties, _not_ for Content, as Properties are boolean values and therefore have an "opposite" value that can be assumed as the desired Default state.
 
-> TODO following sections one heading level up
+The following table explains Implicit Default state inheritance rules using the example Choice Identifiers `C1`, `C2`, `C3`.  `C3` is not defined, but declared, hence its Property states (PS) will be assigned a value if Default states (implicit or explicit) exist.  Resulting Property states ("RPS") are listed with [Property Specifier](#property-specifiers) syntax).
+
+Choice `C1` PS | Choice `C2` PS | Implicit Default PS              | Default (`*`) PS | `C1` RPS  | `C2` RPS  | `C3` RPS
+-------------- | -------------- | -------------------------------- | ---------------- | --------- | --------- | ---------
+_(none)_       | _(none)_       | _(none)_                         | _(none)_         | _(none)_  | _(none)_  | _(none)_
+`+f`           | _(none)_       | `-f` _(opposite of C1)_          | _(none)_         | `+f`      | `-f`      | `-f`
+`+f`           | `+f`           | `-f` _(opposite of C1/C2)_       | _(none)_         | `+f`      | `+f`      | `-f`
+`+f`           | `-f`           | _(none)_ _(C1/C2 contradicting)_ | _(none)_         | `+f`      | `-f`      | _(none)_ (Invalid! `f` missing!)
+`+f`           | `-f`           | _(none)_                         | `-f`             | `+f`      | `-f`      | `-f`
+`+f`           | `-p`           | `-f` `+p`                        | _(none)_         | `+f` `+p` | `-f` `-p` | `-f` `+p`
+`-!`           | _(none)_       | `+fbp` _(<!-- TODO link -->)_    | _(none)_         | `-fbp`    | `+fbp`    | `+fbp`
+`-!`           | `-p`           | `+fbp`                           | _(none)_         | `-fbp`    | `+fb` `-p`| `+fbp`
+`+f`           | _(none)_       | `-f`                             | `+b`             | `+f` `+b` | `-f` `+b` | `-f` `+b`
+`-!`           | `+p`           | `+fb` _(`p` contradicting)_      | _(none)_         | `-fbp     | `+fb` `+p`| `+fb` (Invalid! `p` missing!)
+`-!`           | `+p`           | `+fb`                            | `-p`             | `-fbp     | `+fb` `+p`| `+fb` `-p`
+
+<!-- TODO more (creative) examples -->
+
+<!-- TODO following sections one heading level up (?) -->
 
 #### Choice Expression Scopes
 
@@ -454,179 +523,239 @@ The data defined in Choice Expressions can be applied to either
 
 For each of them there exists a dedicated **Choice Expression Scope**.  Both scopes are explained in the following sub-sections.
 
-<a name="bce"></a>
+<a name="base"></a>
 
-##### Base Choice Expressions
+##### Base Scope
 
 ###### Purpose
 
-**Base Choice Expressions** (BCE) are used to
+Expressions in **Base Scope** are used to
  * assign component **values** (using [Content Specifiers](#content-specifiers)) and **attributes** (using [Property Specifiers](#property-specifiers)), and to
  * **declare** and **define** [Choice Identifiers](#choice-identifiers) inside the scope of a corresponding [Aspect Identifier](#aspect-identifier).
 
 ###### Typical Use
 
-BCEs are used to assign component values, such as `10kΩ`, `0.1µF 50V` or `74HC595`.  The component value is defined by the choice content (assigned through Content Choice Arguments).
+The Base Scope is used to assign basic component values, such as `10kΩ`, `0.1µF 50V` or `74HC595`.  The component value is passed via [Content Specifiers](#content-specifiers).
 
-They are also used to modify component attributes, e.g. when a component shall change its _DNP_ (do not populate) state or when it shall or shall not be included in position files or the bill of materials.  Component attributes are defined by choice properties (assigned through Property Choice Arguments).
+Also, the Base Scope is used to modify component attributes, e.g. when a component shall change its _DNP_ (do not populate) state or when it shall or shall not be included in position files or the bill of materials.  Component attributes are specified using choice properties (through the use of [Property Specifiers](#property-specifiers)).
 
-BCEs can _not_ modify custom fields.  For this, ACEs must be used (see below).
+The Base Scope can _not_ modify custom fields.  For this, the [Auxiliary Scope](#aux) must be used (see next section).
 
-###### Data Assignment
+Examples using the Base Scope are discussed later in the [SBE](#sbe) and [CBE](#cbe) sections.
 
-> TODO content and properties ... how are they mapped to the component data
+<a name="aux"></a>
 
-###### Examples
-
-As BCEs only specify an expression scope and not a real Choice Expression Type, examples are provided in the sections ***TODO link*** (SBCE) and ***TODO link*** (CBCE).
-
-<a name="ace"></a>
-
-##### Auxiliary Choice Expressions
+##### Auxiliary Scope
 
 ###### Purpose
 
-**Auxiliary Choice Expressions** (ACE) assign values to specific component **custom fields** (using Content Choice Arguments).
+Expressions in **Auxiliary Scope** (or short: _Aux Scope_) are used for assigning values to specific component **custom fields** (called target fields) with the use of [Content Specifiers](#content-specifiers).
 
-They do _not_ declare additional choices, but can **only refer** to aspect choices declared in [Base Choice Expressions](#bce).
+Unlike in [Base Scope](#base), in Auxiliary Scope expressions do _not_ declare additional choices, but **only refer** to aspect choices declared in [Base Scope](#base).
 
-Each Choice Identifier used in an ACE must therefore be declared in a BCE, even if no change of the component value or attributes is required (***TODO*** link to CI declaration w/o definition).
+Each Choice Identifier used in an Aux Scope must therefore be declared in [Base Scope](#base), even if no change of the component value or attributes is required.
 
-Also, ACEs do not support specifying properties, as they do not refer to the component itself, but to dedicated fields within it.
+Also, Aux Scope does not support specifying properties, as expressions in Aux Scope do not refer to the component itself, but to dedicated target fields within it.
 
 ###### Typical Use
 
-ACEs are used to assign custom field values, such as a manufacturer name or a manufacturer product number (MPN) to be used in the bill of materials.  However, ACEs can also be used for other information, such as a choice-dependent device address.  That information can then be made visible in the schematic for informational purposes.  This can be used to automatically streamline schematic documentation.
+The Aux Scope is used to assign custom field values, such as a manufacturer name or a manufacturer product number (MPN), for example, to be used in the bill of materials.
 
-###### Data Assignment
-
-> TODO how is data mapped
+Aux Scope expressions can also be used to specify other information, such as a choice-dependent text information that can be made visible anywhere in the schematic for documentation purposes.
 
 ###### Examples
 
-As ACEs only specify an expression scope and not a real Choice Expression Type, examples are provided in the sections ***TODO link*** (SACE) and ***TODO link*** (CACE).
+Examples using the Aux Scope are discussed later in the [SAE](#sae) and [CAE](#cae) sections.
 
 #### Choice Expression Formats
 
-Furthermore, Choice Expressions can be noted in different ways, depending on the user's preferences and requirements.
+Furthermore, Choice Expressions can use different notations, depending on the user's preferences and requirements.
 
 The two different **Choice Expression Formats** are described in the following sub-sections.
 
-<a name="sce"></a>
+<a name="simple"></a>
 
-##### Simple Choice Expressions
+##### Simple Format
 
 ###### Purpose
 
-**Simple Choice Expressions** (SCE)
+The **Simple Format** is particularly well suited to
  * specify a single Choice Expression using
  * one specific component field per expression.
 
 ###### Typical Use
 
-> TODO
+Expressions noted in Simple Format
+ * are recommended for longer, more complex (or verbatim) Content, such as a datasheet or purchase URL or a complex "Value" field content,
+ * can be useful when referencing a dedicated set of Choice Arguments using text variables that are embedded at another location of the schematic (see examples),
+ * have the drawback that, due to the diversity of the symbol field names they occupy, each unique used field name adds to the list of field names available in total, for example when using the Symbol Fields Editor.
 
 ###### Examples
 
-As SCEs only specify an expression format and not a real Choice Expression Type, examples are provided in the sections ***TODO link*** (SBCE) and ***TODO link*** (SACE).
+Examples using the Simple Format are provided in the [SBE](#sbe) and [SAE](#sae) sections.
 
-<a name="cce"></a>
+<a name="combined"></a>
 
-##### Combined Choice Expressions
+##### Combined Format
 
-**Combined Choice Expressions** (CCE)
- * allow combining multiple Choice Expressions in a
- * single component field (also, for Base Choice Expressions, optionally accepting the Aspect identifier).
+The **Combined Format** is particularly well suited to
+ * allow combining multiple Choice Expressions in
+ * a single component field (also, in Base Scope, optionally accepting the Aspect Identifier).
 
 ###### Typical Use
 
-> TODO
+Expressions noted in Combined Format
+ * are recommended for shorter, simpler Content, such as a simple component Value, a short MPN or manufacturer name,
+ * allow specifying multiple Choice Expressions in a compact way,
+ * therefore save space when many Choices need to be declared or defined.
 
 ###### Examples
 
-As CCEs only specify an expression format and not a real Choice Expression Type, examples are provided in the sections ***TODO link*** (CBCE) and ***TODO link*** (CACE).
+Examples using the Combined Format are provided in the [CBE](#cbe) and [CAE](#cae) sections.
 
 #### Choice Expression Types
 
-The combination of the above two Expression Scopes and two Expression Formats results in the following four **Choice Expression Types** discussed in the following sub-sections.
+The **combination** of the above two **Expression Scopes** and two **Expression Formats** results in the following four **Choice Expression Types** discussed in the following sub-sections.
 
-<a name="sbce"></a>
+<a name="sbe"></a>
 
-##### Simple Base Choice Expressions
-
-###### Syntax
-
-**Simple Base Choice Expressions** (SBCE)  
-use the field `Var(<CHOICELIST>)` with field content in [SCE](#SCE) format to assign component value and properties to a specific choice list `<CHOICELIST>`.
+##### Simple Base Expressions
 
 ###### Typical Use
 
-> TODO
+Using the [Base Scope](#base), SBEs define the component's Value content and/or component attributes and features.
 
-###### Examples
-
-> TODO
-
-<a name="cbce"></a>
-
-##### Combined Base Choice Expressions
+[Content](#content-specifiers) and [Property](#property-specifiers) specifiers use the [Simple Format](#simple).
 
 ###### Syntax
 
-**Combined Base Choice Expressions** (CBCE)  
-use the field `Var` with field content in [CCE](#CCE) format (with an Aspect identifier allowed) to assign component values and properties to one or more choice lists.
+**Field name**: `Var(<CIL>)` (with `<CIL>` being the Choice Identifier List)
 
-###### Typical Use
-
-> TODO
+**Field content**: Expression in [Simple Format](#simple)
 
 ###### Examples
 
-> TODO
+The following entries could be used for a capacitor.  Note how the Aspect Identifier must be passed with a dedicated entry, as SBEs cannot include the Aspect Identifier, as is possible for [CBEs](#cbe).
 
-<a name="sace"></a>
+Field name            | Field content
+--------------------- | -------------
+`Var.Aspect`          | `Capacitance`
+`Var(Low)`            | `10µF`
+`Var(Medium)`         | `100µF`
+`Var(High)`           | `470µF`
+`Var(None,*)`         | `-! DNP`
 
-##### Simple Auxiliary Choice Expressions
+This defines an Aspect Identifier _"Capacitance"_ including (at least, depending on the definitions used in other components) the Choice Identifiers _"Low"_, _"Medium"_, _"High"_, which define capacitance values, as well as _"None"_, which assigns the (capacitance) value `DNP` and also makes the component unfitted and excluded from position files and BoM.
+
+Note how the Default Choice Identifier _"*"_ is used to also match the _"None"_ Choice to any Choice that may be defined outside this component (this may or may not be a good idea, depending on the safety vs. convenience policy).
+
+<a name="cbe"></a>
+
+##### Combined Base Expressions
+
+###### Typical Use
+
+Using the [Base Scope](#base), CBEs define the component's Value content, component attributes and features and/or the Aspect Identifier.
+
+[Content](#content-specifiers) and [Property](#property-specifiers) specifiers use the [Combined Format](#combined).
 
 ###### Syntax
 
-**Simple Auxiliary Choice Expressions** (SACE)  
-use the field `<CUSTOMFIELD>.Var(<CHOICELIST>)` with field content in [SCE](#SCE) format to assign a specific value for the component's custom field `<CUSTOMFIELD>` to a specific choice list `<CHOICELIST>`.
+**Field name**: `Var`
 
-###### Typical Use
-
-> TODO
+**Field content**: Expression in [Combined Format](#combined)
 
 ###### Examples
 
-> TODO
+The following single entry serves the same purpose as the above [SBE](#sbe) example.  Note how even the Aspect Identifier is included in the same single expression.
 
-<a name="cace"></a>
+Field name     | Field content
+-------------- | -------------
+`Var`          | `Capacitance Low(10µF) Medium(100µF) High(470µF) None,*(-! DNP)`
 
-##### Combined Auxiliary Choice Expressions
+The same explanation applies as for the above [SBE](#sbe) example.
+
+<a name="sae"></a>
+
+##### Simple Auxiliary Expressions
+
+###### Typical Use
+
+Using the [Auxiliary Scope](#aux), SAEs define the content of a specified existing component field.
+
+[Content](#content-specifiers) and [Property](#property-specifiers) specifiers use the [Simple Format](#simple).
 
 ###### Syntax
 
-**Combined Auxiliary Choice Expressions** (CACE)  
-use the field `<CUSTOMFIELD>.Var` with field content in [CCE](#CCE) format (with no Aspect identifier allowed) to assign values for the component's custom field `<CUSTOMFIELD>` to one or more choice lists.
+**Field name**: `<TARGET_FIELD_NAME>.Var(<CIL>)` (with `<TARGET_FIELD_NAME>` being the name of the custom target field to assign the content to, and `<CIL>` being the Choice Identifier List
 
-###### Typical Use
-
-> TODO
+**Field content**: Expression in [Simple Format](#simple)
 
 ###### Examples
 
-> TODO
+The following entries could be used to define the MPN, description and datasheet URL for an imaginary LDO component.  Note that the target field names "Description", "MPN" and "Datasheet" must exist.
+
+Field name                    | Field content
+----------------------------- | -------------
+`Description.Var(1.8V)`       | `Fixed voltage 1.8V 200mA LDO`
+`Description.Var(3.3V)`       | `Fixed voltage 3.3V 200mA LDO`
+`Description.Var(adjustable)` | `Adjustable voltage 200mA LDO`
+`MPN.Var(1.8V)`               | `ALDO200V18`
+`MPN.Var(3.3V)`               | `ALDO200V33`
+`MPN.Var(adjustable)`         | `ALDO200ADJ`
+`Datasheet.Var(1.8V,3.3V)     | `"https://example.kivar.markh.de/products/aldo200v.pdf"`
+`Datasheet.Var(adjustable)    | `"https://example.kivar.markh.de/products/aldo200a.pdf"`
+
+This defines the Choice Identifiers _"1.8V"_, _"3.3V"_ and _"adjustable"_, which define different field content for the target fields _"Description"_, _"MPN"_ and _"Datasheet"_.  Note how this example does not make use of the Default Choice Identifier _"*"_, as there are no sensible defaults that could be assigned for yet unknown Choices that may be declared by other components.
+
+As it is not possible to _declare_ Choice Identifiers in the Auxiliary Scope (they rely on declarations in the [Base Scope](#base)), there must exist _at least_ the following Choice declarations in the same or another component that uses the same Aspect Identifier (_"Voltage"_ assumed here).  These Choice declarations are noted as [SBEs](#sbe), but Choices can be declared in any Expression Format (i.e. SBE or CBE types), even intermixed.
+
+Field name                    | Field content
+----------------------------- | -------------
+`Var.Aspect`                  | `Voltage`
+`Var(1.8V,3.3V,adjustable)`   | _(empty)_
+
+<a name="cae"></a>
+
+##### Combined Auxiliary Expressions
+
+###### Typical Use
+
+Using the [Auxiliary Scope](#aux), CAEs define the content of a specified existing component field.
+
+[Content](#content-specifiers) and [Property](#property-specifiers) specifiers use the [Combined Format](#combined).
+
+###### Syntax
+
+**Field name**: `<TARGET_FIELD_NAME>.Var` (with `<TARGET_FIELD_NAME>` being the name of the custom target field to assign the content to
+
+**Field content**: Expression in [Combined Format](#combined)
+
+###### Examples
+
+The following few entries serve the same purpose as the above [SAE](#sae) example.
+
+Field name              | Field content
+----------------------- | -------------
+`Description.Var`       | `1.8V(Fixed voltage 1.8V 200mA LDO) 3.3V(Fixed voltage 3.3V 200mA LDO) adjustable(Adjustable voltage 200mA LDO)`
+`MPN.Var`               | `1.8V(ALDO200V18) 3.3V(ALDO200V33) adjustable(ALDO200ADJ)`
+`Datasheet.Var`         | `1.8V,3.3V("https://example.kivar.markh.de/products/aldo200v.pdf") adjustable("https://example.kivar.markh.de/products/aldo200a.pdf")`
+
+The same explanation applies as for the above [CAE](#cae) example.
+
+As explained above, _declaring_ Choice Identifiers is not allowed from the [Auxiliary Scope](#aux).  Hence, there must exist at least the following Choice declarations in the same or another component that uses the same Aspect Identifier.  These Choice declarations are noted as [CBCs](#cbe).
+
+Field name             | Field content
+---------------------- | -------------
+`Var`                  | `Voltage 1.8V,3.3V,adjustable()`
 
 #### Aspect Identifier
 
 ##### Purpose
 
-> TODO
+To define to which aspect (i.e. group/dimension/degree of freedom) a component's Choice Identifiers relate to, an **Aspect Identifier** must be specified for every component that uses one or more Choice Expressions.
 
 ##### Specification
-
-As mentioned above, each component that provides KiVar variation rules must refer to exactly one Aspect.
 
 There are two methods of passing the **Aspect Identifier**:
 
@@ -635,37 +764,83 @@ There are two methods of passing the **Aspect Identifier**:
 
 Details and examples can be found in the following sections.
 
-> TODO more
+<a name="all-or-none"></a>
 
-<!-- ***TODO*** a **lot** of old stuff removed from here. re-insert sections that are still valid! -->
+#### Fully Defined Assignments (The "All-or-None" Rule)
 
-<!-- ***TODO*** Usage tips section. when to use which ce type? some examples. more examples in the real-world section. -->
+##### Purpose
 
-<!-- ***TODO*** Q&A section that handles the most obvious questions -->
+One of the key concepts of KiVar requires all Configurations (sets of Choice selections) to be unambiguous with regard to their outcome.  This is required in order to be able to detect, i.e. map the assigned outcome back to an unambiguous set of Choices.
+
+It is therefore required for **each Content or Property assignment** that there is
+ * either **no definition** for **any** Choice involved (i.e. keep all Content or Property states in their original state)
+ * or a **dedicated definition** for **every** Choice involved (i.e. set all Content or Property states to a defined state).
+
+In short, assignments must be done for **either none or all** Choices.  There must be no sparsely defined assignments, because they would lead to inconsistent states when switching Choices.
+
+> **Note:**
+> To avoid undefined assignments, Default Choices can be used.  For example, the Default Choice Identifier (`*`) can be added to the Choice Identifier List of an appropriate Choice Expression for that expression to also apply to otherwise undefined Choices.
+
+> **Note:**
+> The KiVar Choice Expression compiler will stop with an error if a sparse definitions are detected.
+
+<!-- todo?
+##### Content Scope
+
+... TODO use default choice ...
+
+##### Property Scope
+
+... often no default required thanks to implicit defaults. if implicit defaults cannot be used, because different (+/-) states are assigned, explicit defaults must be used.
+-->
+
+#### Quoting and Escaping
+
+**Special characters** inside a Choice Expression, such as `,` ` ` `-` `+` `(` `)` (comma, space, dash/minus, plus, parentheses) are **not** considered special (i.e. do not act as separators or Property Modifiers) if
+
+ * they appear inside a quoted part of the definition, i.e. inside a matching pair of two unescaped `'` (single quotation mark) or `"` (double quotation mark) characters, or when
+ * they are escaped, i.e. directly prepended with a `\` (backslash).
+
+Single and double quotation mark characters (`'` and `"`) can be nested.  The inner quotation marks will be part of the verbatim string in this case.
+
+To include any character as-is without being interpreted (e.g. `-` or `+` to be used as first character of a Content string, or a _quotation mark_ or _backslash_), that character must be _escaped_, i.e. preceded, with a _backslash_ character.
+
+> **Hint:**
+> For many cases, quoting and escaping in KiVar works just like in a regular POSIX shell interpreter.
+
+_Examples:_
+
+* To assign the fictional value `don't care` (a string containing a single quotation mark and a space), the appropriate Content Argument in the Choice Expression would be either `'don\'t care'` or `don\'t\ care`.
+* To use `+5V` (a string starting with a plus) as a value, the choice definition arguments `'+5V'` or `\+5V` would be appropriate.  If the plus were not escaped, `+5V` would be interpreted as an (invalid) [Property Specifier](#property-specifiers).
+* To assign an empty Content string (e.g. component value or target field content), use an empty quoted string (`''` or `""`) as [Content Specifier](#content-specifiers).
+* To assign a list of simple words or values as Content (e.g. value specifications such as `47µF 35V 10% X7R`), the Content Specifiers can be naturally listed without quoting or escaping.
+* To keep consecutive space characters, they must be escaped or quoted, e.g. to assign the Content string `three   spaces` the Content Specifier `three\ \ \ spaces`, `"three   spaces"` or `three'   'spaces` could be used.
+
+> **Note:**
+> The same quoting and escaping rules apply for Aspect and Choice Identifiers.
 
 #### Real-World Examples
 
-The following examples are taken from a real project and show a few configurable variation aspects, their possible choices along with a short explanation of the implementation.
+The following examples are taken from real commercial projects.  They show a few configurable variation aspects, their possible choices along with a short explanation of the implementation.
 
-Each example is illustrated with a schematic snippet including the values of the `KiVar.Rule` field of each related symbol.
+To further explore these examples and learn the recommended ways of implementing KiVar rules, check out the [demo project](demo/).
+
+In the following sections, each example is illustrated with a schematic snippet including the values of the relevant fields for each related symbol.
 
 ##### Example 1: I²C Device Address Selection
 
-This is a very simple example, used for address selection of an I²C device.  Address input A0 switches between device addresses 0x54 _(A0=0)_ and 0x55 _(A0=1)_.
+In this very simple example, KiVar is used for address selection of an I²C device.  Address input A0 switches between device addresses 0x54 _(A0=GND)_ and 0x55 _(A0=+3V3)_.
 
 ![Example 1](doc/examples/1.svg)
 
-> ***TODO*** Fix the text description. Description does not yet match figure or demo project.
-
-The device address is selected by tying the IC input A0 to either +3V3 or GND, depending on the selected choice.  Inputs A1 and A2 are tied to fixed levels.
+The device address is selected by tying the IC input A0 to either GND or +3V3, depending on the selected choice.  Inputs A1 and A2 are tied to fixed levels.
 
 How to read the rules:
 
- * Variation aspect is `EEPROM_ADDR` (with choice `0x54` currently applied in the figure).
- * **R1**: For choice `0x55` this part will be fitted (empty definition, hence fitted), else unfitted (per default choice).
- * **R2**: Similarly, for choice `0x54` this part will be fitted, else unfitted.
-
-Alternatively, the rules in this example could explicitly list _those_ choices that make the corresponding parts _unfitted_.  However, with the above notation, the rules can be read more naturally.  That is, choice 0x55 is listed in the upper resistor and leads to high voltage level and choice 0x54 is listed in the lower resistor and leads to low voltage level.
+ * Variation aspect is `EEPROM_ADDR` (with choice `0x55` currently applied in the figure).
+ * **R1**: For choice `0x55` this part will be fitted (`+!`, resolving to `+fpb`).  There is no default choice required, as implicit defaults (opposite property states, i.e. `-fpb`) are assumed automatically.
+ * **R2**: Likewise, for choice `0x54` this part will be fitted, else unfitted (same explanation as for R1).
+ * **U1**: A purely informational field called `I2C Address` is assigned the value `0x54` or `0x55`, depending on the choice.  This field can then either be made visible directly, or referenced by other symbols or text boxes within the schematic (using `${U1:I2C Address}`).
 
 ##### Example 2: Boot Source Selection
 
@@ -815,8 +990,6 @@ If all rules can be parsed without problems, the main dialog window appears.
 
 For the above [real-world examples](#real-world-examples), the selection dialog window may look similar to the following:
 
-> TODO Match choices in the following dialogs with the changes performed in the 3D views below!
-
 ![Variant Selection Dialog Without Changes](doc/plugin-empty.svg)
 
 For each of the listed variation aspects a variation choice can now be selected.
@@ -854,4 +1027,15 @@ To propagate the changes back to the schematic, use the PCB Editor menu item _To
 
 #### Using the KiVar Action Plugin
 
-> ***TODO*** copy some text from the plugin manual. for a start, simply recommend using `--help`. ;)
+The KiVar CLI application works similar to the plugin, except that it manipulates an existing `.kicad_pcb` file (which must not be opened in another application.
+
+For usage information, run:
+
+```
+kivar --help
+```
+
+<!-- ***TODO*** Q&A section that handles the most obvious questions 
+* why is there no gui for rules setup?
+* ...
+-->
