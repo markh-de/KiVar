@@ -780,26 +780,55 @@ Details and examples can be found in the following sections.
 
 One of the key concepts of KiVar requires all Configurations (sets of Choice selections) to be unambiguous with regard to their outcome.  This is required in order to be able to detect, i.e. map the assigned outcome back to an unambiguous set of Choices.
 
-<!-- TODO each content and property assignment must be fully defined for all choices involved in the assignment.
-if a value, field or attribute is defined for at least one choice, it must be defined for all choices (within the aspect scope).
+It is therefore required for **each Content or Property assignment** that there is
+ * either **no definition** for **any** Choice involved (i.e. keep all Content or Property states in their original state)
+ * or a **dedicated definition** for **every** Choice involved (i.e. set all Content or Property states to a defined state).
+
+In short, assignments must be done for **either none or all** Choices.  There must be no partially (i.e. sparsely) defined cases, because they would lead to inconsistent states when switching Choices.
+
+<!--
+todo!
+> **Note:**
+> To define CThe KiVar Choice Expression compiler will stop with an error if a sparse definitions are detected.
 -->
 
-<!-- TODO check old text -->
+> **Note:**
+> The KiVar Choice Expression compiler will stop with an error if a sparse definitions are detected.
 
+<!-- more text
 ##### Content Scope
 
-<!-- TODO use default choice -->
+... TODO use default choice ...
 
 ##### Property Scope
 
-<!-- TODO often no default required thanks to implicit defaults. if implicit defaults cannot be used, because different (+/-) states are assigned, explicit defaults must be used. -->
+... often no default required thanks to implicit defaults. if implicit defaults cannot be used, because different (+/-) states are assigned, explicit defaults must be used.
+-->
 
 #### Quoting and Escaping
 
-##### Purpose
+**Special characters** inside a Choice Expression, such as `,` ` ` `-` `+` `(` `)` (comma, space, dash/minus, plus, parentheses) are **not** considered special (i.e. do not act as separators or Property Modifiers) if
 
-<!-- TODO separation characters used by the parser. to avoid misinterpretation, escaping or quoting must be used ... old text! -->
-<!-- TODO examples (old text?) -->
+ * they appear inside a quoted part of the definition, i.e. inside a matching pair of two unescaped `'` (single quotation mark) or `"` (double quotation mark) characters, or when
+ * they are escaped, i.e. directly prepended with a `\` (backslash).
+
+Single and double quotation mark characters (`'` and `"`) can be nested.  The inner quotation marks will be part of the verbatim string in this case.
+
+To include any character as-is without being interpreted (e.g. `-` or `+` to be used as first character of a Content string, or a _quotation mark_ or _backslash_), that character must be _escaped_, i.e. preceded, with a _backslash_ character.
+
+> **Hint:**
+> For many cases, quoting and escaping in KiVar works just like in a regular POSIX shell interpreter.
+
+_Examples:_
+
+* To assign the fictional value `don't care` (a string containing a single quotation mark and a space), the appropriate Content Argument in the Choice Expression would be either `'don\'t care'` or `don\'t\ care`.
+* To use `+5V` (a string starting with a plus) as a value, the choice definition arguments `'+5V'` or `\+5V` would be appropriate.  If the plus were not escaped, `+5V` would be interpreted as an (invalid) [Property Specifier](#property-specifiers).
+* To assign an empty Content string (e.g. component value or target field content), use an empty quoted string (`''` or `""`) as [Content Specifier](#content-specifiers).
+* To assign a list of simple words or values as Content (e.g. value specifications such as `47µF 35V 10% X7R`), the Content Specifiers can be naturally listed without quoting or escaping.
+* To keep consecutive space characters, they must be escaped or quoted, e.g. to assign the Content string `three   spaces` the Content Specifier `three\ \ \ spaces`, `"three   spaces"` or `three'   'spaces` could be used.
+
+> **Note:**
+> The same quoting and escaping rules apply for Aspect and Choice Identifiers.
 
 #### Real-World Examples
 
@@ -1009,7 +1038,13 @@ To propagate the changes back to the schematic, use the PCB Editor menu item _To
 
 #### Using the KiVar Action Plugin
 
-> ***TODO*** copy some text from the plugin manual. for a start, simply recommend using `--help`. ;)
+The KiVar CLI application works similar to the plugin, except that it manipulates an existing `.kicad_pcb` file (which must not be opened in another application.
+
+For usage information, run:
+
+```
+kivar --help
+```
 
 <!-- ***TODO*** Q&A section that handles the most obvious questions 
 * why is there no gui for rules setup?
