@@ -298,7 +298,7 @@ Basic terms used in this document:
  * **Configuration:**  
    A fully defined selection of _specific_ _Choices_ for _all_ available _Aspects_.  In other words, one specific board assembly variant state.
 
-#### Basic Rules Structure
+#### Fundamentals
 
 Each component (which uses KiVar variation rules) must refer to exactly one **Aspect**, to which all **Choices** defined or referred to in that component always relate to.
 
@@ -325,7 +325,7 @@ One possible example _Configuration_ for these Aspects and Choices:
 
 `DEV_ADDR=0x52 BOOT_SRC=NAND VIO_LEVEL=1.8V`
 
-KiVar computes such sets of Aspect and Choice definitions internally by checking each component's field data for KiVar _Choice Expressions_, which are explained in the following sections.
+KiVar computes such sets of Aspect and Choice definitions internally by checking each component's field data for KiVar [Choice Expressions](#choice-expressions), which are explained in the following sections.
 
 #### Choice Expressions
 
@@ -333,36 +333,40 @@ Component variation rules are specified in **Choice Expression**s, which are def
 
 One component must relate to a single aspect, but can relate to an unlimited number of choices for that aspect.
 
+Typically, multiple components are involved when defining specific Choices.  But not each component is forced to refer to all Choices (of a certain Aspect).  Instead, the KiVar Expression compiler accumulates all mentioned Choices and computes the data to be assigned for each of them.
+
 Choice Expressions can use various notations, depending on their Scope and Format.  Choice Expression syntax is described in the following sections from their **innermost to outermost** elements.
 
 #### Choice Arguments
 
+<!-- TODO improve! the CE does not really *consist* of a CAL, but includes one (Simple Format) or more (Combined Format) -->
+
 In its simplest form, a Choice Expression consists only of a **Choice Argument List**, which is just a list of _space_-separated **Choice Argument**s to be assigned to a component for a specific choice.
 
 Each _Choice Argument_ of the _Choice Argument List_ can be of one of two possible types:
- * a part of the **content** to be assigned as the component _value_ or a specific _field_ or
- * a **property** assignment specifier (to mark a component _(un)fitted_, _(not) in BoM_, _(not) in position files_).
+ * a part of the **Content** to be assigned as the component _value_ or a specific target _field_, or
+ * a **Property** state assignment specifier (e.g. to mark a component _(un)fitted_, _(not) in BoM_, _(not) in position files_).
 
-Argument types are distinguished by their first (unescaped) character and will be explained in more detail in the followin sub-sections.
+Argument types are distinguished by their first (unescaped) character and will be explained in more detail in the following sub-sections.
 
 ##### Content Specifiers
 
 ###### Purpose
 
-One or more **Content Specifiers** can be used to assign a string to the component value or to any (custom) component field (such as _Manufacturer_, _MPN_, ...).
+One or more **Content Specifiers** can be used to form a string to be assigned to the component value or to any (custom) component field (such as _Manufacturer_, _MPN_, ...).
 
 ###### Syntax
 
 Each argument beginning with a character _other than_ `-` and `+` is interpreted as a **Content Specifier**.
 
-There can be multiple Content Specifiers in each Choice Expression.  Their values will be concatenated with one ` ` (space) character as separator to form the resulting Content string.  However, each choice may have only a maximum of one resulting Content assigned.  For example: `Choice1("hello world"   foo bar)` will result in `Choice1` to be assigned the content `hello world foo bar`, but multiple content assignments to the same Choice, such as `Choice1("hello world") Choice1(foo bar)`, are invalid.  This restriction is due to the fact that Choice Expressions can be provided in several ways (fields) and there is no guaranteed processing (concatenation) order.
-
-> **Note:**  
-> As arguments can be separated by _any_ number of space characters, each separation will result in a single space character in the final content, no matter how many spaces were used for the argument separation originally.  For strings that shall be assigned in a verbatim way (such as a URL), it is highly recommended to use quoting techniques (discussed later).
+There can be multiple Content Specifiers in each Choice Expression.  Their values will be concatenated with one ` ` (space) character as separator to form the resulting Content string.  However, each choice may have only a maximum of one resulting Content assigned.  For example: `Choice1("hello world"   foo bar)` will result in `Choice1` to be assigned the content `hello world foo bar`, but multiple content assignments to the same Choice, such as `Choice1("hello world") Choice1(foo bar)`, are invalid.  This restriction is due to the fact that Choice Expressions can be provided in different ([Simple](#simple), [Combined](#combined)) formats and there is no guaranteed processing (concatenation) order.
 
 ###### Evaluation
 
 All Content Specifiers of a Choice Expression are evaluated from left to right and concatenated with one space character between each argument to form the final content string to be assigned when the corresponding choice is selected.
+
+> **Note:**  
+> As arguments can be separated by _any_ number of space characters, each separation will result in a single space character in the final content, no matter how many spaces were used for the argument separation originally (similar to HTML).  For strings that shall be assigned in a verbatim way (such as a URL), it is highly recommended to use quoting techniques (discussed later).
 
 ###### Examples
 
