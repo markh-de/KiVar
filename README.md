@@ -970,21 +970,22 @@ How to read the rules:
 
 ##### Example 6: Backlight LED Maximum Constant Current Selection
 
-In this example a combination of resistor networks determines the maximum constant current for an LED backlight (_maximum_ because the used current regulator also has a PWM input, which is later controlled via software).
+In this example a combination of resistor networks determines the maximum constant current for an LED backlight (_maximum_ because the used current regulator also has a PWM input, which can be controlled via software).
 
 ![Example 6](doc/examples/6.svg)
-
-> ***TODO*** Fix the text description. Description does not yet match figure or demo project.
 
 The resistor network combination allows to select an LED current from 10mA to 150mA in steps of 10mA.  Also, like in example 2, there is an additional choice `JP`, which leaves all four configuration resistors unfitted, so that the user can manually select the current using the solder bridges.
 
 How to read the rules:
 
  * Variation aspect is `I_LED_MA` (with choice `100` currently applied in the figure).
- * **R21**: This is the _most significant_ path for 80mA current. For the upper half of the current choices, i.e. `80` up to `150`, the resistor is fitted.  For other choices (incl. `JP`) the part will be unfitted.
- * **R22**: This is the path for 40mA current. For choices `40` to `70` and for `120` to `150` the resistor is fitted.  For other choices (incl. `JP`) the part will be unfitted.
- * **R29**: This is the path for 20mA current. For choices `20`, `30`, `60`, `70`, `100`, `110`, `140`, `150` the resistor is fitted.  For other choices (incl. `JP`) the part will be unfitted.
- * **R30**: This is the _least significant_ path for 10mA current. For choices `10`, `30`, `50`, `70`, `90`, `110`, `130`, `150` the resistor is fitted.  For other choices (incl. `JP`) the part will be unfitted.
+ * **R21**: This is the _most significant_ path for 80mA current. For the upper half of the current choices, i.e. `80` up to `150`, the resistor is fitted.  For other choices (incl. `JP`) the part is unfitted (handled by [Implicit Defaults](#implicit-defaults)).
+ * **R22**: This is the path for 40mA current. For choices `40` through `70` and `120` through `150` the resistor is fitted.  For other choices (incl. `JP`) it is unfitted.
+ * **R29**: This is the path for 20mA current. For choices `20`, `30`, `60`, `70`, `100`, `110`, `140`, `150` the resistor is fitted.  For other choices (incl. `JP`) it is unfitted.
+ * **R30**: This is the _least significant_ path for 10mA current. For choices `10`, `30`, `50`, `70`, `90`, `110`, `130`, `150` the resistor is fitted.  For other choices (incl. `JP`) it is unfitted.
+
+> **Note:**  
+> Again, to save horizontal space, the Aspect Identifier is moved to the dedicated `Var.Aspect` field (shown), for all involved components.
 
 ### Rules Application
 
@@ -994,7 +995,7 @@ After setting up the rules for each relevant symbol (or footprint), variations c
 
 ##### Update the PCB
 
-If the rules were set up in the Schematic Editor (eeschema), they need to be updated to the PCB Editor first (menu item _Tools &rarr; Update PCB from Schematic..._).
+If the expressions were set up in the Schematic Editor (eeschema), they need to be updated to the PCB Editor first (menu item _Tools &rarr; Update PCB from Schematic..._).
 
 ##### Run the Plugin
 
@@ -1002,30 +1003,30 @@ To open the plugin dialog, simply click the KiVar plugin icon in the main toolba
 
 ##### Configuration Identification
 
-Upon start, during the enumeration stage, KiVar automatically detects the current variation configuration, i.e., it tries to find a definite choice for each configured variation, based on the currently assigned values and attributes for each related footprint.
+Upon start, during the compilation stage, KiVar automatically detects the current variation configuration, i.e., it tries to find a definite choice for each configured aspect, based on the currently assigned values, field contents and attributes for each related footprint.
 
-If the values and attributes do not exactly match one definite choice (for a variation aspect), then the corresponding variation choice selector is preset to the entry _'\<unset>'_.  This will probably happen before applying a specific choice for the first time or after editing rules, because not all of the currently assigned footprint attributes may perfectly match one of the defined variation choices.
+If they do not exactly match one definite choice (per variation aspect), then the corresponding variation choice selector is preset to the entry _'\<unset>'_.  This will probably happen before applying a specific choice for the first time or after editing expressions, because not all of the currently assigned footprint properties may perfectly match one of the defined variation choices.
 
 ##### Possible Error Messages
 
-In case the defined variation rules cannot be parsed and enumerated without problems, an error message window with a list of problems will appear.  Each of these problems must then be fixed in order to successfully start the plugin.
+In case the defined choice expressions cannot be parsed and/or compiled without problems, an error message window with a list of problems is presented.  Each of the listed problems must then be fixed in order to successfully start the plugin.
 
 > **Hint:**  
 > Error messages can be clicked to focus the corresponding footprint on the _pcbnew_ canvas in the background.
 
 ##### Variation Choices Selection
 
-If all rules can be parsed without problems, the main dialog window appears.
+If all expressions can be compiled without problems, the plugin dialog window appears.
 
 For the above [real-world examples](#real-world-examples), the selection dialog window may look similar to the following:
 
 ![Variant Selection Dialog Without Changes](doc/plugin-empty.svg)
 
-For each of the listed variation aspects a variation choice can now be selected.
+For each of the listed Aspect Identifiers a variation Choice Identifier can now be selected.
 
-If the values and attributes of the footprint(s) related to a variation aspect shall not be modified, the entry _'\<unset>'_ can be selected for that variation aspect.  In this case, the corresponding variation is skipped during the assignment stage and related footprints remain unmodified.
+If the values, field contents and attributes of the footprint(s) related to a variation aspect shall not be modified, the entry _'\<unset>'_ can be selected for that variation aspect.  In this case, the corresponding variation will be excluded from the assignment stage and related footprints remain unmodified.
 
-The change list section below the selection area summarizes all component value and attribute changes to be performed for each related footprint if the current variation configuration is applied.
+The change list section below the selection area summarizes all component changes to be performed for each related footprint if the current variation configuration is applied.
 
 > **Hint:**  
 > Entries in the change list can be clicked to focus the corresponding footprint on the _pcbnew_ canvas in the background.
