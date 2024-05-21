@@ -826,8 +826,9 @@ _Examples:_
 
 The following figure illustrates the processing of some example Choice Expressions using [Combined Base Expressions](#cbe) (the classic expression type).
 
-![Expression 
+![Expression Processing](doc/processing.svg)
 
+Users are advised to use this figure as an exercise to find out whether the Content and Property assignment rules have been fully understood before proceeding to the example schematics below.
 
 #### Real-World Examples
 
