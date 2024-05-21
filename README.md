@@ -826,9 +826,8 @@ _Examples:_
 
 The following figure illustrates the processing of some example Choice Expressions using [Combined Base Expressions](#cbe) (the classic expression type).
 
-![Expression Processing](doc/processing.svg)
+![Expression 
 
-Users are advised to use this figure as an exercise to find out whether the Content and Property assignment rules have been fully understood before proceeding to the example schematics below.
 
 #### Real-World Examples
 
@@ -851,7 +850,9 @@ How to read the rules:
  * Variation aspect is `EEPROM_ADDR` (with choice `0x55` currently applied in the figure).
  * **R1**: For choice `0x55` this part will be fitted (`+!`, resolving to `+fpb`).  There is no default choice required, as implicit defaults (opposite property states, i.e. `-fpb`) are assumed automatically.
  * **R2**: Likewise, for choice `0x54` this part will be fitted, else unfitted (same explanation as for R1).
- * **U1**: A purely informational field called `I2C Address` is assigned the value `0x54` or `0x55`, depending on the choice.  This field can then either be made visible directly, or referenced by other symbols or text boxes within the schematic (using `${U1:I2C Address}`).
+ * **U1**: A purely informational field called `I2C Address` is assigned the value `0x54` or `0x55`, depending on the choice.  This field can then either be made visible directly, or referenced by other symbols or text boxes within the schematic (using text variable `${U1:I2C Address}`).
+
+This example uses only classic [Combined Format](#combined) Expressions.
 
 ##### Example 2: Boot Source Selection
 
@@ -859,16 +860,18 @@ This is used for the boot source device selection for an NXP i.MX6ULL SoC.
 
 ![Example 2](doc/examples/2.svg)
 
-> ***TODO*** Fix the text description. Description does not yet match figure or demo project.
-
 The variation choices provide selection between the boot sources `EMMC`, `SD` and `NAND`, as well as an extra choice `JP` (which leaves _all_ configuration resistors unfitted, so that the user can configure the board by manually shorting the solder bridges JP1, JP2, JP3).
 
 How to read the rules:
 
- * Variation aspect is `BOOT_SRC` (with choice `EMMC` currently applied in the figure).
- * **R9**: For choices `NAND` and `JP` this part is unfitted, else (`SD` and `EMMC`) fitted.
+ * Variation aspect is `BOOT_SRC` (with choice `EMMC` currently applied in the figure).  The Aspect Identifier is specified in a dedicated field for each involved component, so that the (visible) Expressions are short.  
+   The Aspect Identifier field (`Var.Aspect`) is kept invisible, except for component R9, where it is moved to the top of the figure for documentation purposes.  
+   _Hint:_ Uncheck the "Allow automatic placement" option for such moved fields.
+ * **R9**: For choices `NAND` and `JP` this part is unfitted, else (`SD` and `EMMC`, handled by [Implicit Defaults](#implicit-defaults)) fitted.
  * **R10**: For choices `SD`, `EMMC` and `JP` this part is unfitted, else (`NAND`) fitted.
  * **R11**: For choices `SD`, `NAND` and `JP` this part is unfitted, else (`EMMC`) fitted.
+
+This example uses only classic [Combined Format](#combined) Expressions.
 
 ##### Example 3: Undervoltage Trip Points
 
