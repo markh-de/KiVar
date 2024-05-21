@@ -764,14 +764,6 @@ There are two methods of passing the **Aspect Identifier**:
 
 Details and examples can be found in the following sections.
 
-> TODO more
-
-<!-- ***TODO*** a **lot** of old stuff removed from here. re-insert sections that are still valid! -->
-
-<!-- TODO escaping and quoting rules. check old text. -->
-
-<!-- ***TODO*** Usage tips section. when to use which ce type? some examples. more examples in the real-world section. -->
-
 <a name="all-or-none"></a>
 
 #### Fully Defined Assignments (The "All-or-None" Rule)
