@@ -1535,19 +1535,6 @@
 				)
 			)
 		)
-		(property "KiVar.Rule" ""
-			(at 0 0 0)
-			(unlocked yes)
-			(layer "F.Fab")
-			(hide yes)
-			(uuid "96f581ee-e8a5-4a6e-955d-22415ff05376")
-			(effects
-				(font
-					(size 1 1)
-					(thickness 0.15)
-				)
-			)
-		)
 		(property ki_fp_filters "QFN*1EP*4x4mm*P0.5mm*")
 		(path "/b90e2ece-31a9-44a1-a7e2-4f98d0159cd7/61002a8a-6b88-406b-8c99-a0cdff0f1a3f")
 		(sheetname "Example 4: IC Variant Selection")
@@ -2947,19 +2934,6 @@
 			(effects
 				(font
 					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "KiVar.Rule" ""
-			(at 0 0 -90)
-			(unlocked yes)
-			(layer "F.Fab")
-			(hide yes)
-			(uuid "34ddefeb-d94d-481f-a797-6862a9b34b98")
-			(effects
-				(font
-					(size 1 1)
-					(thickness 0.15)
 				)
 			)
 		)
