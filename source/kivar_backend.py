@@ -27,9 +27,10 @@ from copy import deepcopy
     # Add R22 'exclude from BOM' fabrication attribute.
     # Add R22 'Do not place' fabrication attribute.
     # Update R2 fields.
+#     ^^^ this "update fields" message is too generic.
 
 def version():
-    return '0.2.0-dev32'
+    return '0.2.0-dev33'
 
 def pcbnew_compatibility_error():
     ver = pcbnew.GetMajorMinorPatchVersion()

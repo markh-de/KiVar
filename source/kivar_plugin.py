@@ -15,6 +15,13 @@ except ModuleNotFoundError:
 # * After applying configuration, define board variables containing the choice for each aspect, e.g. ${KIVAR.BOOT_SEL} => NAND
 #   (requires KiCad API change/fix: https://gitlab.com/kicad/code/kicad/-/issues/16426)
 
+def doc_branch():
+    return '46-update-documentation-for-020-release'
+#    return 'v0.2.x'
+
+def doc_base_url():
+    return f'https://doc.kivar.markh.de/{doc_branch()}/README.md'
+
 class KiVarPlugin(pcbnew.ActionPlugin):
     def defaults(self):
         self.name = 'KiVar: Switch Assembly Variants'
@@ -39,13 +46,11 @@ class KiVarPlugin(pcbnew.ActionPlugin):
         else:
             show_selection_dialog(board, fpdict, vardict)
 
-# TODO link to release maintenance branch!
 def help_url():
-    return 'https://help.kivar.markh.de#usage'
+    return f'{doc_base_url()}#usage'
 
-# TODO add matching anchors to doc!
 def help_migrate_url():
-    return 'https://help.kivar.markh.de#migrate'
+    return f'{doc_base_url()}#migrate'
 
 def show_selection_dialog(board, fpdict, vardict):
     dlg = VariantDialog(board, fpdict, vardict)
@@ -131,10 +136,17 @@ class VariantDialog(wx.Dialog):
         # Bottom (help link and buttons)
         button_sizer = wx.BoxSizer(wx.HORIZONTAL)
 
-        link = hyperlink.HyperLinkCtrl(self, -1, 'Usage hints', URL=help_url())
+        legacy_rules = legacy_expressions_found(self.fpdict)
+        if legacy_rules:
+            target_url = help_migrate_url()
+            link_text = f'Read how to migrate {legacy_rules} found legacy rule(s).'
+        else:
+            target_url = help_url()
+            link_text = 'Usage hints'
+        link = hyperlink.HyperLinkCtrl(self, -1, link_text, URL=target_url)
         default_color = wx.Colour()
         link.SetColours(link=default_color, visited=default_color)
-        link.SetToolTip('Opens a web browser at ' + help_url())
+        link.SetToolTip(f'Opens a web browser at {target_url}')
         link.EnableRollover(False)
 
         ok_button = wx.Button(self, label='Update PCB')
