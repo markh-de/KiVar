@@ -1,5 +1,7 @@
 # KiVar − PCB Assembly Variants for KiCad
 
+<!-- implement blocks: https://github.com/orgs/community/discussions/16925 -->
+
 ## Introduction
 
 <img align='right' style='width:6em;' src='doc/kivar-icon.inkscape.svg'>
