@@ -397,22 +397,22 @@ KiVar provides a set of boolean component _Properties_ that allow controlling ce
 
 Each argument beginning with a `-` or `+` is interpreted as a **Property Specifier**, which is a combination of **Property Modifiers** and **Property Identifiers**.
 
-Each Property Specifier must start with a Property Modifier, defining the boolean state (_true_ or _false_, represented by `+` or `-`, respectively) to be assigned to the Properties subsequently specified by their corresponding Property Identifiers.
+Each Property Specifier must start with a _Property Modifier_, defining the boolean state (_true_ or _false_, represented by `+` or `-`, respectively) to be assigned to the Properties subsequently specified by their corresponding _Property Identifiers_.
 
 ###### Evaluation
 
-All Property Specifiers inside a Choice Expression are evaluated from left to right, resulting in a set of defined boolean Property states for the corresponding component and choice.  Properties not defined in any of the component's Choices are kept in their original state.
+All Property Specifiers inside a Choice Expression are evaluated from left to right, resulting in a set of defined boolean Property states for the corresponding component and Choice.  Properties _not_ defined in any of the component's Choices are kept in their original state. <!-- todo mention that this is a major change vs. 0.1.x? -->
 
 ###### Attribute Properties
 
-The following Properties allow modification of component attributes:
+The following Properties allow modification of component _attributes_:
 
  * **Fitted** (property identifier `f`).  
-   This property specifies whether a component shall be fitted (property _true_) or unfitted (property _false_).  This property is linked to the pcbnew footprint attribute _Do not populate_ with inverted polarity.
+   This property specifies whether a component shall be fitted (property state _true_) or unfitted (property state _false_).  This property is linked to the pcbnew footprint attribute _Do not populate_ with inverted polarity.
  * **inPos** (property identifier `p`).  
-   This property specifies whether a component shall be included in the component placement/position files (property _true_) or excluded (property _false_).  This property is linked to the pcbnew footprint attribute _Not in Position Files_ with inverted polarity.
+   This property specifies whether a component shall be included in the component placement/position files (property state _true_) or excluded (property state _false_).  This property is linked to the pcbnew footprint attribute _Not in Position Files_ with inverted polarity.
  * **inBom** (property identifier `b`).  
-   This property specifies whether a component shall be included in the Bill of Materials (property _true_) or excluded (property _false_).  This property is linked to the pcbnew footprint attribute _Not in BoM_ with inverted polarity.
+   This property specifies whether a component shall be included in the Bill of Materials (property state _true_) or excluded (property state _false_).  This property is linked to the pcbnew footprint attribute _Not in BoM_ with inverted polarity.
 
 <!-- FUTURE FEATURES
 ###### Feature Properties
@@ -430,7 +430,7 @@ The following Properties allow controlling various component features:
 The following Property allows grouping frequently used attribute properties for user convenience:
 
  * **All** (property identifier `!`).  
-   This placeholder property represents all three attribute properties **Fitted**, **inPos** and **inBom** (`f`, `p`, `b`).  It can be used as a shortcut to save space, as most of the times, all three attributes are controlled together and set to the same state.  However, if finer control is desired, the state of individual attribute properties can still be overridden.  Examples can be found in the next section.
+   This placeholder property represents all three attribute properties **Fitted**, **inPos** and **inBom** (`f`, `p`, `b`).  It can be used as a shortcut, as most of the times all three attributes are controlled together and set to the same state.  However, if finer control is desired, the state of individual attribute properties can still be overridden.  Examples can be found in the next section.
 
 <!-- TODO really name it "all"? yes, all attributes, but there will be more than attributes to be controlled with properties -->
 
@@ -451,13 +451,14 @@ Choice Argument List input | Resulting Property states | Explanation
 
 ##### Purpose
 
-Each Choice must have a unique name withing its Aspect scope.  This name can be any string.
+Each Choice must have a unique name within its Aspect scope.  This name can be any string.
 
-For referring to a Choice name, **Choice Identifiers** are used.  They are basically the same as the name itself, but <!-- TODO link --> rules for quoting and escaping of special characters apply.  Choice Identifiers are **case-sensitive**.
+For referring to a Choice name, **Choice Identifiers** are used.  They are basically the same as the name itself, but rules for [quoting and escaping](#quoting-and-escaping) of special characters apply.  Choice Identifiers are **case-sensitive**.
 
-Whether the mention of a Choice Identifier implicitly declares the Choice in its Aspect depends on the scope in which the identifier is used: In [Base Scope](#base), expressions can declare (new) choice identifiers, while in [Auxiliary Scope](#aux), expressions can only refer to Choice Identifiers declared in [Base Scope](#base) (in the same or another component).
+Whether the mention of a Choice Identifier implicitly declares the Choice in its Aspect context depends on the scope in which the identifier is used:  
+In [Base Scope](#base), expressions can declare (new) choice identifiers, while in [Auxiliary Scope](#aux), expressions can only refer to Choice Identifiers declared in [Base Scope](#base) (in the same or another component).
 
-The special Choice Identifier `*` is used for specifying default content and attributes to be applied to Choices not explicitly listed in the corresponding component.  Refer to the [Default Choices](#default-choices) section below for details.
+The special Choice Identifier `*` is used for specifying default Content and Properties to be applied to Choices not explicitly listed in the corresponding assignment.  Refer to the [Default Choices](#default-choices) section below for details.
 
 ##### Declaration and Definition
 
