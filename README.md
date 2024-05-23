@@ -466,17 +466,15 @@ The special Choice Identifier `*` is used for specifying default Content and Pro
 
 ##### Choice Identifier Lists
 
-When using Choice Identifiers in Choice Expressions, they are always specified as **Choice Identifier Lists**.  A Choice Identifier List consists of **one or more** Choice Identifiers.
-
-A Choice Identifier List is a **comma-separated** list of Choice Identifiers, for example `ChoiceId_1,ChoiceId_2,ChoiceId_3`.  No space is allowed around the separating comma.
+When using Choice Identifiers in Choice Expressions, those identifiers are always specified inside **Choice Identifier Lists**.  A Choice Identifier List consists of **one or more** Choice Identifiers that are separated by `,` (comma) characters (e.g. `ChoiceId_1,ChoiceId_2,ChoiceId_3`).  No space is allowed around the separating comma.
 
 ##### Default Choices
 
 ###### Purpose
 
-To follow the ["All-or-None" rule](#all-or-none), Content or Property assignments must be defined for _all_ choices involved if at least one assignment is performed.
+To follow the ["All-or-None" rule](#all-or-none), Content and Property assignments must be defined for _all_ choices involved if at least one assignment is defined.
 
-This would require each Choice Identifier to be listed along with its corresponding Content or Property assignments.  Also, any modification of available Choice Identifiers (i.e. adding, removing, renaming Choices) in _one_ component would require the Choice Expressions of _all_ components in the same Aspect scope to be adapted as well.
+Defining all Choices for each assignment theoretically requires each Choice Identifier to be listed along with its corresponding Content or Property assignments.  Also, any modification of available Choice Identifiers (i.e. adding, removing, renaming Choices) in _one_ component theoretically requires the Choice Expressions of _all_ components in the same Aspect scope to be adapted as well.
 
 To avoid listing each possible Choice Identifier for each assignment, **Default Choices** can be used.  The Content and Property assignments specified for a Default Choice apply as described below.
 
@@ -486,16 +484,16 @@ The reserved Choice Identifier used for Default Choices is "`*`".
 
 ###### Default Content Inheritance
 
-For each assignment target, the Content (component value or field content) specified in the Default Choice applies to all Choices that **do not provide** their own Content definition for the same assignment.
+For each assignment target, the Content (component value or field content, respectively) specified in the Default Choice applies to all Choices that **do not provide** their own Content definition for the same assignment.
 
 The following table explains Content inheritance rules using an example Choice Identifier `A` and some example Content.
 
-Default Choice (`*`) Content | Specific Choice (`A`) Content  | Resulting Specific Choice (`A`) Content
----------------------------- | ------------------------------ | ----------------------------------------
-_(none)_                     | _(none)_                       | _(none)_
-_(none)_                     | `123`                          | `def`
-`abc`                        | _(none)_                       | `abc`
-`abc`                        | `123`                          | `123`
+Default Choice (`*`) Content | Specific Choice (`A`) Content | Resulting Specific Choice (`A`) Content
+---------------------------- | ----------------------------- | ---------------------------------------
+_(none)_                     | _(none)_                      | _(none)_
+_(none)_                     | `123`                         | `def`
+`abc`                        | _(none)_                      | `abc`
+`abc`                        | `123`                         | `123`
 
 ###### Default Property Inheritance
 
@@ -503,23 +501,27 @@ For each assignment target, the state of each Property specified in the Default 
 
 The following table explains Property state inheritance rules using an example Choice Identifier `B` and some example Property states (with resulting Property states listed with [Property Specifier](#property-specifiers) syntax).
 
-Default Choice (`*`) Property Specifiers | Specific Choice (`B`) Property Specifiers  | Resulting Specific Choice (`B`) Property states
----------------------------------------- | ------------------------------------------ | ------------------------------------------------
-_(none)_                                 | _(none)_                                   | _(none)_
-_(none)_                                 | `+f`                                       | `+f`
-`+f`                                     | _(none)_                                   | `+f`
-`+!`                                     | _(none)_                                   | `+fbp` _(see <!-- TODO link -->...)
-`+!`                                     | `-p`                                       | `+fb` `-p`
-`+f`                                     | `-b`                                       | `+f` `-b`
-`+f +b`                                  | `-b`                                       | `+f` `-b`
+Default Choice (`*`) Property Specifiers | Specific Choice (`B`) Property Specifiers | Resulting Specific Choice (`B`) Property states
+---------------------------------------- | ----------------------------------------- | -----------------------------------------------
+_(none)_                                 | _(none)_                                  | _(none)_
+_(none)_                                 | `+f`                                      | `+f`
+`+f`                                     | _(none)_                                  | `+f`
+`+!`                                     | _(none)_                                  | `+fbp` _(see <!-- TODO link -->...)
+`+!`                                     | `-p`                                      | `+fb` `-p`
+`+f`                                     | `-b`                                      | `+f` `-b`
+`+f +b`                                  | `-b`                                      | `+f` `-b`
 
 ##### Implicit Defaults
 
-For Property assignments, it may not be required to explicitly specify a Default Choice, as for Properties, **Implicit Defaults** apply.  The following rule applies:
+For Property assignments, it may not be required to explicitly specify a Default Choice, as for Properties, **Implicit Defaults** may apply.
 
-For each assignment target, whenever only _one_ state (i.e. either `+` _or_ `-`) is assigned to a specific Property, then the **opposite** state is used for this Property as the Implicit Default for that assignment.  The Implicit Default can be imagined as a "Default Default", i.e. the _Implicit_ Default state of a Property will be **overridden** by a state specified in an _explicit_ (usual) Default Choice.
+For each assignment target, whenever only _one_ state (i.e. _either_ `+` _or_ `-`) is assigned to a specific Property, then the **opposite** state is used for this Property as the Implicit Default for that assignment.
 
-Implicit Defaults are only used for Properties, _not_ for Content, as Properties are boolean values and therefore have an "opposite" value that can be assumed as the desired Default state.
+> [!NOTE]
+> The Implicit Default can be imagined as a "Default Default", i.e. the _Implicit_ Default state of a Property will be **overridden** by a state specified in an _explicit_ (usual) [Default Choice](#default-choices).
+
+> [!NOTE]
+> Implicit Defaults are only used for Properties, _not_ for Content, as Properties are boolean values and therefore have an "opposite" value that can be assumed as the desired Default state.
 
 The following table explains Implicit Default state inheritance rules using the example Choice Identifiers `C1`, `C2`, `C3`.  `C3` is not defined, but declared, hence its Property states (PS) will be assigned a value if Default states (implicit or explicit) exist.  Resulting Property states ("RPS") are listed with [Property Specifier](#property-specifiers) syntax).
 
@@ -540,6 +542,8 @@ _(none)_       | _(none)_       | _(none)_                         | _(none)_   
 <!-- TODO more (creative) examples -->
 
 <!-- TODO following sections one heading level up (?) -->
+
+<!-- CURRENT REVIEW POSITION -->
 
 #### Choice Expression Scopes
 
