@@ -1,7 +1,5 @@
 # KiVar − PCB Assembly Variants for KiCad
 
-<!-- implement blocks: https://github.com/orgs/community/discussions/16925 -->
-
 ## Introduction
 
 <img align='right' style='width:6em;' src='doc/kivar-icon.inkscape.svg'>
@@ -138,7 +136,7 @@ pip install kivar-${VERSION}.tar.gz
 
 ## Usage
 
-> **Important:**  
+> [!IMPORTANT]
 > The following instructions refer to the version **0.2.x** series of KiVar, which uses a slightly modified, but significantly extended rule syntax, and an enhanced range of functions compared to earlier versions.  
 > If you are using an older version, please consider [updating](#installation) and [migrating](#migrate) your variation rules to the new format.
 
@@ -168,7 +166,7 @@ While KiVar 0.1.x and earlier used a single field named `KiVar.Rule`, current re
 
 So as a first step users should move all legacy rules from `KiVar.Rule` to `Var`.  This can be achieved by copying and pasting the values of the `KiVar.Rule` column over to the `Var` column in the KiCad Schematic Editor's Symbol Fields Table.
 
-> **Hint:**  
+> [!TIP]
 > To do this, open the Symbol Fields Table, sort by the legacy `KiVar.Rule` field, then copy & paste all relevant cells to the `Var` field (which may need to be created first).  Afterwards, remove all `KiVar.Rule` fields (can be done in the Symbol Fields Table dialog).
 
 Further reading: [Choice Expressions](#choice-expressions).
@@ -217,7 +215,7 @@ Rule String             | Resulting Choice1 Content | Resulting Choice1 Properti
 `*(10k -!) Choice2()`   | `10k`                     | `-!` (effectively `-f -b -p`) | `10k`                     | `-!` (effectively `-f -b -p`)
 `*(10k -!) Choice2(+b)` | `10k`                     | `-!` (effectively `-f -b -p`) | `10k`                     | `-! +b` (effectively `-f +b -p`)
 
-> **Important:**  
+> [!IMPORTANT]
 > Component attributes (DNP, Not in Pos, Not in BoM) are now **kept at their current state** (and ignored in the Choice match) if their corresponding properties are **not defined** (to _true_ or _false_).  
 > In versions prior to 0.2.0 all three component attributes were either set or cleared, depending on the presence of the `-!` option.  They could not be set to different states, and none of them could be kept untouched for component with variation rules.  Version 0.2.0 introduces much more flexibility regarding attribute management.
 
@@ -231,10 +229,10 @@ Starting with version 0.2.0, users can choose to _only_ specify the Property Sta
 
 For example, if a component is only fitted (Property Identifier `f`) in one Choice (of many), it is now sufficient to specify `+f` in _that_ Choice Expression and leave the rest of the assignment choices and the [Default Choice](#default-choices) (`*`) without a definition for the `f` Property.  The implicit default state for the `f` (fitted) Property will then automatically assumed to be the opposite (`-f`) for any other Choices.
 
-> **Note:**  
+> [!IMPORTANT]
 > Implicit Property States can only be used if there is only **one** type of State/Polarity (either `+` or `-`) assigned in any of the assignment's choices.
 
-> **Note:**  
+> [!IMPORTANT]
 > Implicit default States only work for Property States, as they use _boolean_ states (actually tri-state, but as soon as a Property is provided, it's either _true_ or _false_) and therefore have an (implicit) "opposite" value.
 
 Further reading: [Implicit Defaults](#implicit-defaults).
@@ -367,7 +365,7 @@ There can be multiple Content Specifiers in each Choice Expression.  Their value
 
 All Content Specifiers of a Choice Expression are evaluated from left to right and concatenated with one space character between each argument to form the final content string to be assigned when the corresponding choice is selected.
 
-> **Note:**  
+> [!NOTE]
 > As arguments can be separated by _any_ number of space characters, each separation will result in a single space character in the final content, no matter how many spaces were used for the argument separation originally (similar to HTML).  For strings that shall be assigned in a verbatim way (such as a URL), it is highly recommended to use quoting techniques (discussed later).
 
 ###### Examples
@@ -687,7 +685,7 @@ Using the [Base Scope](#base), CBEs define the component's Value content, compon
 
 [Content](#content-specifiers) and [Property](#property-specifiers) specifiers use the [Combined Format](#combined).
 
-> **Note:**  
+> [!NOTE]
 > This Choice Expression type probably seems familiar, as it is very similar to the classic notation used in versions prior to 0.2.0 of KiVar.
 
 ###### Syntax
@@ -809,10 +807,10 @@ It is therefore required for **each Content or Property assignment** that there 
 
 In short, assignments must be done for **either none or all** Choices.  There must be no sparsely defined assignments, because they would lead to inconsistent states when switching Choices.
 
-> **Note:**  
+> [!TIP]
 > To avoid undefined assignments, Default Choices can be used.  For example, the Default Choice Identifier (`*`) can be added to the Choice Identifier List of an appropriate Choice Expression for that expression to also apply to otherwise undefined Choices.
 
-> **Note:**  
+> [!NOTE]
 > The KiVar Choice Expression compiler will stop with an error if a sparse definitions are detected.
 
 <!-- todo?
@@ -836,7 +834,7 @@ Single and double quotation mark characters (`'` and `"`) can be nested.  The in
 
 To include any character as-is without being interpreted (e.g. `-` or `+` to be used as first character of a Content string, or a _quotation mark_ or _backslash_), that character must be _escaped_, i.e. preceded, with a _backslash_ character.
 
-> **Hint:**  
+> [!TIP]
 > For many cases, quoting and escaping in KiVar works just like in a regular POSIX shell interpreter.
 
 _Examples:_
@@ -847,7 +845,7 @@ _Examples:_
 * To assign a list of simple words or values as Content (e.g. value specifications such as `47µF 35V 10% X7R`), the Content Specifiers can be naturally listed without quoting or escaping.
 * To keep consecutive space characters, they must be escaped or quoted, e.g. to assign the Content string `three   spaces` the Content Specifier `three\ \ \ spaces`, `"three   spaces"` or `three'   'spaces` could be used.
 
-> **Note:**  
+> [!NOTE]
 > The same quoting and escaping rules apply for Aspect and Choice Identifiers.
 
 #### Expression Processing Example
@@ -897,7 +895,7 @@ How to read the rules:
  * **R10**: For choices `SD`, `EMMC` and `JP` this part is unfitted, else (`NAND`) fitted.
  * **R11**: For choices `SD`, `NAND` and `JP` this part is unfitted, else (`EMMC`) fitted.
 
-> **Note:**  
+> [!NOTE]
 > The Aspect Identifier is specified in a dedicated field for each involved component, so that the (visible) Expressions can be kept short.  
 > The Aspect Identifier field (`Var.Aspect`) is kept invisible, except for component R9, from where it is moved to the top of the figure for documentation purposes.  
 > _Hint:_ In the Schematic Editor, uncheck the "Allow automatic placement" option for such moved fields.
@@ -920,7 +918,7 @@ How to read the rules:
  * **R14**: For choice `2.41V/3.40V` the value is `309kΩ`, for choice `3.15V/3.57V`, the value is `100kΩ`.
  * **R15**: The value is always set to `750kΩ`.  Same explanation applies as for R13.
 
-> **Note:**  
+> [!NOTE]
 > The Aspect Identifier is handled similarly to example 2 above.
 
 ##### Example 4: IC Variant Selection
@@ -940,11 +938,11 @@ How to read the rules:
  * **U3**: For choice `IRAZ`, set the component value to `ISL91127IRAZ`, for choice `IRNZ` set it to `ISL91127IRNZ`.  Also, set the `MPN` field accordingly (expression not shown in the schematic, check out the demo project).  
    Furthermore, for choice `IRAZ`, set the (visible) `Info` field content to `Adjustable`, for choice `IRNZ` set it to `Fixed` for documentation purposes.
 
-> **Note:**  
+> [!NOTE]
 > The Aspect Identifier is referenced by a text field from component U3 using the text variable `${U3:Var.Aspect}`.  Using this technique, the pure Aspect Identifier can be placed inside any text for documentation purposes.
 
 <!-- obsolete, U3 also mentions it... also this is fundamental knowledge and should not only be a side-note in the examples.
-> **Note:**  
+> [!NOTE]
 > The Choice Expression in R16 is the _only_ one explicitly mentioning the Choice Identifier `IRNZ`, declaring that choice name for all rules that refer to the same Aspect Identifier (`ISL91127`).  
 > You need at least one Choice Expression explicitly mentioning a Choice Identifier for it to be declared and available.
 -->
@@ -966,7 +964,7 @@ In order to **switch the full set of ordering information or symbol and footprin
 
 In general, this variation technique can be used to switch between symbols that refer to either the same footprint (as in this example) or a different footprint shape (e.g. SMT vs. THT, or different SMT package sizes), which can exist side by side or even overlaid in the same spot of the PCB (only the footprints, _not_ the actual components!).
 
-> **Hint:**  
+> [!TIP]
 > Should you decide to use multiple overlapping footprint instances (of course, only one of them fitted with the actual component), the following custom DRC rule might become handy:
 >
 > ```
@@ -978,7 +976,7 @@ In general, this variation technique can be used to switch between symbols that 
 > )
 > ```
 
-> **Note:**  
+> [!NOTE]
 > If copper pads of multiple _alternate(!)_ footprints do overlap, it is important to assign the same net to each set of overlapping pads, in order to avoid DRC errors.  Some overlapping pads of alternate footprints will be applied the same net anyway (as in this example), but _unconnected_ symbol pins will automatically be applied calculated net names which will naturally conflict with those of alternate symbols if their corresponding copper pads overlap in the PCB.  It is then required to connect the unconnected pins with each other in the schematic (using wires or labels).  In the above example, visually distinguishable labels (P00..P17) were chosen for such connections that are otherwise without function.
 -->
 
@@ -993,7 +991,7 @@ How to read the rules:
  * **R19**: For choice `9535/0x20` this part will be fitted, else (`9535/0x24`, `9539/0x74`) unfitted.
  * **U4**: The I²C address information field `I2C Address` is set according to the resulting address, depending on the selected choice.  Also, the `MPN` and `Datasheet` fields are set accordingly (expression not shown in the schematic, check out the demo project).
 
-> **Note:**  
+> [!NOTE]
 > Depending on the available space in the schematic, the Aspect Identifier can be moved into the dedicated `Var.Aspect` field (and shown or hidden), as for U4, or be part of the Choice Expression, as for R18 and R19.
 
 ##### Example 6: Backlight LED Maximum Constant Current Selection
@@ -1012,7 +1010,7 @@ How to read the rules:
  * **R29**: This is the path for 20mA current. For choices `20`, `30`, `60`, `70`, `100`, `110`, `140`, `150` the resistor is fitted.  For other choices (incl. `JP`) it is unfitted.
  * **R30**: This is the _least significant_ path for 10mA current. For choices `10`, `30`, `50`, `70`, `90`, `110`, `130`, `150` the resistor is fitted.  For other choices (incl. `JP`) it is unfitted.
 
-> **Note:**  
+> [!NOTE]
 > Again, to save horizontal space, the Aspect Identifier is moved to the dedicated `Var.Aspect` field (shown), for all involved components.
 
 ### Rules Application
@@ -1039,7 +1037,7 @@ If they do not exactly match one definite choice (per variation aspect), then th
 
 In case the defined choice expressions cannot be parsed and/or compiled without problems, an error message window with a list of problems is presented.  Each of the listed problems must then be fixed in order to successfully start the plugin.
 
-> **Hint:**  
+> [!TIP]
 > Error messages can be clicked to focus the corresponding footprint on the _pcbnew_ canvas in the background.
 
 ##### Variation Choices Selection
@@ -1056,7 +1054,7 @@ If the values, field contents and attributes of the footprint(s) related to a va
 
 The change list section below the selection area summarizes all component changes to be performed for each related footprint if the current variation configuration is applied.
 
-> **Hint:**  
+> [!TIP]
 > Entries in the change list can be clicked to focus the corresponding footprint on the _pcbnew_ canvas in the background.
 
 After selecting a few different variation choices, the dialog window may look like the following:
