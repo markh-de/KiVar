@@ -565,7 +565,8 @@ The Base Scope is used to assign basic component values, such as `10kΩ`, `0.1µ
 
 Also, the Base Scope is used to modify component attributes, e.g. when a component shall change its _DNP_ (do not populate) state or when it shall or shall not be included in position files or the bill of materials.  Component attributes are specified using choice properties (through the use of [Property Specifiers](#property-specifiers)).
 
-The Base Scope can _not_ modify custom fields.  For this, the [Auxiliary Scope](#aux) must be used (see next section).
+> [!IMPORTANT]
+> Expressions in the Base Scope can _not_ modify custom fields.  For this, the [Auxiliary Scope](#aux) must be used (see next section).
 
 Examples using the Base Scope are discussed later in the [SBE](#sbe) and [CBE](#cbe) sections.
 
@@ -577,11 +578,11 @@ Examples using the Base Scope are discussed later in the [SBE](#sbe) and [CBE](#
 
 Expressions in **Auxiliary Scope** (or short: _Aux Scope_) are used for assigning values to specific component **custom fields** (called target fields) with the use of [Content Specifiers](#content-specifiers).
 
-Unlike in [Base Scope](#base), in Auxiliary Scope expressions do _not_ declare additional choices, but **only refer** to aspect choices declared in [Base Scope](#base).
+> [!IMPORTANT]
+> Expressions in the Auxiliary Scopy can _not_ declare additional Choice Identifiers, but only refer to existing ones that are declared in the [Base Scope](#base) of the same or any other component using the same Aspect.
 
-Each Choice Identifier used in an Aux Scope must therefore be declared in [Base Scope](#base), even if no change of the component value or attributes is required.
-
-Also, Aux Scope does not support specifying properties, as expressions in Aux Scope do not refer to the component itself, but to dedicated target fields within it.
+> [!IMPORTANT]
+> Expressions in the Auxiliary Scope refer to dedicated _target fields_ of components, not to the components themselves.  As target fields do not have mutable attributes, Auxiliary Scope expressions do _not_ support specifying Properties.
 
 ###### Typical Use
 
