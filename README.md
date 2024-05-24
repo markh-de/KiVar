@@ -671,12 +671,9 @@ Using the [Base Scope](#base), **Simple Base Expression**s define the component'
 
 ###### Syntax
 
-**Field name**:  
-`Var(<CIL>)`  
-_(with `<CIL>` being the Choice Identifier List)_
+**Field name**: `Var(<CIL>)` _(with `<CIL>` being the Choice Identifier List)_
 
-**Field content**:  
-Expression in [Simple Format](#simple)
+**Field content**: Expression in [Simple Format](#simple)
 
 ###### Examples
 
@@ -711,11 +708,9 @@ Using the [Base Scope](#base), **Combined Base Expression**s define the componen
 
 ###### Syntax
 
-**Field name**:  
-`Var`
+**Field name**: `Var`
 
-**Field content**:  
-Expression in [Combined Format](#combined)
+**Field content**: Expression in [Combined Format](#combined)
 
 ###### Examples
 
@@ -739,12 +734,9 @@ Using the [Auxiliary Scope](#aux), **Simple Auxiliary Expression**s define the c
 
 ###### Syntax
 
-**Field name**:  
-`<TARGET_FIELD_NAME>.Var(<CIL>)`  
-_(with `<TARGET_FIELD_NAME>` being the name of the custom target field to assign the content to, and `<CIL>` being the Choice Identifier List_
+**Field name**: `<TARGET_FIELD_NAME>.Var(<CIL>)` _(with `<TARGET_FIELD_NAME>` being the name of the custom target field to assign the content to, and `<CIL>` being the Choice Identifier List_
 
-**Field content**:  
-Expression in [Simple Format](#simple)
+**Field content**: Expression in [Simple Format](#simple)
 
 ###### Examples
 
@@ -782,12 +774,9 @@ Using the [Auxiliary Scope](#aux), **Combined Auxiliary Expression**s define the
 
 ###### Syntax
 
-**Field name**:  
-`<TARGET_FIELD_NAME>.Var`  
-_(with `<TARGET_FIELD_NAME>` being the name of the custom target field to assign the content to_
+**Field name**: `<TARGET_FIELD_NAME>.Var` _(with `<TARGET_FIELD_NAME>` being the name of the custom target field to assign the content to_
 
-**Field content**:  
-Expression in [Combined Format](#combined)
+**Field content**: Expression in [Combined Format](#combined)
 
 ###### Examples
 
