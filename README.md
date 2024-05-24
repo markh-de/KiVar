@@ -543,8 +543,6 @@ _(none)_       | _(none)_       | _(none)_                         | _(none)_   
 
 <!-- TODO following sections one heading level up (?) -->
 
-<!-- CURRENT REVIEW POSITION -->
-
 #### Choice Expression Scopes
 
 The data defined in Choice Expressions can be applied to either
@@ -561,16 +559,16 @@ For each of them there exists a dedicated **Choice Expression Scope**.  Both sco
 
 Expressions in **Base Scope** are used to
  * assign component **values** (using [Content Specifiers](#content-specifiers)) and **attributes** (using [Property Specifiers](#property-specifiers)), and to
- * **declare** and **define** [Choice Identifiers](#choice-identifiers) inside the scope of a corresponding [Aspect Identifier](#aspect-identifier).
+ * **declare** and **define** [Choice Identifiers](#choice-identifiers) in the context of a corresponding [Aspect Identifier](#aspect-identifier).
 
 ###### Typical Use
 
-The Base Scope is used to assign basic component values, such as `10kΩ`, `0.1µF 50V` or `74HC595`.  The component value is passed via [Content Specifiers](#content-specifiers).
+The Base Scope is used to assign basic component values, such as `10kΩ`, `0.1µF 50V` or `74HC595`, to the mandatory "Value" field of a component (i.e. symbol or footprint), passed via [Content Specifiers](#content-specifiers).
 
-Also, the Base Scope is used to modify component attributes, e.g. when a component shall change its _DNP_ (do not populate) state or when it shall or shall not be included in position files or the bill of materials.  Component attributes are specified using choice properties (through the use of [Property Specifiers](#property-specifiers)).
+Also, the Base Scope is used to modify component attributes, for example to modify the _DNP_ (Do Not Populate), _Exclude from Position Files_ and/or _Exclude from BoM_ states (attributes) of a component.  Component attributes are modified using [Property Specifiers](#property-specifiers).
 
 > [!IMPORTANT]
-> Expressions in the Base Scope can _not_ modify custom fields.  For this, the [Auxiliary Scope](#aux) must be used (see next section).
+> Expressions in the Base Scope can _not_ modify **custom** (i.e. other than "Value") fields.  For this, the [Auxiliary Scope](#aux) must be used (see next section).
 
 Examples using the Base Scope are discussed later in the [SBE](#sbe) and [CBE](#cbe) sections.
 
@@ -580,7 +578,7 @@ Examples using the Base Scope are discussed later in the [SBE](#sbe) and [CBE](#
 
 ###### Purpose
 
-Expressions in **Auxiliary Scope** (or short: _Aux Scope_) are used for assigning values to specific component **custom fields** (called target fields) with the use of [Content Specifiers](#content-specifiers).
+Expressions in **Auxiliary Scope** (or short: _Aux Scope_) are used for assigning values to specific component **custom** target fields with the use of [Content Specifiers](#content-specifiers).
 
 > [!IMPORTANT]
 > Expressions in the Auxiliary Scopy can _not_ declare additional Choice Identifiers, but only refer to existing ones that are declared in the [Base Scope](#base) of the same or any other component using the same Aspect.
@@ -588,11 +586,14 @@ Expressions in **Auxiliary Scope** (or short: _Aux Scope_) are used for assignin
 > [!IMPORTANT]
 > Expressions in the Auxiliary Scope refer to dedicated _target fields_ of components, not to the components themselves.  As target fields do not have mutable attributes, Auxiliary Scope expressions do _not_ support specifying Properties.
 
+> [!IMPORTANT]
+> Target fields referenced by Expressions in the Aux Scope _must_ already exist.
+
 ###### Typical Use
 
 The Aux Scope is used to assign custom field values, such as a manufacturer name or a manufacturer product number (MPN), for example, to be used in the bill of materials.
 
-Aux Scope expressions can also be used to specify other information, such as a choice-dependent text information that can be made visible anywhere in the schematic for documentation purposes.
+Aux Scope expressions can also be used to specify other information, such as user-defined choice-dependent text information to be visible anywhere in the schematic for documentation purposes (using text-variables).
 
 ###### Examples
 
@@ -631,7 +632,7 @@ Examples using the Simple Format are provided in the [SBE](#sbe) and [SAE](#sae)
 
 The **Combined Format** is particularly well suited to
  * allow combining multiple Choice Expressions in
- * a single component field (also, in Base Scope, optionally accepting the Aspect Identifier).
+ * a single component field (also, in [Base Scope](#base), optionally accepting the [Aspect Identifier](#aspect-identifier)).
 
 ###### Typical Use
 
@@ -646,7 +647,9 @@ Examples using the Combined Format are provided in the [CBE](#cbe) and [CAE](#ca
 
 #### Choice Expression Types
 
-The **combination** of the above two **Expression Scopes** and two **Expression Formats** results in the following four **Choice Expression Types** discussed in the following sub-sections.
+The **combination** of the above two **Expression Scopes** and two **Expression Formats** results in the following four **Choice Expression Types** discussed in the upcoming sub-sections.
+
+<!-- CURRENT REVIEW POSITION -->
 
 <a name="sbe"></a>
 
@@ -794,7 +797,7 @@ To define to which aspect (i.e. group/dimension/degree of freedom) a component's
 There are two methods of passing the **Aspect Identifier**:
 
 1. Using the _dedicated component field_ `Var.Aspect`, or
-2. as part of a _Combined Base Choice Expression_.
+2. as part of a [_Combined Base Expression_](#cbe).
 
 Details and examples can be found in the following sections.
 
