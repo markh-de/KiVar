@@ -649,23 +649,24 @@ Examples using the Combined Format are provided in the [CBE](#cbe) and [CAE](#ca
 
 The **combination** of the above two **Expression Scopes** and two **Expression Formats** results in the following four **Choice Expression Types** discussed in the upcoming sub-sections.
 
-<!-- CURRENT REVIEW POSITION -->
-
 <a name="sbe"></a>
 
-##### Simple Base Expressions
+##### Simple Base Expressions (SBE)
 
 ###### Typical Use
 
-Using the [Base Scope](#base), SBEs define the component's Value content and/or component attributes and features.
+Using the [Base Scope](#base), **Simple Base Expression**s define the component's Value content and/or component attributes and features.
 
-[Content](#content-specifiers) and [Property](#property-specifiers) specifiers use the [Simple Format](#simple).
+[Content](#content-specifiers) and [Property](#property-specifiers) specifiers are noted in the [Simple Format](#simple).
 
 ###### Syntax
 
-**Field name**: `Var(<CIL>)` (with `<CIL>` being the Choice Identifier List)
+**Field name**:  
+`Var(<CIL>)`  
+_(with `<CIL>` being the Choice Identifier List)_
 
-**Field content**: Expression in [Simple Format](#simple)
+**Field content**:  
+Expression in [Simple Format](#simple)
 
 ###### Examples
 
@@ -681,30 +682,34 @@ Field name            | Field content
 
 This defines an Aspect Identifier _"Capacitance"_ including (at least, depending on the definitions used in other components) the Choice Identifiers _"Low"_, _"Medium"_, _"High"_, which define capacitance values, as well as _"None"_, which assigns the (capacitance) value `DNP` and also makes the component unfitted and excluded from position files and BoM.
 
-Note how the Default Choice Identifier _"*"_ is used to also match the _"None"_ Choice to any Choice that may be defined outside this component (this may or may not be a good idea, depending on the safety vs. convenience policy).
+> [!NOTE]
+> In the above example, the Default Choice Identifier _"*"_ is added to the _"None"_ Choice, so that the corresponding expression also applies to any Choices declared outside this component in the same Aspect context. 
+ Applying default data to Choices that the current component or assignment is "unaware" of may or may not be a good idea, depending on the chosen convenience vs. safety ratio.
 
 <a name="cbe"></a>
 
-##### Combined Base Expressions
+##### Combined Base Expressions (CBE)
 
 ###### Typical Use
 
-Using the [Base Scope](#base), CBEs define the component's Value content, component attributes and features and/or the Aspect Identifier.
+Using the [Base Scope](#base), **Combined Base Expression**s define the component's Value content, component attributes and features and/or the Aspect Identifier.
 
-[Content](#content-specifiers) and [Property](#property-specifiers) specifiers use the [Combined Format](#combined).
+[Content](#content-specifiers) and [Property](#property-specifiers) specifiers are noted in the [Combined Format](#combined).
 
 > [!NOTE]
 > This Choice Expression type probably seems familiar, as it is very similar to the classic notation used in versions prior to 0.2.0 of KiVar.
 
 ###### Syntax
 
-**Field name**: `Var`
+**Field name**:  
+`Var`
 
-**Field content**: Expression in [Combined Format](#combined)
+**Field content**:  
+Expression in [Combined Format](#combined)
 
 ###### Examples
 
-The following single entry serves the same purpose as the above [SBE](#sbe) example.  Note how even the Aspect Identifier is included in the same single expression.
+The following single entry serves the same purpose as the above [SBE](#sbe) example.  Note how even the [Aspect Identifier](#aspect-identifier) is included in the same single expression.
 
 Field name     | Field content
 -------------- | -------------
@@ -714,19 +719,22 @@ The same explanation applies as for the above [SBE](#sbe) example.
 
 <a name="sae"></a>
 
-##### Simple Auxiliary Expressions
+##### Simple Auxiliary Expressions (SAE)
 
 ###### Typical Use
 
-Using the [Auxiliary Scope](#aux), SAEs define the content of a specified existing component field.
+Using the [Auxiliary Scope](#aux), **Simple Auxiliary Expression**s define the content of a specified _existing_ component field.
 
-[Content](#content-specifiers) and [Property](#property-specifiers) specifiers use the [Simple Format](#simple).
+[Content](#content-specifiers) and [Property](#property-specifiers) specifiers are noted in the [Simple Format](#simple).
 
 ###### Syntax
 
-**Field name**: `<TARGET_FIELD_NAME>.Var(<CIL>)` (with `<TARGET_FIELD_NAME>` being the name of the custom target field to assign the content to, and `<CIL>` being the Choice Identifier List
+**Field name**:  
+`<TARGET_FIELD_NAME>.Var(<CIL>)`  
+_(with `<TARGET_FIELD_NAME>` being the name of the custom target field to assign the content to, and `<CIL>` being the Choice Identifier List_
 
-**Field content**: Expression in [Simple Format](#simple)
+**Field content**:  
+Expression in [Simple Format](#simple)
 
 ###### Examples
 
@@ -754,19 +762,22 @@ Field name                    | Field content
 
 <a name="cae"></a>
 
-##### Combined Auxiliary Expressions
+##### Combined Auxiliary Expressions (CAE)
 
 ###### Typical Use
 
-Using the [Auxiliary Scope](#aux), CAEs define the content of a specified existing component field.
+Using the [Auxiliary Scope](#aux), **Combined Auxiliary Expression**s define the content of a specified _existing_ component field.
 
-[Content](#content-specifiers) and [Property](#property-specifiers) specifiers use the [Combined Format](#combined).
+[Content](#content-specifiers) and [Property](#property-specifiers) specifiers are noted in the [Combined Format](#combined).
 
 ###### Syntax
 
-**Field name**: `<TARGET_FIELD_NAME>.Var` (with `<TARGET_FIELD_NAME>` being the name of the custom target field to assign the content to
+**Field name**:  
+`<TARGET_FIELD_NAME>.Var`  
+_(with `<TARGET_FIELD_NAME>` being the name of the custom target field to assign the content to_
 
-**Field content**: Expression in [Combined Format](#combined)
+**Field content**:  
+Expression in [Combined Format](#combined)
 
 ###### Examples
 
