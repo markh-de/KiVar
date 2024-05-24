@@ -622,6 +622,11 @@ Expressions noted in Simple Format
  * can be useful when referencing a dedicated set of Choice Arguments using text variables that are embedded at another location of the schematic (see examples),
  * have the drawback that, due to the diversity of the symbol field names they occupy, each unique used field name adds to the list of field names available in total, for example when using the Symbol Fields Editor.
 
+###### Syntax
+
+> [!CAUTION]
+> TODO
+
 ###### Examples
 
 Examples using the Simple Format are provided in the [SBE](#sbe) and [SAE](#sae) sections.
@@ -640,6 +645,11 @@ Expressions noted in Combined Format
  * are recommended for shorter, simpler Content, such as a simple component Value, a short MPN or manufacturer name,
  * allow specifying multiple Choice Expressions in a compact way,
  * therefore save space when many Choices need to be declared or defined.
+
+###### Syntax
+
+> [!CAUTION]
+> TODO
 
 ###### Examples
 
