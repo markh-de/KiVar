@@ -630,7 +630,7 @@ Expressions noted in Simple Format
 
 Where `<CIL>` is the [Choice Identifiers List](#choice-identifiers) and `<CAL>` is the [Choice Arguments List](#choice-arguments).
 
-If an optional `<TARGET_FIELD_NAME>` is provided, the expression will relate to a specific custom field of the component (see [SAE](#sae)), else it will relate to the component itself (see [SBE](#sbe)).
+If an optional `<TARGET_FIELD_NAME>` (directly followed by a `.`) is provided, the expression will relate to a specific custom field of the component (see [SAE](#sae)), else it will relate to the component itself (see [SBE](#sbe)).
 
 ###### Examples
 
@@ -659,7 +659,7 @@ Expressions noted in Combined Format
 
 Where `<CIL_1>` ... `<CIL_N>` and `<CAL_1>` ... `<CAL_N>` are the [Choice Identifiers Lists](#choice-identifiers) with their respective [Choice Arguments Lists](#choice-arguments).
 
-If an optional `<TARGET_FIELD_NAME>` is provided, the expression will relate to a specific custom field of the component (see [CAE](#sae)), else it will relate to the component itself (see [CBE](#sbe)).
+If an optional `<TARGET_FIELD_NAME>` (directly followed by a `.`) is provided, the expression will relate to a specific custom field of the component (see [CAE](#sae)), else it will relate to the component itself (see [CBE](#sbe)).
 
 Passing the [Aspect Identifier](#aspect-identifier) via the `<ASPECT_ID>` specifier is only allowed for [Combined Base Expressions](#cbe), i.e. when no `<TARGET_FIELD_NAME>` is provided.
 
