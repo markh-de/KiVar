@@ -591,11 +591,11 @@ Expressions in **Auxiliary Scope** (or short: _Aux Scope_) are used for assignin
 
 ###### Typical Use
 
+<!-- TODO Rename all "auX" -> "auxiliary" -->
+
 The Aux Scope is used to assign custom field values, such as a manufacturer name or a manufacturer product number (MPN), for example, to be used in the bill of materials.
 
 Aux Scope expressions can also be used to specify other information, such as user-defined choice-dependent text information to be visible anywhere in the schematic for documentation purposes (using text-variables).
-
-###### Examples
 
 Examples using the Aux Scope are discussed later in the [SAE](#sae) and [CAE](#cae) sections.
 
@@ -622,19 +622,6 @@ Expressions noted in Simple Format
  * can be useful when referencing a dedicated set of Choice Arguments using text variables that are embedded at another location of the schematic (see examples),
  * have the drawback that, due to the diversity of the symbol field names they occupy, each unique used field name adds to the list of field names available in total, for example when using the Symbol Fields Editor.
 
-###### Syntax
-
-**Field name:** `[<TARGET_FIELD_NAME>.]Var(<CIL>)`
-
-**Field content:** `<CAL>`
-
-Used placeholders:
- * `<TARGET_FIELD_NAME>` (optional) specifies the component's field name the expression relates to. If provided, the [Auxiliary Scope](#aux) (i.e. a [SAE](#sae)) will be used, else the [Base Scope](#base) (i.e. a [SBE](#sbe)) will be used.
- * `<CIL>` specifies the [Choice Identifiers List](#choice-identifiers).
- * `<CAL>` specifies the corresponding [Choice Arguments List](#choice-arguments).
-
-###### Examples
-
 Examples using the Simple Format are provided in the [SBE](#sbe) and [SAE](#sae) sections.
 
 <a name="combined"></a>
@@ -652,30 +639,11 @@ Expressions noted in Combined Format
  * allow specifying multiple Choice Expressions in a compact way,
  * therefore save space when many Choices need to be declared or defined.
 
-###### Syntax
-
-<!-- TODO REVIEW POSITION - TODO: move syntax to types again, but be more specific about the actual content syntax! -->
-
-**Field name:** `[<TARGET_FIELD_NAME>.]Var`
-
-**Field content:** `[<ASPECT_ID> ]<CIL_1>(<CAL_1>)[ <CIL_2>(<CAL_2>)[ ...[ <CIL_N>(<CAL_N>)]]]`
-
-Used placeholders:
- * `<TARGET_FIELD_NAME>` (optional) specifies the component's field name the expression relates to. If provided, the [Auxiliary Scope](#aux) (i.e. a [CAE](#cae)) will be used, else the [Base Scope](#base) (i.e. a [CBE](#cbe)) will be used.
- * `<ASPECT_ID>` (optional) specifies the [Aspect Identifier](#aspect-identifier). If provided (only allowed for [Combined Base Expressions](#cbe), i.e. when no `<TARGET_FIELD_NAME>` is provided).
- * `<CIL_1>` .. `<CIL_N>` specify the [Choice Identifiers Lists](#choice-identifiers).
- * `<CAL_1>` .. `<CAL_N>` specify the corresponding [Choice Arguments Lists](#choice-arguments).
-
-> [!NOTE]
-> The [Aspect Identifier](#aspect-identifier) (if allowed) can be passed at _any_ element position within the Combined Expression (first or last position recommended for readability).
-
-###### Examples
-
 Examples using the Combined Format are provided in the [CBE](#cbe) and [CAE](#cae) sections.
 
 #### Choice Expression Types
 
-The **combination** of the above two **Expression Scopes** and two **Expression Formats** results in the following four **Choice Expression Types** discussed in the upcoming sub-sections.
+The four available **Choice Expression Types** are formed by using both [Expression Scopes](#expression-scopes) with both [Expression Formats](#expression-formats) as discussed in the following sub-sections.
 
 <a name="sbe"></a>
 
@@ -691,10 +659,11 @@ Using the [Base Scope](#base), **Simple Base Expression**s define the component'
 
 **Field name**: `Var(<CIL>)`
 
-**Field content**: Expression in [Simple Format](#simple)
+**Field content:** `<CAL>`
 
-Used placeholder:
- * `<CIL>` specifies the [Choice Identifiers Lists](#choice-identifiers).
+Used placeholders:
+ * `<CIL>` specifies the [Choice Identifiers List](#choice-identifiers).
+ * `<CAL>` specifies the corresponding [Choice Arguments List](#choice-arguments).
 
 ###### Examples
 
@@ -702,13 +671,13 @@ The following entries could be used for a capacitor.  Note how the Aspect Identi
 
 Field name            | Field content
 --------------------- | -------------
-`Var.Aspect`          | `Capacitance`
+`Var.Aspect` \*       | `Capacitance`
 `Var(Low)`            | `10µF`
 `Var(Medium)`         | `100µF`
 `Var(High)`           | `470µF`
 `Var(None,*)`         | `-! DNP`
 
-This defines an Aspect Identifier _"Capacitance"_ including (at least, depending on the definitions used in other components) the Choice Identifiers _"Low"_, _"Medium"_, _"High"_, which define capacitance values, as well as _"None"_, which assigns the (capacitance) value `DNP` and also makes the component unfitted and excluded from position files and BoM.
+\* This defines an Aspect Identifier _"Capacitance"_ including (at least, depending on the definitions used in other components) the Choice Identifiers _"Low"_, _"Medium"_, _"High"_, which define capacitance values, as well as _"None"_, which assigns the (capacitance) value `DNP` and also makes the component unfitted and excluded from position files and BoM.
 
 > [!NOTE]
 > In the above example, the Default Choice Identifier _"*"_ is added to the _"None"_ Choice, so that the corresponding expression also applies to any Choices declared outside this component in the same Aspect context. 
@@ -731,7 +700,15 @@ Using the [Base Scope](#base), **Combined Base Expression**s define the componen
 
 **Field name**: `Var`
 
-**Field content**: Expression in [Combined Format](#combined)
+**Field content:** `[<ASPECT_ID> ]<CIL_1>(<CAL_1>)[ <CIL_2>(<CAL_2>)[ ...[ <CIL_N>(<CAL_N>)]]]`
+
+Used placeholders:
+ * `<ASPECT_ID>` (optional) specifies the [Aspect Identifier](#aspect-identifier).
+ * `<CIL_1>` .. `<CIL_N>` specify the [Choice Identifiers Lists](#choice-identifiers).
+ * `<CAL_1>` .. `<CAL_N>` specify the corresponding [Choice Arguments Lists](#choice-arguments).
+
+> [!NOTE]
+> The [Aspect Identifier](#aspect-identifier) can be passed at _any_ element position within the Combined Expression (first or last position recommended for readability).
 
 ###### Examples
 
@@ -757,11 +734,12 @@ Using the [Auxiliary Scope](#aux), **Simple Auxiliary Expression**s define the c
 
 **Field name**: `<TARGET_FIELD_NAME>.Var(<CIL>)`
 
-**Field content**: Expression in [Simple Format](#simple)
+**Field content:** `<CAL>`
 
 Used placeholders:
  * `<TARGET_FIELD_NAME>` specifies the name of the component's field to assign specified content to.
  * `<CIL>` specifies the [Choice Identifiers List](#choice-identifiers).
+ * `<CAL>` specifies the corresponding [Choice Arguments List](#choice-arguments).
 
 ###### Examples
 
@@ -799,9 +777,14 @@ Using the [Auxiliary Scope](#aux), **Combined Auxiliary Expression**s define the
 
 ###### Syntax
 
-**Field name**: `<TARGET_FIELD_NAME>.Var` _(with `<TARGET_FIELD_NAME>` being the name of the custom target field to assign the content to_
+**Field name**: `<TARGET_FIELD_NAME>.Var`
 
-**Field content**: Expression in [Combined Format](#combined)
+**Field content:** `<CIL_1>(<CAL_1>)[ <CIL_2>(<CAL_2>)[ ...[ <CIL_N>(<CAL_N>)]]]`
+
+Used placeholders:
+ * `<TARGET_FIELD_NAME>` specifies the name of the component's field to assign specified content to.
+ * `<CIL_1>` .. `<CIL_N>` specify the [Choice Identifiers Lists](#choice-identifiers).
+ * `<CAL_1>` .. `<CAL_N>` specify the corresponding [Choice Arguments Lists](#choice-arguments).
 
 ###### Examples
 
@@ -893,10 +876,9 @@ _Examples:_
 
 #### Expression Processing Example
 
-The following figure illustrates the processing of some example Choice Expressions using [Combined Base Expressions](#cbe) (the classic expression type).
+The following figure illustrates the processing of some example Choice Expressions using [Combined Base Expressions](#cbe) (the classic Expression Type).
 
-![Expression 
-
+![Expression Processing Illustration](doc/processing.svg)
 
 #### Real-World Examples
 
