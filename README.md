@@ -654,6 +654,8 @@ Expressions noted in Combined Format
 
 ###### Syntax
 
+<!-- TODO REVIEW POSITION - TODO: move syntax to types again, but be more specific about the actual content syntax! -->
+
 **Field name:** `[<TARGET_FIELD_NAME>.]Var`
 
 **Field content:** `[<ASPECT_ID> ]<CIL_1>(<CAL_1>)[ <CIL_2>(<CAL_2>)[ ...[ <CIL_N>(<CAL_N>)]]]`
@@ -687,9 +689,12 @@ Using the [Base Scope](#base), **Simple Base Expression**s define the component'
 
 ###### Syntax
 
-**Field name**: `Var(<CIL>)` _(with `<CIL>` being the Choice Identifier List)_
+**Field name**: `Var(<CIL>)`
 
 **Field content**: Expression in [Simple Format](#simple)
+
+Used placeholder:
+ * `<CIL>` specifies the [Choice Identifiers Lists](#choice-identifiers).
 
 ###### Examples
 
@@ -750,9 +755,13 @@ Using the [Auxiliary Scope](#aux), **Simple Auxiliary Expression**s define the c
 
 ###### Syntax
 
-**Field name**: `<TARGET_FIELD_NAME>.Var(<CIL>)` _(with `<TARGET_FIELD_NAME>` being the name of the custom target field to assign the content to, and `<CIL>` being the Choice Identifier List_
+**Field name**: `<TARGET_FIELD_NAME>.Var(<CIL>)`
 
 **Field content**: Expression in [Simple Format](#simple)
+
+Used placeholders:
+ * `<TARGET_FIELD_NAME>` specifies the name of the component's field to assign specified content to.
+ * `<CIL>` specifies the [Choice Identifiers List](#choice-identifiers).
 
 ###### Examples
 
