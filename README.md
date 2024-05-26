@@ -628,9 +628,10 @@ Expressions noted in Simple Format
 
 **Field content:** `<CAL>`
 
-Where `<CIL>` is the [Choice Identifiers List](#choice-identifiers) and `<CAL>` is the [Choice Arguments List](#choice-arguments).
-
-If an optional `<TARGET_FIELD_NAME>` (directly followed by a `.`) is provided, the expression will relate to a specific custom field of the component (see [SAE](#sae)), else it will relate to the component itself (see [SBE](#sbe)).
+Used placeholders:
+ * `<TARGET_FIELD_NAME>` (optional) specifies the component's field name the expression relates to. If provided, the [Auxiliary Scope](#aux) (i.e. a [SAE](#sae)) will be used, else the [Base Scope](#base) (i.e. a [SBE](#sbe)) will be used.
+ * `<CIL>` specifies the [Choice Identifiers List](#choice-identifiers).
+ * `<CAL>` specifies the corresponding [Choice Arguments List](#choice-arguments).
 
 ###### Examples
 
@@ -657,11 +658,11 @@ Expressions noted in Combined Format
 
 **Field content:** `[<ASPECT_ID> ]<CIL_1>(<CAL_1>)[ <CIL_2>(<CAL_2>)[ ...[ <CIL_N>(<CAL_N>)]]]`
 
-Where `<CIL_1>` ... `<CIL_N>` and `<CAL_1>` ... `<CAL_N>` are the [Choice Identifiers Lists](#choice-identifiers) with their respective [Choice Arguments Lists](#choice-arguments).
-
-If an optional `<TARGET_FIELD_NAME>` (directly followed by a `.`) is provided, the expression will relate to a specific custom field of the component (see [CAE](#sae)), else it will relate to the component itself (see [CBE](#sbe)).
-
-Passing the [Aspect Identifier](#aspect-identifier) via the `<ASPECT_ID>` specifier is only allowed for [Combined Base Expressions](#cbe), i.e. when no `<TARGET_FIELD_NAME>` is provided.
+Used placeholders:
+ * `<TARGET_FIELD_NAME>` (optional) specifies the component's field name the expression relates to. If provided, the [Auxiliary Scope](#aux) (i.e. a [CAE](#cae)) will be used, else the [Base Scope](#base) (i.e. a [CBE](#cbe)) will be used.
+ * `<ASPECT_ID>` (optional) specifies the [Aspect Identifier](#aspect-identifier). If provided (only allowed for [Combined Base Expressions](#cbe), i.e. when no `<TARGET_FIELD_NAME>` is provided).
+ * `<CIL_1>` .. `<CIL_N>` specify the [Choice Identifiers Lists](#choice-identifiers).
+ * `<CAL_1>` .. `<CAL_N>` specify the corresponding [Choice Arguments Lists](#choice-arguments).
 
 > [!NOTE]
 > The [Aspect Identifier](#aspect-identifier) (if allowed) can be passed at _any_ element position within the Combined Expression (first or last position recommended for readability).
