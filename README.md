@@ -150,7 +150,7 @@ The following sections describe the process of configuring your schematic or boa
 
 The following sub-sections describe the variation rules setup procedure.
 
-While it is recommended to define variation rules in the schematic (i.e. in symbol fields) and propagate them to the board, it is also possible to define those rules directly in the board (i.e. in footprint fields) and propagate them back to the schematic.  Either way, in order for KiVar to utilize the variation rules, they must be present in the footprint fields, as KiVar uses the _pcbnew_ API wrapper and can therefore only operate on the board (not schematic) data, which must then be propagated back to the schematic as described in later sections. <!-- todo link -->
+While it is recommended to define variation rules in the schematic (i.e. in symbol fields) and propagate them to the board, it is also possible to define those rules directly in the board (i.e. in footprint fields) and propagate them back to the schematic.  Either way, in order for KiVar to utilize the variation rules, they must be present in the footprint fields, as KiVar uses the _pcbnew_ API wrapper and can therefore only operate on the board (not schematic) data, which must then be [propagated back to the schematic](#updating-the-schematic).
 
 <a name="migrate"></a>
 
@@ -339,8 +339,6 @@ Choice Expressions can use various notations, depending on their Scope and Forma
 
 #### Choice Arguments
 
-<!-- TODO improve! the CE does not really *consist* of a CAL, but includes one (Simple Format) or more (Combined Format) -->
-
 In its simplest form, a Choice Expression consists only of a **Choice Argument List**, which is just a list of _space_-separated **Choice Argument**s to be assigned to a component for a specific choice.
 
 Each _Choice Argument_ of the _Choice Argument List_ can be of one of two possible types:
@@ -430,8 +428,6 @@ The following Property allows grouping frequently used attribute properties for 
  * **All** (property identifier `!`).  
    This placeholder property represents all three attribute properties **Fitted**, **inPos** and **inBom** (`f`, `p`, `b`).  It can be used as a shortcut, as most of the times all three attributes are controlled together and set to the same state.  However, if finer control is desired, the state of individual attribute properties can still be overridden.  Examples can be found in the next section.
 
-<!-- TODO really name it "all"? yes, all attributes, but there will be more than attributes to be controlled with properties -->
-
 ###### Examples
 
 The Property Specifiers in the following input Choice Argument Lists will result in the following Property states:
@@ -506,7 +502,7 @@ Default Choice (`*`) Property Specifiers | Specific Choice (`B`) Property Specif
 _(none)_                                 | _(none)_                                  | _(none)_
 _(none)_                                 | `+f`                                      | `+f`
 `+f`                                     | _(none)_                                  | `+f`
-`+!`                                     | _(none)_                                  | `+fbp` _(see <!-- TODO link -->...)
+`+!`                                     | _(none)_                                  | `+fbp` _([&rarr; placeholder](#placeholder-properties))_
 `+!`                                     | `-p`                                      | `+fb` `-p`
 `+f`                                     | `-b`                                      | `+f` `-b`
 `+f +b`                                  | `-b`                                      | `+f` `-b`
@@ -525,23 +521,21 @@ For each assignment target, whenever only _one_ state (i.e. _either_ `+` _or_ `-
 
 The following table explains Implicit Default state inheritance rules using the example Choice Identifiers `C1`, `C2`, `C3`.  `C3` is not defined, but declared, hence its Property states (PS) will be assigned a value if Default states (implicit or explicit) exist.  Resulting Property states ("RPS") are listed with [Property Specifier](#property-specifiers) syntax).
 
-Choice `C1` PS | Choice `C2` PS | Implicit Default PS              | Default (`*`) PS | `C1` RPS  | `C2` RPS  | `C3` RPS
--------------- | -------------- | -------------------------------- | ---------------- | --------- | --------- | ---------
-_(none)_       | _(none)_       | _(none)_                         | _(none)_         | _(none)_  | _(none)_  | _(none)_
-`+f`           | _(none)_       | `-f` _(opposite of C1)_          | _(none)_         | `+f`      | `-f`      | `-f`
-`+f`           | `+f`           | `-f` _(opposite of C1/C2)_       | _(none)_         | `+f`      | `+f`      | `-f`
-`+f`           | `-f`           | _(none)_ _(C1/C2 contradicting)_ | _(none)_         | `+f`      | `-f`      | _(none)_ (Invalid! `f` missing!)
-`+f`           | `-f`           | _(none)_                         | `-f`             | `+f`      | `-f`      | `-f`
-`+f`           | `-p`           | `-f` `+p`                        | _(none)_         | `+f` `+p` | `-f` `-p` | `-f` `+p`
-`-!`           | _(none)_       | `+fbp` _(<!-- TODO link -->)_    | _(none)_         | `-fbp`    | `+fbp`    | `+fbp`
-`-!`           | `-p`           | `+fbp`                           | _(none)_         | `-fbp`    | `+fb` `-p`| `+fbp`
-`+f`           | _(none)_       | `-f`                             | `+b`             | `+f` `+b` | `-f` `+b` | `-f` `+b`
-`-!`           | `+p`           | `+fb` _(`p` contradicting)_      | _(none)_         | `-fbp     | `+fb` `+p`| `+fb` (Invalid! `p` missing!)
-`-!`           | `+p`           | `+fb`                            | `-p`             | `-fbp     | `+fb` `+p`| `+fb` `-p`
+Choice `C1` PS | Choice `C2` PS | Implicit Default PS                                      | Default (`*`) PS | `C1` RPS  | `C2` RPS  | `C3` RPS
+-------------- | -------------- | -------------------------------------------------------- | ---------------- | --------- | --------- | ---------
+_(none)_       | _(none)_       | _(none)_                                                 | _(none)_         | _(none)_  | _(none)_  | _(none)_
+`+f`           | _(none)_       | `-f` _(opposite of C1)_                                  | _(none)_         | `+f`      | `-f`      | `-f`
+`+f`           | `+f`           | `-f` _(opposite of C1/C2)_                               | _(none)_         | `+f`      | `+f`      | `-f`
+`+f`           | `-f`           | _(none)_ _(C1/C2 contradicting)_                         | _(none)_         | `+f`      | `-f`      | _(none)_ (Invalid! `f` missing!)
+`+f`           | `-f`           | _(none)_                                                 | `-f`             | `+f`      | `-f`      | `-f`
+`+f`           | `-p`           | `-f` `+p`                                                | _(none)_         | `+f` `+p` | `-f` `-p` | `-f` `+p`
+`-!`           | _(none)_       | `+fbp` _([&rarr; placeholder](#placeholder-properties))_ | _(none)_         | `-fbp`    | `+fbp`    | `+fbp`
+`-!`           | `-p`           | `+fbp`                                                   | _(none)_         | `-fbp`    | `+fb` `-p`| `+fbp`
+`+f`           | _(none)_       | `-f`                                                     | `+b`             | `+f` `+b` | `-f` `+b` | `-f` `+b`
+`-!`           | `+p`           | `+fb` _(`p` contradicting)_                              | _(none)_         | `-fbp     | `+fb` `+p`| `+fb` (Invalid! `p` missing!)
+`-!`           | `+p`           | `+fb`                                                    | `-p`             | `-fbp     | `+fb` `+p`| `+fb` `-p`
 
 <!-- TODO more (creative) examples -->
-
-<!-- TODO following sections one heading level up (?) -->
 
 #### Choice Expression Scopes
 
@@ -587,17 +581,15 @@ Expressions in **Auxiliary Scope** (or short: _Aux Scope_) are used for assignin
 > Expressions in the Auxiliary Scope refer to dedicated _target fields_ of components, not to the components themselves.  As target fields do not have mutable attributes, Auxiliary Scope expressions do _not_ support specifying Properties.
 
 > [!IMPORTANT]
-> Target fields referenced by Expressions in the Aux Scope _must_ already exist.
+> Target fields referenced by Expressions in the Auxiliary Scope _must_ already exist.
 
 ###### Typical Use
 
-<!-- TODO Rename all "auX" -> "auxiliary" -->
+The Auxiliary Scope is used to assign custom field values, such as a manufacturer name or a manufacturer product number (MPN), for example, to be used in the bill of materials.
 
-The Aux Scope is used to assign custom field values, such as a manufacturer name or a manufacturer product number (MPN), for example, to be used in the bill of materials.
+Auxiliary Scope expressions can also be used to specify other information, such as user-defined choice-dependent text information to be visible anywhere in the schematic for documentation purposes (using text-variables).
 
-Aux Scope expressions can also be used to specify other information, such as user-defined choice-dependent text information to be visible anywhere in the schematic for documentation purposes (using text-variables).
-
-Examples using the Aux Scope are discussed later in the [SAE](#sae) and [CAE](#cae) sections.
+Examples using the Auxiliary Scope are discussed later in the [SAE](#sae) and [CAE](#cae) sections.
 
 #### Choice Expression Formats
 
@@ -1108,9 +1100,9 @@ To propagate the changes back to the schematic, use the PCB Editor menu item _To
 
 #### Using the KiVar Action Plugin
 
-The KiVar CLI application works similar to the plugin, except that it manipulates an existing `.kicad_pcb` file (which must not be opened in another application.
+The KiVar CLI application works similar to the plugin, except that it manipulates an existing `.kicad_pcb` file (which must not be opened in another application).
 
-For usage information, run:
+For usage information and available commands and options, run:
 
 ```
 kivar --help
