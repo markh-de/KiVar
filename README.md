@@ -745,8 +745,8 @@ Field name                    | Field content
 `MPN.Var(1.8V)`               | `ALDO200V18`
 `MPN.Var(3.3V)`               | `ALDO200V33`
 `MPN.Var(adjustable)`         | `ALDO200ADJ`
-`Datasheet.Var(1.8V,3.3V)     | `"https://example.kivar.markh.de/products/aldo200v.pdf"`
-`Datasheet.Var(adjustable)    | `"https://example.kivar.markh.de/products/aldo200a.pdf"`
+`Datasheet.Var(1.8V,3.3V)`    | `"https://example.kivar.markh.de/products/aldo200v.pdf"`
+`Datasheet.Var(adjustable)`   | `"https://example.kivar.markh.de/products/aldo200a.pdf"`
 
 This defines the Choice Identifiers _"1.8V"_, _"3.3V"_ and _"adjustable"_, which define different field content for the target fields _"Description"_, _"MPN"_ and _"Datasheet"_.  Note how this example does not make use of the Default Choice Identifier _"*"_, as there are no sensible defaults that could be assigned for yet unknown Choices that may be declared by other components.
 
