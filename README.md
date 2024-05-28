@@ -150,7 +150,7 @@ The following sections describe the process of configuring your schematic or boa
 
 The following sub-sections describe the variation rules setup procedure.
 
-While it is recommended to define variation rules in the schematic (i.e. in symbol fields) and propagate them to the board, it is also possible to define those rules directly in the board (i.e. in footprint fields) and propagate them back to the schematic.  Either way, in order for KiVar to utilize the variation rules, they must be present in the footprint fields, as KiVar uses the _pcbnew_ API wrapper and can therefore only operate on the board (not schematic) data, which must then be propagated back to the schematic as described in later sections. <!-- todo link -->
+While it is recommended to define variation rules in the schematic (i.e. in symbol fields) and propagate them to the board, it is also possible to define those rules directly in the board (i.e. in footprint fields) and propagate them back to the schematic.  Either way, in order for KiVar to utilize the variation rules, they must be present in the footprint fields, as KiVar uses the _pcbnew_ API wrapper and can therefore only operate on the board (not schematic) data, which must then be [propagated back to the schematic](#updating-the-schematic).
 
 <a name="migrate"></a>
 
@@ -339,8 +339,6 @@ Choice Expressions can use various notations, depending on their Scope and Forma
 
 #### Choice Arguments
 
-<!-- TODO improve! the CE does not really *consist* of a CAL, but includes one (Simple Format) or more (Combined Format) -->
-
 In its simplest form, a Choice Expression consists only of a **Choice Argument List**, which is just a list of _space_-separated **Choice Argument**s to be assigned to a component for a specific choice.
 
 Each _Choice Argument_ of the _Choice Argument List_ can be of one of two possible types:
@@ -430,8 +428,6 @@ The following Property allows grouping frequently used attribute properties for 
  * **All** (property identifier `!`).  
    This placeholder property represents all three attribute properties **Fitted**, **inPos** and **inBom** (`f`, `p`, `b`).  It can be used as a shortcut, as most of the times all three attributes are controlled together and set to the same state.  However, if finer control is desired, the state of individual attribute properties can still be overridden.  Examples can be found in the next section.
 
-<!-- TODO really name it "all"? yes, all attributes, but there will be more than attributes to be controlled with properties -->
-
 ###### Examples
 
 The Property Specifiers in the following input Choice Argument Lists will result in the following Property states:
@@ -506,7 +502,7 @@ Default Choice (`*`) Property Specifiers | Specific Choice (`B`) Property Specif
 _(none)_                                 | _(none)_                                  | _(none)_
 _(none)_                                 | `+f`                                      | `+f`
 `+f`                                     | _(none)_                                  | `+f`
-`+!`                                     | _(none)_                                  | `+fbp` _(see <!-- TODO link -->...)
+`+!`                                     | _(none)_                                  | `+fbp` _([&rarr; placeholder](#placeholder-properties))_
 `+!`                                     | `-p`                                      | `+fb` `-p`
 `+f`                                     | `-b`                                      | `+f` `-b`
 `+f +b`                                  | `-b`                                      | `+f` `-b`
@@ -525,23 +521,21 @@ For each assignment target, whenever only _one_ state (i.e. _either_ `+` _or_ `-
 
 The following table explains Implicit Default state inheritance rules using the example Choice Identifiers `C1`, `C2`, `C3`.  `C3` is not defined, but declared, hence its Property states (PS) will be assigned a value if Default states (implicit or explicit) exist.  Resulting Property states ("RPS") are listed with [Property Specifier](#property-specifiers) syntax).
 
-Choice `C1` PS | Choice `C2` PS | Implicit Default PS              | Default (`*`) PS | `C1` RPS  | `C2` RPS  | `C3` RPS
--------------- | -------------- | -------------------------------- | ---------------- | --------- | --------- | ---------
-_(none)_       | _(none)_       | _(none)_                         | _(none)_         | _(none)_  | _(none)_  | _(none)_
-`+f`           | _(none)_       | `-f` _(opposite of C1)_          | _(none)_         | `+f`      | `-f`      | `-f`
-`+f`           | `+f`           | `-f` _(opposite of C1/C2)_       | _(none)_         | `+f`      | `+f`      | `-f`
-`+f`           | `-f`           | _(none)_ _(C1/C2 contradicting)_ | _(none)_         | `+f`      | `-f`      | _(none)_ (Invalid! `f` missing!)
-`+f`           | `-f`           | _(none)_                         | `-f`             | `+f`      | `-f`      | `-f`
-`+f`           | `-p`           | `-f` `+p`                        | _(none)_         | `+f` `+p` | `-f` `-p` | `-f` `+p`
-`-!`           | _(none)_       | `+fbp` _(<!-- TODO link -->)_    | _(none)_         | `-fbp`    | `+fbp`    | `+fbp`
-`-!`           | `-p`           | `+fbp`                           | _(none)_         | `-fbp`    | `+fb` `-p`| `+fbp`
-`+f`           | _(none)_       | `-f`                             | `+b`             | `+f` `+b` | `-f` `+b` | `-f` `+b`
-`-!`           | `+p`           | `+fb` _(`p` contradicting)_      | _(none)_         | `-fbp     | `+fb` `+p`| `+fb` (Invalid! `p` missing!)
-`-!`           | `+p`           | `+fb`                            | `-p`             | `-fbp     | `+fb` `+p`| `+fb` `-p`
+Choice `C1` PS | Choice `C2` PS | Implicit Default PS                                      | Default (`*`) PS | `C1` RPS  | `C2` RPS  | `C3` RPS
+-------------- | -------------- | -------------------------------------------------------- | ---------------- | --------- | --------- | ---------
+_(none)_       | _(none)_       | _(none)_                                                 | _(none)_         | _(none)_  | _(none)_  | _(none)_
+`+f`           | _(none)_       | `-f` _(opposite of C1)_                                  | _(none)_         | `+f`      | `-f`      | `-f`
+`+f`           | `+f`           | `-f` _(opposite of C1/C2)_                               | _(none)_         | `+f`      | `+f`      | `-f`
+`+f`           | `-f`           | _(none)_ _(C1/C2 contradicting)_                         | _(none)_         | `+f`      | `-f`      | _(none)_ (Invalid! `f` missing!)
+`+f`           | `-f`           | _(none)_                                                 | `-f`             | `+f`      | `-f`      | `-f`
+`+f`           | `-p`           | `-f` `+p`                                                | _(none)_         | `+f` `+p` | `-f` `-p` | `-f` `+p`
+`-!`           | _(none)_       | `+fbp` _([&rarr; placeholder](#placeholder-properties))_ | _(none)_         | `-fbp`    | `+fbp`    | `+fbp`
+`-!`           | `-p`           | `+fbp`                                                   | _(none)_         | `-fbp`    | `+fb` `-p`| `+fbp`
+`+f`           | _(none)_       | `-f`                                                     | `+b`             | `+f` `+b` | `-f` `+b` | `-f` `+b`
+`-!`           | `+p`           | `+fb` _(`p` contradicting)_                              | _(none)_         | `-fbp     | `+fb` `+p`| `+fb` (Invalid! `p` missing!)
+`-!`           | `+p`           | `+fb`                                                    | `-p`             | `-fbp     | `+fb` `+p`| `+fb` `-p`
 
 <!-- TODO more (creative) examples -->
-
-<!-- TODO following sections one heading level up (?) -->
 
 #### Choice Expression Scopes
 
@@ -587,17 +581,15 @@ Expressions in **Auxiliary Scope** (or short: _Aux Scope_) are used for assignin
 > Expressions in the Auxiliary Scope refer to dedicated _target fields_ of components, not to the components themselves.  As target fields do not have mutable attributes, Auxiliary Scope expressions do _not_ support specifying Properties.
 
 > [!IMPORTANT]
-> Target fields referenced by Expressions in the Aux Scope _must_ already exist.
+> Target fields referenced by Expressions in the Auxiliary Scope _must_ already exist.
 
 ###### Typical Use
 
-The Aux Scope is used to assign custom field values, such as a manufacturer name or a manufacturer product number (MPN), for example, to be used in the bill of materials.
+The Auxiliary Scope is used to assign custom field values, such as a manufacturer name or a manufacturer product number (MPN), for example, to be used in the bill of materials.
 
-Aux Scope expressions can also be used to specify other information, such as user-defined choice-dependent text information to be visible anywhere in the schematic for documentation purposes (using text-variables).
+Auxiliary Scope expressions can also be used to specify other information, such as user-defined choice-dependent text information to be visible anywhere in the schematic for documentation purposes (using text-variables).
 
-###### Examples
-
-Examples using the Aux Scope are discussed later in the [SAE](#sae) and [CAE](#cae) sections.
+Examples using the Auxiliary Scope are discussed later in the [SAE](#sae) and [CAE](#cae) sections.
 
 #### Choice Expression Formats
 
@@ -622,19 +614,6 @@ Expressions noted in Simple Format
  * can be useful when referencing a dedicated set of Choice Arguments using text variables that are embedded at another location of the schematic (see examples),
  * have the drawback that, due to the diversity of the symbol field names they occupy, each unique used field name adds to the list of field names available in total, for example when using the Symbol Fields Editor.
 
-###### Syntax
-
-**Field name:** `[<TARGET_FIELD_NAME>.]Var(<CIL>)`
-
-**Field content:** `<CAL>`
-
-Used placeholders:
- * `<TARGET_FIELD_NAME>` (optional) specifies the component's field name the expression relates to. If provided, the [Auxiliary Scope](#aux) (i.e. a [SAE](#sae)) will be used, else the [Base Scope](#base) (i.e. a [SBE](#sbe)) will be used.
- * `<CIL>` specifies the [Choice Identifiers List](#choice-identifiers).
- * `<CAL>` specifies the corresponding [Choice Arguments List](#choice-arguments).
-
-###### Examples
-
 Examples using the Simple Format are provided in the [SBE](#sbe) and [SAE](#sae) sections.
 
 <a name="combined"></a>
@@ -652,30 +631,11 @@ Expressions noted in Combined Format
  * allow specifying multiple Choice Expressions in a compact way,
  * therefore save space when many Choices need to be declared or defined.
 
-###### Syntax
-
-<!-- TODO REVIEW POSITION - TODO: move syntax to types again, but be more specific about the actual content syntax! -->
-
-**Field name:** `[<TARGET_FIELD_NAME>.]Var`
-
-**Field content:** `[<ASPECT_ID> ]<CIL_1>(<CAL_1>)[ <CIL_2>(<CAL_2>)[ ...[ <CIL_N>(<CAL_N>)]]]`
-
-Used placeholders:
- * `<TARGET_FIELD_NAME>` (optional) specifies the component's field name the expression relates to. If provided, the [Auxiliary Scope](#aux) (i.e. a [CAE](#cae)) will be used, else the [Base Scope](#base) (i.e. a [CBE](#cbe)) will be used.
- * `<ASPECT_ID>` (optional) specifies the [Aspect Identifier](#aspect-identifier). If provided (only allowed for [Combined Base Expressions](#cbe), i.e. when no `<TARGET_FIELD_NAME>` is provided).
- * `<CIL_1>` .. `<CIL_N>` specify the [Choice Identifiers Lists](#choice-identifiers).
- * `<CAL_1>` .. `<CAL_N>` specify the corresponding [Choice Arguments Lists](#choice-arguments).
-
-> [!NOTE]
-> The [Aspect Identifier](#aspect-identifier) (if allowed) can be passed at _any_ element position within the Combined Expression (first or last position recommended for readability).
-
-###### Examples
-
 Examples using the Combined Format are provided in the [CBE](#cbe) and [CAE](#cae) sections.
 
 #### Choice Expression Types
 
-The **combination** of the above two **Expression Scopes** and two **Expression Formats** results in the following four **Choice Expression Types** discussed in the upcoming sub-sections.
+The four available **Choice Expression Types** are formed by using both [Expression Scopes](#expression-scopes) with both [Expression Formats](#expression-formats) as discussed in the following sub-sections.
 
 <a name="sbe"></a>
 
@@ -691,10 +651,11 @@ Using the [Base Scope](#base), **Simple Base Expression**s define the component'
 
 **Field name**: `Var(<CIL>)`
 
-**Field content**: Expression in [Simple Format](#simple)
+**Field content:** `<CAL>`
 
-Used placeholder:
- * `<CIL>` specifies the [Choice Identifiers Lists](#choice-identifiers).
+Used placeholders:
+ * `<CIL>` specifies the [Choice Identifiers List](#choice-identifiers).
+ * `<CAL>` specifies the corresponding [Choice Arguments List](#choice-arguments).
 
 ###### Examples
 
@@ -702,13 +663,13 @@ The following entries could be used for a capacitor.  Note how the Aspect Identi
 
 Field name            | Field content
 --------------------- | -------------
-`Var.Aspect`          | `Capacitance`
+`Var.Aspect` \*       | `Capacitance`
 `Var(Low)`            | `10µF`
 `Var(Medium)`         | `100µF`
 `Var(High)`           | `470µF`
 `Var(None,*)`         | `-! DNP`
 
-This defines an Aspect Identifier _"Capacitance"_ including (at least, depending on the definitions used in other components) the Choice Identifiers _"Low"_, _"Medium"_, _"High"_, which define capacitance values, as well as _"None"_, which assigns the (capacitance) value `DNP` and also makes the component unfitted and excluded from position files and BoM.
+\* This defines an Aspect Identifier _"Capacitance"_ including (at least, depending on the definitions used in other components) the Choice Identifiers _"Low"_, _"Medium"_, _"High"_, which define capacitance values, as well as _"None"_, which assigns the (capacitance) value `DNP` and also makes the component unfitted and excluded from position files and BoM.
 
 > [!NOTE]
 > In the above example, the Default Choice Identifier _"*"_ is added to the _"None"_ Choice, so that the corresponding expression also applies to any Choices declared outside this component in the same Aspect context. 
@@ -731,7 +692,15 @@ Using the [Base Scope](#base), **Combined Base Expression**s define the componen
 
 **Field name**: `Var`
 
-**Field content**: Expression in [Combined Format](#combined)
+**Field content:** `[<ASPECT_ID> ]<CIL_1>(<CAL_1>)[ <CIL_2>(<CAL_2>)[ ...[ <CIL_N>(<CAL_N>)]]]`
+
+Used placeholders:
+ * `<ASPECT_ID>` (optional) specifies the [Aspect Identifier](#aspect-identifier).
+ * `<CIL_1>` .. `<CIL_N>` specify the [Choice Identifiers Lists](#choice-identifiers).
+ * `<CAL_1>` .. `<CAL_N>` specify the corresponding [Choice Arguments Lists](#choice-arguments).
+
+> [!NOTE]
+> The [Aspect Identifier](#aspect-identifier) can be passed at _any_ element position within the Combined Expression (first or last position recommended for readability).
 
 ###### Examples
 
@@ -757,11 +726,12 @@ Using the [Auxiliary Scope](#aux), **Simple Auxiliary Expression**s define the c
 
 **Field name**: `<TARGET_FIELD_NAME>.Var(<CIL>)`
 
-**Field content**: Expression in [Simple Format](#simple)
+**Field content:** `<CAL>`
 
 Used placeholders:
  * `<TARGET_FIELD_NAME>` specifies the name of the component's field to assign specified content to.
  * `<CIL>` specifies the [Choice Identifiers List](#choice-identifiers).
+ * `<CAL>` specifies the corresponding [Choice Arguments List](#choice-arguments).
 
 ###### Examples
 
@@ -775,8 +745,8 @@ Field name                    | Field content
 `MPN.Var(1.8V)`               | `ALDO200V18`
 `MPN.Var(3.3V)`               | `ALDO200V33`
 `MPN.Var(adjustable)`         | `ALDO200ADJ`
-`Datasheet.Var(1.8V,3.3V)     | `"https://example.kivar.markh.de/products/aldo200v.pdf"`
-`Datasheet.Var(adjustable)    | `"https://example.kivar.markh.de/products/aldo200a.pdf"`
+`Datasheet.Var(1.8V,3.3V)`    | `"https://example.kivar.markh.de/products/aldo200v.pdf"`
+`Datasheet.Var(adjustable)`   | `"https://example.kivar.markh.de/products/aldo200a.pdf"`
 
 This defines the Choice Identifiers _"1.8V"_, _"3.3V"_ and _"adjustable"_, which define different field content for the target fields _"Description"_, _"MPN"_ and _"Datasheet"_.  Note how this example does not make use of the Default Choice Identifier _"*"_, as there are no sensible defaults that could be assigned for yet unknown Choices that may be declared by other components.
 
@@ -799,9 +769,14 @@ Using the [Auxiliary Scope](#aux), **Combined Auxiliary Expression**s define the
 
 ###### Syntax
 
-**Field name**: `<TARGET_FIELD_NAME>.Var` _(with `<TARGET_FIELD_NAME>` being the name of the custom target field to assign the content to_
+**Field name**: `<TARGET_FIELD_NAME>.Var`
 
-**Field content**: Expression in [Combined Format](#combined)
+**Field content:** `<CIL_1>(<CAL_1>)[ <CIL_2>(<CAL_2>)[ ...[ <CIL_N>(<CAL_N>)]]]`
+
+Used placeholders:
+ * `<TARGET_FIELD_NAME>` specifies the name of the component's field to assign specified content to.
+ * `<CIL_1>` .. `<CIL_N>` specify the [Choice Identifiers Lists](#choice-identifiers).
+ * `<CAL_1>` .. `<CAL_N>` specify the corresponding [Choice Arguments Lists](#choice-arguments).
 
 ###### Examples
 
@@ -893,10 +868,9 @@ _Examples:_
 
 #### Expression Processing Example
 
-The following figure illustrates the processing of some example Choice Expressions using [Combined Base Expressions](#cbe) (the classic expression type).
+The following figure illustrates the processing of some example Choice Expressions using [Combined Base Expressions](#cbe) (the classic Expression Type).
 
-![Expression 
-
+![Expression Processing Illustration](doc/processing.svg)
 
 #### Real-World Examples
 
@@ -1126,9 +1100,9 @@ To propagate the changes back to the schematic, use the PCB Editor menu item _To
 
 #### Using the KiVar Action Plugin
 
-The KiVar CLI application works similar to the plugin, except that it manipulates an existing `.kicad_pcb` file (which must not be opened in another application.
+The KiVar CLI application works similar to the plugin, except that it manipulates an existing `.kicad_pcb` file (which must not be opened in another application).
 
-For usage information, run:
+For usage information and available commands and options, run:
 
 ```
 kivar --help
