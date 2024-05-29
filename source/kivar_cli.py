@@ -17,8 +17,11 @@ except ModuleNotFoundError:
 # also check all TODO notes buried in the code below!
 
 # TODO have common help URL for both plugin and CLI? place in module?
-def help_url():
-    return 'https://github.com/markh-de/KiVar/blob/main/README.md#usage'
+def doc_vcs_ref():
+    return f'v{version()}'
+
+def doc_base_url():
+    return f'https://doc.kivar.markh.de/{doc_vcs_ref()}/README.md'
 
 def print_err(*args, file=sys.stderr, **kwargs):
     print(*args, file=file, **kwargs)
@@ -41,7 +44,7 @@ def build_vardict_wrapper(fpdict):
         return None
     if len(vardict) == 0:
         print_err(f'Error: No rule definitions found.')
-        print_err(f'       Read {help_url()} for usage instructions.')
+        print_err(f'       Read {doc_base_url()}#usage for usage instructions.')
         return None
     return vardict
 

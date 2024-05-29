@@ -35,10 +35,6 @@ release_pypi() {
     src_tmp_dir="$SRC_DIR/pypi"
     tmp_dir=$(mktemp -d)
 
-    # TODO shorten README.md, only lines before:
-    #      <!-- intro_end -->
-    # is readme text used as description?
-
     sed "s/<<VERSION>>/$VERSION/g" "$src_tmp_dir/setup.py.tpl" > "$tmp_dir/setup.py"
 
     mkdir -p "$tmp_dir/$RELEASE_NAME/"
@@ -48,7 +44,7 @@ release_pypi() {
        "$SRC_DIR/kivar_backend.py" \
        "$tmp_dir/$RELEASE_NAME/"
 
-    cp "$README_FILE" \
+    cp "$src_tmp_dir/README.md" \
        "$tmp_dir/"
 
     mkdir -p "$release_dir/"
@@ -93,7 +89,6 @@ VERSION=$1
 RELEASE_NAME='kivar'
 ID='de_markh_kivar'
 RELEASE_DIR=$(readlink -f "$(dirname "$0")")"/../release/v$VERSION"
-README_FILE=$(readlink -f "$(dirname "$0")")"/../README.md"
 SRC_DIR=$(readlink -f "$(dirname "$0")")
 
 echo "--- PCM ---"

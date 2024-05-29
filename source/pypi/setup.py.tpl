@@ -1,12 +1,14 @@
 from setuptools import setup
+import os
 
-# TODO add longer description
-# TODO add short readme, read it, add as markdown, see
-#      https://www.youtube.com/watch?v=tEFkHEKypLI
+with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'README.md'), 'r') as f:
+    long_descr = f.read()
 
 setup(
     name='kivar',
     description='PCB Assembly Variants for KiCad',
+    long_description=long_descr,
+    long_description_content_type='text/markdown',
     license='MIT',
     url='https://github.com/markh-de/KiVar',
     author='Mark Hämmerling',

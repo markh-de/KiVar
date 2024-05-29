@@ -16,8 +16,7 @@ except ModuleNotFoundError:
 #   (requires KiCad API change/fix: https://gitlab.com/kicad/code/kicad/-/issues/16426)
 
 def doc_vcs_ref():
-    return '46-update-documentation-for-020-release'
-#    return f'v{version()}'
+    return f'v{version()}'
 
 def doc_base_url():
     return f'https://doc.kivar.markh.de/{doc_vcs_ref()}/README.md'
