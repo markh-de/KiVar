@@ -15,12 +15,12 @@ except ModuleNotFoundError:
 # * After applying configuration, define board variables containing the choice for each aspect, e.g. ${KIVAR.BOOT_SEL} => NAND
 #   (requires KiCad API change/fix: https://gitlab.com/kicad/code/kicad/-/issues/16426)
 
-def doc_branch():
+def doc_vcs_ref():
     return '46-update-documentation-for-020-release'
-#    return 'v0.2.x'
+#    return f'v{version()}'
 
 def doc_base_url():
-    return f'https://doc.kivar.markh.de/{doc_branch()}/README.md'
+    return f'https://doc.kivar.markh.de/{doc_vcs_ref()}/README.md'
 
 class KiVarPlugin(pcbnew.ActionPlugin):
     def defaults(self):
