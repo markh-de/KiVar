@@ -539,13 +539,103 @@
           "label": "Var",
           "name": "Var",
           "show": true
+        },
+        {
+          "group_by": false,
+          "label": "ChoiceText.Var",
+          "name": "ChoiceText.Var",
+          "show": false
+        },
+        {
+          "group_by": false,
+          "label": "Datasheet.Var(*)",
+          "name": "Datasheet.Var(*)",
+          "show": false
+        },
+        {
+          "group_by": false,
+          "label": "Datasheet.Var(9539/0x74)",
+          "name": "Datasheet.Var(9539/0x74)",
+          "show": false
+        },
+        {
+          "group_by": false,
+          "label": "I2C Address",
+          "name": "I2C Address",
+          "show": false
+        },
+        {
+          "group_by": false,
+          "label": "I2C Address.Var",
+          "name": "I2C Address.Var",
+          "show": false
+        },
+        {
+          "group_by": false,
+          "label": "MPN",
+          "name": "MPN",
+          "show": false
+        },
+        {
+          "group_by": false,
+          "label": "MPN.Var(*)",
+          "name": "MPN.Var(*)",
+          "show": false
+        },
+        {
+          "group_by": false,
+          "label": "MPN.Var(9539/0x74)",
+          "name": "MPN.Var(9539/0x74)",
+          "show": false
+        },
+        {
+          "group_by": false,
+          "label": "Manufacturer",
+          "name": "Manufacturer",
+          "show": false
+        },
+        {
+          "group_by": false,
+          "label": "ChoiceText",
+          "name": "ChoiceText",
+          "show": false
+        },
+        {
+          "group_by": false,
+          "label": "Var.Aspect",
+          "name": "Var.Aspect",
+          "show": true
+        },
+        {
+          "group_by": false,
+          "label": "MPN.Var",
+          "name": "MPN.Var",
+          "show": false
+        },
+        {
+          "group_by": false,
+          "label": "Info.Var",
+          "name": "Info.Var",
+          "show": false
+        },
+        {
+          "group_by": false,
+          "label": "Var(JP)",
+          "name": "Var(JP)",
+          "show": false
+        },
+        {
+          "group_by": false,
+          "label": "Info",
+          "name": "Info",
+          "show": false
         }
       ],
       "filter_string": "",
       "group_symbols": true,
       "name": "",
       "sort_asc": false,
-      "sort_field": "Description"
+      "sort_field": "Var"
     },
     "connection_grid_size": 50.0,
     "drawing": {
@@ -620,10 +710,6 @@
     [
       "efd04459-986c-49c2-bdc3-96a700b4a724",
       "Example 6: Maximum LED Backlight Drive Current Selection"
-    ],
-    [
-      "ed6b360e-2c97-4912-8101-70e5ae5801ff",
-      "Rule Structure Illustration"
     ],
     [
       "133d4058-5b5c-4077-bb0d-59323121a93a",

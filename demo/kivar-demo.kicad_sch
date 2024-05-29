@@ -6,7 +6,8 @@
 	(paper "A5" portrait)
 	(title_block
 		(title "KiVar Demo")
-		(date "2024-03-19")
+		(date "2024-05-29")
+		(rev "0.2.0")
 		(company "Author: Mark Hämmerling <dev@markh.de>")
 		(comment 1 "https://github.com/markh-de/KiVar")
 		(comment 4 "Root Sheet")
@@ -56,8 +57,8 @@
 		)
 	)
 	(sheet
-		(at 80.01 146.05)
-		(size 40.005 10.795)
+		(at 27.94 146.05)
+		(size 91.44 10.795)
 		(fields_autoplaced yes)
 		(stroke
 			(width 0.1524)
@@ -69,7 +70,7 @@
 		)
 		(uuid "133d4058-5b5c-4077-bb0d-59323121a93a")
 		(property "Sheetname" "Rule Processing Illustration"
-			(at 80.01 145.0844 0)
+			(at 27.94 145.0844 0)
 			(effects
 				(font
 					(size 1.778 1.778)
@@ -80,7 +81,7 @@
 			)
 		)
 		(property "Sheetfile" "rule_processing.kicad_sch"
-			(at 80.01 157.4296 0)
+			(at 27.94 157.4296 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -93,7 +94,7 @@
 		(instances
 			(project "kivar-demo"
 				(path "/cd745a5c-45fb-4106-85c8-c86c130b6ee7"
-					(page "9")
+					(page "8")
 				)
 			)
 		)
@@ -223,49 +224,6 @@
 			(project "kivar-demo"
 				(path "/cd745a5c-45fb-4106-85c8-c86c130b6ee7"
 					(page "5")
-				)
-			)
-		)
-	)
-	(sheet
-		(at 27.94 146.05)
-		(size 40.005 10.795)
-		(fields_autoplaced yes)
-		(stroke
-			(width 0.1524)
-			(type solid)
-			(color 151 166 142 1)
-		)
-		(fill
-			(color 208 229 196 1.0000)
-		)
-		(uuid "ed6b360e-2c97-4912-8101-70e5ae5801ff")
-		(property "Sheetname" "Rule Structure Illustration"
-			(at 27.94 145.0844 0)
-			(effects
-				(font
-					(size 1.778 1.778)
-					(bold yes)
-					(color 146 108 108 1)
-				)
-				(justify left bottom)
-			)
-		)
-		(property "Sheetfile" "rule_structure.kicad_sch"
-			(at 27.94 157.4296 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-					(italic yes)
-					(color 194 194 194 1)
-				)
-				(justify left top)
-			)
-		)
-		(instances
-			(project "kivar-demo"
-				(path "/cd745a5c-45fb-4106-85c8-c86c130b6ee7"
-					(page "8")
 				)
 			)
 		)
