@@ -137,8 +137,8 @@ pip install kivar-${VERSION}.tar.gz
 ## Usage
 
 > [!IMPORTANT]
-> The following instructions refer to the version **0.2.x** series of KiVar, which uses a slightly modified, but significantly extended rule syntax, and an enhanced range of functions compared to earlier versions.  
-> If you are using an older version, please consider [updating](#installation) and [migrating](#migrate) your variation rules to the new format.
+> This manual refers to the **0.2.x** series of KiVar, which uses different component fields for specifying rules, a slightly modified (but significantly extended) rule syntax, and an enhanced range of functions compared to earlier versions.  
+> If you are still using an older version, please consider [updating](#installation) KiVar and [migrating](#migrate) your variation rules to the new format.
 
 The process of writing and assigning rules to components (i.e. symbols and footprints) is done manually using simple text expressions.
 
