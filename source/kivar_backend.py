@@ -54,7 +54,7 @@ def legacy_expressions_found(fpdict):
     found = 0
     for uuid in fpdict:
         for field in fpdict[uuid][Key.FIELDS]:
-            if field == 'KiVar.Rule': found += 1
+            if field == 'KiVar.Rule' and fpdict[uuid][Key.FIELDS][field]: found += 1
     return found
 
 def build_fpdict(board):
