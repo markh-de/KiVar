@@ -44,8 +44,11 @@ def fp_to_uuid(fp):
 def uuid_to_fp(board, uuid):
     return board.GetItem(pcbnew.KIID(uuid)).Cast()
 
+def field_accepted(field_name):
+    return not field_name.lower() in ['value', 'reference', 'footprint']
+
 def set_fp_field(fp, field, value):
-    if not field.lower() in ['value', 'reference', 'footprint']: fp.SetField(field, value)
+    if field_accepted(field): fp.SetField(field, value)
 
 def legacy_expressions_found(fpdict):
     found = 0
@@ -58,17 +61,20 @@ def build_fpdict(board):
     fpdict = {}
     for fp in board.GetFootprints():
         uuid = fp_to_uuid(fp)
-        # TODO check if UUID exists in dict!
-        fpdict[uuid] = {}
-        fpdict[uuid][Key.REF] = fp.GetReferenceAsString()
-        fpdict[uuid][Key.FIELDS] = fp.GetFieldsText()
-        # TODO clean up, we currently store the value twice!
-        # the format is the same as for choice branches
-        fpdict[uuid][Key.VALUE] = fp.GetValue()
-        fpdict[uuid][Key.PROPS] = {}
-        fpdict[uuid][Key.PROPS][PropCode.BOM] = not fp.IsExcludedFromBOM()
-        fpdict[uuid][Key.PROPS][PropCode.POS] = not fp.IsExcludedFromPosFiles()
-        fpdict[uuid][Key.PROPS][PropCode.FIT] = not fp.IsDNP()
+        # if UUID is already known, skip any footprint with same UUID.
+        # TODO return error if same UUIDs are found. silently ignoring entries is bad.
+        if not uuid in fpdict:
+            fpdict[uuid] = {}
+            fpdict[uuid][Key.REF] = fp.GetReferenceAsString()
+            fields_text = fp.GetFieldsText()
+            fpdict[uuid][Key.FIELDS] = {}
+            for field in fields_text:
+                if field_accepted(field): fpdict[uuid][Key.FIELDS][field] = fields_text[field]
+            fpdict[uuid][Key.VALUE] = fp.GetValue()
+            fpdict[uuid][Key.PROPS] = {}
+            fpdict[uuid][Key.PROPS][PropCode.BOM] = not fp.IsExcludedFromBOM()
+            fpdict[uuid][Key.PROPS][PropCode.POS] = not fp.IsExcludedFromPosFiles()
+            fpdict[uuid][Key.PROPS][PropCode.FIT] = not fp.IsDNP()
     return fpdict
 
 def store_fpdict(board, fpdict):
