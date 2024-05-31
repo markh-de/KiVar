@@ -105,7 +105,7 @@ def list_command(board=None, long=False, prop_codes=False, detailed=False, selec
                         f = quote_str(field)
                         v = quote_str(vardict[uuid][Key.AUX][field][choice][Key.VALUE])
                         print(f"            {f}: {v}")
-                        # Future note: When options for aux rules are allowed, print them here
+                        # Future note: When properties for aux expressions are allowed, print them here
         print()
     return True
 
