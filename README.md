@@ -859,6 +859,9 @@ To include any character as-is without being interpreted (e.g. `-` or `+` to be 
 > [!TIP]
 > For many cases, quoting and escaping in KiVar works just like in a regular POSIX shell interpreter.
 
+> [!TIP]
+> As long as they come in pairs and in the correct nesting order, parentheses (`(` and `)`) are not required to be escaped or quoted, as the expression parser can handle multiple levels of properly nested parentheses.  For example, `Choice_1(100nF (10%))` is fine, even without quoting or escaping.  Unusual arrangements, however, may require quoting or escaping in order to avoid misinterpretation by the parser.
+
 _Examples:_
 
 * To assign the fictional value `don't care` (a string containing a single quotation mark and a space), the appropriate Content Argument in the Choice Expression would be either `'don\'t care'` or `don\'t\ care`.
