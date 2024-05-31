@@ -75,7 +75,7 @@ Key concepts of KiVar are:
 
  * Designs may contain **multiple** independent variation **aspects** (i.e. dimensions or degrees of freedom).
  * Variation rules are **fully contained** in component fields of native design files (no external configuration files) and **portable** (i.e. copying components to another design keeps their variation specification intact).
- * Component values and attributes are modified **in place**, enabling compatibility with all exporters that work on the actual component data.
+ * Component values, fields and attributes are modified **in place**, enabling compatibility with all exporters that work on the actual component data.
  * **No external state information** is stored; currently matching variation choices are detected automatically.
 
 ## Supported KiCad Versions
