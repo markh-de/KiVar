@@ -584,6 +584,9 @@ Expressions in **Auxiliary Scope** (or short: _Aux Scope_) are used for assignin
 > [!IMPORTANT]
 > Target fields referenced by Expressions in the Auxiliary Scope _must_ already exist.
 
+> [!NOTE]
+> The target field names "Footprint", "Reference" and "Value" are not permitted (to change the component value, the [Base Scope](#base) must be used).
+
 ###### Typical Use
 
 The Auxiliary Scope is used to assign custom field values, such as a manufacturer name or a manufacturer product number (MPN), for example, to be used in the bill of materials.
