@@ -1,15 +1,16 @@
 #!/bin/sh -e
 
 release_pcm() {
+    out_base_name="${RELEASE_NAME}-${VERSION}-pcm.zip"
     meta_version="$VERSION"
     meta_status="testing"
     meta_kicad_version="8.0"
-    meta_download_url="https://github.com/markh-de/KiVar/releases/download/v${VERSION}/kivar-v${VERSION}-pcm.zip"
+    meta_download_url="https://github.com/markh-de/KiVar/releases/download/v${VERSION}/${out_base_name}"
 
     release_dir="$RELEASE_DIR"
     src_pcm_dir="$SRC_DIR/pcm"
     tmp_dir=$(mktemp -d)
-    out_file="$release_dir/${RELEASE_NAME}-${VERSION}-pcm.zip"
+    out_file="$release_dir/${out_base_name}"
 
     mkdir -p "$tmp_dir/plugins"
 
