@@ -1,6 +1,11 @@
 #!/bin/sh -e
 
 release_pcm() {
+    meta_version="$VERSION"
+    meta_status="testing"
+    meta_kicad_version="8.0"
+    meta_download_url="https://github.com/markh-de/KiVar/releases/download/v${VERSION}/kivar-v${VERSION}-pcm.zip"
+
     release_dir="$RELEASE_DIR"
     src_pcm_dir="$SRC_DIR/pcm"
     tmp_dir=$(mktemp -d)
@@ -21,13 +26,27 @@ release_pcm() {
 
     sed "s/<<VERSION>>/$VERSION/g" "$src_pcm_dir/metadata.json.tpl" > "$tmp_dir/metadata.json"
 
-    mkdir -p "$release_dir/"
     rm  -f "$out_file"
     cd "$tmp_dir"
     zip -r "$out_file" .
     cd - >/dev/null
 
     rm -rf "$tmp_dir"
+
+    echo ''
+    echo '<<< PCM Package Info'
+    cat <<EOF
+{
+    "version": "${meta_version}",
+    "status": "${meta_status}",
+    "kicad_version": "${meta_kicad_version}",
+    "download_sha256": "$(sha256sum "$out_file" | cut -f1 -d' ')",
+    "download_size": $(wc -c < "$out_file"),
+    "download_url": "${meta_download_url}",
+    "install_size": $(unzip -l "$out_file" | tail -n1 | xargs | cut -f1 -d' ')
+},
+EOF
+    echo '>>>'
 }
 
 release_pypi() {
@@ -46,8 +65,6 @@ release_pypi() {
 
     cp "$src_tmp_dir/README.md" \
        "$tmp_dir/"
-
-    mkdir -p "$release_dir/"
 
     cd "$tmp_dir/"
     python setup.py sdist
@@ -91,13 +108,19 @@ ID='de_markh_kivar'
 RELEASE_DIR=$(readlink -f "$(dirname "$0")")"/../release/v$VERSION"
 SRC_DIR=$(readlink -f "$(dirname "$0")")
 
-echo "--- PCM ---"
-release_pcm
-echo ''
-echo "--- PyPI ---"
-release_pypi
-echo ''
+rm -rf "$RELEASE_DIR/"
+mkdir -p "$RELEASE_DIR/"
+
 echo "--- ZIP ---"
 release_zip
 echo ''
+
+echo "--- PyPI ---"
+release_pypi
+echo ''
+
+echo "--- PCM ---"
+release_pcm
+echo ''
+
 echo 'Release files created.'
