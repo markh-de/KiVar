@@ -13,8 +13,6 @@ from copy import deepcopy
 
 # TODO clarify rules for Aspect name (forbidden characters: "*" ".")
 
-# TODO filter forbidden field names (reference, value, footprint (???)) for set AND get!!
-
 # TODO in aux field parser, accept only target fields which are no KiVar fields themselves (avoid recursion!)
 
 # TODO wrap the backend with a class.
@@ -161,6 +159,7 @@ class PropCode: # all of these must be uppercase
 class FieldID: # case-sensitive
     BASE   = 'Var'
     ASPECT = 'Aspect'
+
 class PropGroup:
     ALL = '!'
 
@@ -451,11 +450,14 @@ def parse_rule_fields(fpdict_uuid_branch):
             base_rule_string = value
         elif len(parts) > 1 and parts[-1] == FieldID.BASE:
             target_field = '.'.join(parts[0:-1])
-            if target_field in fpdict_uuid_branch[Key.FIELDS]:
-                aux_rule_strings.append([target_field, value])
-            else:
-                errors.append(f"Target field '{target_field}' does not exist for combined aux expression") # TODO escape field name?
+            if not field_accepted(target_field):
+                errors.append(f"Combined aux expression: Target field '{target_field}' is forbidden") # TODO escape field name?
                 continue
+            elif not target_field in fpdict_uuid_branch[Key.FIELDS]:
+                errors.append(f"Combined aux expression: Target field '{target_field}' does not exist") # TODO escape field name?
+                continue
+            else:
+                aux_rule_strings.append([target_field, value])
         else:
             try: prefix, name_list = split_parens(parts[-1])
             except: continue
@@ -469,11 +471,14 @@ def parse_rule_fields(fpdict_uuid_branch):
                     base_choice_sets.append([name_list, value])
                 else:
                     target_field = '.'.join(parts[0:-1])
-                    if target_field in fpdict_uuid_branch[Key.FIELDS]:
-                        aux_choice_sets.append([target_field, name_list, value])
-                    else:
-                        errors.append(f"Target field '{target_field}' does not exist for simple aux expression") # TODO escape field name?
+                    if not field_accepted(target_field):
+                        errors.append(f"Simple aux expression: Target field '{target_field}' is forbidden") # TODO escape field name?
                         continue
+                    elif not target_field in fpdict_uuid_branch[Key.FIELDS]:
+                        errors.append(f"Simple aux expression: Target field '{target_field}' does not exist") # TODO escape field name?
+                        continue
+                    else:
+                        aux_choice_sets.append([target_field, name_list, value])
     return errors, aspect, base_rule_string, base_choice_sets, aux_rule_strings, aux_choice_sets
 
 def build_vardict(fpdict):
