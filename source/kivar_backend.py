@@ -431,6 +431,14 @@ def parse_rule_str(rule_str):
                 choice_sets.append([name_list, content])
     return errors, aspects, choice_sets
 
+def field_name_check(field_name, available_fields):
+    error = None
+    if not field_accepted(field_name):
+        error = f"Target field '{field_name}' is forbidden" # TODO escape field name
+    elif not field_name in available_fields:
+        error = f"Target field '{field_name}' does not exist" # TODO escape field name
+    return error
+
 def parse_rule_fields(fpdict_uuid_branch):
     errors = []
     aspect = None
@@ -450,11 +458,9 @@ def parse_rule_fields(fpdict_uuid_branch):
             base_rule_string = value
         elif len(parts) > 1 and parts[-1] == FieldID.BASE:
             target_field = '.'.join(parts[0:-1])
-            if not field_accepted(target_field):
-                errors.append(f"Combined aux expression: Target field '{target_field}' is forbidden") # TODO escape field name?
-                continue
-            elif not target_field in fpdict_uuid_branch[Key.FIELDS]:
-                errors.append(f"Combined aux expression: Target field '{target_field}' does not exist") # TODO escape field name?
+            field_name_error = field_name_check(target_field, fpdict_uuid_branch[Key.FIELDS])
+            if field_name_error is not None:
+                errors.append(f"Combined aux expression: {field_name_error}")
                 continue
             else:
                 aux_rule_strings.append([target_field, value])
@@ -471,11 +477,9 @@ def parse_rule_fields(fpdict_uuid_branch):
                     base_choice_sets.append([name_list, value])
                 else:
                     target_field = '.'.join(parts[0:-1])
-                    if not field_accepted(target_field):
-                        errors.append(f"Simple aux expression: Target field '{target_field}' is forbidden") # TODO escape field name?
-                        continue
-                    elif not target_field in fpdict_uuid_branch[Key.FIELDS]:
-                        errors.append(f"Simple aux expression: Target field '{target_field}' does not exist") # TODO escape field name?
+                    field_name_error = field_name_check(target_field, fpdict_uuid_branch[Key.FIELDS])
+                    if field_name_error is not None:
+                        errors.append(f"Simple aux expression: {field_name_error}")
                         continue
                     else:
                         aux_choice_sets.append([target_field, name_list, value])
