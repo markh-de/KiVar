@@ -28,7 +28,7 @@ from copy import deepcopy
 #     ^^^ this "update fields" message is too generic.
 
 def version():
-    return '0.2.1'
+    return '0.2.9901'
 
 def pcbnew_compatibility_error():
     ver = pcbnew.GetMajorMinorPatchVersion()
@@ -55,11 +55,24 @@ def legacy_expressions_found(fpdict):
             if field == 'KiVar.Rule' and fpdict[uuid][Key.FIELDS][field]: found += 1
     return found
 
+class FootprintPasteMargin:
+    OFFSET = -42000.00
+    TOLERANCE = 100.00
+
+def footprint_paste_state(paste_margin_ratio):
+    if paste_margin_ratio <= (FootprintPasteMargin.OFFSET + FootprintPasteMargin.TOLERANCE) and paste_margin_ratio >= (FootprintPasteMargin.OFFSET - FootprintPasteMargin.TOLERANCE):
+        state = False
+    elif paste_margin_ratio <= (FootprintPasteMargin.TOLERANCE) and paste_margin_ratio >= (-FootprintPasteMargin.TOLERANCE):
+        state = True
+    else:
+        state = None
+    return state
+
 def build_fpdict(board):
     fpdict = {}
     for fp in board.GetFootprints():
         uuid = fp_to_uuid(fp)
-        # if UUID is already known, skip any footprint with same UUID.
+        # if UUID is already present, skip any footprint with same UUID.
         # TODO return error if same UUIDs are found. silently ignoring entries is bad.
         if not uuid in fpdict:
             fpdict[uuid] = {}
@@ -73,6 +86,7 @@ def build_fpdict(board):
             fpdict[uuid][Key.PROPS][PropCode.BOM] = not fp.IsExcludedFromBOM()
             fpdict[uuid][Key.PROPS][PropCode.POS] = not fp.IsExcludedFromPosFiles()
             fpdict[uuid][Key.PROPS][PropCode.FIT] = not fp.IsDNP()
+            fpdict[uuid][Key.PROPS][PropCode.SOLDER] = fp.GetLocalSolderPasteMarginRatio()
     return fpdict
 
 def store_fpdict(board, fpdict):
@@ -89,11 +103,13 @@ def store_fpdict(board, fpdict):
                 if   prop_code == PropCode.BOM: old_prop_value = not fp.IsExcludedFromBOM()
                 elif prop_code == PropCode.POS: old_prop_value = not fp.IsExcludedFromPosFiles()
                 elif prop_code == PropCode.FIT: old_prop_value = not fp.IsDNP()
+                elif prop_code == PropCode.SOLDER: old_prop_value = fp.GetLocalSolderPasteMarginRatio()
                 if old_prop_value is not None:
                     if old_prop_value != new_prop_value:
                         if   prop_code == PropCode.BOM: fp.SetExcludedFromBOM(not new_prop_value)
                         elif prop_code == PropCode.POS: fp.SetExcludedFromPosFiles(not new_prop_value)
                         elif prop_code == PropCode.FIT: fp.SetDNP(not new_prop_value)
+                        elif prop_code == PropCode.SOLDER: fp.SetLocalSolderPasteMarginRatio(new_prop_value)
         old_fp_field_values = fp.GetFieldsText()
         for field in fpdict[uuid][Key.FIELDS]:
             old_fp_field_value = old_fp_field_values[field]
@@ -155,17 +171,20 @@ class PropCode: # all of these must be uppercase
     FIT = 'F'
     BOM = 'B'
     POS = 'P'
+    SOLDER = 'S'
+
+class PropGroup:
+    ALL = '!' # TODO rename, does not mean "all" anymore
 
 class FieldID: # case-sensitive
     BASE   = 'Var'
     ASPECT = 'Aspect'
 
-class PropGroup:
-    ALL = '!'
-
-def base_prop_codes(): return PropCode.FIT + PropCode.BOM + PropCode.POS
+def base_prop_codes(): return PropCode.FIT + PropCode.BOM + PropCode.POS + PropCode.SOLDER
 
 def supported_prop_codes(): return base_prop_codes() + PropGroup.ALL
+
+def group_all_prop_codes(): return PropCode.FIT + PropCode.BOM + PropCode.POS # TODO rename group
 
 def prop_state(props, prop):
     return props[prop] if prop in props else None
@@ -178,10 +197,11 @@ def prop_attrib_name(prop_code):
     return name
 
 def prop_abbrev(prop_code):
-    if   prop_code == PropCode.BOM: name = 'BoM'
-    elif prop_code == PropCode.POS: name = 'Pos'
-    elif prop_code == PropCode.FIT: name = 'Fit'
-    else:                           name = '(unknown)'
+    if   prop_code == PropCode.BOM:    name = 'BoM'
+    elif prop_code == PropCode.POS:    name = 'Pos'
+    elif prop_code == PropCode.FIT:    name = 'Fit'
+    elif prop_code == PropCode.SOLDER: name = 'Solder'
+    else:                              name = '(unknown)'
     return name
 
 def mismatches_fp_choice(fpdict_branch, vardict_choice_branch):
@@ -251,10 +271,21 @@ def apply_selection(fpdict, vardict, selection, dry_run = False):
         for prop_code in base_prop_codes():
             new_prop = vardict[uuid][Key.BASE][selected_choice][Key.PROPS][prop_code]
             if new_prop is not None:
+                changed = False
                 old_prop = fpdict[uuid][Key.PROPS][prop_code]
-                if old_prop is not None and old_prop != new_prop:
-                    changes.append([uuid, ref, f"Change {ref} '{prop_attrib_name(prop_code)}' from '{bool_as_text(not old_prop)}' to '{bool_as_text(not new_prop)}' ({choice_text})."])
-                    if not dry_run: fpdict[uuid][Key.PROPS][prop_code] = new_prop
+                if prop_code == PropCode.SOLDER:
+                    old_paste_state = footprint_paste_state(old_prop)
+                    if old_paste_state is not None and old_paste_state != new_prop:
+                        if new_prop: new_paste_ratio = old_prop - FootprintPasteMargin.OFFSET
+                        else:        new_paste_ratio = old_prop + FootprintPasteMargin.OFFSET
+                        fpdict[uuid][Key.PROPS][prop_code] = new_paste_ratio
+                        changed = True
+                        changes.append([uuid, ref, f"Change {ref} solder paste relative clearance from {round(old_prop*100, 6)}% to {round(new_paste_ratio*100, 6)}% ({choice_text})."])
+                else:
+                    if old_prop is not None and old_prop != new_prop:
+                        changed = True
+                        changes.append([uuid, ref, f"Change {ref} '{prop_attrib_name(prop_code)}' from '{bool_as_text(not old_prop)}' to '{bool_as_text(not new_prop)}' ({choice_text})."])
+                    if changed and not dry_run: fpdict[uuid][Key.PROPS][prop_code] = new_prop
         for field in vardict[uuid][Key.AUX]:
             new_field_value = vardict[uuid][Key.AUX][field][selected_choice][Key.VALUE]
             if new_field_value is not None:
@@ -279,7 +310,7 @@ def parse_prop_str(prop_str, old_prop_set={}):
             if not prop_code in supported_prop_codes(): raise ValueError(f"Unsupported property identifier '{prop_code}'")
             # TODO add a '?' symbol, which can be defined by the user
             if prop_code == PropGroup.ALL:
-                for c in base_prop_codes(): prop_set[c] = state
+                for c in group_all_prop_codes(): prop_set[c] = state
             else:
                 prop_set[prop_code] = state
     if expect_prop: raise ValueError(f"Property specifier must not end with a modifier, but with an identifier")
@@ -582,6 +613,15 @@ def build_vardict(fpdict):
                 # TODO cook and quote names in error message, refine wording
                 for e in fin_errors: errors.append([uuid, ref, f"{ref}: In aux expression for target field '{field}': {e}."])
                 continue
+    # Check that all solder paste margin values match one of the two allowed ranges (only if the corresponding property is used, else the current value is ignored)
+    for uuid in vardict:
+        for choice in vardict[uuid][Key.BASE]:
+            if PropCode.SOLDER in vardict[uuid][Key.BASE][choice][Key.PROPS] and vardict[uuid][Key.BASE][choice][Key.PROPS][PropCode.SOLDER] is not None:
+                ratio = fpdict[uuid][Key.PROPS][PropCode.SOLDER]
+                if footprint_paste_state(ratio) is None:
+                    ref = fpdict[uuid][Key.REF]
+                    errors.append([uuid, ref, f"{ref}: Cannot classify current solder paste relative clearance ({round(ratio*100, 5)}%) to be used for '{prop_abbrev(PropCode.SOLDER)}' property."])
+                    break
     if not errors:
         # Check for ambiguous choices (only if data is valid so far)
         for aspect in sorted(all_choices, key=natural_sort_key):
