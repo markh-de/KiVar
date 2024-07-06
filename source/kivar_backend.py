@@ -28,7 +28,7 @@ from copy import deepcopy
 #     ^^^ this "update fields" message is too generic.
 
 def version():
-    return '0.2.9901'
+    return '0.2.9902'
 
 def pcbnew_compatibility_error():
     ver = pcbnew.GetMajorMinorPatchVersion()
@@ -83,10 +83,15 @@ def build_fpdict(board):
                 if field_accepted(field): fpdict[uuid][Key.FIELDS][field] = fields_text[field]
             fpdict[uuid][Key.VALUE] = fp.GetValue()
             fpdict[uuid][Key.PROPS] = {}
-            fpdict[uuid][Key.PROPS][PropCode.BOM] = not fp.IsExcludedFromBOM()
-            fpdict[uuid][Key.PROPS][PropCode.POS] = not fp.IsExcludedFromPosFiles()
-            fpdict[uuid][Key.PROPS][PropCode.FIT] = not fp.IsDNP()
+            fpdict[uuid][Key.PROPS][PropCode.FIT] = convert_prop_attrib(PropCode.FIT, fp.IsDNP())
+            fpdict[uuid][Key.PROPS][PropCode.BOM] = convert_prop_attrib(PropCode.BOM, fp.IsExcludedFromBOM())
+            fpdict[uuid][Key.PROPS][PropCode.POS] = convert_prop_attrib(PropCode.POS, fp.IsExcludedFromPosFiles())
+            # Solder paste property is handled differently. The fpdict prop contains the raw ratio value, but
+            # the vardict contains the bool value. This is done because the raw value is required in some places.
+            # Whenever both props need to be compared or set, proper conversions must be done.
+            # TODO tidy this up with generic converter functions that automatically trigger for solder paste props.
             fpdict[uuid][Key.PROPS][PropCode.SOLDER] = fp.GetLocalSolderPasteMarginRatio()
+            for i, model in enumerate(fp.Models()): apply_indexed_prop(fpdict[uuid][Key.PROPS], PropCode.MODEL, i + 1, model.m_Show)
     return fpdict
 
 def store_fpdict(board, fpdict):
@@ -96,20 +101,23 @@ def store_fpdict(board, fpdict):
         new_fp_value = fpdict[uuid][Key.VALUE]
         if old_fp_value != new_fp_value:
             fp.SetValue(new_fp_value)
-        for prop_code in fpdict[uuid][Key.PROPS]:
-            new_prop_value = fpdict[uuid][Key.PROPS][prop_code]
+        for prop_id in fpdict[uuid][Key.PROPS]:
+            prop_code, prop_index = split_prop_id(prop_id)
+            new_prop_value = fpdict[uuid][Key.PROPS][prop_id]
             if new_prop_value is not None:
                 old_prop_value = None
-                if   prop_code == PropCode.BOM: old_prop_value = not fp.IsExcludedFromBOM()
-                elif prop_code == PropCode.POS: old_prop_value = not fp.IsExcludedFromPosFiles()
-                elif prop_code == PropCode.FIT: old_prop_value = not fp.IsDNP()
-                elif prop_code == PropCode.SOLDER: old_prop_value = fp.GetLocalSolderPasteMarginRatio()
+                if   prop_code == PropCode.FIT:    old_prop_value = convert_prop_attrib(PropCode.FIT, fp.IsDNP())
+                elif prop_code == PropCode.BOM:    old_prop_value = convert_prop_attrib(PropCode.BOM, fp.IsExcludedFromBOM())
+                elif prop_code == PropCode.POS:    old_prop_value = convert_prop_attrib(PropCode.POS, fp.IsExcludedFromPosFiles())
+                elif prop_code == PropCode.SOLDER: old_prop_value = fp.GetLocalSolderPasteMarginRatio() # special
+                elif prop_code == PropCode.MODEL:  old_prop_value = fp.Models()[prop_index - 1].m_Show
                 if old_prop_value is not None:
                     if old_prop_value != new_prop_value:
-                        if   prop_code == PropCode.BOM: fp.SetExcludedFromBOM(not new_prop_value)
-                        elif prop_code == PropCode.POS: fp.SetExcludedFromPosFiles(not new_prop_value)
-                        elif prop_code == PropCode.FIT: fp.SetDNP(not new_prop_value)
-                        elif prop_code == PropCode.SOLDER: fp.SetLocalSolderPasteMarginRatio(new_prop_value)
+                        if   prop_code == PropCode.FIT:    fp.SetDNP(convert_prop_attrib(PropCode.FIT, new_prop_value))
+                        elif prop_code == PropCode.BOM:    fp.SetExcludedFromBOM(convert_prop_attrib(PropCode.BOM, new_prop_value))
+                        elif prop_code == PropCode.POS:    fp.SetExcludedFromPosFiles(convert_prop_attrib(PropCode.POS, new_prop_value))
+                        elif prop_code == PropCode.SOLDER: fp.SetLocalSolderPasteMarginRatio(new_prop_value) # special
+                        elif prop_code == PropCode.MODEL:  fp.Models()[prop_index - 1].m_Show = new_prop_value
         old_fp_field_values = fp.GetFieldsText()
         for field in fpdict[uuid][Key.FIELDS]:
             old_fp_field_value = old_fp_field_values[field]
@@ -171,38 +179,57 @@ class PropCode: # all of these must be uppercase
     FIT = 'F'
     BOM = 'B'
     POS = 'P'
-    SOLDER = 'S'
+    SOLDER = 'S' # special: fpdict contains ratio, not bool value
+    MODEL = 'M'
 
 class PropGroup:
-    ALL = '!' # TODO rename, does not mean "all" anymore
+    ASSEMBLE = '!'
 
 class FieldID: # case-sensitive
     BASE   = 'Var'
     ASPECT = 'Aspect'
 
-def base_prop_codes(): return PropCode.FIT + PropCode.BOM + PropCode.POS + PropCode.SOLDER
+def base_prop_codes(): return PropCode.FIT + PropCode.BOM + PropCode.POS + PropCode.SOLDER + PropCode.MODEL
 
-def supported_prop_codes(): return base_prop_codes() + PropGroup.ALL
+def supported_prop_codes(): return base_prop_codes() + PropGroup.ASSEMBLE
 
-def group_all_prop_codes(): return PropCode.FIT + PropCode.BOM + PropCode.POS # TODO rename group
+def inverted_prop_codes(): return PropCode.FIT + PropCode.BOM + PropCode.POS
+
+def indexed_prop_codes(): return PropCode.MODEL
+
+def group_assemble_prop_codes(): return PropCode.FIT + PropCode.BOM + PropCode.POS
 
 def prop_state(props, prop):
     return props[prop] if prop in props else None
 
-def prop_attrib_name(prop_code):
-    if   prop_code == PropCode.BOM: name = 'Exclude from bill of materials'
-    elif prop_code == PropCode.POS: name = 'Exclude from position files'
-    elif prop_code == PropCode.FIT: name = 'Do not populate'
-    else:                           name = '(unknown)'
+def prop_attrib_descr(prop_id):
+    prop_code, prop_index = split_prop_id(prop_id)
+    name = '(unknown)'
+    if prop_code is not None:
+        if   prop_code == PropCode.BOM:    name = "'Exclude from bill of materials'"
+        elif prop_code == PropCode.POS:    name = "'Exclude from position files'"
+        elif prop_code == PropCode.FIT:    name = "'Do not populate'"
+        elif prop_code == PropCode.SOLDER: name = 'solder paste relative clearance'
+        elif prop_code == PropCode.MODEL:  name = 'visibility of 3D model'
+        if prop_index is not None:         name += ' #' + str(prop_index)
     return name
 
-def prop_abbrev(prop_code):
-    if   prop_code == PropCode.BOM:    name = 'BoM'
-    elif prop_code == PropCode.POS:    name = 'Pos'
-    elif prop_code == PropCode.FIT:    name = 'Fit'
-    elif prop_code == PropCode.SOLDER: name = 'Solder'
-    else:                              name = '(unknown)'
+def prop_abbrev(prop_id):
+    prop_code, prop_index = split_prop_id(prop_id)
+    name = '(unknown)'
+    if prop_code is not None:
+        if   prop_code == PropCode.BOM:    name = 'BoM'
+        elif prop_code == PropCode.POS:    name = 'Pos'
+        elif prop_code == PropCode.FIT:    name = 'Fit'
+        elif prop_code == PropCode.SOLDER: name = 'Solder'
+        elif prop_code == PropCode.MODEL:  name = 'Model'
+        if prop_index is not None:         name += '#' + str(prop_index)
     return name
+
+def convert_prop_attrib(prop_code, state):
+    # inverts prop/attrib state (conversion between prop and attrib state, and vice versa), depending on prop_code
+    if prop_code in inverted_prop_codes(): state = not state
+    return state
 
 def mismatches_fp_choice(fpdict_branch, vardict_choice_branch):
     # TODO in returned mismatches, add mismatching fp and choice states
@@ -211,11 +238,12 @@ def mismatches_fp_choice(fpdict_branch, vardict_choice_branch):
     fp_value = fpdict_branch[Key.VALUE]
     if choice_value is not None and fp_value != choice_value:
         mismatches.append('value')
-    for prop_code in base_prop_codes():
-        choice_prop = prop_state(vardict_choice_branch[Key.PROPS], prop_code)
-        fp_prop = prop_state(fpdict_branch[Key.PROPS], prop_code)
+    for prop_id in fpdict_branch[Key.PROPS]:
+        choice_prop = prop_state(vardict_choice_branch[Key.PROPS], prop_id)
+        fp_prop = prop_state(fpdict_branch[Key.PROPS], prop_id)
+        if prop_id == PropCode.SOLDER: fp_prop = footprint_paste_state(fp_prop) # special
         if choice_prop is not None and fp_prop is not None and choice_prop != fp_prop:
-            mismatches.append(f"prop '{prop_code}'")
+            mismatches.append(f"prop '{prop_id}'")
     return mismatches
 
 def mismatches_fp_choice_aux(fp_fields, vardict_aux_branch, choice):
@@ -268,24 +296,29 @@ def apply_selection(fpdict, vardict, selection, dry_run = False):
             if old_value != new_value:
                 changes.append([uuid, ref, f"Change {ref} value from '{escape_str(old_value)}' to '{escape_str(new_value)}' ({choice_text})."])
                 if not dry_run: fpdict[uuid][Key.VALUE] = new_value
-        for prop_code in base_prop_codes():
-            new_prop = vardict[uuid][Key.BASE][selected_choice][Key.PROPS][prop_code]
-            if new_prop is not None:
-                changed = False
-                old_prop = fpdict[uuid][Key.PROPS][prop_code]
-                if prop_code == PropCode.SOLDER:
-                    old_paste_state = footprint_paste_state(old_prop)
-                    if old_paste_state is not None and old_paste_state != new_prop:
-                        if new_prop: new_paste_ratio = old_prop - FootprintPasteMargin.OFFSET
-                        else:        new_paste_ratio = old_prop + FootprintPasteMargin.OFFSET
-                        fpdict[uuid][Key.PROPS][prop_code] = new_paste_ratio
-                        changed = True
-                        changes.append([uuid, ref, f"Change {ref} solder paste relative clearance from {round(old_prop*100, 6)}% to {round(new_paste_ratio*100, 6)}% ({choice_text})."])
+        for prop_id in fpdict[uuid][Key.PROPS]:
+            #print(f'DEBUG: prop_code {prop_code}')
+            new_value = vardict[uuid][Key.BASE][selected_choice][Key.PROPS][prop_id]
+            if new_value is not None:
+                old_value_text = None
+                new_value_text = None
+                old_value = fpdict[uuid][Key.PROPS][prop_id]
+                if prop_id == PropCode.SOLDER: # solder paste prop requires conversion
+                    old_paste_state = footprint_paste_state(old_value)
+                    if old_paste_state is not None and old_paste_state != new_value:
+                        if new_value: new_paste_ratio = old_value - FootprintPasteMargin.OFFSET
+                        else:         new_paste_ratio = old_value + FootprintPasteMargin.OFFSET
+                        fpdict[uuid][Key.PROPS][prop_id] = new_paste_ratio
+                        old_value_text = f'{round(old_value*100, 6)}%'
+                        new_value_text = f'{round(new_paste_ratio*100, 6)}%'
+                        new_value = new_paste_ratio
                 else:
-                    if old_prop is not None and old_prop != new_prop:
-                        changed = True
-                        changes.append([uuid, ref, f"Change {ref} '{prop_attrib_name(prop_code)}' from '{bool_as_text(not old_prop)}' to '{bool_as_text(not new_prop)}' ({choice_text})."])
-                    if changed and not dry_run: fpdict[uuid][Key.PROPS][prop_code] = new_prop
+                    if old_value is not None and old_value != new_value:
+                        old_value_text = f"'{bool_as_text(convert_prop_attrib(prop_id, old_value))}'"
+                        new_value_text = f"'{bool_as_text(convert_prop_attrib(prop_id, new_value))}'"
+                if not (old_value_text is None or new_value_text is None):
+                    changes.append([uuid, ref, f"Change {ref} {prop_attrib_descr(prop_id)} from {old_value_text} to {new_value_text} ({choice_text})."])
+                    if not dry_run: fpdict[uuid][Key.PROPS][prop_id] = new_value
         for field in vardict[uuid][Key.AUX]:
             new_field_value = vardict[uuid][Key.AUX][field][selected_choice][Key.VALUE]
             if new_field_value is not None:
@@ -295,26 +328,59 @@ def apply_selection(fpdict, vardict, selection, dry_run = False):
                     if not dry_run: fpdict[uuid][Key.FIELDS][field] = new_field_value
     return changes
 
-def parse_prop_str(prop_str, old_prop_set={}):
-    prop_set = old_prop_set.copy() # TODO as a dict, this is pass-by-reference, so we could simply overwrite the old prop_set and return only errors
+def apply_indexed_prop(prop_set, prop_code, prop_index, state):
+    if not (prop_code is None or prop_index is None):
+        prop_set[prop_code + '#' + str(prop_index)] = state
+
+def split_prop_id(prop_id):
+    prop_code = None
+    prop_index = None
+    if len(prop_id) > 2 and prop_id[1] == '#' and prop_id[0] in indexed_prop_codes() and prop_id[2:].isnumeric():
+        prop_code = prop_id[0]
+        prop_index = int(prop_id[2:])
+    elif len(prop_id) == 1 and prop_id[0] in supported_prop_codes():
+        prop_code = prop_id[0]
+    return prop_code, prop_index
+
+def parse_prop_str(prop_str, prop_set):
     state = None
-    expect_prop = False
-    for prop_code in prop_str.upper():
-        if prop_code in '+-':
-            if expect_prop: raise ValueError(f"Property modifier must be followed by property identifier")
-            expect_prop = True
-            state = prop_code == '+'
-        else:
-            expect_prop = False
-            if state is None: raise ValueError(f"Undefined property modifier for identifier '{prop_code}'") # should never happen
-            if not prop_code in supported_prop_codes(): raise ValueError(f"Unsupported property identifier '{prop_code}'")
-            # TODO add a '?' symbol, which can be defined by the user
-            if prop_code == PropGroup.ALL:
-                for c in group_all_prop_codes(): prop_set[c] = state
+    expect_code = False
+    expect_index = False
+    current_code = None
+    current_index = None
+    for c in prop_str.upper():
+        if c in '+-':
+            if expect_code:  raise ValueError(f"Got property modifier where property identifier was expected")
+            if expect_index: raise ValueError(f"Got property modifier where property index was expected")
+            apply_indexed_prop(prop_set, current_code, current_index, state)
+            expect_code = True
+            state = c == '+'
+        elif c in supported_prop_codes():
+            if expect_index: raise ValueError(f"Got property code where property index was expected")
+            if state is None: raise ValueError(f"Undefined property modifier for identifier '{c}'") # should not happen if caller identifies prop_str by first character
+            apply_indexed_prop(prop_set, current_code, current_index, state)
+            expect_code = False
+            if c in indexed_prop_codes():
+                current_code = c
+                current_index = 0
+                expect_index = True
             else:
-                prop_set[prop_code] = state
-    if expect_prop: raise ValueError(f"Property specifier must not end with a modifier, but with an identifier")
-    return prop_set
+                current_code = None
+                current_index = None
+                if c == PropGroup.ASSEMBLE:
+                    for c in group_assemble_prop_codes(): prop_set[c] = state
+                else:
+                    prop_set[c] = state
+        elif c.isnumeric():
+            if current_code is None or current_index is None: raise ValueError(f"Got unexpected property index")
+            current_index = current_index * 10 + int(c)
+            if current_index > 99999: raise ValueError(f"Index value for property code '{current_code}' is too high")
+            expect_index = False
+        else:
+            if not c in supported_prop_codes(): raise ValueError(f"Unsupported property code '{c}'")
+    apply_indexed_prop(prop_set, current_code, current_index, state)
+    if expect_code:  raise ValueError(f"End of property specifier when property code was expected")
+    if expect_index: raise ValueError(f"End of property specifier when property index was expected")
 
 def add_choice(vardict, uuid, raw_choice_name, raw_choice_def, field=None, all_aspect_choices=None):
     """ Adds a choice set (base or aux rule definition) to the vardict. """
@@ -345,7 +411,7 @@ def add_choice(vardict, uuid, raw_choice_name, raw_choice_def, field=None, all_a
                 errors.append(f"No property specifier allowed in aux expression")
                 continue
             try:
-                prop_set = parse_prop_str(arg, prop_set)
+                parse_prop_str(arg, prop_set)
             except Exception as error:
                 errors.append(f"Property specifier parser error: {str(error)}")
                 continue
@@ -379,12 +445,16 @@ def add_choice(vardict, uuid, raw_choice_name, raw_choice_def, field=None, all_a
                 errors.append(f"Illegal additional '{prop_abbrev(prop_code)}' property assignment for choice '{choice}'")
     return errors
 
-def finalize_vardict_branch(vardict_choice_branch, all_aspect_choices, is_aux = False):
-    """ Finalizes (flattens) a branch of the vardict (either base rules or aux rules). """
+def finalize_vardict_branch(vardict_choice_branch, all_aspect_choices, fp_props=None):
+    """
+    Finalizes (flattens) a branch of the vardict (either base rules or aux rules).
+    To specify an aux branch, pass None for the fp_props parameter.
+    """
     errors = []
     # Flatten values
     # TODO instead of counting, append (quoted) name of choice to two lists,
     #      then print their content (joined with comma) in the error messages!
+    # check for mixed defined and undefined content
     choices_with_value_defined = 0
     for choice in all_aspect_choices:
         if not choice in vardict_choice_branch:
@@ -398,9 +468,9 @@ def finalize_vardict_branch(vardict_choice_branch, all_aspect_choices, is_aux = 
             choices_with_value_defined += 1
     if not (choices_with_value_defined == 0 or choices_with_value_defined == len(all_aspect_choices)):
         errors.append(f"Mixed choices with defined ({choices_with_value_defined}x) and undefined ({len(all_aspect_choices) - choices_with_value_defined}x) content (either all or none must be defined)")
-    if not is_aux:
+    if fp_props is not None:
         # Flatten properties
-        for prop_code in base_prop_codes():
+        for prop_code in fp_props:
             default_prop_value = None
             if Key.DEFAULT in vardict_choice_branch and prop_code in vardict_choice_branch[Key.DEFAULT][Key.PROPS] and vardict_choice_branch[Key.DEFAULT][Key.PROPS][prop_code] is not None:
                 # defined default prop value available, use it
@@ -412,10 +482,11 @@ def finalize_vardict_branch(vardict_choice_branch, all_aspect_choices, is_aux = 
                 for choice in all_aspect_choices:
                     if prop_code in vardict_choice_branch[choice][Key.PROPS] and vardict_choice_branch[choice][Key.PROPS][prop_code] is not None:
                         if vardict_choice_branch[choice][Key.PROPS][prop_code]: choices_with_true  += 1
-                        else:                                                     choices_with_false += 1
-                # if only set x-or clear is used in (specific) choices, the implicit default is the opposite.
+                        else:                                                   choices_with_false += 1
+                # if only set x-or clear is used in (specific) choices, the implicit default is the opposite
                 if   choices_with_false and not choices_with_true: default_prop_value = True
                 elif not choices_with_false and choices_with_true: default_prop_value = False
+            # check for mixed defined and undefined properties
             choices_with_prop_defined = 0
             for choice in all_aspect_choices:
                 if not prop_code in vardict_choice_branch[choice][Key.PROPS] or vardict_choice_branch[choice][Key.PROPS][prop_code] is None:
@@ -602,13 +673,13 @@ def build_vardict(fpdict):
         else:
             valid = True
         if not valid: continue
-        fin_errors = finalize_vardict_branch(vardict[uuid][Key.BASE], all_choices[aspect], is_aux=False)
+        fin_errors = finalize_vardict_branch(vardict[uuid][Key.BASE], all_choices[aspect], fpdict[uuid][Key.PROPS])
         if fin_errors:
             # TODO cook and quote names in error message, refine wording
             for e in fin_errors: errors.append([uuid, ref, f"{ref}: In base expression: {e}."])
             continue
         for field in vardict[uuid][Key.AUX]:
-            fin_errors = finalize_vardict_branch(vardict[uuid][Key.AUX][field], all_choices[aspect], is_aux=True)
+            fin_errors = finalize_vardict_branch(vardict[uuid][Key.AUX][field], all_choices[aspect])
             if fin_errors:
                 # TODO cook and quote names in error message, refine wording
                 for e in fin_errors: errors.append([uuid, ref, f"{ref}: In aux expression for target field '{field}': {e}."])
@@ -622,6 +693,13 @@ def build_vardict(fpdict):
                     ref = fpdict[uuid][Key.REF]
                     errors.append([uuid, ref, f"{ref}: Cannot classify current solder paste relative clearance ({round(ratio*100, 5)}%) to be used for '{prop_abbrev(PropCode.SOLDER)}' property."])
                     break
+    # Check that all (indexed) properties are really present in the fpdict (extra loops for dedicated break handling)
+    for uuid in vardict:
+        for choice in vardict[uuid][Key.BASE]:
+            for prop_id in vardict[uuid][Key.BASE][choice][Key.PROPS]:
+                if not prop_id in fpdict[uuid][Key.PROPS]:
+                    prop_code, prop_index = split_prop_id(prop_id)
+                    errors.append([uuid, ref, f"{ref}: Cannot match referenced property '{prop_abbrev(prop_id)}' to footprint (probably index out of bounds)."])
     if not errors:
         # Check for ambiguous choices (only if data is valid so far)
         for aspect in sorted(all_choices, key=natural_sort_key):

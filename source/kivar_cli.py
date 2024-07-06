@@ -69,7 +69,7 @@ def list_command(board=None, long=False, prop_codes=False, detailed=False, selec
                 if cmp_value is not None:
                     cmp_info.append(quote_str(cmp_value))
                 cmp_props = vardict[uuid][Key.BASE][choice][Key.PROPS]
-                for prop_code in base_prop_codes():
+                for prop_code in fpdict[uuid][Key.PROPS]:
                     if prop_code in cmp_props and cmp_props[prop_code] is not None:
                         # TODO use colored output and use green and red here!
                         if prop_codes:
