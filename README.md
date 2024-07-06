@@ -1105,7 +1105,7 @@ All changes by the plugin are only performed in the board, as KiVar is a plugin 
 
 To propagate the changes back to the schematic, use the PCB Editor menu item _Tools &rarr; Update Schematic from PCB..._ and make sure to select the checkboxes _Values_ and _Attributes_\*.  If you have modified the KiVar rules inside the PCB Editor, i.e. edited the footprint fields\* instead of the symbol fields, then also select the checkbox _Other fields_\*, in order to propagate your KiVar rules to the schematic.
 
-#### Using the KiVar Action Plugin
+#### Using the KiVar Command Line Application
 
 The KiVar CLI application works similar to the plugin, except that it manipulates an existing `.kicad_pcb` file (which must not be opened in another application).
 
