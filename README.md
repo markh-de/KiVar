@@ -814,14 +814,19 @@ The variation choices provide selection between the boot sources `EMMC`, `SD` an
 How to read the rules:
 
  * Variation aspect is `BOOT_SRC` (with choice `EMMC` currently applied in the figure).
- * **R9**: For choices `NAND` and `JP` this part is unfitted, else (`SD` and `EMMC`, handled by [Implicit Defaults](#implicit-defaults)) fitted.
+ * **R9**: For choices `NAND` and `JP` this part is unfitted, else (`SD` and `EMMC`, handled by [Implicit Defaults](#implicit-defaults)) fitted.  
  * **R10**: For choices `SD`, `EMMC` and `JP` this part is unfitted, else (`NAND`) fitted.
  * **R11**: For choices `SD`, `NAND` and `JP` this part is unfitted, else (`EMMC`) fitted.
 
 > [!NOTE]
+> **R9** also contains a purely informational field _"ChoiceText"_, which is assigned a readable description of the selected boot device.  That field is then referenced in a text element with the string: `Selected Boot Source: <${R9:ChoiceText}>`.  The corresponding variation rule field (`ChoiceText.Var`) is not visible for the sake of clarity.
+
+> [!NOTE]
 > The Aspect Identifier is specified in a dedicated field for each involved component, so that the (visible) Expressions can be kept short.  
 > The Aspect Identifier field (`Var.Aspect`) is kept invisible, except for component R9, from where it is moved to the top of the figure for documentation purposes.  
-> _Hint:_ In the Schematic Editor, uncheck the "Allow automatic placement" option for such moved fields.
+
+> [!TIP]
+> In the Schematic Editor, uncheck the "Allow automatic placement" option for manually positioned symbol fields.
 
 This example uses only classic [Combined Format](#combined) Expressions.
 
