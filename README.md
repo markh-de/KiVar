@@ -266,7 +266,16 @@ Choice Argument List input | Resulting Content string | Explanation
 
 ###### Purpose
 
-KiVar provides a set of boolean component _Properties_ that allow controlling certain component attributes, such as _Do not populate_, _Not in Position Files_ or _Not in BoM_. <!-- TODO add feature properties ... as soon as they are implemented -->
+KiVar provides a set of boolean component _Properties_ that allow controlling the component attributes
+
+ * **Do not Populate**,
+ * **Not in Position Files**, and
+ * **Not in BoM**
+ 
+as well as component features, such as
+
+ * **Individual 3D Model Appearance** and
+ * **Solder Paste Application**.
 
 ###### Syntax
 
@@ -276,7 +285,7 @@ Each Property Specifier must start with a _Property Modifier_, defining the bool
 
 ###### Evaluation
 
-All Property Specifiers inside a Choice Expression are evaluated from left to right, resulting in a set of defined boolean Property states for the corresponding component and Choice.  Properties _not_ defined in any of the component's Choices are kept in their original state. <!-- todo mention that this is a major change vs. 0.1.x? -->
+All Property Specifiers inside a Choice Expression are evaluated from left to right, resulting in a set of defined boolean Property states for the corresponding component and Choice.  Properties _not_ defined in any of the component's Choices are kept in their original state.
 
 ###### Attribute Properties
 
@@ -289,14 +298,15 @@ The following Properties allow modification of component _attributes_:
  * **inBom** (property identifier `b`).  
    This property specifies whether a component shall be included in the Bill of Materials (property state _true_) or excluded (property state _false_).  This property is linked to the pcbnew footprint attribute _Not in BoM_ with inverted polarity.
 
-Additionally, the following Properties allow controlling various component features:
+Additionally, the following Properties allow controlling various component _features_:
 
  * **Model** (property identifier `mN`, with `N` being an integer number).  
-   This property controls visibility of a dedicated 3D model of the corresponding component.  It can be used to show (property _true_) or hide (property _false_) individual 3D models.  An integer number must be provided directly following the first character of the property identifier, representing the index of the model to be shown or hidden.  The index starts at 1.
+   This property controls the visibility of each individual 3D model of the corresponding component footprint to either visible (property state _true_) or invisible (property state _false_).  An integer number must be provided directly following the first character of the property identifier, representing the index of the model to be shown or hidden.  The index starts at 1.
  * **Solder** (property identifier `s`).  
-   This property controls application of solder paste to the pads of a component's footprint.  Solder paste can be enabled (property _true_) or disabled (property _false_).  For both cases, user-defined footprint-specific solder paste clearances are maintained.  _Important:_ As usual for KiCad solder paste clearance settings, this property has only effect for pads on copper layers, but _not_ for _SMD Aperture_ pads!
+   This property controls the application of solder paste to the pads of a component's footprint.  Solder paste can be enabled (property state _true_) or disabled (property state _false_).  For both cases, user-defined footprint-specific solder paste clearances are maintained (see note below).  _Important:_ As usual for KiCad solder paste clearance settings, this property has only effect for pads on copper layers, but _not_ for _SMD Aperture_ pads!
 
-<!-- TODO add examples for the new properties in the table(s) below! -->
+> [!NOTE]
+> As KiCad does not provide a dedicated footprint attribute for disabling solder paste application, KiVar instead makes use of the _solder paste relative clearance_ value.  To disable or enable solder paste application for a footprint, KiVar applies or removes an offset value of &minus;4,200,000%.  This technique allows retaining user-provided clearance values.  However, in order to ensure safe classification of KiVar-applied solder paste control, those user-provided relative clearance values are only allowed in the range from &minus;10,000% to &plus;10,000%.
 
 ###### Group Properties
 
