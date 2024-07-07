@@ -298,7 +298,9 @@ The following Properties allow modification of component _attributes_:
  * **inBom** (property identifier `b`).  
    This property specifies whether a component shall be included in the Bill of Materials (property state _true_) or excluded (property state _false_).  This property is linked to the pcbnew footprint attribute _Not in BoM_ with inverted polarity.
 
-Additionally, the following Properties allow controlling various component _features_:
+###### Feature Properties
+
+Additionally, the following Properties allow controlling component _features_:
 
  * **Model** (property identifier `mN`, with `N` being an integer number).  
    This property controls the visibility of each individual 3D model of the corresponding component footprint to either visible (property state _true_) or invisible (property state _false_).  An integer number must be provided directly following the first character of the property identifier, representing the index of the model to be shown or hidden.  The index starts at 1.
