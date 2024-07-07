@@ -15,7 +15,7 @@ The name _KiVar_ (for _KiCad Variants_, obviously) can also be read as an acrony
 
 ## Features
 
-KiVar assigns PCB component **values**, **field content** and **attributes** (such as _Do not populate_, _Not in position files_, _Not in BoM_) according to variation rules specified in footprint fields.  When applying those rules, components are modified _in place_, allowing for immediate update of the PCB design as well as the 3D view and enabling compatibility with _any_ exporter.
+KiVar assigns PCB component **values**, **field content**, **attributes** (such as _Do not populate_, _Not in position files_ or _Not in BoM_) and **features** (such as _individual 3D model visibility_ or _solder paste application_) according to variation rules specified in footprint fields.  When applying those rules, components are modified _in place_, allowing for immediate update of the PCB design as well as the 3D view and enabling compatibility with _any_ exporter.
 
 Back-propagation of modified component data from the PCB to the schematic can be done in an extra step.
 
@@ -75,7 +75,7 @@ Key concepts of KiVar are:
 
  * Designs may contain **multiple** independent variation **aspects** (i.e. dimensions or degrees of freedom).
  * Variation rules are **fully contained** in component fields of native design files (no external configuration files) and **portable** (i.e. copying components to another design keeps their variation specification intact).
- * Component values, fields and attributes are modified **in place**, enabling compatibility with all exporters that work on the actual component data.
+ * Component values, fields, attributes and features are modified **in place**, enabling compatibility with all exporters that work on the actual component data.
  * **No external state information** is stored; currently matching variation choices are detected automatically.
 
 ## Supported KiCad Versions
@@ -143,7 +143,7 @@ pip install kivar-${VERSION}.tar.gz
 
 The process of writing and assigning rules to components (i.e. symbols and footprints) is done manually using simple text expressions.
 
-Once all relevant components are equipped with their variation rules, KiVar allows the selection of variation choices using either an easy-to-use dialog interface (when using the Action Plugin) or a command-line interface (when using the CLI app) and takes care of the automatic analysis and assignment of the corresponding component values, fields and attributes.
+Once all relevant components are equipped with their variation rules, KiVar allows the selection of variation choices using either an easy-to-use dialog interface (when using the Action Plugin) or a command-line interface (when using the CLI app) and takes care of the automatic analysis and assignment of the corresponding component values, fields, attributes and features.
 
 The following sections describe the process of configuring your schematic or board and - after that - selecting a variation configuration from the previously configured variation choices.
 
@@ -274,7 +274,7 @@ KiVar provides a set of boolean component _Properties_ that allow controlling th
  
 as well as component features, such as
 
- * **Individual 3D Model Appearance** and
+ * **Individual 3D Model Visibility** and
  * **Solder Paste Application**.
 
 ###### Syntax
@@ -307,6 +307,9 @@ Additionally, the following Properties allow controlling component _features_:
  * **Solder** (property identifier `s`).  
    This property controls the application of solder paste to the pads of a component's footprint.  Solder paste can be enabled (property state _true_) or disabled (property state _false_).  For both cases, user-defined footprint-specific solder paste clearances are maintained (see note below).  _Important:_ As usual for KiCad solder paste clearance settings, this property has only effect for pads on copper layers, but _not_ for _SMD Aperture_ pads!
 
+> [!IMPORTANT]
+> For indexed Properties, i.e. Properties including an integer index value, each index is treated as an individual and independent Property.  For example, the Properties _Model#1_ and _Model#2_ do not affect each other.  This independence also applies to [Default Property Inheritance](#default-property-inheritance) and [Implicit Defaults](#implicit-defaults) discussed below.
+
 > [!NOTE]
 > As KiCad does not provide a dedicated footprint attribute for disabling solder paste application, KiVar instead makes use of the _solder paste relative clearance_ value.  To disable or enable solder paste application for a footprint, KiVar applies or removes an offset value of &minus;4,200,000%.  This technique allows retaining user-provided clearance values.  However, in order to ensure safe classification of KiVar-applied solder paste control, those user-provided relative clearance values are only allowed in the range from &minus;10,000% to &plus;10,000%.
 
@@ -329,6 +332,10 @@ Choice Argument List input | Resulting Property states | Explanation
 `+!`                       |  Fitted, inBom, inPos     | Place this component to the board, include it in the BoM and in position files.
 `-! +b`                    |  _not_ Fitted, inBom, _not_ inPos | After setting `f`, `b`, `p` to false, `b` is set to true again.  Useful if you want your BoM to include unfitted parts, that are otherwise marked "DNP".
 `-!+b`                     |  _not_ Fitted, inBom, _not_ inPos | Equivalent to prior example.  Multiple modifiers may appear inside a single specifier argument.
+`-s`                       |  _not_ Solder             | Remove solder paste from the component's footprint SMD pads.
+`-!s`                      |  _not_ Fitted, inBom, _not_ inPos, _not_ Solder | Do not assemble component, and remove solder paste from its footprint.
+`+m1-m2`                   |  _not_ Model#1, Model#2   | Show first 3D model, hide second one.
+`-m1m2m3 +m4`              |  _not_ Model#1, _not_ Model#2, _not_ Model#3, Model#4 | Hide first three 3D models, show fourth one.
 
 #### Choice Identifiers
 
@@ -395,6 +402,8 @@ _(none)_                                 | `+f`                                 
 `+!`                                     | `-p`                                      | `+fb` `-p`
 `+f`                                     | `-b`                                      | `+f` `-b`
 `+f +b`                                  | `-b`                                      | `+f` `-b`
+`+s!`                                    | `-s`                                      | `+fbp` `-s`
+`-m1m2m3`                                | `+m3`                                     | `-m1` `-m2` `+m3`
 
 ##### Implicit Defaults
 
@@ -418,18 +427,20 @@ _(none)_       | _(none)_       | _(none)_                                      
 `+f`           | `-f`           | _(none)_ _(C1/C2 contradicting)_                         | _(none)_         | `+f`      | `-f`      | _(none)_ (Invalid! `f` missing!)
 `+f`           | `-f`           | _(none)_                                                 | `-f`             | `+f`      | `-f`      | `-f`
 `+f`           | `-p`           | `-f` `+p`                                                | _(none)_         | `+f` `+p` | `-f` `-p` | `-f` `+p`
-`-!`           | _(none)_       | `+fbp` _([&rarr; group](#group-properties))_ | _(none)_         | `-fbp`    | `+fbp`    | `+fbp`
+`-!`           | _(none)_       | `+fbp` _([&rarr; group](#group-properties))_             | _(none)_         | `-fbp`    | `+fbp`    | `+fbp`
 `-!`           | `-p`           | `+fbp`                                                   | _(none)_         | `-fbp`    | `+fb` `-p`| `+fbp`
 `+f`           | _(none)_       | `-f`                                                     | `+b`             | `+f` `+b` | `-f` `+b` | `-f` `+b`
-`-!`           | `+p`           | `+fb` _(`p` contradicting)_                              | _(none)_         | `-fbp     | `+fb` `+p`| `+fb` (Invalid! `p` missing!)
-`-!`           | `+p`           | `+fb`                                                    | `-p`             | `-fbp     | `+fb` `+p`| `+fb` `-p`
+`-!`           | `+p`           | `+fb` _(`p` of C1/C2 contradicting)_                     | _(none)_         | `-fbp`    | `+fb` `+p`| `+fb` (Invalid! `p` missing!)
+`-!`           | `+p`           | `+fb`                                                    | `-p`             | `-fbp`    | `+fb` `+p`| `+fb` `-p`
+`-s`           | `+!`           | `-fbp` `+s`                                              | _(none)_         | `-fbps`   | `+fbps`   | `-fbp` `+s`
+`+m1`          | `+m2`          | `-m1m2`                                                  | _(none)_         | `+m1` `-m2` | `-m1` `+m2` | `-m1m2`
 
 <!-- TODO more (creative) examples -->
 
 #### Choice Expression Scopes
 
 The data defined in Choice Expressions can be applied to either
- * the component's basic properties (i.e. component _value_ and _attributes_), or to
+ * the component's basic properties (i.e. component _value_, _attributes_, _features_), or to
  * custom component fields (such as _Manufacturer_, _MPN_, ...).
 
 For each of them there exists a dedicated **Choice Expression Scope**.  Both scopes are explained in the following sub-sections.
@@ -441,14 +452,14 @@ For each of them there exists a dedicated **Choice Expression Scope**.  Both sco
 ###### Purpose
 
 Expressions in **Base Scope** are used to
- * assign component **values** (using [Content Specifiers](#content-specifiers)) and **attributes** (using [Property Specifiers](#property-specifiers)), and to
+ * assign component **values** (using [Content Specifiers](#content-specifiers)) and **attributes** or **features** (using [Property Specifiers](#property-specifiers)), and to
  * **declare** and **define** [Choice Identifiers](#choice-identifiers) in the context of a corresponding [Aspect Identifier](#aspect-identifier).
 
 ###### Typical Use
 
 The Base Scope is used to assign basic component values, such as `10kΩ`, `0.1µF 50V` or `74HC595`, to the mandatory "Value" field of a component (i.e. symbol or footprint), passed via [Content Specifiers](#content-specifiers).
 
-Also, the Base Scope is used to modify component attributes, for example to modify the _DNP_ (Do Not Populate), _Exclude from Position Files_ and/or _Exclude from BoM_ states (attributes) of a component.  Component attributes are modified using [Property Specifiers](#property-specifiers).
+Also, the Base Scope is used to modify component attributes, for example the _DNP_ (Do Not Populate), _Exclude from Position Files_ and/or _Exclude from BoM_ states (attributes) of a component, or dedicated component features, for example controlling 3D model visibility or solder paste application.  Component attributes and features are modified using [Property Specifiers](#property-specifiers).
 
 > [!IMPORTANT]
 > Expressions in the Base Scope can _not_ modify **custom** (i.e. other than "Value") fields.  For this, the [Auxiliary Scope](#aux) must be used (see next section).
@@ -941,7 +952,7 @@ To open the plugin dialog, simply click the KiVar plugin icon in the main toolba
 
 ##### Configuration Identification
 
-Upon start, during the compilation stage, KiVar automatically detects the current variation configuration, i.e., it tries to find a definite choice for each configured aspect, based on the currently assigned values, field contents and attributes for each related footprint.
+Upon start, during the compilation stage, KiVar automatically detects the current variation configuration, i.e., it tries to find one definite choice for each configured aspect, based on the currently assigned values, field contents, attributes and features for each related footprint.
 
 If they do not exactly match one definite choice (per variation aspect), then the corresponding variation choice selector is preset to the entry _'\<unset>'_.  This will probably happen before applying a specific choice for the first time or after editing expressions, because not all of the currently assigned footprint properties may perfectly match one of the defined variation choices.
 
@@ -962,7 +973,7 @@ For the above [real-world examples](#real-world-examples), the selection dialog 
 
 For each of the listed Aspect Identifiers a variation Choice Identifier can now be selected.
 
-If the values, field contents and attributes of the footprint(s) related to a variation aspect shall not be modified, the entry _'\<unset>'_ can be selected for that variation aspect.  In this case, the corresponding variation will be excluded from the assignment stage and related footprints remain unmodified.
+If the values, field contents, attributes and features of the footprint(s) related to a variation aspect shall not be modified, the entry _'\<unset>'_ can be selected for that variation aspect.  In this case, the corresponding variation will be excluded from the assignment stage and related footprints remain unmodified.
 
 The change list section below the selection area summarizes all component changes to be performed for each related footprint if the current variation configuration is applied.
 
@@ -973,7 +984,7 @@ After selecting a few different variation choices, the dialog window may look li
 
 ![Variant Selection Dialog With Changes](doc/plugin-changes.svg)
 
-When clicking the _Update PCB_ button, KiVar sets the values and attributes for all relevant footprints as previewed in the information text box.
+When clicking the _Update PCB_ button, KiVar sets the configured data for all relevant footprints as previewed in the information text box.
 
 ##### Visible Changes
 
