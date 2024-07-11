@@ -28,7 +28,7 @@ from copy import deepcopy
 #     ^^^ this "update fields" message is too generic.
 
 def version():
-    return '0.2.9902'
+    return '0.2.9903'
 
 def pcbnew_compatibility_error():
     ver = pcbnew.GetMajorMinorPatchVersion()
@@ -297,7 +297,6 @@ def apply_selection(fpdict, vardict, selection, dry_run = False):
                 changes.append([uuid, ref, f"Change {ref} value from '{escape_str(old_value)}' to '{escape_str(new_value)}' ({choice_text})."])
                 if not dry_run: fpdict[uuid][Key.VALUE] = new_value
         for prop_id in fpdict[uuid][Key.PROPS]:
-            #print(f'DEBUG: prop_code {prop_code}')
             new_value = vardict[uuid][Key.BASE][selected_choice][Key.PROPS][prop_id]
             if new_value is not None:
                 old_value_text = None
