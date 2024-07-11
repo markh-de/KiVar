@@ -26,14 +26,14 @@ def doc_base_url():
 def print_err(*args, file=sys.stderr, **kwargs):
     print(*args, file=file, **kwargs)
 
-def load_board(board_file):
-    if not os.path.isfile(board_file) or not os.access(board_file, os.R_OK):
-        print_err(f'Error: "{board_file}" is not a readable file.')
+def load_board(in_file):
+    if not os.path.isfile(in_file) or not os.access(in_file, os.R_OK):
+        print_err(f'Error: "{in_file}" is not a readable file.')
         return None
-    return pcbnew.LoadBoard(board_file)
+    return pcbnew.LoadBoard(in_file)
 
-def save_board(board_file, board):
-    return pcbnew.SaveBoard(board_file, board)
+def save_board(out_file, board):
+    return pcbnew.SaveBoard(out_file, board)
 
 def build_vardict_wrapper(fpdict):
     vardict, errors = build_vardict(fpdict)
@@ -48,8 +48,8 @@ def build_vardict_wrapper(fpdict):
         return None
     return vardict
 
-def list_command(board=None, long=False, prop_codes=False, detailed=False, selected=False, verbose=False):
-    b = load_board(board)
+def list_command(in_file=None, long=False, prop_codes=False, detailed=False, selected=False, verbose=False):
+    b = load_board(in_file)
     if b is None: return False
     fpdict = build_fpdict(b)
     vardict = build_vardict_wrapper(fpdict)
@@ -109,8 +109,8 @@ def list_command(board=None, long=False, prop_codes=False, detailed=False, selec
         print()
     return True
 
-def state_command(board=None, all=False, query_aspect=None, verbose=False):
-    b = load_board(board)
+def state_command(in_file=None, all=False, query_aspect=None, verbose=False):
+    b = load_board(in_file)
     if b is None: return False
     fpdict = build_fpdict(b)
     vardict = build_vardict_wrapper(fpdict)
@@ -139,8 +139,8 @@ def state_command(board=None, all=False, query_aspect=None, verbose=False):
                 print(f'{p_aspect}={p_c}')
     return True
 
-def check_command(board=None, verbose=False):
-    b = load_board(board)
+def check_command(in_file=None, verbose=False):
+    b = load_board(in_file)
     if b is None: return False
     fpdict = build_fpdict(b)
     vardict = build_vardict_wrapper(fpdict)
@@ -162,13 +162,13 @@ def check_command(board=None, verbose=False):
         print_err(f'Check passed. All {len(sel)} aspect(s) have a matching choice.')
     return True
 
-def set_command(board=None, assign=None, dry_run=False, verbose=False):
+def set_command(in_file=None, out_file=None, force_save=False, assign=None, dry_run=False, verbose=False):
     # TODO how to handle errors? ignore failing assignments, or abort?
     #      collect errors, then print & return?
     if assign is None:
         print('Error: No assignments passed.')
         return False
-    b = load_board(board)
+    b = load_board(in_file)
     if b is None: return False
     fpdict = build_fpdict(b)
     vardict = build_vardict_wrapper(fpdict)
@@ -193,22 +193,21 @@ def set_command(board=None, assign=None, dry_run=False, verbose=False):
         else:
             print(f"Error: Assignment '{asmt}' failed: Format error: Wrong number of '=' separators.")
     changes = apply_selection(fpdict, vardict, sel, dry_run=False)
-    if len(changes) > 0:
-        if dry_run or verbose:
+    if verbose: # or dry_run:
+        if changes:
             print_err(f'Changes ({len(changes)}):')
             for uuid, order, change in sorted(changes, key=lambda x: natural_sort_key(x[1])):
                 print('    ' + change)
-        if not dry_run:
-            store_fpdict(b, fpdict)
-            if save_board(board, b):
-                if verbose:
-                    print(f'Board saved to file "{board}".')
-            else:
-                print_err(f'Error: Failed to save board to file "{board}".')
-                return False
-    else:
-        if verbose or dry_run:
+        else:
             print('No changes.')
+    if not dry_run and (changes or force_save):
+        store_fpdict(b, fpdict)
+        if save_board(out_file, b):
+            if verbose:
+                print(f'Board saved to file "{out_file}".')
+        else:
+            print_err(f'Error: Failed to save board to file "{out_file}".')
+            return False
     return True
 
 def main():
@@ -223,24 +222,25 @@ def main():
     list_parser.add_argument("-d", "--detailed",   action="store_true", help="show component assignments (implies --long)")
     list_parser.add_argument("-c", "--prop-codes", action="store_true", help="display property codes (implies --detailed)")
 #   list_parser.add_argument("-v", "--verbose",    action="store_true", help="verbose output")
-    list_parser.add_argument("board", help="KiCad PCB file name")
+    list_parser.add_argument("pcb", help="input KiCad PCB file name")
 
     state_parser = subparsers.add_parser("state", help="show currently matching choice for each aspect")
     state_parser.add_argument("-Q", "--query",   action="append",     help="query aspect for matching choice", metavar="aspect")
     state_parser.add_argument("-a", "--all",     action="store_true", help="list all aspects (default: list only aspects with matching choice)")
 #   state_parser.add_argument("-v", "--verbose", action="store_true", help="verbose output")
-    state_parser.add_argument("board", help="KiCad PCB file name")
+    state_parser.add_argument("pcb", help="input KiCad PCB file name")
 
     check_parser = subparsers.add_parser("check", help="check all aspects for matching choices, exit with error if check fails")
 #    check_parser.add_argument("--verbose", "-v", action="store_true", help="verbose output")
     # TODO add option to check only for dedicated list of aspects
-    check_parser.add_argument("board", help="KiCad PCB file name")
+    check_parser.add_argument("pcb", help="input KiCad PCB file name")
 
     set_parser = subparsers.add_parser("set", help="assign choices to aspects")
     set_parser.add_argument("-A", "--assign",  action="append",     help="assign choice to aspect ('str' format: \"aspect=choice\")", metavar="str")
     set_parser.add_argument("-D", "--dry-run", action="store_true", help="only print assignments, do not really perform/save them")
+    set_parser.add_argument("-o", "--output",  action="append",     help="override output file name and force saving", metavar="out_pcb")
     set_parser.add_argument("-v", "--verbose", action="store_true", help="verbose output")
-    set_parser.add_argument("board", help="KiCad PCB file name")
+    set_parser.add_argument("pcb", help="input (and default output) KiCad PCB file name")
 
     args = parser.parse_args()
     exitcode = 0
@@ -256,16 +256,23 @@ def main():
             exitcode = 3
         else:
             cmd = args.command
+            in_file = args.pcb
             if cmd == "list":
                 if args.prop_codes: args.detailed = True
                 if args.detailed:   args.long = True
-                if not list_command(board=args.board, long=args.long, prop_codes=args.prop_codes, detailed=args.detailed, selected=args.selection): exitcode = 1
+                if not list_command(in_file=in_file, long=args.long, prop_codes=args.prop_codes, detailed=args.detailed, selected=args.selection): exitcode = 1
             elif cmd == "state":
-                if not state_command(board=args.board, all=args.all, query_aspect=args.query): exitcode = 1
+                if not state_command(in_file=in_file, all=args.all, query_aspect=args.query): exitcode = 1
             elif cmd == "check":
-                if not check_command(board=args.board): exitcode = 1
+                if not check_command(in_file=in_file): exitcode = 1
             elif cmd == "set":
-                if not set_command(board=args.board, assign=args.assign, dry_run=args.dry_run, verbose=args.verbose): exitcode = 1
+                if args.output:
+                    out_file = args.output[-1]
+                    force_save = True
+                else:
+                    out_file = in_file
+                    force_save = False
+                if not set_command(in_file=in_file, out_file=out_file, force_save=force_save, assign=args.assign, dry_run=args.dry_run, verbose=args.verbose): exitcode = 1
             else:
                 print_err(f'This is the KiVar CLI, version {version()}.')
                 parser.print_usage()
