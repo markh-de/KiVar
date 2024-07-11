@@ -6,8 +6,8 @@
 	(paper "A4")
 	(title_block
 		(title "KiVar Demo")
-		(date "2024-05-29")
-		(rev "0.2.0")
+		(date "2024-07-11")
+		(rev "0.3.0")
 		(company "Author: Mark Hämmerling <dev@markh.de>")
 		(comment 1 "https://github.com/markh-de/KiVar")
 		(comment 4 "Maximum LED Backlight Drive Current Selection")
@@ -3165,6 +3165,24 @@
 			)
 		)
 		(property "Var(JP)" ""
+			(at 129.54 73.025 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "VarID" "A"
+			(at 129.54 73.025 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "VarID.Var" "10(1) 20(2) 30(3) 40(4) 50(5) 60(6) 70(7) 80(8) 90(9) 100(A) 110(B) 120(C) 130(D) 140(E) 150(F) JP(0)"
 			(at 129.54 73.025 0)
 			(effects
 				(font

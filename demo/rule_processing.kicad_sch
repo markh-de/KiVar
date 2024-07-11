@@ -6,8 +6,8 @@
 	(paper "A5")
 	(title_block
 		(title "KiVar Demo")
-		(date "2024-05-29")
-		(rev "0.2.0")
+		(date "2024-07-11")
+		(rev "0.3.0")
 		(company "Author: Mark Hämmerling <dev@markh.de>")
 		(comment 1 "https://github.com/markh-de/KiVar")
 		(comment 4 "KiVar Rule Processing")

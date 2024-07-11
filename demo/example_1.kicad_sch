@@ -6,8 +6,8 @@
 	(paper "A5")
 	(title_block
 		(title "KiVar Demo")
-		(date "2024-05-29")
-		(rev "0.2.0")
+		(date "2024-07-11")
+		(rev "0.3.0")
 		(company "Author: Mark Hämmerling <dev@markh.de>")
 		(comment 1 "https://github.com/markh-de/KiVar")
 		(comment 4 "I²C Device Address Selection")
@@ -1125,6 +1125,24 @@
 			)
 		)
 		(property "I2C Address.Var" "0x54(0x54) 0x55(0x55)"
+			(at 119.38 60.96 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "VarID" "55"
+			(at 119.38 60.96 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "VarID.Var" "0x54(54) 0x55(55)"
 			(at 119.38 60.96 0)
 			(effects
 				(font

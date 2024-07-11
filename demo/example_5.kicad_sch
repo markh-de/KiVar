@@ -6,8 +6,8 @@
 	(paper "A4")
 	(title_block
 		(title "KiVar Demo")
-		(date "2024-05-29")
-		(rev "0.2.0")
+		(date "2024-07-11")
+		(rev "0.3.0")
 		(company "Author: Mark Hämmerling <dev@markh.de>")
 		(comment 1 "https://github.com/markh-de/KiVar")
 		(comment 4 "IC Type and Address Selection")
@@ -1743,6 +1743,24 @@
 			)
 		)
 		(property "I2C Address.Var" "9535/0x20(0x20) 9535/0x24(0x24) 9539/0x74(0x74)"
+			(at 170.18 100.33 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "VarID" "24"
+			(at 170.18 100.33 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "VarID.Var" "9535/0x20(20) 9535/0x24(24) 9539/0x74(74)"
 			(at 170.18 100.33 0)
 			(effects
 				(font

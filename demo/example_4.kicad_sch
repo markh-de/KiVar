@@ -6,8 +6,8 @@
 	(paper "A4")
 	(title_block
 		(title "KiVar Demo")
-		(date "2024-05-29")
-		(rev "0.2.0")
+		(date "2024-07-11")
+		(rev "0.3.0")
 		(company "Author: Mark Hämmerling <dev@markh.de>")
 		(comment 1 "https://github.com/markh-de/KiVar")
 		(comment 4 "IC Variant Selection")
@@ -2392,6 +2392,24 @@
 					(size 1.27 1.27)
 				)
 				(justify left)
+				(hide yes)
+			)
+		)
+		(property "VarID" "A"
+			(at 121.92 104.14 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "VarID.Var" "IRAZ(A) IRNZ(N)"
+			(at 121.92 104.14 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
 				(hide yes)
 			)
 		)
