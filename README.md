@@ -107,7 +107,8 @@ Required steps:
 
 1. Open the KiCad PCB Editor (pcbnew).
 2. In the PCB Editor, choose the menu option _Tools &rarr; External Plugins &rarr; Open Plugin Directory_.  This will open a file browser at the location of your KiCad plugin directory.
-3. Unzip the contents of an official [KiVar release archive](https://github.com/markh-de/KiVar/releases) (the ZIP file _without_ the `-pcm` suffix) to that KiCad plugin directory you opened in the previous step.  _Important:_ Do not create another directory inside the target plugin directory, but only place the files from the release archive directly in the plugin directory.
+3. Unzip the contents of an official [KiVar release archive](https://github.com/markh-de/KiVar/releases) (the ZIP file _without_ the `-pcm` suffix) to that KiCad plugin directory you opened in the previous step.  
+   _Important:_ Do not create another directory inside the target plugin directory, but only place the files from the release archive directly in the plugin directory.
 4. Switch back to the PCB Editor and choose the menu option _Tools &rarr; External Plugins &rarr; Refresh Plugins_.  The _KiVar_ plugin icon should now appear in the toolbar and in the plugin list under _Tools &rarr; External Plugins_.
 
 If the installation does not work for you this way, consider reporting your problem as an issue in the KiVar bug tracker.
@@ -154,13 +155,12 @@ The following sub-sections describe the variation rules setup procedure.
 While it is recommended to define variation rules in the schematic (i.e. in symbol fields) and propagate them to the board, it is also possible to define those rules directly in the board (i.e. in footprint fields) and propagate them back to the schematic.  Either way, in order for KiVar to utilize the variation rules, they must be present in the footprint fields, as KiVar uses the _pcbnew_ API wrapper and can therefore only operate on the board (not schematic) data, which must then be [propagated back to the schematic](#updating-the-schematic).
 
 > [!TIP]
+> Before diving into the more or less formal specification of KiVar variation rules, you might want to have a look at some [real-world examples](#real-world-examples) or the [demo project](demo/) for a start.  Both will give you a first impression of how KiVar rules work.  To make the following explanations easier to read and understand, examples are also given where useful.
+
+> [!TIP]
 > If you are already experienced with writing variation rules for older KiVar 0.1.x versions, it is highly recommended to read the [KiVar Migration Guide](#migrate), which covers the most important changes introduced with KiVar release 0.2.0.
 
 #### Definition of Terms
-
-<!-- don't repeat
-As mentioned before, KiVar supports multiple independent _variation aspects_ per board.  For each of these variation aspects, one _variation choice_ can be made later during the selection process.  The result of selecting a specific set of choices for a given set of aspects forms a _variation configuration_.
--->
 
 Basic terms used in this document:
 
@@ -305,7 +305,8 @@ Additionally, the following Properties allow controlling component _features_:
  * **Model** (property identifier `mN`, with `N` being an integer number).  
    This property controls the visibility of each individual 3D model of the corresponding component footprint to either visible (property state _true_) or invisible (property state _false_).  An integer number must be provided directly following the first character of the property identifier, representing the index of the model to be shown or hidden.  The index starts at 1.
  * **Solder** (property identifier `s`).  
-   This property controls the application of solder paste to the pads of a component's footprint.  Solder paste can be enabled (property state _true_) or disabled (property state _false_).  For both cases, user-defined footprint-specific solder paste clearances are maintained (see note below).  _Important:_ As usual for KiCad solder paste clearance settings, this property has only effect for pads on copper layers, but _not_ for _SMD Aperture_ pads!
+   This property controls the application of solder paste to the pads of a component's footprint.  Solder paste can be enabled (property state _true_) or disabled (property state _false_).  For both cases, user-defined footprint-specific solder paste clearances are maintained (see note below).  
+   _Important:_ As usual for KiCad solder paste clearance settings, this property has only effect for pads on copper layers, but _not_ for _SMD Aperture_ pads!
 
 > [!IMPORTANT]
 > For indexed Properties, i.e. Properties including an integer index value, each index is treated as an individual and independent Property.  For example, the Properties _Model#1_ and _Model#2_ do not affect each other.  This independence also applies to [Default Property Inheritance](#default-property-inheritance) and [Implicit Defaults](#implicit-defaults) discussed below.
