@@ -918,10 +918,13 @@ How to read the rules:
  * Variation aspect is `IOEXP_TYPE/ADDR` (see above).
  * **R18**: For choices `9535/0x24` and `9539/0x74` this part will be fitted, else (`9535/0x20`, handled by [Implicit Defaults](#implicit-defaults)) unfitted.
  * **R19**: For choice `9535/0x20` this part will be fitted, else (`9535/0x24`, `9539/0x74`) unfitted.
- * **U4**: The I²C address information field `I2C Address` is set according to the resulting address, depending on the selected choice.  Also, the `MPN` and `Datasheet` fields are set accordingly (expression not shown in the schematic, check out the demo project).
+ * **U4**: The I²C address information field `I2C Address` is set according to the resulting address, depending on the selected choice.  The `MPN` and `Datasheet` fields are set accordingly.  Also, for the 953**9** IC type (choice `9539/0x74`) only 3D model #2 will be visible (`-m1+m2`), while for other choices (i.e. 953**5** IC type), only model #1 will be visible instead (`+m1-m2`).  The MPN, Datasheet and 3D model visibility rules are not shown on the symbol to keep the schematic clear.  To see all rules, check out the demo project.
 
 > [!NOTE]
 > Depending on the available space in the schematic, the Aspect Identifier can be moved into the dedicated `Var.Aspect` field (and shown or hidden), as for U4, or be part of the Choice Expression, as for R18 and R19.
+
+> [!NOTE]
+> The different 3D models for U4 were only chosen for feature demonstration purposes.  The two ICs actually use the same TSSOP-24 package.
 
 ##### Example 6: Backlight LED Maximum Constant Current Selection
 
