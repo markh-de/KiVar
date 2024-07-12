@@ -1706,6 +1706,24 @@
 				(justify left)
 			)
 		)
+		(property "Var(*)" "+m1-m2"
+			(at 170.18 100.33 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Var(9539/0x74)" "-m1+m2"
+			(at 170.18 100.33 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(property "Datasheet.Var(9539/0x74)" "http://www.ti.com/lit/ds/symlink/tca9539.pdf"
 			(at 170.18 100.33 0)
 			(effects
