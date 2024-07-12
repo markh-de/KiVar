@@ -28,7 +28,7 @@ from copy import deepcopy
 #     ^^^ this "update fields" message is too generic.
 
 def version():
-    return '0.2.9903'
+    return '0.2.9904'
 
 def pcbnew_compatibility_error():
     ver = pcbnew.GetMajorMinorPatchVersion()
@@ -343,15 +343,14 @@ def split_prop_id(prop_id):
 
 def parse_prop_str(prop_str, prop_set):
     state = None
-    expect_code = False
-    expect_index = False
-    current_code = None
-    current_index = None
+    expect_code = expect_index = False
+    current_code = current_index = None
     for c in prop_str.upper():
         if c in '+-':
             if expect_code:  raise ValueError(f"Got property modifier where property identifier was expected")
             if expect_index: raise ValueError(f"Got property modifier where property index was expected")
             apply_indexed_prop(prop_set, current_code, current_index, state)
+            current_code = current_index = None
             expect_code = True
             state = c == '+'
         elif c in supported_prop_codes():
@@ -364,8 +363,7 @@ def parse_prop_str(prop_str, prop_set):
                 current_index = 0
                 expect_index = True
             else:
-                current_code = None
-                current_index = None
+                current_code = current_index = None
                 if c == PropGroup.ASSEMBLE:
                     for c in group_assemble_prop_codes(): prop_set[c] = state
                 else:
