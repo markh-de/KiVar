@@ -918,7 +918,7 @@ How to read the rules:
  * Variation aspect is `IOEXP_TYPE/ADDR` (see above).
  * **R18**: For choices `9535/0x24` and `9539/0x74` this part will be fitted, else (`9535/0x20`, handled by [Implicit Defaults](#implicit-defaults)) unfitted.
  * **R19**: For choice `9535/0x20` this part will be fitted, else (`9535/0x24`, `9539/0x74`) unfitted.
- * **U4**: The I²C address information field `I2C Address` is set according to the resulting address, depending on the selected choice.  The `MPN` and `Datasheet` fields are set accordingly.  Also, for the 953**9** IC type (choice `9539/0x74`) only 3D model #2 will be visible (`-m1+m2`), while for other choices (i.e. 953**5** IC type), only model #1 will be visible instead (`+m1-m2`).  The MPN, Datasheet and 3D model visibility rules are not shown on the symbol to keep the schematic clear.  To see all rules, check out the demo project.
+ * **U4**: The I²C address information field `I2C Address` is set according to the resulting address, depending on the selected choice.  The `MPN` and `Datasheet` fields are set accordingly.  Also, for the 953**9** IC type (choice `9539/0x74`) only the second 3D model will be visible (`-m1+m2`), while for other choices (i.e. 953**5** IC type, default choice), only the first 3D model will be visible instead (`+m1-m2`).  The MPN, Datasheet and 3D model visibility rules are not shown on the symbol to keep the schematic clear.  To see all rules, check out the demo project.
 
 > [!NOTE]
 > Depending on the available space in the schematic, the Aspect Identifier can be moved into the dedicated `Var.Aspect` field (and shown or hidden), as for U4, or be part of the Choice Expression, as for R18 and R19.
@@ -944,6 +944,12 @@ How to read the rules:
 
 > [!NOTE]
 > Again, to save horizontal space, the Aspect Identifier is moved to the dedicated `Var.Aspect` field (shown), for all involved components.
+
+##### Usage Tip: Assembly Variant Codes
+
+For each above example, one essential component was chosen to carry an Aspect Choice variation identifier code (in field `VarID`).  These codes than then be used to form a PCB assembly variant code that is unique for each Configuration (i.e. combination of Aspect Choices).
+
+Even though PCB variants are not really supposed to change any property of the _bare_ PCB (i.e. copper, solder mask, ...), such variant configuration codes can be added to any documentation (or even silkscreen) layer.  Refer to the [PCB 3D views below](#visible-changes) and to the [demo project](demo/) for a usage example.
 
 ### Rules Application
 
