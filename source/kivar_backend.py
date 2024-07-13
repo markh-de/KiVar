@@ -28,7 +28,7 @@ from copy import deepcopy
 #     ^^^ this "update fields" message is too generic.
 
 def version():
-    return '0.2.9904'
+    return '0.3.0'
 
 def pcbnew_compatibility_error():
     ver = pcbnew.GetMajorMinorPatchVersion()
