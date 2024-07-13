@@ -138,9 +138,7 @@ pip install kivar-${VERSION}.tar.gz
 ## Usage
 
 > [!IMPORTANT]
-> This manual refers to the **0.2.x** series of KiVar, which uses different component fields for specifying rules, a slightly modified (but significantly extended) rule syntax, and an enhanced range of functions compared to earlier versions.  
-> If you are still using an older version, please consider [updating](#installation) KiVar and [migrating](#migrate) your variation rules to the new format.  
-> You can also switch to the [latest version of this user guide](https://github.com/markh-de/KiVar/blob/main/README.md#usage).
+> This manual refers to the **0.3.x** series of KiVar.  If you are still using an older version, please consider [updating](#installation) KiVar and [migrating](#migrate) your variation rules.
 
 The process of writing and assigning rules to components (i.e. symbols and footprints) is done manually using simple text expressions.
 
@@ -150,15 +148,13 @@ The following sections describe the process of configuring your schematic or boa
 
 ### Component Variation Setup
 
-The following sub-sections describe the variation rules setup procedure.
-
 While it is recommended to define variation rules in the schematic (i.e. in symbol fields) and propagate them to the board, it is also possible to define those rules directly in the board (i.e. in footprint fields) and propagate them back to the schematic.  Either way, in order for KiVar to utilize the variation rules, they must be present in the footprint fields, as KiVar uses the _pcbnew_ API wrapper and can therefore only operate on the board (not schematic) data, which must then be [propagated back to the schematic](#updating-the-schematic).
 
 > [!TIP]
 > Before diving into the more or less formal specification of KiVar variation rules, you might want to have a look at some [real-world examples](#real-world-examples) or the [demo project](demo/) for a start.  Both will give you a first impression of how KiVar rules work.
 
 > [!TIP]
-> If you are already experienced with writing variation rules for older KiVar 0.1.x versions, it is highly recommended to read the [KiVar Migration Guide](#migrate), which covers the most important changes introduced with KiVar release 0.2.0.
+> If you are already experienced with writing variation rules for older KiVar versions (especially 0.1.x), it is highly recommended to read the [KiVar Migration Guide](#migrate), which covers the most important changes introduced with newer KiVar releases.
 
 #### Definition of Terms
 
@@ -221,6 +217,7 @@ Choice Expressions can use various notations, depending on their Scope and Forma
 In its simplest form, a Choice Expression consists only of a **Choice Argument List**, which is just a list of _space_-separated **Choice Argument**s to be assigned to a component for a specific choice.
 
 Each _Choice Argument_ of the _Choice Argument List_ can be of one of two possible types:
+
  * a part of the **Content** to be assigned as the component _value_ or a specific target _field_, or
  * a **Property** state assignment specifier (e.g. to mark a component _(un)fitted_, _(not) in BoM_, _(not) in position files_).
 
@@ -312,7 +309,7 @@ Additionally, the following Properties allow controlling component _features_:
 > For indexed Properties, i.e. Properties including an integer index value, each index is treated as an individual and independent Property.  For example, the Properties _Model#1_ and _Model#2_ do not affect each other.  This independence also applies to [Default Property Inheritance](#default-property-inheritance) and [Implicit Defaults](#implicit-defaults) discussed below.
 
 > [!NOTE]
-> As KiCad does not provide a dedicated footprint attribute for disabling solder paste application, KiVar instead makes use of the _solder paste relative clearance_ value.  To disable or enable solder paste application for a footprint, KiVar applies or removes an offset value of &minus;4,200,000%.  This technique allows retaining user-provided clearance values.  However, in order to ensure safe classification of KiVar-applied solder paste control, those user-provided relative clearance values are only allowed in the range from &minus;10,000% to &plus;10,000%.
+> As KiCad does not provide a dedicated footprint attribute for disabling solder paste application, KiVar instead makes use of the _solder paste relative clearance_ value.  To disable or enable solder paste application for a footprint, KiVar applies or removes an offset value of &minus;4,200,000%.  This technique allows retaining user-provided clearance values.  However, in order to ensure safe classification of KiVar-applied solder paste control, those user-provided relative clearance values must be in the range from &minus;10,000% to &plus;10,000%.
 
 ###### Group Properties
 
@@ -403,7 +400,7 @@ _(none)_                                 | `+f`                                 
 `+!`                                     | `-p`                                      | `+fb` `-p`
 `+f`                                     | `-b`                                      | `+f` `-b`
 `+f +b`                                  | `-b`                                      | `+f` `-b`
-`+s!`                                    | `-s`                                      | `+fbp` `-s`
+`-s!`                                    | `+s`                                      | `-fbp` `+s`
 `-m1m2m3`                                | `+m3`                                     | `-m1` `-m2` `+m3`
 
 ##### Implicit Defaults
@@ -441,6 +438,7 @@ _(none)_       | _(none)_       | _(none)_                                      
 #### Choice Expression Scopes
 
 The data defined in Choice Expressions can be applied to either
+
  * the component's basic properties (i.e. component _value_, _attributes_, _features_), or to
  * custom component fields (such as _Manufacturer_, _MPN_, ...).
 
@@ -453,6 +451,7 @@ For each of them there exists a dedicated **Choice Expression Scope**.  Both sco
 ###### Purpose
 
 Expressions in **Base Scope** are used to
+
  * assign component **values** (using [Content Specifiers](#content-specifiers)) and **attributes** or **features** (using [Property Specifiers](#property-specifiers)), and to
  * **declare** and **define** [Choice Identifiers](#choice-identifiers) in the context of a corresponding [Aspect Identifier](#aspect-identifier).
 
@@ -508,12 +507,14 @@ The two different **Choice Expression Formats** are described in the following s
 ###### Purpose
 
 The **Simple Format** is particularly well suited to
+
  * specify a single Choice Expression using
  * one specific component field per expression.
 
 ###### Typical Use
 
 Expressions noted in Simple Format
+
  * are recommended for longer, more complex (or verbatim) Content, such as a datasheet or purchase URL or a complex "Value" field content,
  * can be useful when referencing a dedicated set of Choice Arguments using text variables that are embedded at another location of the schematic (see examples),
  * have the drawback that, due to the diversity of the symbol field names they occupy, each unique used field name adds to the list of field names available in total, for example when using the Symbol Fields Editor.
@@ -525,12 +526,14 @@ Examples using the Simple Format are provided in the [SBE](#sbe) and [SAE](#sae)
 ##### Combined Format
 
 The **Combined Format** is particularly well suited to
+
  * allow combining multiple Choice Expressions in
  * a single component field (also, in [Base Scope](#base), optionally accepting the [Aspect Identifier](#aspect-identifier)).
 
 ###### Typical Use
 
 Expressions noted in Combined Format
+
  * are recommended for shorter, simpler Content, such as a simple component Value, a short MPN or manufacturer name,
  * allow specifying multiple Choice Expressions in a compact way,
  * therefore save space when many Choices need to be declared or defined.
@@ -558,6 +561,7 @@ Using the [Base Scope](#base), **Simple Base Expression**s define the component'
 **Field content:** `<CAL>`
 
 Used placeholders:
+
  * `<CIL>` specifies the [Choice Identifiers List](#choice-identifiers).
  * `<CAL>` specifies the corresponding [Choice Arguments List](#choice-arguments).
 
@@ -589,9 +593,6 @@ Using the [Base Scope](#base), **Combined Base Expression**s define the componen
 
 [Content](#content-specifiers) and [Property](#property-specifiers) specifiers are noted in the [Combined Format](#combined).
 
-> [!NOTE]
-> This Choice Expression type probably seems familiar, as it is very similar to the classic notation used in versions prior to 0.2.0 of KiVar.
-
 ###### Syntax
 
 **Field name**: `Var`
@@ -599,6 +600,7 @@ Using the [Base Scope](#base), **Combined Base Expression**s define the componen
 **Field content:** `[<ASPECT_ID> ]<CIL_1>(<CAL_1>)[ <CIL_2>(<CAL_2>)[ ...[ <CIL_N>(<CAL_N>)]]]`
 
 Used placeholders:
+
  * `<ASPECT_ID>` (optional) specifies the [Aspect Identifier](#aspect-identifier).
  * `<CIL_1>` .. `<CIL_N>` specify the [Choice Identifiers Lists](#choice-identifiers).
  * `<CAL_1>` .. `<CAL_N>` specify the corresponding [Choice Arguments Lists](#choice-arguments).
@@ -633,6 +635,7 @@ Using the [Auxiliary Scope](#aux), **Simple Auxiliary Expression**s define the c
 **Field content:** `<CAL>`
 
 Used placeholders:
+
  * `<TARGET_FIELD_NAME>` specifies the name of the component's field to assign specified content to.
  * `<CIL>` specifies the [Choice Identifiers List](#choice-identifiers).
  * `<CAL>` specifies the corresponding [Choice Arguments List](#choice-arguments).
@@ -678,6 +681,7 @@ Using the [Auxiliary Scope](#aux), **Combined Auxiliary Expression**s define the
 **Field content:** `<CIL_1>(<CAL_1>)[ <CIL_2>(<CAL_2>)[ ...[ <CIL_N>(<CAL_N>)]]]`
 
 Used placeholders:
+
  * `<TARGET_FIELD_NAME>` specifies the name of the component's field to assign specified content to.
  * `<CIL_1>` .. `<CIL_N>` specify the [Choice Identifiers Lists](#choice-identifiers).
  * `<CAL_1>` .. `<CAL_N>` specify the corresponding [Choice Arguments Lists](#choice-arguments).
@@ -724,6 +728,7 @@ Details and examples can be found in the following sections.
 One of the key concepts of KiVar requires all Configurations (sets of Choice selections) to be unambiguous with regard to their outcome.  This is required in order to be able to detect, i.e. map the assigned outcome back to an unambiguous set of Choices.
 
 It is therefore required for **each Content or Property assignment** that there is
+
  * either **no definition** for **any** Choice involved (i.e. keep all Content or Property states in their original state)
  * or a **dedicated definition** for **every** Choice involved (i.e. set all Content or Property states to a defined state).
 
@@ -1033,7 +1038,7 @@ kivar --help
 
 ## Migrating from Earlier KiVar Versions
 
-### Migrating from KiVar 0.1.x to 0.2.x
+### Migrating from KiVar 0.1.x
 
 KiVar 0.2.0 introduced changes and enhancements to the rule syntax.  The following sub-sections will support experienced users of KiVar 0.1.x with updating their legacy variation rules for current and upcoming KiVar versions.
 
@@ -1073,6 +1078,7 @@ Values, however, were handled differently: They _were_ inherited from the Defaul
 With version 0.2.0, this behavior has changed.  Default Choice inheritance has been streamlined and now applies to both Values (now called _Content_) and Options (now called _Properties_), thanks to the introduction of enhanced [Property Specifiers](#property-specifiers).  _Property Modifiers_ now allow overriding property states with either _set_ (modifier `+`) or _clear_ (modifier `-`) operations.  That is, after the Default Property states are applied (inherited), specific choices can (partially) override those states.
 
 There are now three supported effective Properties:
+
  * **Fitted** (identifier `f`): Component is fitted.  Clears the "Do not populate" component attribute.
  * **inPos** (identifier `p`): Component is listed in Position files.  Clears the "Exclude from Position Files" component attribute.
  * **inBom** (identifier `b`): Component is listed in Bill of Materials.  Clears the "Exclude from BoM" component attribute.
@@ -1159,3 +1165,10 @@ Starting with version 0.2.0, `"` (double-quote) characters are also supported fo
 This change is mostly backwards-compatible.  If your legacy string do not use double-quote characters that are supposed to be used in a verbatim fashion themselves, there is no need to adapt legacy rule strings.
 
 Further reading: [Quoting and Escaping](#quoting-and-escaping).
+
+### Migrating from KiVar 0.2.x
+
+The most important change with KiVar 0.3.0 was the introduction of [Feature Properties](#feature-properties).  These allow you to
+
+ * enable or disable the visibility of individual 3D models of a footprint and
+ * suppress the application of solder paste for SMD pads of a footprint.
