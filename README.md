@@ -146,7 +146,7 @@ The process of writing and assigning rules to components (i.e. symbols and footp
 
 Once all relevant components are equipped with their variation rules, KiVar allows the selection of variation choices using either an easy-to-use dialog interface (when using the Action Plugin) or a command-line interface (when using the CLI app) and takes care of the automatic analysis and assignment of the corresponding component values, fields, attributes and features.
 
-The following sections describe the process of configuring your schematic or board and - after that - selecting a variation configuration from the previously configured variation choices.
+The following sections describe the process of configuring your schematic or board and - after that - selecting a variation configuration from the previously configured variation choices.  Examples are given where appropriate.
 
 ### Component Variation Setup
 
@@ -155,7 +155,7 @@ The following sub-sections describe the variation rules setup procedure.
 While it is recommended to define variation rules in the schematic (i.e. in symbol fields) and propagate them to the board, it is also possible to define those rules directly in the board (i.e. in footprint fields) and propagate them back to the schematic.  Either way, in order for KiVar to utilize the variation rules, they must be present in the footprint fields, as KiVar uses the _pcbnew_ API wrapper and can therefore only operate on the board (not schematic) data, which must then be [propagated back to the schematic](#updating-the-schematic).
 
 > [!TIP]
-> Before diving into the more or less formal specification of KiVar variation rules, you might want to have a look at some [real-world examples](#real-world-examples) or the [demo project](demo/) for a start.  Both will give you a first impression of how KiVar rules work.  To make the following explanations easier to read and understand, examples are also given where useful.
+> Before diving into the more or less formal specification of KiVar variation rules, you might want to have a look at some [real-world examples](#real-world-examples) or the [demo project](demo/) for a start.  Both will give you a first impression of how KiVar rules work.
 
 > [!TIP]
 > If you are already experienced with writing variation rules for older KiVar 0.1.x versions, it is highly recommended to read the [KiVar Migration Guide](#migrate), which covers the most important changes introduced with KiVar release 0.2.0.
