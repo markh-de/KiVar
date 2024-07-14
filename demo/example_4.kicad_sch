@@ -1902,6 +1902,15 @@
 				(hide yes)
 			)
 		)
+		(property "Var.Aspect" "ISL91127"
+			(at 173.99 101.6 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(property "Var" "IRNZ(0Ω) IRAZ(1MΩ)"
 			(at 176.53 104.1399 0)
 			(effects
@@ -1910,15 +1919,6 @@
 					(italic yes)
 				)
 				(justify left)
-			)
-		)
-		(property "Var.Aspect" "ISL91127"
-			(at 173.99 101.6 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
 			)
 		)
 		(pin "1"
@@ -2827,6 +2827,15 @@
 				(hide yes)
 			)
 		)
+		(property "Var.Aspect" "ISL91127"
+			(at 173.99 109.22 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(property "Var" "IRAZ(+!)"
 			(at 176.53 111.7599 0)
 			(effects
@@ -2835,15 +2844,6 @@
 					(italic yes)
 				)
 				(justify left)
-			)
-		)
-		(property "Var.Aspect" "ISL91127"
-			(at 173.99 109.22 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
 			)
 		)
 		(pin "1"

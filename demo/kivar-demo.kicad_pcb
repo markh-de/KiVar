@@ -10981,7 +10981,7 @@
 				)
 			)
 		)
-		(property "Var" "*(TCA9535PWR) 9539/0x74(TCA9539PWR)"
+		(property "Var" "*(TCA9535PWR +m1-m2) 9539/0x74(TCA9539PWR -m1+m2)"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -11130,32 +11130,6 @@
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "cc153fd0-9d46-41ff-8402-ba180ba32995")
-			(effects
-				(font
-					(size 1 1)
-					(thickness 0.15)
-				)
-			)
-		)
-		(property "Var(*)" "+m1-m2"
-			(at 0 0 0)
-			(unlocked yes)
-			(layer "F.Fab")
-			(hide yes)
-			(uuid "b305d3fc-d1f0-4603-9873-782a620073a2")
-			(effects
-				(font
-					(size 1 1)
-					(thickness 0.15)
-				)
-			)
-		)
-		(property "Var(9539/0x74)" "-m1+m2"
-			(at 0 0 0)
-			(unlocked yes)
-			(layer "F.Fab")
-			(hide yes)
-			(uuid "1addb4fd-753f-4ab6-a3aa-ef5445e5ee71")
 			(effects
 				(font
 					(size 1 1)

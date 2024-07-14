@@ -1103,6 +1103,16 @@
 				(hide yes)
 			)
 		)
+		(property "Var" "EEPROM_ADDR"
+			(at 121.5741 53.34 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
 		(property "I2C Address" "0x55"
 			(at 121.5741 53.34 0)
 			(show_name yes)
@@ -1112,16 +1122,6 @@
 					(italic yes)
 				)
 				(justify left)
-			)
-		)
-		(property "Var" "EEPROM_ADDR"
-			(at 121.5741 53.34 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-				(hide yes)
 			)
 		)
 		(property "I2C Address.Var" "0x54(0x54) 0x55(0x55)"

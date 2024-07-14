@@ -1308,6 +1308,17 @@
 				(hide yes)
 			)
 		)
+		(property "Var.Aspect" "BOOT_SRC"
+			(at 165.1 67.31 0)
+			(show_name yes)
+			(do_not_autoplace yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+					(italic yes)
+				)
+			)
+		)
 		(property "Var" "NAND,JP(-!)"
 			(at 140.97 87.6299 0)
 			(effects
@@ -1334,17 +1345,6 @@
 					(size 1.27 1.27)
 				)
 				(hide yes)
-			)
-		)
-		(property "Var.Aspect" "BOOT_SRC"
-			(at 165.1 67.31 0)
-			(show_name yes)
-			(do_not_autoplace yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-					(italic yes)
-				)
 			)
 		)
 		(property "VarID" "E"
@@ -1716,6 +1716,15 @@
 				(hide yes)
 			)
 		)
+		(property "Var.Aspect" "BOOT_SRC"
+			(at 165.735 85.09 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(property "Var" "SD,EMMC,JP(-!)"
 			(at 167.64 87.6299 0)
 			(effects
@@ -1724,15 +1733,6 @@
 					(italic yes)
 				)
 				(justify left)
-			)
-		)
-		(property "Var.Aspect" "BOOT_SRC"
-			(at 165.735 85.09 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
 			)
 		)
 		(pin "1"
@@ -1876,6 +1876,15 @@
 				(hide yes)
 			)
 		)
+		(property "Var.Aspect" "BOOT_SRC"
+			(at 195.58 85.09 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(property "Var" "SD,NAND,JP(-!)"
 			(at 198.12 87.6299 0)
 			(effects
@@ -1884,15 +1893,6 @@
 					(italic yes)
 				)
 				(justify left)
-			)
-		)
-		(property "Var.Aspect" "BOOT_SRC"
-			(at 195.58 85.09 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
 			)
 		)
 		(pin "1"
