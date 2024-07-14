@@ -28,7 +28,7 @@ from copy import deepcopy
 #     ^^^ this "update fields" message is too generic.
 
 def version():
-    return '0.3.0'
+    return '0.3.9901'
 
 def pcbnew_compatibility_error():
     ver = pcbnew.GetMajorMinorPatchVersion()
@@ -379,7 +379,7 @@ def parse_prop_str(prop_str, prop_set):
     if expect_code:  raise ValueError(f"End of property specifier when property code was expected")
     if expect_index: raise ValueError(f"End of property specifier when property index was expected")
 
-def add_choice(vardict, uuid, raw_choice_name, raw_choice_def, field=None, all_aspect_choices=None):
+def add_choice(vardict, uuid, raw_choice_name, raw_choice_def, field=None):
     """ Adds a choice set (base or aux rule definition) to the vardict. """
     # TODO add unique error codes (for aux rules, add an offset), for unit testing (do not compare error strings).
     # If field is passed, this handles aux rules, else base rules.
@@ -416,9 +416,6 @@ def add_choice(vardict, uuid, raw_choice_name, raw_choice_def, field=None, all_a
             values.append(arg)
     for choice in choices:
         if is_aux:
-            if choice != Key.DEFAULT and not choice in all_aspect_choices:
-                errors.append(f"Undeclared choice identifier '{choice}'") # TODO print aspect in caller.### (in aspect {quote_str(aspect)})")
-                continue
             if not field in vardict[uuid][Key.AUX]: vardict[uuid][Key.AUX][field] = {}
             vardict_branch = vardict[uuid][Key.AUX][field]
         else:
@@ -629,7 +626,6 @@ def build_vardict(fpdict):
                 for error in add_errors: errors.append([uuid, ref, f"{ref}: When adding aspect '{aspect}' choice list '{choice_name}' in base expression: {error}."])
                 break
     # Handle aux rules
-    all_choices = get_choice_dict(vardict)
     for uuid in auxdict:
         aux_rule_strings, aux_choice_sets = auxdict[uuid]
         ref = fpdict[uuid][Key.REF]
@@ -651,7 +647,7 @@ def build_vardict(fpdict):
                 errors.append([uuid, ref, f"{ref}: Multiple aux expressions for target field '{field}'."]) # TODO wording
                 continue
             for choice_name, choice_content in choice_sets:
-                add_errors = add_choice(vardict, uuid, choice_name, choice_content, field, all_choices[aspect])
+                add_errors = add_choice(vardict, uuid, choice_name, choice_content, field)
                 if add_errors:
                     for error in add_errors: errors.append([uuid, ref, f"{ref}: Combined aux expression for aspect '{aspect}' choice list '{choice_name}' with target field '{field}': {error}."])
                     break
@@ -663,13 +659,14 @@ def build_vardict(fpdict):
             continue
         valid = False
         for field, choice_name, choice_content in aux_choice_sets:
-            add_errors = add_choice(vardict, uuid, choice_name, choice_content, field, all_choices[aspect])
+            add_errors = add_choice(vardict, uuid, choice_name, choice_content, field)
             if add_errors:
                 for error in add_errors: errors.append([uuid, ref, f"{ref}: Simple aux expression for aspect '{aspect}' choice list '{choice_name}' with target field '{field}': {error}."])
                 break
         else:
             valid = True
         if not valid: continue
+        all_choices = get_choice_dict(vardict)
         fin_errors = finalize_vardict_branch(vardict[uuid][Key.BASE], all_choices[aspect], fpdict[uuid][Key.PROPS])
         if fin_errors:
             # TODO cook and quote names in error message, refine wording
@@ -723,9 +720,12 @@ def get_choice_dict(vardict):
     for uuid in vardict:
         aspect = vardict[uuid][Key.ASPECT]
         if not aspect in choices: choices[aspect] = []
+        # In case the input dict still contains temporary data (such as default data), ignore it.
         for choice in vardict[uuid][Key.BASE]:
-            # In case the input dict still contains temporary data (such as default data), ignore it.
             if choice != Key.DEFAULT and not choice in choices[aspect]: choices[aspect].append(choice)
+        for field in vardict[uuid][Key.AUX]:
+            for choice in vardict[uuid][Key.AUX][field]:
+                if choice != Key.DEFAULT and not choice in choices[aspect]: choices[aspect].append(choice)
     return choices
 
 def split_parens(string):
