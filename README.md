@@ -88,6 +88,9 @@ KiVar uses the Python API wrapper for pcbnew, the KiCad PCB Editor.
 
 ## Installation
 
+> [!NOTE]
+> The Action Plugin and the CLI app can be installed independently of each other.  As the Action Plugin does not have external dependencies, it does not require the CLI package to be installed.
+
 ### KiVar Action Plugin
 
 The recommended plugin installation method is to use KiCad's integrated **Plugin and Content Manager**.  KiVar is included in the **official PCM repository**, allowing a smooth and safe installation and update experience.  For manual installation users can also choose to download the plugin archive package.
