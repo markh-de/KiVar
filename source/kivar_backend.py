@@ -28,7 +28,7 @@ from copy import deepcopy
 #     ^^^ this "update fields" message is too generic.
 
 def version():
-    return '0.3.9902'
+    return '0.3.9903'
 
 def pcbnew_compatibility_error():
     ver = pcbnew.GetMajorMinorPatchVersion()
@@ -592,6 +592,7 @@ def build_vardict(fpdict):
     vardict = {}
     errors = []
     auxdict = {}
+    all_choices = {}
     # Handle base rule
     for uuid in fpdict:
         ref = fpdict[uuid][Key.REF]
