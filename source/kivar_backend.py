@@ -28,7 +28,7 @@ from copy import deepcopy
 #     ^^^ this "update fields" message is too generic.
 
 def version():
-    return '0.3.9901'
+    return '0.3.9902'
 
 def pcbnew_compatibility_error():
     ver = pcbnew.GetMajorMinorPatchVersion()
@@ -166,7 +166,8 @@ def quote_str(string):
 
 # TODO use a cleaner way for keys
 class Key:
-    DEFAULT = '*' # relevant for user interface, rest of keys only used internally
+    DEFAULT = '*' # same symbol as used for expressions
+    STANDIN = '?' # same symbol as used for expressions
     ASPECT  = 'a'
     BASE    = 'b'
     AUX     = 'x'
@@ -452,9 +453,14 @@ def finalize_vardict_branch(vardict_choice_branch, all_aspect_choices, fp_props=
     choices_with_value_defined = 0
     for choice in all_aspect_choices:
         if not choice in vardict_choice_branch:
-            vardict_choice_branch[choice] = {}
-            vardict_choice_branch[choice][Key.VALUE] = None
-            vardict_choice_branch[choice][Key.PROPS] = {}
+            if Key.STANDIN in vardict_choice_branch:
+                vardict_choice_branch[choice] = {}
+                vardict_choice_branch[choice][Key.VALUE] = vardict_choice_branch[Key.STANDIN][Key.VALUE]
+                vardict_choice_branch[choice][Key.PROPS] = vardict_choice_branch[Key.STANDIN][Key.PROPS]
+            else:
+                vardict_choice_branch[choice] = {}
+                vardict_choice_branch[choice][Key.VALUE] = None
+                vardict_choice_branch[choice][Key.PROPS] = {}
         if Key.DEFAULT in vardict_choice_branch:
             if vardict_choice_branch[choice][Key.VALUE] is None:
                 vardict_choice_branch[choice][Key.VALUE] = vardict_choice_branch[Key.DEFAULT][Key.VALUE]
@@ -491,6 +497,7 @@ def finalize_vardict_branch(vardict_choice_branch, all_aspect_choices, fp_props=
                 errors.append(f"Mixed choices with defined ({choices_with_prop_defined}x) and undefined ({len(all_aspect_choices) - choices_with_prop_defined}x) {prop_abbrev(prop_code)} property ('{prop_code}') state (either all or none must be defined)")
     # Remove default choice entries from branch
     vardict_choice_branch.pop(Key.DEFAULT, None)
+    vardict_choice_branch.pop(Key.STANDIN, None)
     return errors
 
 def parse_rule_str(rule_str):
@@ -722,10 +729,10 @@ def get_choice_dict(vardict):
         if not aspect in choices: choices[aspect] = []
         # In case the input dict still contains temporary data (such as default data), ignore it.
         for choice in vardict[uuid][Key.BASE]:
-            if choice != Key.DEFAULT and not choice in choices[aspect]: choices[aspect].append(choice)
+            if choice != Key.DEFAULT and choice != Key.STANDIN and not choice in choices[aspect]: choices[aspect].append(choice)
         for field in vardict[uuid][Key.AUX]:
             for choice in vardict[uuid][Key.AUX][field]:
-                if choice != Key.DEFAULT and not choice in choices[aspect]: choices[aspect].append(choice)
+                if choice != Key.DEFAULT and choice != Key.STANDIN and not choice in choices[aspect]: choices[aspect].append(choice)
     return choices
 
 def split_parens(string):
