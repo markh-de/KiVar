@@ -7,14 +7,6 @@ try:
 except ModuleNotFoundError:
     from .kivar_backend import build_fpdict, build_vardict, version, get_choice_dict, detect_current_choices, natural_sort_key, apply_selection, store_fpdict, uuid_to_fp, pcbnew_compatibility_error, legacy_expressions_found
 
-# TODO:
-#
-# * As saving text variables is currently not supported by the API wrapper, and as KiVar is typically configured
-#   via fields anyway, add text variables for configuration of the custom property (to be called "?").
-#
-# * After applying configuration, define board variables containing the choice for each aspect, e.g. ${KIVAR.BOOT_SEL} => NAND
-#   (requires KiCad API change/fix: https://gitlab.com/kicad/code/kicad/-/issues/16426)
-
 def doc_vcs_ref():
     return f'v{version()}'
 
@@ -60,7 +52,7 @@ def pcbnew_parent_window():
 
 class VariantDialog(wx.Dialog):
     def __init__(self, board, fpdict, vardict):
-        super().__init__(pcbnew_parent_window(), title=f'KiVar {version()}: Variant Selection', style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER)
+        super().__init__(pcbnew_parent_window(), title=f'Variant Selection | KiVar {version()}', style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER | wx.MAXIMIZE_BOX)
 
         self.board = board
         self.vardict = vardict
@@ -71,21 +63,20 @@ class VariantDialog(wx.Dialog):
 
         sizer = wx.BoxSizer(wx.VERTICAL)
 
-        # Selections
-#        sel_grid = wx.GridSizer(cols=2, hgap=10, vgap=6)
-        sel_grid = wx.GridSizer(cols=1, hgap=10, vgap=6)
-
-        # left: variations
-        var_box = wx.StaticBox(self, label='Variation Choices')
+        # Variation Selections
+        var_box = wx.StaticBox(self, label='Variation Aspect Choices')
         var_box_sizer = wx.StaticBoxSizer(var_box)
-        var_grid = wx.GridSizer(cols=2, hgap=10, vgap=6)
 
+        scroll_panel = wx.ScrolledWindow(self, style=wx.VSCROLL)
+        scroll_panel.SetScrollRate(8, 8)
+
+        var_grid = wx.GridSizer(cols=2, hgap=10, vgap=6)
         self.choices = {}
         for cfg in sorted(choice_dict, key=natural_sort_key):
             opts = ['<unset>']
             sorted_choices = sorted(choice_dict[cfg], key=natural_sort_key)
             opts.extend(sorted_choices)
-            self.choices[cfg] = wx.Choice(self, choices=opts)
+            self.choices[cfg] = wx.Choice(scroll_panel, choices=opts)
             sel_opt = preselect[cfg]
             sel_index = 0 # <unset> by default
             if sel_opt is not None:
@@ -93,31 +84,22 @@ class VariantDialog(wx.Dialog):
             self.choices[cfg].SetSelection(sel_index)
             self.choices[cfg].Bind(wx.EVT_CHOICE, self.on_change)
             
-            var_grid.Add(wx.StaticText(self, label=f'{cfg}:'), 1, wx.ALIGN_CENTRE_VERTICAL | wx.ALIGN_RIGHT | wx.EXPAND)
+            var_grid.Add(wx.StaticText(scroll_panel, label=f'{cfg}:'), 1, wx.ALIGN_CENTRE_VERTICAL | wx.ALIGN_RIGHT | wx.EXPAND)
             var_grid.Add(self.choices[cfg], 0, wx.EXPAND)
 
-        var_box_sizer.Add(var_grid, 1, wx.EXPAND | wx.ALL, 6)
-        sel_grid.Add(var_box_sizer, 1, wx.EXPAND | wx.ALL, 4)
+        scroll_sizer = wx.BoxSizer(wx.VERTICAL)
+        scroll_sizer.Add(var_grid, 1, wx.EXPAND | wx.ALL, 8)
 
-        # # right: options
-        # opt_box = wx.StaticBox(self, label='Options')
-        # reset_button = wx.Button(self, label='Reset Choices')
-        # checkbox_excl_from_bom = wx.CheckBox(self, label="DNP sets 'Exclude from bill of materials'")
-        # checkbox_excl_from_pos = wx.CheckBox(self, label="DNP sets 'Exclude from position files'")
-        # opt_box_sizer = wx.StaticBoxSizer(opt_box, wx.VERTICAL)
-        # opt_box_sizer.Add(checkbox_excl_from_bom, 0, wx.EXPAND | wx.ALL, 4)
-        # opt_box_sizer.Add(checkbox_excl_from_pos, 0, wx.EXPAND | wx.ALL, 4)
-        # opt_box_sizer.Add(wx.StaticText(self, label=''), 1, wx.EXPAND | wx.ALL)
-        # opt_box_sizer.Add(reset_button, 0, wx.ALIGN_CENTRE_HORIZONTAL | wx.ALL, 4)
-        # opt_box_sizer.Add(wx.StaticText(self, label=''), 1, wx.EXPAND | wx.ALL)
-        # sel_grid.Add(opt_box_sizer, 0, wx.EXPAND | wx.ALL, 4)
+        scroll_panel.SetSizer(scroll_sizer)
 
-        sizer.Add(sel_grid, 0, wx.EXPAND | wx.ALL, 4)
+        var_box_sizer.Add(scroll_panel, 1, wx.ALL | wx.EXPAND, 5)
+        var_box_sizer.SetMinSize((640, 300))
+
+        sizer.Add(var_box_sizer, 12, wx.EXPAND | wx.ALL, 8)
 
         # Changes Text
         changes_box = wx.StaticBox(self, label='Changes To Be Applied')
         self.changes_box_sizer = wx.StaticBoxSizer(changes_box)
-        self.changes_box_sizer.SetMinSize((640, 280))
 
         self.changes_list_win = wx.ScrolledWindow(self, wx.ID_ANY)
         self.changes_list = PcbItemListBox(self.changes_list_win, board)
@@ -130,7 +112,7 @@ class VariantDialog(wx.Dialog):
         self.changes_list_win.SetSizer(changes_list_sizer)
         self.changes_box_sizer.Add(self.changes_list_win, 1, wx.EXPAND)
 
-        sizer.Add(self.changes_box_sizer, 1, wx.EXPAND | wx.ALL, 8)
+        sizer.Add(self.changes_box_sizer, 10, wx.EXPAND | wx.ALL, 8)
 
         # Bottom (help link and buttons)
         button_sizer = wx.BoxSizer(wx.HORIZONTAL)
@@ -149,25 +131,19 @@ class VariantDialog(wx.Dialog):
         link.EnableRollover(False)
 
         ok_button = wx.Button(self, label='Update PCB')
-#        update_button = wx.Button(self, label='Reset Choices')
         cancel_button = wx.Button(self, label='Close')
 
         button_sizer.Add(link, 0)
         button_sizer.AddStretchSpacer(1)
         button_sizer.Add(cancel_button, 0)
-#        button_sizer.Add(update_button, 0, wx.LEFT, 6)
         button_sizer.Add(ok_button, 0, wx.LEFT, 6)
 
         sizer.Add(button_sizer, 0, wx.EXPAND | wx.ALL, 8)
 
         self.SetSizerAndFit(sizer)
-        # TODO avoid 50/50 split between boxes. should be dynamic!
-
-        self.Fit()
         self.CentreOnParent()
 
         ok_button.Bind(wx.EVT_BUTTON, self.on_ok)
-#        update_button.Bind(wx.EVT_BUTTON, self.on_update)
         cancel_button.Bind(wx.EVT_BUTTON, self.on_cancel)
 
     def selections(self):
@@ -182,16 +158,12 @@ class VariantDialog(wx.Dialog):
 
     def on_ok(self, event):
         apply_selection(self.fpdict, self.vardict, self.selections())
-        # TODO do a verify step as in the CLI. bring up an error message if it failed!
         store_fpdict(self.board, self.fpdict)
         pcbnew.Refresh()
         self.Destroy()
 
     def on_change(self, event):
         self.update_list()
-
-#    def on_update(self, event):
-#        self.update_text()
 
     def on_cancel(self, event):
         self.Destroy()
