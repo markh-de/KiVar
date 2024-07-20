@@ -346,16 +346,9 @@ Each Choice must have a unique name within its Aspect scope.  This name can be a
 
 For referring to a Choice name, **Choice Identifiers** are used.  They are basically the same as the name itself, but rules for [quoting and escaping](#quoting-and-escaping) of special characters apply.  Choice Identifiers are **case-sensitive**.
 
-Whether the mention of a Choice Identifier implicitly declares the Choice in its Aspect context depends on the scope in which the identifier is used:  
-In [Base Scope](#base), expressions can declare (new) choice identifiers, while in [Auxiliary Scope](#aux), expressions can only refer to Choice Identifiers declared in [Base Scope](#base) (in the same or another component).
-
 The special Choice Identifier `*` is used for specifying default Content and Properties to be applied to Choices not explicitly listed in the corresponding assignment.  Refer to the [Default Choices](#default-choices) section below for details.
 
 ##### Declaration and Definition
-
-<!-- TODO this is important to understand. explain how declaration of choices can be done by _any_ component's Base Scope expression in the same aspect scope and how the list of available choices is automatically extended. old text! update and use rule compiler figure from demo project? -->
-
-<!-- TODO update demo figure for each expression type, use same colors for identification of example elements. -->
 
 ##### Choice Identifier Lists
 
@@ -447,55 +440,49 @@ The data defined in Choice Expressions can be applied to either
 
 For each of them there exists a dedicated **Choice Expression Scope**.  Both scopes are explained in the following sub-sections.
 
-<a name="base"></a>
+<a name="cmp"></a>
 
-##### Base Scope
+##### Component Scope
 
 ###### Purpose
 
-Expressions in **Base Scope** are used to
-
- * assign component **values** (using [Content Specifiers](#content-specifiers)) and **attributes** or **features** (using [Property Specifiers](#property-specifiers)), and to
- * **declare** and **define** [Choice Identifiers](#choice-identifiers) in the context of a corresponding [Aspect Identifier](#aspect-identifier).
+Expressions in **Component Scope** are used to assign **values** (using [Content Specifiers](#content-specifiers)), **attributes** or **features** (using [Property Specifiers](#property-specifiers)) to the component in which they are specified.
 
 ###### Typical Use
 
-The Base Scope is used to assign basic component values, such as `10kΩ`, `0.1µF 50V` or `74HC595`, to the mandatory "Value" field of a component (i.e. symbol or footprint), passed via [Content Specifiers](#content-specifiers).
+The Component Scope is used to assign basic component values, such as `10kΩ`, `0.1µF 50V` or `74HC595`, to the mandatory "Value" field of a component (i.e. symbol or footprint), passed via [Content Specifiers](#content-specifiers).
 
-Also, the Base Scope is used to modify component attributes, for example the _DNP_ (Do Not Populate), _Exclude from Position Files_ and/or _Exclude from BoM_ states (attributes) of a component, or dedicated component features, for example controlling 3D model visibility or solder paste application.  Component attributes and features are modified using [Property Specifiers](#property-specifiers).
+Also, the Component Scope is used to modify component attributes, for example the _DNP_ (Do Not Populate), _Exclude from Position Files_ and/or _Exclude from BoM_ states (attributes) of a component, or dedicated component features, for example controlling 3D model visibility or solder paste application.  Component attributes and features are modified using [Property Specifiers](#property-specifiers).
 
 > [!IMPORTANT]
-> Expressions in the Base Scope can _not_ modify **custom** (i.e. other than "Value") fields.  For this, the [Auxiliary Scope](#aux) must be used (see next section).
+> Expressions in the Component Scope can _not_ modify **custom** (i.e. other than "Value") fields.  For this, the [Field Scope](#fld) must be used (see next section).
 
-Examples using the Base Scope are discussed later in the [SBE](#sbe) and [CBE](#cbe) sections.
+Examples using the Component Scope are discussed later in the [SCE](#sce) and [CCE](#cce) sections.
 
-<a name="aux"></a>
+<a name="fld"></a>
 
-##### Auxiliary Scope
+##### Field Scope
 
 ###### Purpose
 
-Expressions in **Auxiliary Scope** (or short: _Aux Scope_) are used for assigning values to specific component **custom** target fields with the use of [Content Specifiers](#content-specifiers).
+Expressions in **Field Scope** are used to assign **content** (using [Content Specifiers](#content-specifiers)) to specific **custom** fields of the component in which they are specified.
 
 > [!IMPORTANT]
-> Expressions in the Auxiliary Scopy can _not_ declare additional Choice Identifiers, but only refer to existing ones that are declared in the [Base Scope](#base) of the same or any other component using the same Aspect.
+> Field Scope expressions do _not_ support specifying Properties.
 
 > [!IMPORTANT]
-> Expressions in the Auxiliary Scope refer to dedicated _target fields_ of components, not to the components themselves.  As target fields do not have mutable attributes, Auxiliary Scope expressions do _not_ support specifying Properties.
-
-> [!IMPORTANT]
-> Target fields referenced by Expressions in the Auxiliary Scope _must_ already exist.
+> Target fields referenced by Expressions in the Field Scope _must_ already exist.
 
 > [!NOTE]
-> The target field names "Footprint", "Reference" and "Value" are not permitted (to change the component value, the [Base Scope](#base) must be used).
+> The target field names "Footprint", "Reference" and "Value" are not permitted (to change the component value, the [Component Scope](#cmp) must be used).
 
 ###### Typical Use
 
-The Auxiliary Scope is used to assign custom field values, such as a manufacturer name or a manufacturer product number (MPN), for example, to be used in the bill of materials.
+The Field Scope is used to assign custom field values, such as the manufacturer name or the manufacturer product number (MPN), for example, to be used in the bill of materials.  Also, component fields for tolerance, voltage rating, or the datasheet URL can be modified.
 
-Auxiliary Scope expressions can also be used to specify other information, such as user-defined choice-dependent text information to be visible anywhere in the schematic for documentation purposes (using text-variables).
+Field Scope expressions can also be used to specify other information, such as user-defined choice-dependent text information to be visible anywhere in the schematic for documentation purposes (using text-variables).
 
-Examples using the Auxiliary Scope are discussed later in the [SAE](#sae) and [CAE](#cae) sections.
+Examples using the Field Scope are discussed later in the [SFE](#sfe) and [CFE](#cfe) sections.
 
 #### Choice Expression Formats
 
@@ -522,7 +509,7 @@ Expressions noted in Simple Format
  * can be useful when referencing a dedicated set of Choice Arguments using text variables that are embedded at another location of the schematic (see examples),
  * have the drawback that, due to the diversity of the symbol field names they occupy, each unique used field name adds to the list of field names available in total, for example when using the Symbol Fields Editor.
 
-Examples using the Simple Format are provided in the [SBE](#sbe) and [SAE](#sae) sections.
+Examples using the Simple Format are provided in the [SCE](#sce) and [SFE](#sfe) sections.
 
 <a name="combined"></a>
 
@@ -531,7 +518,7 @@ Examples using the Simple Format are provided in the [SBE](#sbe) and [SAE](#sae)
 The **Combined Format** is particularly well suited to
 
  * allow combining multiple Choice Expressions in
- * a single component field (also, in [Base Scope](#base), optionally accepting the [Aspect Identifier](#aspect-identifier)).
+ * a single component field (also, in [Component Scope](#cmp), optionally accepting the [Aspect Identifier](#aspect-identifier)).
 
 ###### Typical Use
 
@@ -541,19 +528,19 @@ Expressions noted in Combined Format
  * allow specifying multiple Choice Expressions in a compact way,
  * therefore save space when many Choices need to be declared or defined.
 
-Examples using the Combined Format are provided in the [CBE](#cbe) and [CAE](#cae) sections.
+Examples using the Combined Format are provided in the [CCE](#cce) and [CFE](#cfe) sections.
 
 #### Choice Expression Types
 
 The four available **Choice Expression Types** are formed by using both [Expression Scopes](#expression-scopes) with both [Expression Formats](#expression-formats) as discussed in the following sub-sections.
 
-<a name="sbe"></a>
+<a name="sce"></a>
 
-##### Simple Base Expressions (SBE)
+##### Simple Component Expressions (SCE)
 
 ###### Typical Use
 
-Using the [Base Scope](#base), **Simple Base Expression**s define the component's Value content and/or component attributes and features.
+Using the [Component Scope](#cmp), **Simple Component Expression**s define the component's Value content and/or component attributes and features.
 
 [Content](#content-specifiers) and [Property](#property-specifiers) specifiers are noted in the [Simple Format](#simple).
 
@@ -570,7 +557,7 @@ Used placeholders:
 
 ###### Examples
 
-The following entries could be used for a capacitor.  Note how the Aspect Identifier must be passed with a dedicated entry, as SBEs cannot include the Aspect Identifier, as is possible for [CBEs](#cbe).
+The following entries could be used for a capacitor.  Note how the Aspect Identifier must be passed with a dedicated entry, as SCEs cannot include the Aspect Identifier, as is possible for [CCEs](#cce).
 
 Field name            | Field content
 --------------------- | -------------
@@ -586,13 +573,13 @@ Field name            | Field content
 > In the above example, the Default Choice Identifier _"*"_ is added to the _"None"_ Choice, so that the corresponding expression also applies to any Choices declared outside this component in the same Aspect context. 
  Applying default data to Choices that the current component or assignment is "unaware" of may or may not be a good idea, depending on the chosen convenience vs. safety ratio.
 
-<a name="cbe"></a>
+<a name="cce"></a>
 
-##### Combined Base Expressions (CBE)
+##### Combined Component Expressions (CCE)
 
 ###### Typical Use
 
-Using the [Base Scope](#base), **Combined Base Expression**s define the component's Value content, component attributes and features and/or the Aspect Identifier.
+Using the [Component Scope](#cmp), **Combined Component Expression**s define the component's Value content, component attributes and features and/or the Aspect Identifier.
 
 [Content](#content-specifiers) and [Property](#property-specifiers) specifiers are noted in the [Combined Format](#combined).
 
@@ -613,21 +600,21 @@ Used placeholders:
 
 ###### Examples
 
-The following single entry serves the same purpose as the above [SBE](#sbe) example.  Note how even the [Aspect Identifier](#aspect-identifier) is included in the same single expression.
+The following single entry serves the same purpose as the above [SCE](#sce) example.  Note how even the [Aspect Identifier](#aspect-identifier) is included in the same single expression.
 
 Field name     | Field content
 -------------- | -------------
 `Var`          | `Capacitance Low(10µF) Medium(100µF) High(470µF) None,*(-! DNP)`
 
-The same explanation applies as for the above [SBE](#sbe) example.
+The same explanation applies as for the above [SCE](#sce) example.
 
-<a name="sae"></a>
+<a name="sfe"></a>
 
-##### Simple Auxiliary Expressions (SAE)
+##### Simple Field Expressions (SFE)
 
 ###### Typical Use
 
-Using the [Auxiliary Scope](#aux), **Simple Auxiliary Expression**s define the content of a specified _existing_ component field.
+Using the [Field Scope](#fld), **Simple Field Expression**s define the content of a specified _existing_ component field.
 
 [Content](#content-specifiers) and [Property](#property-specifiers) specifiers are noted in the [Simple Format](#simple).
 
@@ -649,6 +636,7 @@ The following entries could be used to define the MPN, description and datasheet
 
 Field name                    | Field content
 ----------------------------- | -------------
+`Var.Aspect`                  | `Voltage`
 `Description.Var(1.8V)`       | `Fixed voltage 1.8V 200mA LDO`
 `Description.Var(3.3V)`       | `Fixed voltage 3.3V 200mA LDO`
 `Description.Var(adjustable)` | `Adjustable voltage 200mA LDO`
@@ -658,22 +646,15 @@ Field name                    | Field content
 `Datasheet.Var(1.8V,3.3V)`    | `"https://example.kivar.markh.de/products/aldo200v.pdf"`
 `Datasheet.Var(adjustable)`   | `"https://example.kivar.markh.de/products/aldo200a.pdf"`
 
-This defines the Choice Identifiers _"1.8V"_, _"3.3V"_ and _"adjustable"_, which define different field content for the target fields _"Description"_, _"MPN"_ and _"Datasheet"_.  Note how this example does not make use of the Default Choice Identifier _"*"_, as there are no sensible defaults that could be assigned for yet unknown Choices that may be declared by other components.
+This defines the Choice Identifiers _"1.8V"_, _"3.3V"_ and _"adjustable"_ (inside the Aspect _"Voltage"_), which define different field content for the target fields _"Description"_, _"MPN"_ and _"Datasheet"_.  Note how this example does not make use of the Default Choice Identifier _"*"_, as there are no sensible defaults that could be assigned for yet unknown Choices that may be declared by other components.
 
-As it is not possible to _declare_ Choice Identifiers in the Auxiliary Scope (they rely on declarations in the [Base Scope](#base)), there must exist _at least_ the following Choice declarations in the same or another component that uses the same Aspect Identifier (_"Voltage"_ assumed here).  These Choice declarations are noted as [SBEs](#sbe), but Choices can be declared in any Expression Format (i.e. SBE or CBE types), even intermixed.
+<a name="cfe"></a>
 
-Field name                    | Field content
------------------------------ | -------------
-`Var.Aspect`                  | `Voltage`
-`Var(1.8V,3.3V,adjustable)`   | _(empty)_
-
-<a name="cae"></a>
-
-##### Combined Auxiliary Expressions (CAE)
+##### Combined Field Expressions (CFE)
 
 ###### Typical Use
 
-Using the [Auxiliary Scope](#aux), **Combined Auxiliary Expression**s define the content of a specified _existing_ component field.
+Using the [Field Scope](#fld), **Combined Field Expression**s define the content of a specified _existing_ component field.
 
 [Content](#content-specifiers) and [Property](#property-specifiers) specifiers are noted in the [Combined Format](#combined).
 
@@ -691,21 +672,16 @@ Used placeholders:
 
 ###### Examples
 
-The following few entries serve the same purpose as the above [SAE](#sae) example.
+The following few entries serve the same purpose as the above [SFE](#sfe) example.
 
 Field name              | Field content
 ----------------------- | -------------
+`Var.Aspect`            | `Voltage`
 `Description.Var`       | `1.8V(Fixed voltage 1.8V 200mA LDO) 3.3V(Fixed voltage 3.3V 200mA LDO) adjustable(Adjustable voltage 200mA LDO)`
 `MPN.Var`               | `1.8V(ALDO200V18) 3.3V(ALDO200V33) adjustable(ALDO200ADJ)`
 `Datasheet.Var`         | `1.8V,3.3V("https://example.kivar.markh.de/products/aldo200v.pdf") adjustable("https://example.kivar.markh.de/products/aldo200a.pdf")`
 
-The same explanation applies as for the above [CAE](#cae) example.
-
-As explained above, _declaring_ Choice Identifiers is not allowed from the [Auxiliary Scope](#aux).  Hence, there must exist at least the following Choice declarations in the same or another component that uses the same Aspect Identifier.  These Choice declarations are noted as [CBCs](#cbe).
-
-Field name             | Field content
----------------------- | -------------
-`Var`                  | `Voltage 1.8V,3.3V,adjustable()`
+The same explanation applies as for the above [CFE](#cfe) example.
 
 #### Aspect Identifier
 
@@ -718,7 +694,7 @@ To define to which aspect (i.e. group/dimension/degree of freedom) a component's
 There are two methods of passing the **Aspect Identifier**:
 
 1. Using the _dedicated component field_ `Var.Aspect`, or
-2. as part of a [_Combined Base Expression_](#cbe).
+2. as part of a [_Combined Component Expression_](#cce).
 
 Details and examples can be found in the following sections.
 
@@ -783,7 +759,7 @@ _Examples:_
 
 #### Expression Processing Example
 
-The following figure illustrates the processing of some example Choice Expressions using [Combined Base Expressions](#cbe) (the classic Expression Type).
+The following figure illustrates the processing of some example Choice Expressions using [Combined Component Expressions](#cce) (the classic Expression Type).
 
 ![Expression Processing Illustration](doc/processing.svg)
 
@@ -1060,7 +1036,7 @@ Further reading: [Choice Expressions](#choice-expressions).
 
 #### Basic Rule Format
 
-While the legacy format of the `KiVar.Rule` field is very similar to the current "[Combined Base Expression Type](#cbe)" (using the `Var` field), there have been some changes that may (or may not) break existing legacy rules.  Users will need to revise their legacy rules to be sure that they are parsed as expected with current (and upcoming) versions of KiVar.
+While the legacy format of the `KiVar.Rule` field is very similar to the current "[Combined Component Expression Type](#cce)" (using the `Var` field), there have been some changes that may (or may not) break existing legacy rules.  Users will need to revise their legacy rules to be sure that they are parsed as expected with current (and upcoming) versions of KiVar.
 
 The following sections will cover the details.
 
@@ -1175,3 +1151,19 @@ The most important change with KiVar 0.3.0 was the introduction of [Feature Prop
 
  * enable or disable the visibility of individual 3D models of a footprint and
  * suppress the application of solder paste for SMD pads of a footprint.
+
+### Migrating from KiVar 0.3.x
+
+#### Auxiliary (now "Field") Scope Implicit Choice Declaration
+
+Severity: **Not critical** (backwards-compatible).
+
+_Base_ and _Auxiliary_ scope were renamed to [Component](#cmp) and [Field](#fld) scope, respectively, to better reflect their usage due to the following change:
+
+It is no longer necessary to declare Choices in Component (ex "Base") scope before they can be used in Field (ex "Auxiliary") scope.  Expressions in Field scope now implicitly declare Choice Identifiers, just as in Component scope.
+
+#### Introducing Stand-In Choices
+
+Severity: **Not critical** (backwards-compatible).
+
+Version 0.4.0 introduces Stand-In Choices, which act similar to [Default Choices](#default-choices), but do not inherit Content or Properties for declared specific Choices.  Stand-In Choices may therefore be preferred over Default Choices in many cases, for example when making use of [Implicit Defaults](#implicit-defaults).
