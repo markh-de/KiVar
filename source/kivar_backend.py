@@ -13,7 +13,7 @@ from copy import deepcopy
 
 # TODO clarify rules for Aspect name (forbidden characters: "*" ".")
 
-# TODO in aux field parser, accept only target fields which are no KiVar fields themselves (avoid recursion!)
+# TODO in field scope, accept only target fields which are no KiVar fields themselves (avoid recursion!)
 
 # TODO wrap the backend with a class.
 
@@ -28,7 +28,7 @@ from copy import deepcopy
 #     ^^^ this "update fields" message is too generic.
 
 def version():
-    return '0.3.9903'
+    return '0.3.9904'
 
 def pcbnew_compatibility_error():
     ver = pcbnew.GetMajorMinorPatchVersion()
@@ -169,8 +169,8 @@ class Key:
     DEFAULT = '*' # same symbol as used for expressions
     STANDIN = '?' # same symbol as used for expressions
     ASPECT  = 'a'
-    BASE    = 'b'
-    AUX     = 'x'
+    CMP     = 'c'
+    FLD     = 'f'
     VALUE   = 'v'
     PROPS   = 'p'
     REF     = 'R'
@@ -247,11 +247,11 @@ def mismatches_fp_choice(fpdict_branch, vardict_choice_branch):
             mismatches.append(f"prop '{prop_id}'")
     return mismatches
 
-def mismatches_fp_choice_aux(fp_fields, vardict_aux_branch, choice):
+def mismatches_fp_choice_fld(fp_fields, vardict_fld_branch, choice):
     # TODO in returned mismatches, add mismatching fp and choice states
     mismatches = []
-    for field in vardict_aux_branch:
-        choice_field_value = vardict_aux_branch[field][choice][Key.VALUE]
+    for field in vardict_fld_branch:
+        choice_field_value = vardict_fld_branch[field][choice][Key.VALUE]
         if choice_field_value is not None and choice_field_value != fp_fields[field]:
             mismatches.append(f"field '{field}' for choice '{choice}'")
     return mismatches
@@ -268,9 +268,9 @@ def detect_current_choices(fpdict, vardict):
         eliminate_choices = []
         for choice in choices[aspect]:
             eliminate = False
-            mismatches = mismatches_fp_choice(fpdict[uuid], vardict[uuid][Key.BASE][choice])
+            mismatches = mismatches_fp_choice(fpdict[uuid], vardict[uuid][Key.CMP][choice])
             if mismatches: eliminate = True
-            mismatches = mismatches_fp_choice_aux(fpdict[uuid][Key.FIELDS], vardict[uuid][Key.AUX], choice)
+            mismatches = mismatches_fp_choice_fld(fpdict[uuid][Key.FIELDS], vardict[uuid][Key.FLD], choice)
             if mismatches: eliminate = True
             # defer elimination until after iteration
             if eliminate: eliminate_choices.append(choice)
@@ -291,14 +291,14 @@ def apply_selection(fpdict, vardict, selection, dry_run = False):
         selected_choice = selection[aspect]
         if selected_choice is None: continue
         choice_text = f'{quote_str(aspect)}={quote_str(selected_choice)}'
-        new_value = vardict[uuid][Key.BASE][selected_choice][Key.VALUE]
+        new_value = vardict[uuid][Key.CMP][selected_choice][Key.VALUE]
         if new_value is not None:
             old_value = fpdict[uuid][Key.VALUE]
             if old_value != new_value:
                 changes.append([uuid, ref, f"Change {ref} value from '{escape_str(old_value)}' to '{escape_str(new_value)}' ({choice_text})."])
                 if not dry_run: fpdict[uuid][Key.VALUE] = new_value
         for prop_id in fpdict[uuid][Key.PROPS]:
-            new_value = vardict[uuid][Key.BASE][selected_choice][Key.PROPS][prop_id]
+            new_value = vardict[uuid][Key.CMP][selected_choice][Key.PROPS][prop_id]
             if new_value is not None:
                 old_value_text = None
                 new_value_text = None
@@ -319,8 +319,8 @@ def apply_selection(fpdict, vardict, selection, dry_run = False):
                 if not (old_value_text is None or new_value_text is None):
                     changes.append([uuid, ref, f"Change {ref} {prop_attrib_descr(prop_id)} from {old_value_text} to {new_value_text} ({choice_text})."])
                     if not dry_run: fpdict[uuid][Key.PROPS][prop_id] = new_value
-        for field in vardict[uuid][Key.AUX]:
-            new_field_value = vardict[uuid][Key.AUX][field][selected_choice][Key.VALUE]
+        for field in vardict[uuid][Key.FLD]:
+            new_field_value = vardict[uuid][Key.FLD][field][selected_choice][Key.VALUE]
             if new_field_value is not None:
                 old_field_value = fpdict[uuid][Key.FIELDS][field]
                 if old_field_value != new_field_value:
@@ -381,10 +381,10 @@ def parse_prop_str(prop_str, prop_set):
     if expect_index: raise ValueError(f"End of property specifier when property index was expected")
 
 def add_choice(vardict, uuid, raw_choice_name, raw_choice_def, field=None):
-    """ Adds a choice set (base or aux rule definition) to the vardict. """
-    # TODO add unique error codes (for aux rules, add an offset), for unit testing (do not compare error strings).
-    # If field is passed, this handles aux rules, else base rules.
-    is_aux = field is not None
+    """ Adds a choice set (component or field rule definition) to the vardict. """
+    # TODO add unique error codes (for field scope, add an offset), for unit testing (do not compare error strings).
+    # If field is passed, this handles field scope rules, else component scope rules.
+    field_scope = field is not None
     try:
         raw_names = split_raw_str(raw_choice_name, ',', False)
     except Exception as e:
@@ -405,8 +405,8 @@ def add_choice(vardict, uuid, raw_choice_name, raw_choice_def, field=None):
     for raw_arg in raw_args:
         arg = cook_raw_string(raw_arg)
         if raw_arg[0] in '-+': # not supposed to match if arg starts with \-, \+, '+' or '-'
-            if is_aux:
-                errors.append(f"No property specifier allowed in aux expression")
+            if field_scope:
+                errors.append(f"No property specifier allowed in field scope expression")
                 continue
             try:
                 parse_prop_str(arg, prop_set)
@@ -416,11 +416,11 @@ def add_choice(vardict, uuid, raw_choice_name, raw_choice_def, field=None):
         else:
             values.append(arg)
     for choice in choices:
-        if is_aux:
-            if not field in vardict[uuid][Key.AUX]: vardict[uuid][Key.AUX][field] = {}
-            vardict_branch = vardict[uuid][Key.AUX][field]
+        if field_scope:
+            if not field in vardict[uuid][Key.FLD]: vardict[uuid][Key.FLD][field] = {}
+            vardict_branch = vardict[uuid][Key.FLD][field]
         else:
-            vardict_branch = vardict[uuid][Key.BASE]
+            vardict_branch = vardict[uuid][Key.CMP]
         if not choice in vardict_branch:
             vardict_branch[choice] = {}
             vardict_branch[choice][Key.VALUE] = None
@@ -442,8 +442,8 @@ def add_choice(vardict, uuid, raw_choice_name, raw_choice_def, field=None):
 
 def finalize_vardict_branch(vardict_choice_branch, all_aspect_choices, fp_props=None):
     """
-    Finalizes (flattens) a branch of the vardict (either base rules or aux rules).
-    To specify an aux branch, pass None for the fp_props parameter.
+    Finalizes (flattens) a branch of the vardict (either component or field scope).
+    To specify a field scope branch, pass None for the fp_props parameter.
     """
     errors = []
     # Flatten values
@@ -545,10 +545,10 @@ def field_name_check(field_name, available_fields):
 def parse_rule_fields(fpdict_uuid_branch):
     errors = []
     aspect = None
-    base_rule_string = None
-    base_choice_sets = []
-    aux_rule_strings = []
-    aux_choice_sets = []
+    cmp_rule_string = None
+    cmp_choice_sets = []
+    fld_rule_strings = []
+    fld_choice_sets = []
     for fp_field in fpdict_uuid_branch[Key.FIELDS]:
         value = fpdict_uuid_branch[Key.FIELDS][fp_field]
         # field names that are not properly formatted are ignored and do not cause
@@ -558,15 +558,15 @@ def parse_rule_fields(fpdict_uuid_branch):
         if len(parts) == 2 and parts[0] == FieldID.BASE and parts[1] == FieldID.ASPECT:
             aspect = value
         elif len(parts) == 1 and parts[0] == FieldID.BASE:
-            base_rule_string = value
+            cmp_rule_string = value
         elif len(parts) > 1 and parts[-1] == FieldID.BASE:
             target_field = '.'.join(parts[0:-1])
             field_name_error = field_name_check(target_field, fpdict_uuid_branch[Key.FIELDS])
             if field_name_error is not None:
-                errors.append(f"Combined aux expression: {field_name_error}")
+                errors.append(f"Combined field expression: {field_name_error}")
                 continue
             else:
-                aux_rule_strings.append([target_field, value])
+                fld_rule_strings.append([target_field, value])
         else:
             try: prefix, name_list = split_parens(parts[-1])
             except: continue
@@ -577,43 +577,43 @@ def parse_rule_fields(fpdict_uuid_branch):
                     errors.append(f"Choice identifier list '{name_list}' contains illegal space character")
                     continue
                 if len(parts) == 1:
-                    base_choice_sets.append([name_list, value])
+                    cmp_choice_sets.append([name_list, value])
                 else:
                     target_field = '.'.join(parts[0:-1])
                     field_name_error = field_name_check(target_field, fpdict_uuid_branch[Key.FIELDS])
                     if field_name_error is not None:
-                        errors.append(f"Simple aux expression: {field_name_error}")
+                        errors.append(f"Simple field expression: {field_name_error}")
                         continue
                     else:
-                        aux_choice_sets.append([target_field, name_list, value])
-    return errors, aspect, base_rule_string, base_choice_sets, aux_rule_strings, aux_choice_sets
+                        fld_choice_sets.append([target_field, name_list, value])
+    return errors, aspect, cmp_rule_string, cmp_choice_sets, fld_rule_strings, fld_choice_sets
 
 def build_vardict(fpdict):
     vardict = {}
     errors = []
-    auxdict = {}
+    fld_dict = {}
     all_choices = {}
-    # Handle base rule
+    # Handle component rule
     for uuid in fpdict:
         ref = fpdict[uuid][Key.REF]
-        parse_errors, aspect, base_rule_string, base_choice_sets, aux_rule_strings, aux_choice_sets = parse_rule_fields(fpdict[uuid])
+        parse_errors, aspect, cmp_rule_string, cmp_choice_sets, fld_rule_strings, fld_choice_sets = parse_rule_fields(fpdict[uuid])
         if parse_errors:
             for parse_error in parse_errors: errors.append([uuid, ref, f"{ref}: Field parser: {parse_error}."])
             continue
-        parse_errors, aspects, choice_sets = parse_rule_str(base_rule_string)
+        parse_errors, aspects, choice_sets = parse_rule_str(cmp_rule_string)
         if parse_errors:
-            for parse_error in parse_errors: errors.append([uuid, ref, f"{ref}: Base scope expression parser: {parse_error}."])
+            for parse_error in parse_errors: errors.append([uuid, ref, f"{ref}: Component scope expression parser: {parse_error}."])
             continue
-        choice_sets.extend(base_choice_sets)
+        choice_sets.extend(cmp_choice_sets)
         # TODO decide: shall we really use uncooked aspect name? we have the whole field content only for the pure value.
         if len(aspects) > 1:
             errors.append([uuid, ref, f"{ref}: Multiple aspect identifiers specified."])
             continue
         elif len(aspects) == 1:
-            # about to use the aspect name from the base rule ...
+            # about to use the aspect name from the component rule ...
             if aspect is not None and aspect != '':
                 # ... but there is already an aspect set via the aspect field
-                errors.append([uuid, ref, f"{ref}: Conflicting aspect identifier specification styles (combined base expression vs. aspect field)."])
+                errors.append([uuid, ref, f"{ref}: Conflicting aspect identifier specification styles (combined component expression vs. aspect field)."])
                 continue
             aspect = aspects[0]
         if aspect is None or aspect == '':
@@ -621,75 +621,75 @@ def build_vardict(fpdict):
                 errors.append([uuid, ref, f"{ref}: Missing aspect identifier for existing choice expressions."])
             continue
         if uuid in vardict:
-            errors.append([uuid, ref, f"{ref}: Multiple footprints with same UUID containing base expressions."])
+            errors.append([uuid, ref, f"{ref}: Multiple footprints with same UUID containing component expressions."])
             continue
         vardict[uuid] = {}
         vardict[uuid][Key.ASPECT] = aspect
-        vardict[uuid][Key.BASE] = {}
-        vardict[uuid][Key.AUX] = {}
-        auxdict[uuid] = [aux_rule_strings, aux_choice_sets] # save for aux loop
+        vardict[uuid][Key.CMP] = {}
+        vardict[uuid][Key.FLD] = {}
+        fld_dict[uuid] = [fld_rule_strings, fld_choice_sets] # save for fld loop
         for choice_name, choice_content in choice_sets:
             add_errors = add_choice(vardict, uuid, choice_name, choice_content)
             if add_errors:
-                for error in add_errors: errors.append([uuid, ref, f"{ref}: When adding aspect '{aspect}' choice list '{choice_name}' in base expression: {error}."])
+                for error in add_errors: errors.append([uuid, ref, f"{ref}: When adding aspect '{aspect}' choice list '{choice_name}' in component expression: {error}."])
                 break
-    # Handle aux rules
-    for uuid in auxdict:
-        aux_rule_strings, aux_choice_sets = auxdict[uuid]
+    # Handle field scope
+    for uuid in fld_dict:
+        fld_rule_strings, fld_choice_sets = fld_dict[uuid]
         ref = fpdict[uuid][Key.REF]
         aspect = vardict[uuid][Key.ASPECT]
-        if aux_rule_strings and aspect is None:
-            errors.append([uuid, ref, f"{ref}: Combined aux expression(s) found, but missing base expression(s)."])
+        if fld_rule_strings and aspect is None:
+            errors.append([uuid, ref, f"{ref}: Combined field expression(s) found, but missing component expression(s)."])
             continue
         valid = False
-        for field, rule_str in aux_rule_strings:
+        for field, rule_str in fld_rule_strings:
             if rule_str is None or rule_str == '': continue
             parse_errors, aspects, choice_sets = parse_rule_str(rule_str)
             if parse_errors:
-                for parse_error in parse_errors: errors.append([uuid, ref, f"{ref}: Combined aux expression parser for target field '{field}': {parse_error}."])
+                for parse_error in parse_errors: errors.append([uuid, ref, f"{ref}: Combined field expression parser for target field '{field}': {parse_error}."])
                 continue
             if aspects:
-                errors.append([uuid, ref, f"{ref}: Combined aux expression for target field '{field}' contains what looks like an aspect identifier (only allowed in combined base expressions)."])
+                errors.append([uuid, ref, f"{ref}: Combined field expression for target field '{field}' contains what looks like an aspect identifier (only allowed in combined component expressions)."])
                 continue
-            if field in vardict[uuid][Key.AUX]:
-                errors.append([uuid, ref, f"{ref}: Multiple aux expressions for target field '{field}'."]) # TODO wording
+            if field in vardict[uuid][Key.FLD]:
+                errors.append([uuid, ref, f"{ref}: Multiple field expressions for target field '{field}'."]) # TODO wording
                 continue
             for choice_name, choice_content in choice_sets:
                 add_errors = add_choice(vardict, uuid, choice_name, choice_content, field)
                 if add_errors:
-                    for error in add_errors: errors.append([uuid, ref, f"{ref}: Combined aux expression for aspect '{aspect}' choice list '{choice_name}' with target field '{field}': {error}."])
+                    for error in add_errors: errors.append([uuid, ref, f"{ref}: Combined field expression for aspect '{aspect}' choice list '{choice_name}' with target field '{field}': {error}."])
                     break
         else:
             valid = True
         if not valid: continue
-        if aux_choice_sets and aspect is None:
-            errors.append([uuid, ref, f"{ref}: Simple aux expression(s) found, but missing base expression(s)."])
+        if fld_choice_sets and aspect is None:
+            errors.append([uuid, ref, f"{ref}: Simple field expression(s) found, but missing aspect identifier."])
             continue
         valid = False
-        for field, choice_name, choice_content in aux_choice_sets:
+        for field, choice_name, choice_content in fld_choice_sets:
             add_errors = add_choice(vardict, uuid, choice_name, choice_content, field)
             if add_errors:
-                for error in add_errors: errors.append([uuid, ref, f"{ref}: Simple aux expression for aspect '{aspect}' choice list '{choice_name}' with target field '{field}': {error}."])
+                for error in add_errors: errors.append([uuid, ref, f"{ref}: Simple field expression for aspect '{aspect}' choice list '{choice_name}' with target field '{field}': {error}."])
                 break
         else:
             valid = True
         if not valid: continue
         all_choices = get_choice_dict(vardict)
-        fin_errors = finalize_vardict_branch(vardict[uuid][Key.BASE], all_choices[aspect], fpdict[uuid][Key.PROPS])
+        fin_errors = finalize_vardict_branch(vardict[uuid][Key.CMP], all_choices[aspect], fpdict[uuid][Key.PROPS])
         if fin_errors:
             # TODO cook and quote names in error message, refine wording
-            for e in fin_errors: errors.append([uuid, ref, f"{ref}: In base expression: {e}."])
+            for e in fin_errors: errors.append([uuid, ref, f"{ref}: In component expression: {e}."])
             continue
-        for field in vardict[uuid][Key.AUX]:
-            fin_errors = finalize_vardict_branch(vardict[uuid][Key.AUX][field], all_choices[aspect])
+        for field in vardict[uuid][Key.FLD]:
+            fin_errors = finalize_vardict_branch(vardict[uuid][Key.FLD][field], all_choices[aspect])
             if fin_errors:
                 # TODO cook and quote names in error message, refine wording
-                for e in fin_errors: errors.append([uuid, ref, f"{ref}: In aux expression for target field '{field}': {e}."])
+                for e in fin_errors: errors.append([uuid, ref, f"{ref}: In field expression for target field '{field}': {e}."])
                 continue
     # Check that all solder paste margin values match one of the two allowed ranges (only if the corresponding property is used, else the current value is ignored)
     for uuid in vardict:
-        for choice in vardict[uuid][Key.BASE]:
-            if PropCode.SOLDER in vardict[uuid][Key.BASE][choice][Key.PROPS] and vardict[uuid][Key.BASE][choice][Key.PROPS][PropCode.SOLDER] is not None:
+        for choice in vardict[uuid][Key.CMP]:
+            if PropCode.SOLDER in vardict[uuid][Key.CMP][choice][Key.PROPS] and vardict[uuid][Key.CMP][choice][Key.PROPS][PropCode.SOLDER] is not None:
                 ratio = fpdict[uuid][Key.PROPS][PropCode.SOLDER]
                 if footprint_paste_state(ratio) is None:
                     ref = fpdict[uuid][Key.REF]
@@ -697,8 +697,8 @@ def build_vardict(fpdict):
                     break
     # Check that all (indexed) properties are really present in the fpdict (extra loops for dedicated break handling)
     for uuid in vardict:
-        for choice in vardict[uuid][Key.BASE]:
-            for prop_id in vardict[uuid][Key.BASE][choice][Key.PROPS]:
+        for choice in vardict[uuid][Key.CMP]:
+            for prop_id in vardict[uuid][Key.CMP][choice][Key.PROPS]:
                 if not prop_id in fpdict[uuid][Key.PROPS]:
                     prop_code, prop_index = split_prop_id(prop_id)
                     errors.append([uuid, ref, f"{ref}: Cannot match referenced property '{prop_abbrev(prop_id)}' to footprint (probably index out of bounds)."])
@@ -729,10 +729,10 @@ def get_choice_dict(vardict):
         aspect = vardict[uuid][Key.ASPECT]
         if not aspect in choices: choices[aspect] = []
         # In case the input dict still contains temporary data (such as default data), ignore it.
-        for choice in vardict[uuid][Key.BASE]:
+        for choice in vardict[uuid][Key.CMP]:
             if choice != Key.DEFAULT and choice != Key.STANDIN and not choice in choices[aspect]: choices[aspect].append(choice)
-        for field in vardict[uuid][Key.AUX]:
-            for choice in vardict[uuid][Key.AUX][field]:
+        for field in vardict[uuid][Key.FLD]:
+            for choice in vardict[uuid][Key.FLD][field]:
                 if choice != Key.DEFAULT and choice != Key.STANDIN and not choice in choices[aspect]: choices[aspect].append(choice)
     return choices
 

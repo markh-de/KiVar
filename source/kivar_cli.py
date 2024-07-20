@@ -60,15 +60,15 @@ def list_command(in_file=None, long=False, prop_codes=False, detailed=False, sel
         aspect = vardict[uuid][Key.ASPECT]
         if not aspect in ndict:
             ndict[aspect] = {}
-        for choice in vardict[uuid][Key.BASE]:
+        for choice in vardict[uuid][Key.CMP]:
             if not choice in ndict[aspect]:
                 ndict[aspect][choice] = {}
             if detailed:
                 cmp_info = []
-                cmp_value = vardict[uuid][Key.BASE][choice][Key.VALUE]
+                cmp_value = vardict[uuid][Key.CMP][choice][Key.VALUE]
                 if cmp_value is not None:
                     cmp_info.append(quote_str(cmp_value))
-                cmp_props = vardict[uuid][Key.BASE][choice][Key.PROPS]
+                cmp_props = vardict[uuid][Key.CMP][choice][Key.PROPS]
                 for prop_code in fpdict[uuid][Key.PROPS]:
                     if prop_code in cmp_props and cmp_props[prop_code] is not None:
                         # TODO use colored output and use green and red here!
@@ -101,11 +101,11 @@ def list_command(in_file=None, long=False, prop_codes=False, detailed=False, sel
                 for uuid in sorted(ndict[aspect][choice], key=lambda x: natural_sort_key(fpdict[x][Key.REF])):
                     ref = fpdict[uuid][Key.REF]
                     print(f'        {ref}: {ndict[aspect][choice][uuid]}')
-                    for field in sorted(vardict[uuid][Key.AUX], key=natural_sort_key):
+                    for field in sorted(vardict[uuid][Key.FLD], key=natural_sort_key):
                         f = quote_str(field)
-                        v = quote_str(vardict[uuid][Key.AUX][field][choice][Key.VALUE])
+                        v = quote_str(vardict[uuid][Key.FLD][field][choice][Key.VALUE])
                         print(f"            {f}: {v}")
-                        # Future note: When properties for aux expressions are allowed, print them here
+                        # Future note: When properties for field scope expressions are allowed, print them here
         print()
     return True
 
