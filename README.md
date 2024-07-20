@@ -1147,7 +1147,11 @@ Further reading: [Quoting and Escaping](#quoting-and-escaping).
 
 ### Migrating from KiVar 0.2.x
 
-The most important change with KiVar 0.3.0 was the introduction of [Feature Properties](#feature-properties).  These allow you to
+#### Introduction of Feature Properties
+
+Severity: **Not critical** (backwards-compatible).
+
+KiVar 0.3.0 added [Feature Properties](#feature-properties), which allow you to
 
  * enable or disable the visibility of individual 3D models of a footprint and
  * suppress the application of solder paste for SMD pads of a footprint.
