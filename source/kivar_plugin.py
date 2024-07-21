@@ -88,7 +88,7 @@ class VariantDialog(wx.Dialog):
             var_grid.Add(self.choices[cfg], 0, wx.EXPAND)
 
         scroll_sizer = wx.BoxSizer(wx.VERTICAL)
-        scroll_sizer.Add(var_grid, 1, wx.EXPAND | wx.ALL, 8)
+        scroll_sizer.Add(var_grid, 0, wx.EXPAND | wx.ALL, 8)
 
         scroll_panel.SetSizer(scroll_sizer)
 
