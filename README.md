@@ -350,19 +350,25 @@ The special Choice Identifier `*` is used for specifying default Content and Pro
 
 ##### Declaration and Definition
 
+KiVar uses implicit declarations for Choice definitions.
+
+That is, adding a new Choice to an Aspect is simply done by using the Choice Identifier in any Choice Expression.  This will cause the Choice to be created or extended (if it matches an existing one).
+
+It is therefore important to pay attention to correct spelling of Choice Identifiers, so that Choice Identifiers can be correctly allocated.
+
 ##### Choice Identifier Lists
 
-When using Choice Identifiers in Choice Expressions, those identifiers are always specified inside **Choice Identifier Lists**.  A Choice Identifier List consists of **one or more** Choice Identifiers that are separated by `,` (comma) characters (e.g. `ChoiceId_1,ChoiceId_2,ChoiceId_3`).  No space is allowed around the separating comma.
+When using Choice Identifiers in Choice Expressions, those identifiers can always be specified as **Choice Identifier Lists**.  A Choice Identifier List consists of **one or more** Choice Identifiers separated by `,` (comma) characters (e.g. `ChoiceId_1,ChoiceId_2,ChoiceId_3`).  No space is allowed around the separating comma.
 
-##### Default Choices
-
-###### Purpose
+##### Special Choice Identifiers
 
 To follow the ["All-or-None" rule](#all-or-none), Content and Property assignments must be defined for _all_ choices involved if at least one assignment is defined.
 
-Defining all Choices for each assignment theoretically requires each Choice Identifier to be listed along with its corresponding Content or Property assignments.  Also, any modification of available Choice Identifiers (i.e. adding, removing, renaming Choices) in _one_ component theoretically requires the Choice Expressions of _all_ components in the same Aspect scope to be adapted as well.
+Defining all Choices for each assignment would require each Choice Identifier to be explicitly listed along with its corresponding Content or Property assignments.  Also, any modification of available Choice Identifiers (i.e. adding, removing, renaming Choices) in _one_ component would require the Choice Expressions of all components in the same Aspect scope to be adapted as well.
 
-To avoid listing each possible Choice Identifier for each assignment, **Default Choices** can be used.  The Content and Property assignments specified for a Default Choice apply as described below.
+To avoid having to explicitly list all possible Choice Identifiers for each assignment, **Default Choices** and **Stand-In Choices** are available.  The Content and Property assignments specified for Default and Stand-In Choices apply as described in the following sections.
+
+##### Default Choices
 
 ###### Syntax
 
@@ -688,6 +694,14 @@ The same explanation applies as for the above [CFE](#cfe) example.
 ##### Purpose
 
 To define to which aspect (i.e. group/dimension/degree of freedom) a component's Choice Identifiers relate to, an **Aspect Identifier** must be specified for every component that uses one or more Choice Expressions.
+
+##### Declaration and Definition
+
+KiVar uses implicit declarations for Choice definitions.
+
+That is, adding a new Choice to an Aspect is simply done by using the Choice Identifier in any Choice Expression.  This will cause the Choice to be created or extended (if it matches an existing one).
+
+It is therefore important to pay attention to correct spelling of Choice Identifiers, so that Choice Identifiers can be correctly allocated.
 
 ##### Specification
 
@@ -1166,7 +1180,7 @@ _Base_ and _Auxiliary_ scope were renamed to [Component](#cmp) and [Field](#fld)
 
 It is no longer necessary to declare Choices in Component (ex "Base") scope before they can be used in Field (ex "Auxiliary") scope.  Expressions in Field scope now implicitly declare Choice Identifiers, just as in Component scope.
 
-#### Introducing Stand-In Choices
+#### Introduction of Stand-In Choices
 
 Severity: **Not critical** (backwards-compatible).
 
