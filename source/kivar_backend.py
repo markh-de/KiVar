@@ -19,16 +19,8 @@ from copy import deepcopy
 
 # TODO more testing!
 
-# TODO KiCad 8 has different change reporting style, it seems. use this?
-    # Remove R29 'Do not place' fabrication attribute.
-    # Remove R29 'exclude from BOM' fabrication attribute.
-    # Add R22 'exclude from BOM' fabrication attribute.
-    # Add R22 'Do not place' fabrication attribute.
-    # Update R2 fields.
-#     ^^^ this "update fields" message is too generic.
-
 def version():
-    return '0.3.9904'
+    return '0.3.9905'
 
 def pcbnew_compatibility_error():
     ver = pcbnew.GetMajorMinorPatchVersion()
@@ -440,7 +432,7 @@ def add_choice(vardict, uuid, raw_choice_name, raw_choice_def, field=None):
                 errors.append(f"Illegal additional '{prop_abbrev(prop_code)}' property assignment for choice '{choice}'")
     return errors
 
-def finalize_vardict_branch(vardict_choice_branch, all_aspect_choices, fp_props=None):
+def finalize_vardict_branch(vardict_branch, all_aspect_choices, fp_props=None):
     """
     Finalizes (flattens) a branch of the vardict (either component or field scope).
     To specify a field scope branch, pass None for the fp_props parameter.
@@ -452,19 +444,18 @@ def finalize_vardict_branch(vardict_choice_branch, all_aspect_choices, fp_props=
     # check for mixed defined and undefined content
     choices_with_value_defined = 0
     for choice in all_aspect_choices:
-        if not choice in vardict_choice_branch:
-            if Key.STANDIN in vardict_choice_branch:
-                vardict_choice_branch[choice] = {}
-                vardict_choice_branch[choice][Key.VALUE] = vardict_choice_branch[Key.STANDIN][Key.VALUE]
-                vardict_choice_branch[choice][Key.PROPS] = vardict_choice_branch[Key.STANDIN][Key.PROPS]
+        if not choice in vardict_branch:
+            vardict_branch[choice] = {}
+            if Key.STANDIN in vardict_branch:
+                vardict_branch[choice][Key.VALUE] = vardict_branch[Key.STANDIN][Key.VALUE]
+                vardict_branch[choice][Key.PROPS] = vardict_branch[Key.STANDIN][Key.PROPS]
             else:
-                vardict_choice_branch[choice] = {}
-                vardict_choice_branch[choice][Key.VALUE] = None
-                vardict_choice_branch[choice][Key.PROPS] = {}
-        if Key.DEFAULT in vardict_choice_branch:
-            if vardict_choice_branch[choice][Key.VALUE] is None:
-                vardict_choice_branch[choice][Key.VALUE] = vardict_choice_branch[Key.DEFAULT][Key.VALUE]
-        if vardict_choice_branch[choice][Key.VALUE] is not None:
+                vardict_branch[choice][Key.VALUE] = None
+                vardict_branch[choice][Key.PROPS] = {}
+        if Key.DEFAULT in vardict_branch:
+            if vardict_branch[choice][Key.VALUE] is None:
+                vardict_branch[choice][Key.VALUE] = vardict_branch[Key.DEFAULT][Key.VALUE]
+        if vardict_branch[choice][Key.VALUE] is not None:
             choices_with_value_defined += 1
     if not (choices_with_value_defined == 0 or choices_with_value_defined == len(all_aspect_choices)):
         errors.append(f"Mixed choices with defined ({choices_with_value_defined}x) and undefined ({len(all_aspect_choices) - choices_with_value_defined}x) content (either all or none must be defined)")
@@ -472,32 +463,32 @@ def finalize_vardict_branch(vardict_choice_branch, all_aspect_choices, fp_props=
         # Flatten properties
         for prop_code in fp_props:
             default_prop_value = None
-            if Key.DEFAULT in vardict_choice_branch and prop_code in vardict_choice_branch[Key.DEFAULT][Key.PROPS] and vardict_choice_branch[Key.DEFAULT][Key.PROPS][prop_code] is not None:
+            if Key.DEFAULT in vardict_branch and prop_code in vardict_branch[Key.DEFAULT][Key.PROPS] and vardict_branch[Key.DEFAULT][Key.PROPS][prop_code] is not None:
                 # defined default prop value available, use it
-                default_prop_value = vardict_choice_branch[Key.DEFAULT][Key.PROPS][prop_code]
+                default_prop_value = vardict_branch[Key.DEFAULT][Key.PROPS][prop_code]
             else:
                 # try to determine an implicit default value
                 choices_with_true = 0
                 choices_with_false = 0
                 for choice in all_aspect_choices:
-                    if prop_code in vardict_choice_branch[choice][Key.PROPS] and vardict_choice_branch[choice][Key.PROPS][prop_code] is not None:
-                        if vardict_choice_branch[choice][Key.PROPS][prop_code]: choices_with_true  += 1
-                        else:                                                   choices_with_false += 1
+                    if prop_code in vardict_branch[choice][Key.PROPS] and vardict_branch[choice][Key.PROPS][prop_code] is not None:
+                        if vardict_branch[choice][Key.PROPS][prop_code]: choices_with_true  += 1
+                        else:                                            choices_with_false += 1
                 # if only set x-or clear is used in (specific) choices, the implicit default is the opposite
                 if   choices_with_false and not choices_with_true: default_prop_value = True
                 elif not choices_with_false and choices_with_true: default_prop_value = False
             # check for mixed defined and undefined properties
             choices_with_prop_defined = 0
             for choice in all_aspect_choices:
-                if not prop_code in vardict_choice_branch[choice][Key.PROPS] or vardict_choice_branch[choice][Key.PROPS][prop_code] is None:
-                    vardict_choice_branch[choice][Key.PROPS][prop_code] = default_prop_value
-                if vardict_choice_branch[choice][Key.PROPS][prop_code] is not None:
+                if not prop_code in vardict_branch[choice][Key.PROPS] or vardict_branch[choice][Key.PROPS][prop_code] is None:
+                    vardict_branch[choice][Key.PROPS][prop_code] = default_prop_value
+                if vardict_branch[choice][Key.PROPS][prop_code] is not None:
                     choices_with_prop_defined += 1
             if not (choices_with_prop_defined == 0 or choices_with_prop_defined == len(all_aspect_choices)):
                 errors.append(f"Mixed choices with defined ({choices_with_prop_defined}x) and undefined ({len(all_aspect_choices) - choices_with_prop_defined}x) {prop_abbrev(prop_code)} property ('{prop_code}') state (either all or none must be defined)")
     # Remove default choice entries from branch
-    vardict_choice_branch.pop(Key.DEFAULT, None)
-    vardict_choice_branch.pop(Key.STANDIN, None)
+    vardict_branch.pop(Key.DEFAULT, None)
+    vardict_branch.pop(Key.STANDIN, None)
     return errors
 
 def parse_rule_str(rule_str):
@@ -635,9 +626,9 @@ def build_vardict(fpdict):
                 break
     # Handle field scope
     for uuid in fld_dict:
-        fld_rule_strings, fld_choice_sets = fld_dict[uuid]
         ref = fpdict[uuid][Key.REF]
         aspect = vardict[uuid][Key.ASPECT]
+        fld_rule_strings, fld_choice_sets = fld_dict[uuid]
         if fld_rule_strings and aspect is None:
             errors.append([uuid, ref, f"{ref}: Combined field expression(s) found, but missing component expression(s)."])
             continue
@@ -674,7 +665,10 @@ def build_vardict(fpdict):
         else:
             valid = True
         if not valid: continue
-        all_choices = get_choice_dict(vardict)
+    all_choices = get_choice_dict(vardict)
+    for uuid in fld_dict:
+        ref = fpdict[uuid][Key.REF]
+        aspect = vardict[uuid][Key.ASPECT]
         fin_errors = finalize_vardict_branch(vardict[uuid][Key.CMP], all_choices[aspect], fpdict[uuid][Key.PROPS])
         if fin_errors:
             # TODO cook and quote names in error message, refine wording
