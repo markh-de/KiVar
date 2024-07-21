@@ -1093,7 +1093,7 @@
 				(hide yes)
 			)
 		)
-		(property "Description" " "
+		(property "Description" ""
 			(at 130.175 85.09 0)
 			(effects
 				(font
@@ -1229,7 +1229,7 @@
 				(hide yes)
 			)
 		)
-		(property "Description" " "
+		(property "Description" ""
 			(at 156.845 85.09 0)
 			(effects
 				(font
@@ -1796,7 +1796,7 @@
 				(hide yes)
 			)
 		)
-		(property "Description" " "
+		(property "Description" ""
 			(at 186.69 85.09 0)
 			(effects
 				(font
