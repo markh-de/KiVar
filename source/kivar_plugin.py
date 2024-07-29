@@ -67,7 +67,7 @@ class VariantDialog(wx.Dialog):
         var_box = wx.StaticBox(self, label='Variation Aspect Choices')
         var_box_sizer = wx.StaticBoxSizer(var_box)
 
-        scroll_panel = wx.ScrolledWindow(self, style=wx.VSCROLL)
+        scroll_panel = wx.ScrolledWindow(self, style=wx.VSCROLL | wx.HSCROLL)
         scroll_panel.SetScrollRate(8, 8)
 
         var_grid = wx.GridSizer(cols=2, hgap=10, vgap=6)
@@ -93,29 +93,20 @@ class VariantDialog(wx.Dialog):
         scroll_panel.SetSizer(scroll_sizer)
 
         var_box_sizer.Add(scroll_panel, 1, wx.ALL | wx.EXPAND, 5)
-        var_box_sizer.SetMinSize((640, 300))
 
         sizer.Add(var_box_sizer, 12, wx.EXPAND | wx.ALL, 8)
 
         # Changes Text
         changes_box = wx.StaticBox(self, label='Changes To Be Applied')
-        self.changes_box_sizer = wx.StaticBoxSizer(changes_box)
-
-        self.changes_list_win = wx.ScrolledWindow(self, wx.ID_ANY)
-        self.changes_list = PcbItemListBox(self.changes_list_win, board)
-
+        changes_box_sizer = wx.StaticBoxSizer(changes_box)
+        self.changes_list = PcbItemListBox(changes_box, board)
+        self.changes_list.SetMinSize((360, 100))
+        changes_box_sizer.Add(self.changes_list, 1, wx.EXPAND | wx.ALL, 5)
         self.update_list()
-
-        changes_list_sizer = wx.BoxSizer(wx.VERTICAL)
-        changes_list_sizer.Add(self.changes_list, 1, wx.EXPAND | wx.ALL, 3)
-
-        self.changes_list_win.SetSizer(changes_list_sizer)
-        self.changes_box_sizer.Add(self.changes_list_win, 1, wx.EXPAND)
-
-        sizer.Add(self.changes_box_sizer, 10, wx.EXPAND | wx.ALL, 8)
+        sizer.Add(changes_box_sizer, 10, wx.EXPAND | wx.ALL, 8)
 
         # Bottom (help link and buttons)
-        button_sizer = wx.BoxSizer(wx.HORIZONTAL)
+        button_sizer = wx.StdDialogButtonSizer()
 
         legacy_rules = legacy_expressions_found(self.fpdict)
         if legacy_rules:
@@ -130,21 +121,23 @@ class VariantDialog(wx.Dialog):
         link.SetToolTip(f'Opens a web browser at {target_url}')
         link.EnableRollover(False)
 
-        ok_button = wx.Button(self, label='Update PCB')
-        cancel_button = wx.Button(self, label='Close')
+        ok_button = wx.Button(self, id=wx.ID_OK, label='Update PCB')
+        cancel_button = wx.Button(self, id=wx.ID_CANCEL, label='Close')
 
         button_sizer.Add(link, 0)
         button_sizer.AddStretchSpacer(1)
-        button_sizer.Add(cancel_button, 0)
-        button_sizer.Add(ok_button, 0, wx.LEFT, 6)
+        button_sizer.AddButton(ok_button)
+        button_sizer.AddButton(cancel_button)
+        button_sizer.Realize()
 
         sizer.Add(button_sizer, 0, wx.EXPAND | wx.ALL, 8)
 
-        self.SetSizerAndFit(sizer)
-        self.CentreOnParent()
-
         ok_button.Bind(wx.EVT_BUTTON, self.on_ok)
         cancel_button.Bind(wx.EVT_BUTTON, self.on_cancel)
+
+        self.SetSizerAndFit(sizer)
+        self.SetSize((900, 680))
+        self.CentreOnParent()
 
     def selections(self):
         s = {}
@@ -164,6 +157,7 @@ class VariantDialog(wx.Dialog):
 
     def on_change(self, event):
         self.update_list()
+        self.Layout()
 
     def on_cancel(self, event):
         self.Destroy()
@@ -208,13 +202,13 @@ class MissingRulesDialog(wx.Dialog):
         self.SetSizerAndFit(sizer)
 
 def show_error_dialog(title, errors, board=None):
-    dialog = PcbItemListDialog(f'KiVar {version()}: {title}', sorted(errors, key=lambda x: natural_sort_key(x[1])), board) # sort by text
+    dialog = PcbItemListErrorDialog(f'KiVar {version()}: {title}', sorted(errors, key=lambda x: natural_sort_key(x[1])), board) # sort by text
     dialog.ShowModal()
     dialog.Destroy()
 
 class PcbItemListBox(wx.ListBox):
     def __init__(self, parent, board=None):
-        super().__init__(parent)
+        super().__init__(parent, style=wx.LB_SINGLE | wx.LB_HSCROLL)
         self.board = board
         self.uuids = []
         self.Bind(wx.EVT_LISTBOX, self.on_list_item_selected)
@@ -235,28 +229,20 @@ class PcbItemListBox(wx.ListBox):
                 if fp is not None:
                     pcbnew.FocusOnItem(fp)
 
-class PcbItemListDialog(wx.Dialog):
+class PcbItemListErrorDialog(wx.Dialog):
     def __init__(self, title, itemlist, board=None):
-        super().__init__(pcbnew_parent_window(), title=title, style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER, size=(800, 500))
+        super().__init__(pcbnew_parent_window(), title=title, style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER | wx.MAXIMIZE_BOX)
         self.refs = []
         sizer = wx.BoxSizer(wx.VERTICAL)
 
         # Error messages
         errors_box = wx.StaticBox(self, label='Errors')
         errors_box_sizer = wx.StaticBoxSizer(errors_box)
-        errors_box_sizer.SetMinSize((640, 280))
-
-        errors_list_win = wx.ScrolledWindow(self, wx.ID_ANY)
-        errors_list = PcbItemListBox(errors_list_win, board)
+        errors_list = PcbItemListBox(errors_box, board)
+        errors_box_sizer.Add(errors_list, 1, wx.EXPAND | wx.ALL, 5)
         errors_list.set_item_list(itemlist)
-
-        errors_list_sizer = wx.BoxSizer(wx.VERTICAL)
-        errors_list_sizer.Add(errors_list, 1, wx.EXPAND | wx.ALL, 3)
-
-        errors_list_win.SetSizer(errors_list_sizer)
-        errors_box_sizer.Add(errors_list_win, 1, wx.EXPAND)
-
         sizer.Add(errors_box_sizer, 1, wx.EXPAND | wx.ALL, 8)
+        errors_list.SetMinSize((300, 100))
 
         link = hyperlink.HyperLinkCtrl(self, -1, 'Rule implementation hints', URL=help_url())
         default_color = wx.Colour()
@@ -272,7 +258,10 @@ class PcbItemListDialog(wx.Dialog):
         button_sizer.Add(self.ok_button, 0)
 
         sizer.Add(button_sizer, 0, wx.EXPAND | wx.ALL, 8)
-        self.SetSizer(sizer)
+
+        self.SetSizerAndFit(sizer)
+        self.SetSize((800, 480))
+        self.CentreOnParent()
 
         self.ok_button.SetFocus()
 
