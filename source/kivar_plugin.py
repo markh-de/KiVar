@@ -94,7 +94,7 @@ class VariantDialog(wx.Dialog):
 
         var_box_sizer.Add(scroll_panel, 1, wx.ALL | wx.EXPAND, 5)
 
-        sizer.Add(var_box_sizer, 12, wx.EXPAND | wx.ALL, 8)
+        sizer.Add(var_box_sizer, 12, wx.EXPAND | wx.ALL, 10)
 
         # Changes Text
         changes_box = wx.StaticBox(self, label='Changes To Be Applied')
@@ -103,7 +103,7 @@ class VariantDialog(wx.Dialog):
         self.changes_list.SetMinSize((360, 100))
         changes_box_sizer.Add(self.changes_list, 1, wx.EXPAND | wx.ALL, 5)
         self.update_list()
-        sizer.Add(changes_box_sizer, 10, wx.EXPAND | wx.ALL, 8)
+        sizer.Add(changes_box_sizer, 10, wx.EXPAND | wx.ALL, 10)
 
         # Bottom (help link and buttons)
         button_sizer = wx.StdDialogButtonSizer()
@@ -124,13 +124,13 @@ class VariantDialog(wx.Dialog):
         ok_button = wx.Button(self, id=wx.ID_OK, label='Update PCB')
         cancel_button = wx.Button(self, id=wx.ID_CANCEL, label='Close')
 
-        button_sizer.Add(link, 0)
+        button_sizer.Add(link, 0, wx.LEFT, 5)
         button_sizer.AddStretchSpacer(1)
         button_sizer.AddButton(ok_button)
         button_sizer.AddButton(cancel_button)
         button_sizer.Realize()
 
-        sizer.Add(button_sizer, 0, wx.EXPAND | wx.ALL, 8)
+        sizer.Add(button_sizer, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 5)
 
         ok_button.Bind(wx.EVT_BUTTON, self.on_ok)
         cancel_button.Bind(wx.EVT_BUTTON, self.on_cancel)
@@ -241,7 +241,7 @@ class PcbItemListErrorDialog(wx.Dialog):
         errors_list = PcbItemListBox(errors_box, board)
         errors_box_sizer.Add(errors_list, 1, wx.EXPAND | wx.ALL, 5)
         errors_list.set_item_list(itemlist)
-        sizer.Add(errors_box_sizer, 1, wx.EXPAND | wx.ALL, 8)
+        sizer.Add(errors_box_sizer, 1, wx.EXPAND | wx.ALL, 10)
         errors_list.SetMinSize((300, 100))
 
         link = hyperlink.HyperLinkCtrl(self, -1, 'Rule implementation hints', URL=help_url())
@@ -257,7 +257,8 @@ class PcbItemListErrorDialog(wx.Dialog):
         button_sizer.AddStretchSpacer(1)
         button_sizer.Add(self.ok_button, 0)
 
-        sizer.Add(button_sizer, 0, wx.EXPAND | wx.ALL, 8)
+        sizer.Add(button_sizer, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 10)
+        sizer.AddSpacer(5)
 
         self.SetSizerAndFit(sizer)
         self.SetSize((800, 480))
