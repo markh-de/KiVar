@@ -6,7 +6,7 @@
 	(paper "A5")
 	(title_block
 		(title "KiVar Demo")
-		(date "2024-07-21")
+		(date "2024-08-17")
 		(rev "0.4.0")
 		(company "Author: Mark Hämmerling <dev@markh.de>")
 		(comment 1 "https://github.com/markh-de/KiVar")
@@ -1507,7 +1507,7 @@
 				(hide yes)
 			)
 		)
-		(property "Var" "*(750kΩ)"
+		(property "Var" "?(750kΩ)"
 			(at 106.68 80.0099 0)
 			(effects
 				(font
@@ -1597,7 +1597,7 @@
 				(hide yes)
 			)
 		)
-		(property "Var" "*(1MΩ)"
+		(property "Var" "?(1MΩ)"
 			(at 106.68 62.2299 0)
 			(effects
 				(font

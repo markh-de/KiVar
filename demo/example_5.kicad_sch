@@ -6,7 +6,7 @@
 	(paper "A4")
 	(title_block
 		(title "KiVar Demo")
-		(date "2024-07-21")
+		(date "2024-08-17")
 		(rev "0.4.0")
 		(company "Author: Mark Hämmerling <dev@markh.de>")
 		(comment 1 "https://github.com/markh-de/KiVar")
@@ -1247,7 +1247,7 @@
 	)
 	(rectangle
 		(start 86.36 59.69)
-		(end 215.9 137.16)
+		(end 227.33 137.16)
 		(stroke
 			(width 0.254)
 			(type default)
@@ -1696,7 +1696,7 @@
 				(justify left)
 			)
 		)
-		(property "Var" "*(TCA9535PWR +m1-m2) 9539/0x74(TCA9539PWR -m1+m2)"
+		(property "Var" "?(TCA9535PWR +m1) 9539/0x74(TCA9539PWR +m2)"
 			(at 172.3741 74.93 0)
 			(effects
 				(font

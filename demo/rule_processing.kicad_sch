@@ -6,7 +6,7 @@
 	(paper "A5")
 	(title_block
 		(title "KiVar Demo")
-		(date "2024-07-21")
+		(date "2024-08-17")
 		(rev "0.4.0")
 		(company "Author: Mark Hämmerling <dev@markh.de>")
 		(comment 1 "https://github.com/markh-de/KiVar")
@@ -410,7 +410,7 @@
 		)
 		(uuid "1ba64b71-db13-4aff-af22-c68e411d34a5")
 	)
-	(text "Two(33pF)\nFour(100pF -f)\n*(470pF)"
+	(text "Two(33pF)\nFour(100pF -f)\n?(470pF)"
 		(exclude_from_sim no)
 		(at 93.345 44.45 0)
 		(effects
