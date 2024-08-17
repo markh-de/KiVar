@@ -3,10 +3,10 @@
 	(generator "eeschema")
 	(generator_version "8.0")
 	(uuid "cd745a5c-45fb-4106-85c8-c86c130b6ee7")
-	(paper "A5" portrait)
+	(paper "A4")
 	(title_block
 		(title "KiVar Demo")
-		(date "2024-07-21")
+		(date "2024-08-17")
 		(rev "0.4.0")
 		(company "Author: Mark Hämmerling <dev@markh.de>")
 		(comment 1 "https://github.com/markh-de/KiVar")
@@ -14,8 +14,8 @@
 	)
 	(lib_symbols)
 	(sheet
-		(at 27.94 101.6)
-		(size 92.075 10.795)
+		(at 46.99 125.73)
+		(size 92.075 12.7)
 		(fields_autoplaced yes)
 		(stroke
 			(width 0.1524)
@@ -27,7 +27,7 @@
 		)
 		(uuid "0e980ce9-433f-4ae1-b84f-fd5b1f452ede")
 		(property "Sheetname" "Example 5: IC Type and Address Selection"
-			(at 27.94 100.6344 0)
+			(at 46.99 124.7644 0)
 			(effects
 				(font
 					(size 1.778 1.778)
@@ -38,7 +38,7 @@
 			)
 		)
 		(property "Sheetfile" "example_5.kicad_sch"
-			(at 27.94 112.9796 0)
+			(at 46.99 139.0146 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -57,8 +57,8 @@
 		)
 	)
 	(sheet
-		(at 27.94 146.05)
-		(size 91.44 10.795)
+		(at 161.29 24.13)
+		(size 91.44 12.7)
 		(fields_autoplaced yes)
 		(stroke
 			(width 0.1524)
@@ -70,7 +70,7 @@
 		)
 		(uuid "133d4058-5b5c-4077-bb0d-59323121a93a")
 		(property "Sheetname" "Rule Processing Illustration"
-			(at 27.94 145.0844 0)
+			(at 161.29 23.1644 0)
 			(effects
 				(font
 					(size 1.778 1.778)
@@ -81,7 +81,7 @@
 			)
 		)
 		(property "Sheetfile" "rule_processing.kicad_sch"
-			(at 27.94 157.4296 0)
+			(at 161.29 37.4146 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -100,8 +100,51 @@
 		)
 	)
 	(sheet
-		(at 27.94 25.4)
-		(size 92.075 10.795)
+		(at 46.99 176.53)
+		(size 92.075 12.7)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+			(color 125 147 158 1)
+		)
+		(fill
+			(color 181 212 228 1.0000)
+		)
+		(uuid "6cc89fe7-613b-41f0-9c47-85b72f1b3014")
+		(property "Sheetname" "Example 7: LDO Output Voltage Selection"
+			(at 46.99 175.5644 0)
+			(effects
+				(font
+					(size 1.778 1.778)
+					(bold yes)
+					(color 146 108 108 1)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "example_7.kicad_sch"
+			(at 46.99 189.8146 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+					(italic yes)
+					(color 194 194 194 1)
+				)
+				(justify left top)
+			)
+		)
+		(instances
+			(project "kivar-demo"
+				(path "/cd745a5c-45fb-4106-85c8-c86c130b6ee7"
+					(page "9")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 46.99 24.13)
+		(size 92.075 12.7)
 		(fields_autoplaced yes)
 		(stroke
 			(width 0.1524)
@@ -113,7 +156,7 @@
 		)
 		(uuid "819719b2-602e-433d-a771-1f2596d21337")
 		(property "Sheetname" "Example 1: I²C Device Address Selection"
-			(at 27.94 24.4344 0)
+			(at 46.99 23.1644 0)
 			(effects
 				(font
 					(size 1.778 1.778)
@@ -124,7 +167,7 @@
 			)
 		)
 		(property "Sheetfile" "example_1.kicad_sch"
-			(at 27.94 36.7796 0)
+			(at 46.99 37.4146 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -143,8 +186,8 @@
 		)
 	)
 	(sheet
-		(at 27.94 63.5)
-		(size 92.075 10.795)
+		(at 46.99 74.93)
+		(size 92.075 12.7)
 		(fields_autoplaced yes)
 		(stroke
 			(width 0.1524)
@@ -156,7 +199,7 @@
 		)
 		(uuid "98917921-089a-4f53-9391-423838589d96")
 		(property "Sheetname" "Example 3: Undervoltage Trip Points"
-			(at 27.94 62.5344 0)
+			(at 46.99 73.9644 0)
 			(effects
 				(font
 					(size 1.778 1.778)
@@ -167,7 +210,7 @@
 			)
 		)
 		(property "Sheetfile" "example_3.kicad_sch"
-			(at 27.94 74.8796 0)
+			(at 46.99 88.2146 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -186,8 +229,8 @@
 		)
 	)
 	(sheet
-		(at 27.94 82.55)
-		(size 92.075 10.795)
+		(at 46.99 100.33)
+		(size 92.075 12.7)
 		(fields_autoplaced yes)
 		(stroke
 			(width 0.1524)
@@ -199,7 +242,7 @@
 		)
 		(uuid "b90e2ece-31a9-44a1-a7e2-4f98d0159cd7")
 		(property "Sheetname" "Example 4: IC Variant Selection"
-			(at 27.94 81.5844 0)
+			(at 46.99 99.3644 0)
 			(effects
 				(font
 					(size 1.778 1.778)
@@ -210,7 +253,7 @@
 			)
 		)
 		(property "Sheetfile" "example_4.kicad_sch"
-			(at 27.94 93.9296 0)
+			(at 46.99 113.6146 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -229,8 +272,8 @@
 		)
 	)
 	(sheet
-		(at 27.94 120.65)
-		(size 92.075 10.795)
+		(at 46.99 151.13)
+		(size 92.075 12.7)
 		(fields_autoplaced yes)
 		(stroke
 			(width 0.1524)
@@ -242,7 +285,7 @@
 		)
 		(uuid "efd04459-986c-49c2-bdc3-96a700b4a724")
 		(property "Sheetname" "Example 6: Maximum LED Backlight Drive Current Selection"
-			(at 27.94 119.6844 0)
+			(at 46.99 150.1644 0)
 			(effects
 				(font
 					(size 1.778 1.778)
@@ -253,7 +296,7 @@
 			)
 		)
 		(property "Sheetfile" "example_6.kicad_sch"
-			(at 27.94 132.0296 0)
+			(at 46.99 164.4146 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -272,8 +315,8 @@
 		)
 	)
 	(sheet
-		(at 27.94 44.45)
-		(size 92.075 10.795)
+		(at 46.99 49.53)
+		(size 92.075 12.7)
 		(fields_autoplaced yes)
 		(stroke
 			(width 0.1524)
@@ -285,7 +328,7 @@
 		)
 		(uuid "f1bdcd00-da00-4cca-b21f-4862aa5c3200")
 		(property "Sheetname" "Example 2: Boot Source Selection"
-			(at 27.94 43.4844 0)
+			(at 46.99 48.5644 0)
 			(effects
 				(font
 					(size 1.778 1.778)
@@ -296,7 +339,7 @@
 			)
 		)
 		(property "Sheetfile" "example_2.kicad_sch"
-			(at 27.94 55.8296 0)
+			(at 46.99 62.8146 0)
 			(effects
 				(font
 					(size 1.27 1.27)
