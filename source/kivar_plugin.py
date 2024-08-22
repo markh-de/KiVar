@@ -43,12 +43,17 @@ def help_url():
 def help_migrate_url():
     return f'{doc_base_url()}#migrate'
 
-def show_selection_dialog(board, fpdict, vardict):
-    dlg = VariantDialog(board, fpdict, vardict)
-    dlg.ShowModal()
-
 def pcbnew_parent_window():
     return wx.FindWindowByName('PcbFrame')
+
+def show_selection_dialog(board, fpdict, vardict):
+    dialog = VariantDialog(board, fpdict, vardict)
+    result = dialog.ShowModal()
+    if result == wx.ID_OK:
+        apply_selection(fpdict, vardict, dialog.selections())
+        store_fpdict(board, fpdict)
+        pcbnew.Refresh()
+    dialog.Destroy()
 
 class VariantDialog(wx.Dialog):
     def __init__(self, board, fpdict, vardict):
@@ -132,9 +137,6 @@ class VariantDialog(wx.Dialog):
 
         sizer.Add(button_sizer, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 5)
 
-        ok_button.Bind(wx.EVT_BUTTON, self.on_ok)
-        cancel_button.Bind(wx.EVT_BUTTON, self.on_cancel)
-
         self.SetSizerAndFit(sizer)
         self.SetSize((900, 680))
         self.CentreOnParent()
@@ -149,18 +151,9 @@ class VariantDialog(wx.Dialog):
 
         return s
 
-    def on_ok(self, event):
-        apply_selection(self.fpdict, self.vardict, self.selections())
-        store_fpdict(self.board, self.fpdict)
-        pcbnew.Refresh()
-        self.Destroy()
-
     def on_change(self, event):
         self.update_list()
         self.Layout()
-
-    def on_cancel(self, event):
-        self.Destroy()
 
     def update_list(self):
         changes = apply_selection(self.fpdict, self.vardict, self.selections(), True)
