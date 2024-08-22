@@ -256,23 +256,22 @@ def main():
             exitcode = 3
         else:
             cmd = args.command
-            in_file = args.pcb
             if cmd == "list":
                 if args.prop_codes: args.detailed = True
                 if args.detailed:   args.long = True
-                if not list_command(in_file=in_file, long=args.long, prop_codes=args.prop_codes, detailed=args.detailed, selected=args.selection): exitcode = 1
+                if not list_command(in_file=args.pcb, long=args.long, prop_codes=args.prop_codes, detailed=args.detailed, selected=args.selection): exitcode = 1
             elif cmd == "state":
-                if not state_command(in_file=in_file, all=args.all, query_aspect=args.query): exitcode = 1
+                if not state_command(in_file=args.pcb, all=args.all, query_aspect=args.query): exitcode = 1
             elif cmd == "check":
-                if not check_command(in_file=in_file): exitcode = 1
+                if not check_command(in_file=args.pcb): exitcode = 1
             elif cmd == "set":
                 if args.output:
                     out_file = args.output[-1]
                     force_save = True
                 else:
-                    out_file = in_file
+                    out_file = args.pcb
                     force_save = False
-                if not set_command(in_file=in_file, out_file=out_file, force_save=force_save, assign=args.assign, dry_run=args.dry_run, verbose=args.verbose): exitcode = 1
+                if not set_command(in_file=args.pcb, out_file=out_file, force_save=force_save, assign=args.assign, dry_run=args.dry_run, verbose=args.verbose): exitcode = 1
             else:
                 print_err(f'This is the KiVar CLI, version {version()}.')
                 parser.print_usage()
