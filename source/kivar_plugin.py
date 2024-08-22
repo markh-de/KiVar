@@ -47,11 +47,11 @@ def pcbnew_parent_window():
 def show_selection_dialog(board, fpdict, vardict):
     dialog = VariantDialog(board, fpdict, vardict)
     result = dialog.ShowModal()
+    dialog.Destroy()
     if result == wx.ID_OK:
         apply_selection(fpdict, vardict, dialog.selections())
         store_fpdict(board, fpdict)
         pcbnew.Refresh()
-    dialog.Destroy()
 
 class VariantDialog(wx.Dialog):
     def __init__(self, board, fpdict, vardict):
