@@ -118,7 +118,6 @@ def store_fpdict(board, fpdict):
                 set_fp_field(fp, field, new_fp_field_value)
     return fpdict
 
-# TODO still required if we adopt KiCad 8 reporting style?
 def bool_as_text(value):
     return 'true' if value == True else 'false'
 
@@ -156,7 +155,6 @@ def quote_str(string):
         else: result = string
     return result
 
-# TODO use a cleaner way for keys
 class Key:
     DEFAULT = '*' # same symbol as used for expressions
     STANDIN = '?' # same symbol as used for expressions
