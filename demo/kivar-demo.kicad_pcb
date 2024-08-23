@@ -4931,7 +4931,7 @@
 		(descr "Resistor SMD 0402 (1005 Metric), square (rectangular) end terminal, IPC_7351 nominal with elongated pad for handsoldering. (Body size source: IPC-SM-782 page 72, https://www.pcb-3d.com/wordpress/wp-content/uploads/ipc-sm-782a_amendment_1_and_2.pdf), generated with kicad-footprint-generator")
 		(tags "resistor handsolder")
 		(property "Reference" "R40"
-			(at -2.75 -0.25 360)
+			(at -2.75 -0.25 0)
 			(layer "F.SilkS")
 			(uuid "fd1e3d34-8e93-4214-8cc2-00f25f610e06")
 			(effects
@@ -4942,7 +4942,7 @@
 			)
 		)
 		(property "Value" "100kΩ"
-			(at 0 1.17 360)
+			(at 0 1.17 0)
 			(layer "F.Fab")
 			(uuid "7c3071d7-26f4-4082-a0fd-939957b62d3a")
 			(effects
@@ -4991,7 +4991,7 @@
 				)
 			)
 		)
-		(property "Var" "1.2V(DNP -!) ?(100kΩ)"
+		(property "Var" "1.2V(DNP -s!) ?(100kΩ)"
 			(at 0 0 180)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -5123,7 +5123,7 @@
 			(uuid "963e1164-72b9-4ce0-8673-db53a3e6fce0")
 		)
 		(fp_text user "${REFERENCE}"
-			(at 0 0 360)
+			(at 0 0 0)
 			(layer "F.Fab")
 			(uuid "f503a851-b849-4225-b6c0-d2f98ab61fdc")
 			(effects
@@ -9104,7 +9104,7 @@
 		(descr "Capacitor SMD 0603 (1608 Metric), square (rectangular) end terminal, IPC_7351 nominal, (Body size source: IPC-SM-782 page 76, https://www.pcb-3d.com/wordpress/wp-content/uploads/ipc-sm-782a_amendment_1_and_2.pdf), generated with kicad-footprint-generator")
 		(tags "capacitor")
 		(property "Reference" "C15"
-			(at 0 -1.43 360)
+			(at 0 -1.43 0)
 			(layer "F.SilkS")
 			(uuid "8ed5bedf-8ec0-4cfd-86aa-8f5f3ee7f417")
 			(effects
@@ -9115,7 +9115,7 @@
 			)
 		)
 		(property "Value" "1µF"
-			(at 0 1.43 360)
+			(at 0 1.43 0)
 			(layer "F.Fab")
 			(uuid "297bba70-9503-4253-bf9d-7360f8295818")
 			(effects
@@ -9270,7 +9270,7 @@
 			(uuid "9277fc4a-f509-41fd-8f3c-38e822b066c9")
 		)
 		(fp_text user "${REFERENCE}"
-			(at 0 0 360)
+			(at 0 0 0)
 			(layer "F.Fab")
 			(uuid "f1a56d96-971a-4648-991e-5b2a84029204")
 			(effects
@@ -14424,19 +14424,6 @@
 				)
 			)
 		)
-		(property "VarX" "BKA iqjq(8q) wdwd()"
-			(at 0 0 0)
-			(unlocked yes)
-			(layer "F.Fab")
-			(hide yes)
-			(uuid "e4d49e1f-bd0b-4318-9b55-3f0d98ad5d4f")
-			(effects
-				(font
-					(size 1 1)
-					(thickness 0.15)
-				)
-			)
-		)
 		(property ki_fp_filters "C_*")
 		(path "/b90e2ece-31a9-44a1-a7e2-4f98d0159cd7/3c2fdad2-f25e-4e09-8309-d8bf9a9415d6")
 		(sheetname "Example 4: IC Variant Selection")
@@ -16361,7 +16348,7 @@
 				)
 			)
 		)
-		(property "Var" "1.8V(100kΩ) ?(DNP -!)"
+		(property "Var" "1.8V(100kΩ) ?(DNP -s!)"
 			(at 0 0 -90)
 			(unlocked yes)
 			(layer "F.Fab")
