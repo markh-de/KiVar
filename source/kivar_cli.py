@@ -9,12 +9,11 @@ except ModuleNotFoundError: from .kivar_backend import *
 
 # TODO for list, allow another structure: aspect -> component -> choice (in addition to current aspect -> choice -> component)
 # TODO make use of verbose options, where applicable
-# TODO add option to save to a different file (create a copy)
 # TODO if output to terminal, use colors for highlighting aspects, choices, matches etc.
 #      (provide --no-color/-C option (or a different usual option name))
 # also check all TODO notes buried in the code below!
+# TODO have common help URL for both plugin and CLI? place in backend?
 
-# TODO have common help URL for both plugin and CLI? place in module?
 def doc_vcs_ref():
     return f'v{version()}'
 
