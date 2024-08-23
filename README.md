@@ -39,34 +39,41 @@ I_LED_MA: 10 20 30 40 50 60 70 80 90 [100] 110 120 130 140 150 JP
 IOEXP_TYPE/ADDR: 9535/0x20 [9535/0x24] 9539/0x74
 ISL91127: [IRAZ] IRNZ
 UVLO_LO/HI: 2.41V/3.40V [3.15V/3.57V]
+VOUT: 1.2V [1.8V] 3.3V
 
-$ kivar set --assign 'I_LED_MA=60' --assign 'BOOT_SRC=NAND' --verbose kivar-demo.kicad_pcb 
-Changes (16):
-    Change R9 'Do not populate' from 'false' to 'true' (BOOT_SRC=NAND).
-    Change R9 'Exclude from bill of materials' from 'false' to 'true' (BOOT_SRC=NAND).
-    Change R9 'Exclude from position files' from 'false' to 'true' (BOOT_SRC=NAND).
-    Change R9 field 'ChoiceText' from 'SoM eMMC' to 'SoM NAND' (BOOT_SRC=NAND).
-    Change R10 'Do not populate' from 'true' to 'false' (BOOT_SRC=NAND).
-    Change R10 'Exclude from bill of materials' from 'true' to 'false' (BOOT_SRC=NAND).
-    Change R10 'Exclude from position files' from 'true' to 'false' (BOOT_SRC=NAND).
-    Change R11 'Do not populate' from 'false' to 'true' (BOOT_SRC=NAND).
-    Change R11 'Exclude from bill of materials' from 'false' to 'true' (BOOT_SRC=NAND).
-    Change R11 'Exclude from position files' from 'false' to 'true' (BOOT_SRC=NAND).
-    Change R21 'Do not populate' from 'false' to 'true' (I_LED_MA=60).
-    Change R21 'Exclude from bill of materials' from 'false' to 'true' (I_LED_MA=60).
-    Change R21 'Exclude from position files' from 'false' to 'true' (I_LED_MA=60).
-    Change R22 'Do not populate' from 'true' to 'false' (I_LED_MA=60).
-    Change R22 'Exclude from bill of materials' from 'true' to 'false' (I_LED_MA=60).
-    Change R22 'Exclude from position files' from 'true' to 'false' (I_LED_MA=60).
+$ kivar set --assign 'IOEXP_TYPE/ADDR=9539/0x74' --assign 'VOUT=3.3V' --verbose kivar-demo.kicad_pcb 
+Changes (14):
+    Change R38 value from '100kΩ' to '175kΩ' (VOUT=3.3V).
+    Change R38 field 'VarID' from '18' to '33' (VOUT=3.3V).
+    Change R39 value from '100kΩ' to 'DNP' (VOUT=3.3V).
+    Change R39 'Do not populate' from 'false' to 'true' (VOUT=3.3V).
+    Change R39 'Exclude from bill of materials' from 'false' to 'true' (VOUT=3.3V).
+    Change R39 'Exclude from position files' from 'false' to 'true' (VOUT=3.3V).
+    Change R39 solder paste relative clearance from 0.0% to -4200000.0% (VOUT=3.3V).
+    Change U4 value from 'TCA9535PWR' to 'TCA9539PWR' (IOEXP_TYPE/ADDR=9539/0x74).
+    Change U4 visibility of 3D model #1 from 'true' to 'false' (IOEXP_TYPE/ADDR=9539/0x74).
+    Change U4 visibility of 3D model #2 from 'false' to 'true' (IOEXP_TYPE/ADDR=9539/0x74).
+    Change U4 field 'I2C Address' from '0x24' to '0x74' (IOEXP_TYPE/ADDR=9539/0x74).
+    Change U4 field 'VarID' from '24' to '74' (IOEXP_TYPE/ADDR=9539/0x74).
+    Change U4 field 'Datasheet' from 'http://www.ti.com/lit/ds/symlink/tca9535.pdf' to 'http://www.ti.com/lit/ds/symlink/tca9539.pdf' (IOEXP_TYPE/ADDR=9539/0x74).
+    Change U4 field 'MPN' from 'TCA9535PWR' to 'TCA9539PWR' (IOEXP_TYPE/ADDR=9539/0x74).
 Board saved to file "kivar-demo.kicad_pcb".
 
 $ kivar list --selection kivar-demo.kicad_pcb 
-BOOT_SRC: EMMC JP [NAND] SD
-EEPROM_ADDR: 0x54 [0x55]
-I_LED_MA: 10 20 30 40 50 [60] 70 80 90 100 110 120 130 140 150 JP
-IOEXP_TYPE/ADDR: 9535/0x20 [9535/0x24] 9539/0x74
-ISL91127: [IRAZ] IRNZ
-UVLO_LO/HI: 2.41V/3.40V [3.15V/3.57V]
+BOOT_SRC=EMMC
+EEPROM_ADDR=0x55
+I_LED_MA=100
+IOEXP_TYPE/ADDR=9539/0x74
+ISL91127=IRAZ
+UVLO_LO/HI=3.15V/3.57V
+VOUT=3.3V
+
+$ kivar check kivar-demo.kicad_pcb 
+Check passed.  Matching choices found for complete set of 7 aspect(s).
+
+$ kivar state --query VOUT --query EEPROM_ADDR kivar-demo.kicad_pcb 
+3.3V
+0x55
 ```
 
 ## Concepts
