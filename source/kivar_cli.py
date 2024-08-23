@@ -75,7 +75,7 @@ class Msg:
         return content
 
 class ErrMsg(Msg):
-    def __init__(self, error=False):
+    def __init__(self, error=True):
         super().__init__(error)
 
     def c(self):
