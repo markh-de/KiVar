@@ -60,13 +60,13 @@ Changes (14):
 Board saved to file "kivar-demo.kicad_pcb".
 
 $ kivar list --selection kivar-demo.kicad_pcb 
-BOOT_SRC=EMMC
-EEPROM_ADDR=0x55
-I_LED_MA=100
-IOEXP_TYPE/ADDR=9539/0x74
-ISL91127=IRAZ
-UVLO_LO/HI=3.15V/3.57V
-VOUT=3.3V
+BOOT_SRC: [EMMC] JP NAND SD
+EEPROM_ADDR: 0x54 [0x55]
+I_LED_MA: 10 20 30 40 50 60 70 80 90 [100] 110 120 130 140 150 JP
+IOEXP_TYPE/ADDR: 9535/0x20 9535/0x24 [9539/0x74]
+ISL91127: [IRAZ] IRNZ
+UVLO_LO/HI: 2.41V/3.40V [3.15V/3.57V]
+VOUT: 1.2V 1.8V [3.3V]
 
 $ kivar check kivar-demo.kicad_pcb 
 Check passed.  Matching choices found for complete set of 7 aspect(s).
@@ -75,6 +75,10 @@ $ kivar state --query VOUT --query EEPROM_ADDR kivar-demo.kicad_pcb
 3.3V
 0x55
 ```
+
+There are many more features.
+
+The KiVar CLI can support you with setting, querying, listing and analyzing variation data, either manually or - for example - integrated in a Continuous Integration service.
 
 ## Concepts
 
