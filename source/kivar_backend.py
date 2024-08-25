@@ -20,7 +20,7 @@ from copy import deepcopy
 # TODO more testing!
 
 def version():
-    return '0.3.9909'
+    return '0.3.9910'
 
 def pcbnew_compatibility_error():
     ver = pcbnew.GetMajorMinorPatchVersion()
@@ -693,6 +693,7 @@ def build_vardict(fpdict):
             for prop_id in vardict[uuid][Key.CMP][choice][Key.PROPS]:
                 if not prop_id in fpdict[uuid][Key.PROPS]:
                     prop_code, prop_index = split_prop_id(prop_id)
+                    ref = fpdict[uuid][Key.REF]
                     errors.append([uuid, ref, f"{ref}: Cannot match referenced property '{prop_abbrev(prop_id)}' to footprint (probably index out of bounds)."])
     if not errors:
         # Check for ambiguous choices (only if data is valid so far)
