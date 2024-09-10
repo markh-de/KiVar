@@ -20,7 +20,7 @@ from copy import deepcopy
 # TODO more testing!
 
 def version():
-    return '0.3.9910'
+    return '0.3.9911'
 
 def pcbnew_compatibility_error():
     ver = pcbnew.GetMajorMinorPatchVersion()
@@ -298,7 +298,6 @@ def apply_selection(fpdict, vardict, selection, dry_run = False):
                     if old_paste_state is not None and old_paste_state != new_value:
                         if new_value: new_paste_ratio = old_value - FootprintPasteMargin.OFFSET
                         else:         new_paste_ratio = old_value + FootprintPasteMargin.OFFSET
-                        fpdict[uuid][Key.PROPS][prop_id] = new_paste_ratio
                         old_value_text = f'{round(old_value*100, 6)}%'
                         new_value_text = f'{round(new_paste_ratio*100, 6)}%'
                         new_value = new_paste_ratio
