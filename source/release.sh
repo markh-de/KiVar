@@ -68,7 +68,7 @@ release_pypi() {
        "$tmp_dir/"
 
     cd "$tmp_dir/"
-    python setup.py sdist
+    python3 ./setup.py sdist
     cd - >/dev/null
 
     cp "$tmp_dir/dist/"* \
