@@ -310,7 +310,7 @@ def main():
     exitcode = 0
 
     if args.version:
-        Msg().text(f"KiVar {version()}").flush()
+        Msg().text(f"KiVar {version()} (using pcbnew {pcbnew.Version()})").flush()
         exitcode = 0
     else:
         # TODO do this check only prior to executing corresponding commands?
