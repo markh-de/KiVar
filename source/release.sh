@@ -98,16 +98,14 @@ release_zip() {
 
 # main
 
-if [ "$#" -lt 1 ]; then
-    echo "Usage: $(basename "$0") <VERSION>" >&2
-    exit 1
-fi
-
-VERSION=$1
+SRC_DIR=$(readlink -f "$(dirname "$0")")
+VERSION=$(python3 ${SRC_DIR}/version.py)
 RELEASE_NAME='kivar'
 ID='de_markh_kivar'
 RELEASE_DIR=$(readlink -f "$(dirname "$0")")"/../release/v$VERSION"
-SRC_DIR=$(readlink -f "$(dirname "$0")")
+
+echo "Creating KiVar release $VERSION:"
+echo ''
 
 rm -rf "$RELEASE_DIR/"
 mkdir -p "$RELEASE_DIR/"
