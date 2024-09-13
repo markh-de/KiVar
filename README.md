@@ -11,8 +11,6 @@ KiVar is a tool for **KiCad PCB Assembly Variant selection**, provided as platfo
 
 PCB component variation rules are defined in component (i.e. symbol or footprint) fields.  This allows for the complete variant configuration to be contained in the schematic and board files without requiring external data from outside the native KiCad design files.
 
-The name _KiVar_ (for _KiCad Variants_, obviously) can also be read as an acronym for _**Ki**Cad **V**ariation **a**ssignment **r**ules_.
-
 ## Features
 
 KiVar assigns PCB component **values**, **field content**, **attributes** (such as _Do not populate_, _Not in position files_ or _Not in BoM_) and **features** (such as _individual 3D model visibility_ or _solder paste application_) according to variation rules specified in footprint fields.  When applying those rules, components are modified _in place_, allowing for immediate update of the PCB design as well as the 3D view and enabling compatibility with _any_ exporter.
@@ -76,24 +74,27 @@ $ kivar state --query VOUT --query EEPROM_ADDR kivar-demo.kicad_pcb
 0x55
 ```
 
-There are many more features.
+The KiVar CLI provides support for 
 
-The KiVar CLI can support you with setting, querying, listing and analyzing variation data, either manually or - for example - integrated in a Continuous Integration service.
+ * setting,
+ * querying,
+ * listing and
+ * analyzing
+
+variation data, either manually or - for example - integrated in a Continuous Integration service.
 
 ## Concepts
 
 Key concepts of KiVar are:
 
  * Designs may contain **multiple** independent variation **aspects** (i.e. dimensions or degrees of freedom).
- * Variation rules are **fully contained** in component fields of native design files (no external configuration files) and **portable** (i.e. copying components to another design keeps their variation specification intact).
- * Component values, fields, attributes and features are modified **in place**, enabling compatibility with all exporters that work on the actual component data.
+ * Variation rules are **fully contained** in component fields of native design files (no external configuration files involved) and **portable** (i.e. copying components to another design keeps their variation specification intact).
+ * Component values, fields, attributes and features are modified **in place** with immediate effect, enabling compatibility with all exporters that work on the actual component data.
  * **No external state information** is stored; currently matching variation choices are detected automatically.
 
 ## Supported KiCad Versions
 
 KiVar releases 0.2.0 and later require at least **KiCad release 8**.
-
-Earlier versions of KiVar also supported KiCad 7, but in a very restricted way.  Hence, after the release of KiCad 8, KiVar support for KiCad 7 has been dropped.
 
 KiVar uses the Python API wrapper for pcbnew, the KiCad PCB Editor.
 
@@ -152,7 +153,7 @@ pip install kivar-${VERSION}.tar.gz
 ## Usage
 
 > [!IMPORTANT]
-> This manual refers to the **0.3.x** series of KiVar.  If you are still using an older version, please consider [updating](#installation) KiVar and [migrating](#migrate) your variation rules.
+> This manual refers to the **0.4.x** series of KiVar.  If you are still using an older version, please consider [updating](#installation) KiVar and [migrating](#migrate) your variation rules.
 
 The process of writing and assigning rules to components (i.e. symbols and footprints) is done manually using simple text expressions.
 
@@ -165,7 +166,7 @@ The following sections describe the process of configuring your schematic or boa
 While it is recommended to define variation rules in the schematic (i.e. in symbol fields) and propagate them to the board, it is also possible to define those rules directly in the board (i.e. in footprint fields) and propagate them back to the schematic.  Either way, in order for KiVar to utilize the variation rules, they must be present in the footprint fields, as KiVar uses the _pcbnew_ API wrapper and can therefore only operate on the board (not schematic) data, which must then be [propagated back to the schematic](#updating-the-schematic).
 
 > [!TIP]
-> Before diving into the more or less formal specification of KiVar variation rules, you might want to have a look at some [real-world examples](#real-world-examples) or the [demo project](demo/) for a start.  Both will give you a first impression of how KiVar rules work.
+> Before diving into the more or less formal specification of KiVar variation rules, you might want to have a look at some [usage examples](#usage-examples) or the [demo project](demo/) (from which the examples are taken) for a start.  These will give you a first impression of how KiVar rules work.
 
 > [!TIP]
 > If you are already experienced with writing variation rules for older KiVar versions (especially 0.1.x), it is highly recommended to read the [KiVar Migration Guide](#migrate), which covers the most important changes introduced with newer KiVar releases.
@@ -186,75 +187,119 @@ Basic terms used in this document:
    A fully defined selection of _specific_ _Choices_ for _all_ available _Aspects_.  In other words, one specific board assembly variant state.  
    An example is shown in the following section.
 
+ * **Record:**  
+   An entry in a KiVar-specific custom field of a component (symbol or footprint) to be interpreted by the KiVar rule processor.
+
+ * **Assignment:**  
+   A group of one or more Records containing Choice Expressions to assign a set of data to the same assignment target (e.g. the component itself, or an existing custom field of the component).
+
 #### Fundamentals
 
-Each component (which uses KiVar variation rules) must refer to exactly one **Aspect**, to which all **Choices** defined or referred to in that component always relate to.
+Each component that uses KiVar variation rules must bind to exactly one variation **Aspect** to which all variation **Choices** for that component will then relate to.
 
-There can exist multiple Aspects per design, and for each Aspect there can exist multiple Choices.
+> [!IMPORTANT]
+> There may exist _multiple_ Aspects per design, and for each Aspect there may exist _multiple_ Choices.  
+> One component must relate to a _single_ Aspect, but may relate to an _unlimited number_ of Choices for that Aspect.  
+> Multiple components may (and usually will) refer to the same Aspects and Choices.
 
 _Example:_
 
- * Aspect `EEPROM_I2C_ADDR`
-   * Choice `0x50`
-   * Choice `0x51`
-   * Choice `0x52`
-   * Choice `0x53`
+ * Design
+   * Aspect `EEPROM_I2C_ADDR`
+     * Choice `0x50`
+     * Choice `0x51`
+     * Choice `0x52`
+     * Choice `0x53`
+  
+   * Aspect `BOOT_SRC`
+     * Choice `EMMC`
+     * Choice `SDCARD`
+     * Choice `NAND`
+  
+   * Aspect `VIO_LEVEL`
+     * Choice `1.8V`
+     * Choice `2.5V`
+     * Choice `3.3V`
 
- * Aspect `BOOT_SRC`
-   * Choice `EMMC`
-   * Choice `SDCARD`
-   * Choice `NAND`
-
- * Aspect `VIO_LEVEL`
-   * Choice `1.8V`
-   * Choice `2.5V`
-   * Choice `3.3V`
-
-One possible example _Configuration_ for these Aspects and Choices:
+One possible resulting example _Configuration_ for this design:
 
 `EEPROM_I2C_ADDR=0x52 BOOT_SRC=NAND VIO_LEVEL=1.8V`
 
-KiVar computes such sets of Aspect and Choice definitions internally by checking each component's field data for KiVar [Choice Expressions](#choice-expressions), which are explained in the following sections.
+KiVar computes possible sets of Aspect and Choice definitions internally by checking each component's field data for KiVar [Records](#records) and the [Assignments](#assignments) resulting from them.  The structure and syntax of the expressions used in such Records are described in the following sections.
+
+#### Records
+
+The text expressions that describe the variation rules are noted as **Record**s, i.e. as custom field entries with each field's name containing the keyword `Var` in one of several forms.  Records must appear in the component they relate to.
+
+A usual Record contains the following elements:
+
+ * [Assignment](#assignments) Target information _(implicit, depending on the [Assignment Scope](#assignment-scopes))_
+ * [Choice Expression(s)](#choice-expressions) _(one or more, depending on the [Record Format](#record-formats))_
+   * [Choice Identifier List](#choice-identifier-lists) _(list of affected Choice names)_
+   * [Choice Argument(s)](#choice-arguments) _(data to be assigned to the affected Choices)_
+     * [Content Specifier(s)](#content-specifiers) _(provide data to be used as component value or custom field value)_
+     * [Property Specifier(s)](#property-specifiers) _(provide settings to switch component attributes or footprint features)_
+
+There is a special Aspect Specifier Record type, discussed in the [corresponding section](#aspect-identifier).
+
+Records can use various notations, depending on their [Format](#record-formats).  Details are described in the following sections.
+
+#### Assignments
+
+Each Record addresses a specific target that the contained rule expressions refer to.  A group of one or more Records with the same target form an **Assignment**.
+
+Possibe Assignment targets are:
+
+ * the component's **value**,
+ * one of the component's (custom) **fields**,
+ * a component **attribute** and/or
+ * a component **feature** (e.g. solder paste application, 3D representation).
 
 #### Choice Expressions
 
-Component variation rules are specified in **Choice Expression**s, which are defined in the fields of each component (i.e. symbol and/or footprint) they relate to.  Multiple components may (and usually will) refer to the same aspects and choices.
+Depending on the used [Format](#record-formats), each Record can carry either a single or multiple **Choice Expression**s.
 
-One component must relate to a single aspect, but can relate to an unlimited number of choices for that aspect.
+Each Choice Expression specifies
 
-Typically, multiple components are involved when defining specific Choices.  But not each component is forced to refer to all Choices (of a certain Aspect).  Instead, the KiVar Expression compiler accumulates all mentioned Choices and computes the data to be assigned for each of them.
+ * for which [Choice Identifiers](#choice-identifiers) to assign
+ * which data to the Record's [Assignment](#assignments) target.
 
-Choice Expressions can use various notations, depending on their Scope and Format.  Choice Expression syntax is described in the following sections from their **innermost to outermost** elements.
+For each Choice Expression, this data is passed via the
+
+ * [Choice Identifier List](#choice-identifier-lists) and
+ * [Choice Arguments](#choice-arguments).
 
 #### Choice Arguments
 
-In its simplest form, a Choice Expression consists only of a **Choice Argument List**, which is just a list of _space_-separated **Choice Argument**s to be assigned to a component for a specific choice.
+The actual data to be assigned to the Choices passed as [Choice Identifier List](#choice-identifier-lists) is expressed in the **Choice Argument**s.
 
-Each _Choice Argument_ of the _Choice Argument List_ can be of one of two possible types:
+These Choice Arguments are a list of _space_-separated specifiers used to declare the data to be assigned to the [Assignment](#assignments) Target.
 
- * a part of the **Content** to be assigned as the component _value_ or a specific target _field_, or
- * a **Property** state assignment specifier (e.g. to mark a component _(un)fitted_, _(not) in BoM_, _(not) in position files_).
+Each _Choice Argument_ inside the _Choice Argument List_ can be of one of two possible types:
 
-Argument types are distinguished by their first (unescaped) character and will be explained in more detail in the following sub-sections.
+ * a [**Content** Specifier](#content-specifiers) to assign a component _value_ or a specific _custom field value_, or
+ * a [**Property** Specifier](#property-specifiers), e.g. to mark a component _(un)fitted_, _(not) in BoM_, _(not) in position files_ or change a dedicated footprint feature.
+
+Argument types are distinguished by their **first (unescaped) character** and will be explained in more detail in the following sub-sections.
 
 ##### Content Specifiers
 
 ###### Purpose
 
-One or more **Content Specifiers** can be used to form a string to be assigned to the component value or to any (custom) component field (such as _Manufacturer_, _MPN_, ...).
+One or more **Content Specifiers** can be used to form a string to be assigned to the component value or to any component custom field (such as _Manufacturer_, _MPN_, ...).
 
 ###### Syntax
 
 Each argument beginning with a character _other than_ `-` and `+` is interpreted as a **Content Specifier**.
 
-There can be multiple Content Specifiers in each Choice Expression.  Their values will be concatenated with one ` ` (space) character as separator to form the resulting Content string.  However, each choice may have only a maximum of one resulting Content assigned.  For example: `Choice1("hello world"   foo bar)` will result in `Choice1` to be assigned the content `hello world foo bar`, but multiple content assignments to the same Choice, such as `Choice1("hello world") Choice1(foo bar)`, are invalid.  This restriction is due to the fact that Choice Expressions can be provided in different ([Simple](#simple), [Combined](#combined)) formats and there is no guaranteed processing (concatenation) order.
+There may exist multiple Content Specifiers in each [Choice Argument](#choice-arguments) List.  Their values will be concatenated with one ` ` (space) character as separator to form the resulting Content string.  However, each [Assignment](#assignments) may have a maximum of _one_ resulting Content specified.  For example: `Choice1("hello world"   foo bar)` will result in `Choice1` to be assigned the content `hello world foo bar`, but multiple Content assignments to the same [Choice Identifier](#choice-identifiers), such as `Choice1("hello world") Choice1(foo bar)`, are invalid.  This restriction is due to the fact that [Records](#records) can be provided in different [Formats](#record-formats) and there is no guaranteed processing (concatenation) order.
 
 ###### Evaluation
 
-All Content Specifiers of a Choice Expression are evaluated from left to right and concatenated with one space character between each argument to form the final content string to be assigned when the corresponding choice is selected.
+All Content Specifiers inside the Choice Arguments are evaluated from left to right and concatenated with one space character between each argument to form the final content string to be assigned when the corresponding choice is selected.
 
 > [!NOTE]
-> As arguments can be separated by _any_ number of space characters, each separation will result in a single space character in the final content, no matter how many spaces were used for the argument separation originally (similar to HTML).  For strings that shall be assigned in a verbatim way (such as a URL), it is highly recommended to use quoting techniques (discussed later).
+> As arguments can be separated by _any_ number of space characters, each separation will result in a single space character in the final content, no matter how many spaces were used for the argument separation originally (similar to HTML).  For strings that shall be assigned in a verbatim way (such as a URL), it is highly recommended to use [quoting techniques](#quoting-and-escaping).
 
 ###### Examples
 
@@ -262,14 +307,14 @@ The Content Specifiers in the following input Choice Argument Lists will result 
 
 Choice Argument List input | Resulting Content string | Explanation
 -------------------------- | ------------------------ | -----------
-`100nF`                    | `100nF`                  | Simple single arguments can be noted without escaping or quoting as long as they don't contain certain special characters (discussed later).
+`100nF`                    | `100nF`                  | Simple single arguments can be noted without [escaping or quoting](#quoting-and-escaping) as long as they don't contain certain special characters (discussed later).
 `470µF 10%`                | `470µF 10%`              | Uncritical text, no verbatim adoption of the arguments required.
 `470µF   10%`              | `470µF 10%`              | Multiple separator characters will be converted to a single separator. As the text is uncritical, this conversion may even be desired.
-`'https://kivar.markh.de/ds/abc123.pdf'` | `https://kivar.markh.de/ds/abc123.pdf` | Strings to be used verbatim should always be enclosed in quote characters.
+`'https://kivar.markh.de/ds/abc123.pdf'` | `https://kivar.markh.de/ds/abc123.pdf` | Strings to be used verbatim should always be enclosed in [quote](#quoting-and-escaping) characters.
 `'abc   def ' 123   456`   | `abc   def  123 456`     | Mixed type of quoted and unquoted representation.  Note how the trailing space after `def` remains contained in the result.
 `abc "def 'ghi' jkl" mno`  | `abc def 'ghi' jkl mno`  | Outer double quotes encapsulate inner single quotes, which are part of the verbatim string.
 `abc 'def "ghi" jkl' mno`  | `abc def "ghi" jkl mno`  | Outer single quotes encapsulate inner double quotes, which are part of the verbatim string.
-`abc \d\e\f\ \ ghi\'jkl\\mno` | `abc def  ghi'jkl\mno` | Escaping (prepending a backslash) ensures that the following character is interpreted verbatim, not as a special character.  To create a backslash (the escape character) string, use a double backslash (i.e. escape the backslash).
+`abc \d\e\f\ \ ghi\'jkl\\mno` | `abc def  ghi'jkl\mno` | [Escaping](#quoting-and-escaping) (prepending a backslash) ensures that the following character is interpreted verbatim, not as a special character.  To create a backslash (the escape character) string, use a double backslash (i.e. escape the backslash).
 `\+10% \-5% \-12V \+5V`    | `+10% -5% -12V +5V`      | If the first character of a Content Specifier is a `-` or `+`, the corresponding Choice Argument must be prepended with a backslash (`\`) character or be part of a verbatim string (see next example).
 `"+10%" '-5%' "-"12V '+'5V` | `+10% -5% -12V +5V`     | If the first character of a Content Specifier is a `-` or `+`, the corresponding Choice Argument must be part of a verbatim string or be prepended with a backslash (`\`) character (see previous example).
 
@@ -296,31 +341,31 @@ Each Property Specifier must start with a _Property Modifier_, defining the bool
 
 ###### Evaluation
 
-All Property Specifiers inside a Choice Expression are evaluated from left to right, resulting in a set of defined boolean Property states for the corresponding component and Choice.  Properties _not_ defined in any of the component's Choices are kept in their original state.
+All Property Specifiers inside a [Choice Argument List](#choice-arguments) are evaluated from left to right, resulting in a set of defined boolean Property states for the corresponding component and Choice.  Properties _not_ defined in _any_ of the component's Choices are kept in their original state.
 
 ###### Attribute Properties
 
 The following Properties allow modification of component _attributes_:
 
- * **Fitted** (property identifier `f`).  
-   This property specifies whether a component shall be fitted (property state _true_) or unfitted (property state _false_).  This property is linked to the pcbnew footprint attribute _Do not populate_ with inverted polarity.
- * **inPos** (property identifier `p`).  
-   This property specifies whether a component shall be included in the component placement/position files (property state _true_) or excluded (property state _false_).  This property is linked to the pcbnew footprint attribute _Not in Position Files_ with inverted polarity.
- * **inBom** (property identifier `b`).  
-   This property specifies whether a component shall be included in the Bill of Materials (property state _true_) or excluded (property state _false_).  This property is linked to the pcbnew footprint attribute _Not in BoM_ with inverted polarity.
+ * **Fit** (Property identifier `f`).  
+   This Property specifies whether a component shall be fitted (Property state _true_) or unfitted (Property state _false_).  This Property is linked to the pcbnew footprint attribute _Do not populate_ with inverted polarity.
+ * **Pos** (Property identifier `p`).  
+   This Property specifies whether a component shall be included in the component placement/position files (Property state _true_) or excluded (Property state _false_).  This Property is linked to the pcbnew footprint attribute _Not in Position Files_ with inverted polarity.
+ * **Bom** (Property identifier `b`).  
+   This Property specifies whether a component shall be included in the Bill of Materials (Property state _true_) or excluded (Property state _false_).  This Property is linked to the pcbnew footprint attribute _Not in BoM_ with inverted polarity.
 
 ###### Feature Properties
 
-Additionally, the following Properties allow controlling component _features_:
+Additionally, the following Properties allow controlling footprint _features_:
 
- * **Model** (property identifier `mN`, with `N` being an integer number).  
-   This property controls the visibility of each individual 3D model of the corresponding component footprint to either visible (property state _true_) or invisible (property state _false_).  An integer number must be provided directly following the first character of the property identifier, representing the index of the model to be shown or hidden.  The index starts at 1.
- * **Solder** (property identifier `s`).  
-   This property controls the application of solder paste to the pads of a component's footprint.  Solder paste can be enabled (property state _true_) or disabled (property state _false_).  For both cases, user-defined footprint-specific solder paste clearances are maintained (see note below).  
-   _Important:_ As usual for KiCad solder paste clearance settings, this property has only effect for pads on copper layers, but _not_ for _SMD Aperture_ pads!
+ * **Model** (Property identifier `mN`, with `N` being an integer number).  
+   This Property controls the visibility of each individual 3D model of the corresponding component footprint to either visible (Property state _true_) or invisible (Property state _false_).  An integer number must be provided directly following the first character of the Property identifier, representing the index of the model to be shown or hidden.  The index starts at 1.
+ * **Solder** (Property identifier `s`).  
+   This Property controls the application of solder paste to the pads of a component's footprint.  Solder paste can be enabled (Property state _true_) or disabled (Property state _false_).  For both cases, user-defined footprint-specific solder paste clearances are maintained (see note below).  
+   _Important:_ As usual for KiCad solder paste clearance settings, this Property has only effect for pads on copper layers, but _not_ for _SMD Aperture_ pads!
 
 > [!IMPORTANT]
-> For indexed Properties, i.e. Properties including an integer index value, each index is treated as an individual and independent Property.  For example, the Properties _Model#1_ and _Model#2_ do not affect each other.  This independence also applies to [Default Property Inheritance](#default-property-inheritance) and [Implicit Defaults](#implicit-defaults) discussed below.
+> For indexed Properties, i.e. Properties including an integer index value, each index is treated as an individual and independent Property.  For example, the Properties _Model#1_ and _Model#2_ do not affect each other.  This independence also applies to [Default Property Inheritance](#default-property-inheritance) and [Implicit Property Defaults](#implicit-property-defaults) discussed below.
 
 > [!NOTE]
 > As KiCad does not provide a dedicated footprint attribute for disabling solder paste application, KiVar instead makes use of the _solder paste relative clearance_ value.  To disable or enable solder paste application for a footprint, KiVar applies or removes an offset value of &minus;4,200,000%.  This technique allows retaining user-provided clearance values.  However, in order to ensure safe classification of KiVar-applied solder paste control, those user-provided relative clearance values must be in the range from &minus;10,000% to &plus;10,000%.
@@ -329,24 +374,24 @@ Additionally, the following Properties allow controlling component _features_:
 
 The following Property allows grouping frequently used attribute properties for user convenience:
 
- * **Assemble** (property identifier `!`).  
-   This Group Property represents all three attribute properties **Fitted**, **inPos** and **inBom** (`f`, `p`, `b`).  It can be used as a shortcut, as most of the times all three attributes are controlled together and set to the same state when a component is switched between _assembled_ or _unassembled_.  However, if finer control is desired, the state of individual attribute properties can still be overridden.  Examples can be found in the next section.
+ * **Assemble** (Property identifier `!`).  
+   This Group Property represents all three attribute properties **Fit**, **Pos** and **Bom** (`f`, `p`, `b`).  It can be used as a shortcut, as most of the times all three attributes are controlled together and set to the same state when a component is switched between _assembled_ or _unassembled_.  However, if finer control is desired, the state of individual attribute properties can still be overridden.  Examples can be found in the next section.
 
 ###### Examples
 
 The Property Specifiers in the following input Choice Argument Lists will result in the following Property states:
 
-Choice Argument List input | Resulting Property states | Explanation
--------------------------- | ------------------------- | -----------
-`-f`                       |  _not_ Fitted             | The `-` causes _false_ to be assigned to the subsequent properties, i.e. _Fitted_.  The footprint's attribute _Do not populate_ will be set to _true_.
-`-fbp`                     |  _not_ Fitted, _not_ inBom, _not_ inPos | One modifier (`-`) can be used for any number of subsequent identifiers.
-`-!`                       |  _not_ Fitted, _not_ inBom, _not_ inPos | Equivalent to prior example.
-`+!`                       |  Fitted, inBom, inPos     | Place this component to the board, include it in the BoM and in position files.
-`-! +b`                    |  _not_ Fitted, inBom, _not_ inPos | After setting `f`, `b`, `p` to false, `b` is set to true again.  Useful if you want your BoM to include unfitted parts, that are otherwise marked "DNP".
-`-!+b`                     |  _not_ Fitted, inBom, _not_ inPos | Equivalent to prior example.  Multiple modifiers may appear inside a single specifier argument.
-`-s`                       |  _not_ Solder             | Remove solder paste from the component's footprint SMD pads.
-`-!s`                      |  _not_ Fitted, inBom, _not_ inPos, _not_ Solder | Do not assemble component, and remove solder paste from its footprint.
-`+m1-m2`                   |  _not_ Model#1, Model#2   | Show first 3D model, hide second one.
+Choice Argument List input | Resulting Property states  | Explanation
+-------------------------- | -------------------------- | -----------
+`-f`                       |  _not_ Fit                 | The `-` causes _false_ to be assigned to the subsequent properties, i.e. _Fitted_.  The footprint's attribute _Do not populate_ will be set to _true_.
+`-fbp`                     |  _not_ Fit, _not_ Bom, _not_ Pos | One modifier (`-`) can be used for any number of subsequent identifiers.
+`-!`                       |  _not_ Fit, _not_ Bom, _not_ Pos | Equivalent to prior example.
+`+!`                       |  Fit, Bom, Pos             | Place this component to the board, include it in the BoM and in position files.
+`-! +b`                    |  _not_ Fit, Bom, _not_ Pos | After setting `f`, `b`, `p` to false, `b` is set to true again.  Useful if you want your BoM to include unfitted parts, that are otherwise marked "DNP".
+`-!+b`                     |  _not_ Fit, Bom, _not_ Pos | Equivalent to prior example.  Multiple modifiers may appear inside a single specifier argument.
+`-s`                       |  _not_ Solder              | Remove solder paste from the component's footprint SMD pads.
+`-!s`                      |  _not_ Fit, Bom, _not_ Pos, _not_ Solder | Do not assemble component, and remove solder paste from its footprint.
+`+m1-m2`                   |  _not_ Model#1, Model#2    | Show first 3D model, hide second one.
 `-m1m2m3 +m4`              |  _not_ Model#1, _not_ Model#2, _not_ Model#3, Model#4 | Hide first three 3D models, show fourth one.
 
 #### Choice Identifiers
@@ -357,15 +402,15 @@ Each Choice must have a unique name within its Aspect scope.  This name can be a
 
 For referring to a Choice name, **Choice Identifiers** are used.  They are basically the same as the name itself, but rules for [quoting and escaping](#quoting-and-escaping) of special characters apply.  Choice Identifiers are **case-sensitive**.
 
-The special Choice Identifier `*` is used for specifying default Content and Properties to be applied to Choices not explicitly listed in the corresponding assignment.  Refer to the [Default Choices](#default-choices) section below for details.
+The reserved Choice identifiers `?` and `*` can be used to assign template data to Choices not defined or not fully defined, respectively, for the corresponding assignment.  For details, refer to the [Stand-In Choice](#stand-in-choice) and [Default Choices](#default-choice) sections below.
 
 ##### Declaration and Definition
 
-KiVar uses implicit declarations for Choice definitions.
+KiVar uses implicit declaration of Choice Identifiers.
 
-That is, adding a new Choice to an Aspect is simply done by using the Choice Identifier in any Choice Expression.  This will cause the Choice to be created or extended (if it matches an existing one).
+That is, adding a new Choice to an Aspect is simply done by using (i.e. mentioning) the Choice Identifier in any Assignment's Choice Expression.  This will cause the Choice to be created (if it's new) or extended (if it matches an existing one).
 
-It is therefore important to pay attention to correct spelling of Choice Identifiers, so that Choice Identifiers can be correctly allocated.
+It is therefore important to pay attention to correct spelling of Choice Identifiers, so that they can be correctly allocated.
 
 ##### Choice Identifier Lists
 
@@ -373,13 +418,41 @@ When using Choice Identifiers in Choice Expressions, those identifiers can alway
 
 ##### Special Choice Identifiers
 
-To follow the ["All-or-None" rule](#all-or-none), Content and Property assignments must be defined for _all_ choices involved if at least one assignment is defined.
+To follow the ["All-or-None" rule](#fully-defined-assignments-the-all-or-none-rule), Content and Property assignments must be defined for _all_ choices involved if at least one assignment is defined.
 
-Defining all Choices for each assignment would require each Choice Identifier to be explicitly listed along with its corresponding Content or Property assignments.  Also, any modification of available Choice Identifiers (i.e. adding, removing, renaming Choices) in _one_ component would require the Choice Expressions of all components in the same Aspect scope to be adapted as well.
+Defining all Choices for each Assignment would require each Choice Identifier to be explicitly listed along with its corresponding Content or Property specifications.  Also, any modification of available Choice Identifiers (i.e. adding, removing, renaming Choices) in _one_ component would (that is, _will_) require the Choice Expressions of all components in the same Aspect scope to be adapted as well.
 
-To avoid having to explicitly list all possible Choice Identifiers for each assignment, **Default Choices** and **Stand-In Choices** are available.  The Content and Property assignments specified for Default and Stand-In Choices apply as described in the following sections.
+To avoid having to explicitly list all possible Choice Identifiers for each assignment, **Default Choices** and **Stand-In Choices** are available.  The Content and Properties specified for Default and Stand-In Choices apply as described in the following sections.
 
-##### Default Choices
+##### Stand-In Choice
+
+###### Purpose
+
+Data assigned to a Stand-In Choice is used for all specific Choices that remain _undefined_ (i.e. not mentioned) in the corresponding Assignment.
+
+Stand-In Choice data is _not_ used for specific Choices that have _empty_ definitions.
+
+Stand-In Choices are particularly useful to assign data to "all other" Choices without explicitly mentioning them, or to make use of [Implicit Property Defaults](#implicit-property-defaults), which would be overridden by specifying a [Default Choice](#default-choice).
+
+###### Syntax
+
+The reserved Choice Identifier used for Default Choices is "`?`".
+
+###### Stand-In Data Inheritance
+
+Data assigned to a Stand-In Choice is used for specific Choices that are declared in _other_ Assignments, but are _undefined_ in the Assignment for which the Stand-In Choice is defined.
+
+<!-- TODO add example that illustrates usefulness in conjunction with Implicit Defaults -->
+
+##### Default Choice
+
+###### Purpose
+
+Data (Content or Properties) assigned to a Default Choice is used as a baseline for the data assigned to _all_ specific Choices (defined or undefined) for the Assignment in which the Default Choice is defined.
+
+Default Choice **Content** (if any) is used for all specific Choices that do not provide their own Content or that are undefined.
+
+Default Choice **Properties** (if any) are used as base data before applying Property data from specific Choices definitions.  Undefined Choices inherit the Default Choice's Properties.
 
 ###### Syntax
 
@@ -387,7 +460,7 @@ The reserved Choice Identifier used for Default Choices is "`*`".
 
 ###### Default Content Inheritance
 
-For each assignment target, the Content (component value or field content, respectively) specified in the Default Choice applies to all Choices that **do not provide** their own Content definition for the same assignment.
+For each Assignment target, the Content (component value or field content, respectively) specified in the Default Choice applies to all Choices that **do not provide** their own Content definition for the same Assignment.
 
 The following table explains Content inheritance rules using an example Choice Identifier `A` and some example Content.
 
@@ -400,7 +473,7 @@ _(none)_                     | `123`                         | `def`
 
 ###### Default Property Inheritance
 
-For each assignment target, the state of each Property specified in the Default Choice is used as the **initial value** for _all_ Choices with the same assignment target.
+For each Assignment target, the state of each Property specified in the Default Choice is used as the **initial value** for _all_ Choices with the same Assignment target.
 
 The following table explains Property state inheritance rules using an example Choice Identifier `B` and some example Property states (with resulting Property states listed with [Property Specifier](#property-specifiers) syntax).
 
@@ -416,19 +489,40 @@ _(none)_                                 | `+f`                                 
 `-s!`                                    | `+s`                                      | `-fbp` `+s`
 `-m1m2m3`                                | `+m3`                                     | `-m1` `-m2` `+m3`
 
-##### Implicit Defaults
+##### Stand-In vs. Default Choices
 
-For Property assignments, it may not be required to explicitly specify a Default Choice, as for Properties, **Implicit Defaults** may apply.
+While Stand-In and Default Choices act similarly, users should be aware of the following differences between them.
 
-For each assignment target, whenever only _one_ state (i.e. _either_ `+` _or_ `-`) is assigned to a specific Property, then the **opposite** state is used for this Property as the Implicit Default for that assignment.
+###### Effectiveness
+
+ * **Stand-In** data is only used for Choices that are declared elsewhere, but are not defined (not even with an empty definition) for the Assignment.
+ * **Default** data is used as a basis for _all_ Choices of the Assignment and only overridden by specific Choice data.  Empty definitions inherit the unaltered Default Choice data, as they do not override any data.
+
+###### Granularity
+
+ * **Stand-In** data is used as a whole (all Content and Properties), depending on the _presence of the definition_ for a corresponding specific Choice, while
+ * **Default** data is used as a baseline and can be overridden on a per-element basis (Content or Properties) by the corresponding specific Choice.
+
+###### Order of Application
+
+First, Stand-In data is assigned to all undefined Choices.  After that, Default Choice data is used for all resulting Choice data as usual.
+
+That is, Stand-In and Default Choices can be used at the same time and Default Data applies to all (resulting) Choice definitions in any case.
+
+###### Utilization of Implicit Property Defaults
+
+As Stand-In Choice data is only used for undefined Choices, it can be used for the calculation of Implicit Property Default data.
+
+##### Implicit Property Defaults
+
+For Property states **Implicit Property Defaults** may apply.
+
+For each Assignment target, whenever only _one_ state (i.e. _either_ `+` _or_ `-`) is assigned to a given Property by any number of Choices, then the **opposite** state is used for this Property as the _Implicit Default State_ for that Assignment.
 
 > [!NOTE]
-> The Implicit Default can be imagined as a "Default Default", i.e. the _Implicit_ Default state of a Property will be **overridden** by a state specified in an _explicit_ (usual) [Default Choice](#default-choices).
+> The Implicit Default can be imagined as a "Default Default" state of a Property.  That is, the _Implicit_ Default state of a Property will be **overridden** by a state specified in an _explicit_ (usual) [Default Choice](#default-choice).
 
-> [!NOTE]
-> Implicit Defaults are only used for Properties, _not_ for Content, as Properties are boolean values and therefore have an "opposite" value that can be assumed as the desired Default state.
-
-The following table explains Implicit Default state inheritance rules using the example Choice Identifiers `C1`, `C2`, `C3`.  `C3` is not defined, but declared, hence its Property states (PS) will be assigned a value if Default states (implicit or explicit) exist.  Resulting Property states ("RPS") are listed with [Property Specifier](#property-specifiers) syntax).
+The following table explains Implicit Property Default state inheritance rules using the example Choice Identifiers `C1`, `C2`, `C3`.  `C3` is not defined, but declared by another Assignment.  Hence `C3`'s Property states ("PS") will be assigned the values found in the Assignment's _Implicit Default PS_ (as computed by analysis of all defined Choices, i.e. `C1` and `C2`) and the user-provided (explicit) _Default (`*`) PS_ (overriding Implicit Default values, per Property).  Resulting Property states ("RPS") for all Choices `C1`, `C2`, `C3` are listed with [Property Specifier](#property-specifiers) syntax.
 
 Choice `C1` PS | Choice `C2` PS | Implicit Default PS                                      | Default (`*`) PS | `C1` RPS  | `C2` RPS  | `C3` RPS
 -------------- | -------------- | -------------------------------------------------------- | ---------------- | --------- | --------- | ---------
@@ -448,66 +542,52 @@ _(none)_       | _(none)_       | _(none)_                                      
 
 <!-- TODO more (creative) examples -->
 
-#### Choice Expression Scopes
+#### Assignment Scopes
 
-The data defined in Choice Expressions can be applied to either
+The data defined for an Assignment can be applied to either
 
- * the component's basic properties (i.e. component _value_, _attributes_, _features_), or to
- * custom component fields (such as _Manufacturer_, _MPN_, ...).
+ * the component's basic elements (i.e. component _value_, _attributes_, _features_), or to
+ * component custom fields (such as _Manufacturer_, _MPN_, ...).
 
-For each of them there exists a dedicated **Choice Expression Scope**.  Both scopes are explained in the following sub-sections.
-
-<a name="cmp"></a>
+For each of them there exists a dedicated **Assignment Scope**.  Both scopes are explained in the following sub-sections.
 
 ##### Component Scope
 
 ###### Purpose
 
-Expressions in **Component Scope** are used to assign **values** (using [Content Specifiers](#content-specifiers)), **attributes** or **features** (using [Property Specifiers](#property-specifiers)) to the component in which they are specified.
+Assignments in **Component Scope** are used to assign basic component **values**, such as `10kΩ`, `0.1µF 50V` or `74HC595`, to the "Value" field of a component (i.e. symbol or footprint), passed via [Content Specifiers](#content-specifiers).
 
-###### Typical Use
-
-The Component Scope is used to assign basic component values, such as `10kΩ`, `0.1µF 50V` or `74HC595`, to the mandatory "Value" field of a component (i.e. symbol or footprint), passed via [Content Specifiers](#content-specifiers).
-
-Also, the Component Scope is used to modify component attributes, for example the _DNP_ (Do Not Populate), _Exclude from Position Files_ and/or _Exclude from BoM_ states (attributes) of a component, or dedicated component features, for example controlling 3D model visibility or solder paste application.  Component attributes and features are modified using [Property Specifiers](#property-specifiers).
+Also, the Component Scope is used to modify component **attributes**, for example the _DNP_ (Do Not Populate), _Exclude from Position Files_ and/or _Exclude from BoM_ states (attributes) of a component, or dedicated component/footprint **features**, for example controlling 3D model visibility or solder paste application.  Component attributes and features are modified using [Property Specifiers](#property-specifiers).
 
 > [!IMPORTANT]
-> Expressions in the Component Scope can _not_ modify **custom** (i.e. other than "Value") fields.  For this, the [Field Scope](#fld) must be used (see next section).
+> Assignments in the Component Scope can _not_ modify **custom fields** (i.e. other than "Value").  For this, the [Field Scope](#field-scope) must be used (see next section).
 
-Examples using the Component Scope are discussed later in the [SCE](#sce) and [CCE](#cce) sections.
-
-<a name="fld"></a>
+Examples using the Component Scope are discussed later in the [SCAR](#simple-component-assignment-records-scar) and [CCAR](#combined-component-assignment-records-ccar) sections.
 
 ##### Field Scope
 
 ###### Purpose
 
-Expressions in **Field Scope** are used to assign **content** (using [Content Specifiers](#content-specifiers)) to specific **custom** fields of the component in which they are specified.
+Assignments in **Field Scope** are used to assign Content to **custom fields**, such as the manufacturer name or the manufacturer product number (MPN), for example, to be used in the bill of materials.  Other usual component fields to be modified are tolerance ranges, voltage rating, or the datasheet URL.
+
+For documentation purposes, essential components may be assigned information about the currently selected Aspect Choice, such as a component's selected bus address or some bootstrap configuration settings.  This data can then be made visible anywhere in the schematic and even in the PCB.  This enables automatically updated documentation.
 
 > [!IMPORTANT]
-> Field Scope expressions do _not_ support specifying Properties.
+> Field Scope Assignments do _not_ support specifying Properties.
 
 > [!IMPORTANT]
-> Target fields referenced by Expressions in the Field Scope _must_ already exist.
+> Target fields referenced by Assignments in the Field Scope _must_ already exist.
 
 > [!NOTE]
-> The target field names "Footprint", "Reference" and "Value" are not permitted (to change the component value, the [Component Scope](#cmp) must be used).
+> The target field names "Footprint", "Reference" and "Value" are not permitted (to change the component value, the [Component Scope](#component-scope) must be used).
 
-###### Typical Use
+Examples using the Field Scope are discussed later in the [SFAR](#simple-field-assignment-records-sfar) and [CFAR](#combined-field-assignment-records-cfar) sections.
 
-The Field Scope is used to assign custom field values, such as the manufacturer name or the manufacturer product number (MPN), for example, to be used in the bill of materials.  Also, component fields for tolerance, voltage rating, or the datasheet URL can be modified.
+#### Record Formats
 
-Field Scope expressions can also be used to specify other information, such as user-defined choice-dependent text information to be visible anywhere in the schematic for documentation purposes (using text-variables).
+Furthermore, Assignment Records can use different notations, depending on the user's preferences and requirements.
 
-Examples using the Field Scope are discussed later in the [SFE](#sfe) and [CFE](#cfe) sections.
-
-#### Choice Expression Formats
-
-Furthermore, Choice Expressions can use different notations, depending on the user's preferences and requirements.
-
-The two different **Choice Expression Formats** are described in the following sub-sections.
-
-<a name="simple"></a>
+Both available **Record Formats** are described in the following sub-sections.
 
 ##### Simple Format
 
@@ -515,53 +595,50 @@ The two different **Choice Expression Formats** are described in the following s
 
 The **Simple Format** is particularly well suited to
 
- * specify a single Choice Expression using
- * one specific component field per expression.
+ * specify a part of an [Assignment](#assignments) containing
+ * a _single_ [Choice Expression](#choice-expressions) using
+ * one dedicated [Record](#records).
 
 ###### Typical Use
 
-Expressions noted in Simple Format
+Records noted in Simple Format
 
  * are recommended for longer, more complex (or verbatim) Content, such as a datasheet or purchase URL or a complex "Value" field content,
- * can be useful when referencing a dedicated set of Choice Arguments using text variables that are embedded at another location of the schematic (see examples),
- * have the drawback that, due to the diversity of the symbol field names they occupy, each unique used field name adds to the list of field names available in total, for example when using the Symbol Fields Editor.
+ * can be useful when referencing a dedicated set of Choice Arguments using text variables that are embedded in another location of the schematic (see examples),
+ * have the drawback that - due to the diversity of the symbol field names they occupy - each unique used field name adds to the list of field names available in total, which "pollutes" the fields list, e.g. in the Symbol Fields Editor.
 
-Examples using the Simple Format are provided in the [SCE](#sce) and [SFE](#sfe) sections.
-
-<a name="combined"></a>
+Examples using the Simple Format are provided in the [SCAR](#simple-component-assignment-records-scar) and [SFAR](#simple-field-assignment-records-sfar) sections.
 
 ##### Combined Format
 
 The **Combined Format** is particularly well suited to
 
- * allow combining multiple Choice Expressions in
- * a single component field (also, in [Component Scope](#cmp), optionally accepting the [Aspect Identifier](#aspect-identifier)).
+ * specify one or more parts of an [Assignment](#assignments) containing
+ * one or more [Choice Expression](#choice-expressions),
+ * optionally including the [Aspect Identifier](#aspect-identifier) (only in [Component Scope](#component-scope)), using
+ * one dedicated [Record](#records).
 
 ###### Typical Use
 
-Expressions noted in Combined Format
+Assignments noted in Combined Format
 
  * are recommended for shorter, simpler Content, such as a simple component Value, a short MPN or manufacturer name,
  * allow specifying multiple Choice Expressions in a compact way,
- * therefore save space when many Choices need to be declared or defined.
+ * therefore save a lot of Records (and field adding/typing work) when many Choices need to be declared or defined.
 
-Examples using the Combined Format are provided in the [CCE](#cce) and [CFE](#cfe) sections.
+Examples using the Combined Format are provided in the [CCAR](#combined-component-assignment-records-ccar) and [CFAR](#combined-field-assignment-records-cfar) sections.
 
-#### Choice Expression Types
+#### Assignment Record Types
 
-The four available **Choice Expression Types** are formed by using both [Expression Scopes](#expression-scopes) with both [Expression Formats](#expression-formats) as discussed in the following sub-sections.
+The four available **Assignment Record Types** are the result of using both [Assignment Scopes](#assignment-scopes) in combination with both [Record Formats](#record-formats) as discussed in the following sub-sections.
 
-<a name="sce"></a>
-
-##### Simple Component Expressions (SCE)
+##### Simple Component Assignment Records (SCAR)
 
 ###### Typical Use
 
-Using the [Component Scope](#cmp), **Simple Component Expression**s define the component's Value content and/or component attributes and features.
+Using the [Component Scope](#component-scope), **Simple Component Assignment Record**s define the component's Value content and/or component attributes and features with [Content](#content-specifiers) and [Property](#property-specifiers) specifiers noted in the [Simple Format](#simple-format).
 
-[Content](#content-specifiers) and [Property](#property-specifiers) specifiers are noted in the [Simple Format](#simple).
-
-###### Syntax
+###### Record Elements
 
 **Field name**: `Var(<CIL>)`
 
@@ -574,7 +651,7 @@ Used placeholders:
 
 ###### Examples
 
-The following entries could be used for a capacitor.  Note how the Aspect Identifier must be passed with a dedicated entry, as SCEs cannot include the Aspect Identifier, as is possible for [CCEs](#cce).
+The following entries could be used for a capacitor.  Note how the Aspect Identifier must be passed with a dedicated entry, because [SCARs](#simple-component-assignment-records-scar) cannot include the Aspect Identifier, as is possible for [CCARs](#combined-component-assignment-records-ccar).
 
 Field name            | Field content
 --------------------- | -------------
@@ -582,25 +659,21 @@ Field name            | Field content
 `Var(Low)`            | `10µF`
 `Var(Medium)`         | `100µF`
 `Var(High)`           | `470µF`
-`Var(None,*)`         | `-! DNP`
+`Var(None,?)`         | `-! DNP`
 
 \* This defines an Aspect Identifier _"Capacitance"_ including (at least, depending on the definitions used in other components) the Choice Identifiers _"Low"_, _"Medium"_, _"High"_, which define capacitance values, as well as _"None"_, which assigns the (capacitance) value `DNP` and also makes the component unfitted and excluded from position files and BoM.
 
 > [!NOTE]
-> In the above example, the Default Choice Identifier _"*"_ is added to the _"None"_ Choice, so that the corresponding expression also applies to any Choices declared outside this component in the same Aspect context. 
- Applying default data to Choices that the current component or assignment is "unaware" of may or may not be a good idea, depending on the chosen convenience vs. safety ratio.
+> In the above example, the Stand-In Choice Identifier _"?"_ is added to the _"None"_ Choice, so that the corresponding expression also applies to any Choices declared outside this component in the same Aspect context.  
+> Applying Stand-In data to Choices that the current component or assignment is "unaware" of may or may not be a good idea, depending on the chosen convenience vs. safety ratio.
 
-<a name="cce"></a>
-
-##### Combined Component Expressions (CCE)
+##### Combined Component Assignment Records (CCAR)
 
 ###### Typical Use
 
-Using the [Component Scope](#cmp), **Combined Component Expression**s define the component's Value content, component attributes and features and/or the Aspect Identifier.
+Using the [Component Scope](#component-scope), **Combined Component Assignment Record**s define the component's Value content, component attributes and features and/or the Aspect Identifier with [Content](#content-specifiers) and [Property](#property-specifiers) specifiers noted in the [Combined Format](#combined-format).
 
-[Content](#content-specifiers) and [Property](#property-specifiers) specifiers are noted in the [Combined Format](#combined).
-
-###### Syntax
+###### Record Elements
 
 **Field name**: `Var`
 
@@ -617,25 +690,21 @@ Used placeholders:
 
 ###### Examples
 
-The following single entry serves the same purpose as the above [SCE](#sce) example.  Note how even the [Aspect Identifier](#aspect-identifier) is included in the same single expression.
+The following single entry serves the same purpose as the above [SCAR](#simple-component-assignment-records-scar) example.  Note how even the [Aspect Identifier](#aspect-identifier) is included in the same single Assignment.
 
 Field name     | Field content
 -------------- | -------------
-`Var`          | `Capacitance Low(10µF) Medium(100µF) High(470µF) None,*(-! DNP)`
+`Var`          | `Capacitance Low(10µF) Medium(100µF) High(470µF) None,?(-! DNP)`
 
-The same explanation applies as for the above [SCE](#sce) example.
+The same explanation applies as for the above [SCAR](#simple-component-assignment-records-scar) example.
 
-<a name="sfe"></a>
-
-##### Simple Field Expressions (SFE)
+##### Simple Field Assignment Records (SFAR)
 
 ###### Typical Use
 
-Using the [Field Scope](#fld), **Simple Field Expression**s define the content of a specified _existing_ component field.
+Using the [Field Scope](#field-scope), **Simple Field Assignment Record**s define the Content of a specified _existing_ component field with [Content Specifiers](#content-specifiers) noted in the [Simple Format](#simple-format).
 
-[Content](#content-specifiers) and [Property](#property-specifiers) specifiers are noted in the [Simple Format](#simple).
-
-###### Syntax
+###### Record Elements
 
 **Field name**: `<TARGET_FIELD_NAME>.Var(<CIL>)`
 
@@ -643,7 +712,7 @@ Using the [Field Scope](#fld), **Simple Field Expression**s define the content o
 
 Used placeholders:
 
- * `<TARGET_FIELD_NAME>` specifies the name of the component's field to assign specified content to.
+ * `<TARGET_FIELD_NAME>` specifies the name of the component's field to assign specified Content to.
  * `<CIL>` specifies the [Choice Identifiers List](#choice-identifiers).
  * `<CAL>` specifies the corresponding [Choice Arguments List](#choice-arguments).
 
@@ -663,19 +732,15 @@ Field name                    | Field content
 `Datasheet.Var(1.8V,3.3V)`    | `"https://example.kivar.markh.de/products/aldo200v.pdf"`
 `Datasheet.Var(adjustable)`   | `"https://example.kivar.markh.de/products/aldo200a.pdf"`
 
-This defines the Choice Identifiers _"1.8V"_, _"3.3V"_ and _"adjustable"_ (inside the Aspect _"Voltage"_), which define different field content for the target fields _"Description"_, _"MPN"_ and _"Datasheet"_.  Note how this example does not make use of the Default Choice Identifier _"*"_, as there are no sensible defaults that could be assigned for yet unknown Choices that may be declared by other components.
+This defines the Choice Identifiers _"1.8V"_, _"3.3V"_ and _"adjustable"_ (inside the Aspect _"Voltage"_), which define different field content for the target fields _"Description"_, _"MPN"_ and _"Datasheet"_.  Note how this example does not make use of the Stand-In or Default Choice Identifiers _"*"_ or _"?"_, respectively, as there are no sensible defaults that could be assigned for yet unknown Choices that may be declared by other components.
 
-<a name="cfe"></a>
-
-##### Combined Field Expressions (CFE)
+##### Combined Field Assignment Records (CFAR)
 
 ###### Typical Use
 
-Using the [Field Scope](#fld), **Combined Field Expression**s define the content of a specified _existing_ component field.
+Using the [Field Scope](#field-scope), **Combined Field Assignment Records**s define the Content of a specified _existing_ component field with [Content Specifiers](#content-specifiers) noted in the [Combined Format](#combined-format).
 
-[Content](#content-specifiers) and [Property](#property-specifiers) specifiers are noted in the [Combined Format](#combined).
-
-###### Syntax
+###### Record Elements
 
 **Field name**: `<TARGET_FIELD_NAME>.Var`
 
@@ -683,13 +748,13 @@ Using the [Field Scope](#fld), **Combined Field Expression**s define the content
 
 Used placeholders:
 
- * `<TARGET_FIELD_NAME>` specifies the name of the component's field to assign specified content to.
+ * `<TARGET_FIELD_NAME>` specifies the name of the component's field to assign specified Content to.
  * `<CIL_1>` .. `<CIL_N>` specify the [Choice Identifiers Lists](#choice-identifiers).
  * `<CAL_1>` .. `<CAL_N>` specify the corresponding [Choice Arguments Lists](#choice-arguments).
 
 ###### Examples
 
-The following few entries serve the same purpose as the above [SFE](#sfe) example.
+The following few entries serve the same purpose as the above [SFAR](#simple-field-assignment-records-sfar) example.
 
 Field name              | Field content
 ----------------------- | -------------
@@ -698,28 +763,28 @@ Field name              | Field content
 `MPN.Var`               | `1.8V(ALDO200V18) 3.3V(ALDO200V33) adjustable(ALDO200ADJ)`
 `Datasheet.Var`         | `1.8V,3.3V("https://example.kivar.markh.de/products/aldo200v.pdf") adjustable("https://example.kivar.markh.de/products/aldo200a.pdf")`
 
-The same explanation applies as for the above [CFE](#cfe) example.
+The same explanation applies as for the above [CFAR](#combined-field-assignment-records-cfar) example.
 
 #### Aspect Identifier
 
 ##### Purpose
 
-To define to which aspect (i.e. group/dimension/degree of freedom) a component's Choice Identifiers relate to, an **Aspect Identifier** must be specified for every component that uses one or more Choice Expressions.
+To define to which Aspect (i.e. group/dimension/degree of freedom) all of the component's Choice Identifiers relate to, an **Aspect Identifier** must be specified for each component that makes use of KiVar Assignments.
 
 ##### Declaration and Definition
 
-KiVar uses implicit declarations for Choice definitions.
+Similarly to [Choice Identifiers](#choice-identifiers), KiVar uses implicit declaration of Aspect Identifiers.
 
-That is, adding a new Choice to an Aspect is simply done by using the Choice Identifier in any Choice Expression.  This will cause the Choice to be created or extended (if it matches an existing one).
+That is, adding a new Aspect to a design is simply done by using (i.e. mentioning) the Aspect Identifier in an Aspect Specifier (see below for possible methods).  This will cause the Aspect to be created or extended (if it matches an already existing one).
 
-It is therefore important to pay attention to correct spelling of Choice Identifiers, so that Choice Identifiers can be correctly allocated.
+It is therefore important to pay attention to correct spelling of Aspect Identifiers, so that they can be correctly allocated.
 
 ##### Specification
 
-There are two methods of passing the **Aspect Identifier**:
+There are two methods of specifying the **Aspect Identifier**:
 
-1. Using the _dedicated component field_ `Var.Aspect`, or
-2. as part of a [_Combined Component Expression_](#cce).
+1. Using a dedicated Record in the _component field_ `Var.Aspect`, or
+2. as part of a [_Combined Component Assignment Record_](#combined-component-assignment-records-ccar).
 
 Details and examples can be found in the following sections.
 
@@ -729,41 +794,30 @@ Details and examples can be found in the following sections.
 
 ##### Purpose
 
-One of the key concepts of KiVar requires all Configurations (sets of Choice selections) to be unambiguous with regard to their outcome.  This is required in order to be able to detect, i.e. map the assigned outcome back to an unambiguous set of Choices.
+One of the key concepts of KiVar requires all Configurations (i.e. sets of Choice selections) to be unambiguous regarding their outcome (component values/fields/attributes/features).  This is required in order to be able to detect, i.e. map the assigned outcome back to an unambiguous set of Choices.
 
-It is therefore required for **each Content or Property assignment** that there is
+For each Assignment it is therefore required that for the **Content** and for **each specific Property**, respectively, there is
 
- * either **no definition** for **any** Choice involved (i.e. keep all Content or Property states in their original state)
- * or a **dedicated definition** for **every** Choice involved (i.e. set all Content or Property states to a defined state).
+ * either **no definition** for **any** Choice (i.e. Content or the specific Property's state, respectively, is kept in its original state)
+ * or a **dedicated definition** for **every** Choice (i.e. Content or the specific Property's state is assigned defined data).
 
-In short, assignments must be done for **either none or all** Choices.  There must be no sparsely defined assignments, because they would lead to inconsistent states when switching Choices.
+It is not allowed to provide only a sparse set of definitions for each Assignment element (Content or Property), unless [Stand-In](#stand-in-choice) or [Default](#default-choice) Choice definitions are provided to fill the undefined parts.  Sparse definitions are forbidden as they would lead to inconsistent states when switching Choices.
 
-> [!TIP]
-> To avoid undefined assignments, Default Choices can be used.  For example, the Default Choice Identifier (`*`) can be added to the Choice Identifier List of an appropriate Choice Expression for that expression to also apply to otherwise undefined Choices.
+In short, assignments must be done for **either none or all** Choices.
 
 > [!NOTE]
-> The KiVar Choice Expression compiler will stop with an error if a sparse definitions are detected.
-
-<!-- todo?
-##### Content Scope
-
-... TODO use default choice ...
-
-##### Property Scope
-
-... often no default required thanks to implicit defaults. if implicit defaults cannot be used, because different (+/-) states are assigned, explicit defaults must be used.
--->
+> The KiVar rule processor will notify you with an error if sparse definitions are detected.
 
 #### Quoting and Escaping
 
-**Special characters** inside a Choice Expression, such as `,` ` ` `-` `+` `(` `)` (comma, space, dash/minus, plus, parentheses) are **not** considered special (i.e. do not act as separators or Property Modifiers) if
+**Special characters** inside an Assignment, such as `,` ` ` `-` `+` `(` `)` (comma, space, dash/minus, plus, parentheses) are **not** considered special (i.e. do not act as separators or Property Modifiers) if
 
- * they appear inside a quoted part of the definition, i.e. inside a matching pair of two unescaped `'` (single quotation mark) or `"` (double quotation mark) characters, or when
+ * they appear inside a quoted part of the expression, i.e. inside a matching pair of two unescaped `'` (single quotation mark) or `"` (double quotation mark) characters, or when
  * they are escaped, i.e. directly prepended with a `\` (backslash).
 
-Single and double quotation mark characters (`'` and `"`) can be nested.  The inner quotation marks will be part of the verbatim string in this case.
+Single and double quotation mark characters (`'` and `"`) can be nested, in which case the inner quotation marks will become part of the verbatim string.
 
-To include any character as-is without being interpreted (e.g. `-` or `+` to be used as first character of a Content string, or a _quotation mark_ or _backslash_), that character must be _escaped_, i.e. preceded, with a _backslash_ character.
+To include any character as-is without being interpreted as special character (e.g. `-` or `+` to be used as first character of a Content string, or a _quotation mark_ or _backslash_), that character must be _escaped_, i.e. preceded, with a _backslash_ character.
 
 > [!TIP]
 > For many cases, quoting and escaping in KiVar works just like in a regular POSIX shell interpreter.
@@ -773,7 +827,7 @@ To include any character as-is without being interpreted (e.g. `-` or `+` to be 
 
 _Examples:_
 
-* To assign the fictional value `don't care` (a string containing a single quotation mark and a space), the appropriate Content Argument in the Choice Expression would be either `'don\'t care'` or `don\'t\ care`.
+* To assign the fictional value `don't care` (a string containing a single quotation mark and a space) as a _single_ argument, the appropriate Content Argument in the Choice Expression would be either `'don\'t care'`, `"don't care"`, or `don\'t\ care`.
 * To use `+5V` (a string starting with a plus) as a value, the choice definition arguments `'+5V'` or `\+5V` would be appropriate.  If the plus were not escaped, `+5V` would be interpreted as an (invalid) [Property Specifier](#property-specifiers).
 * To assign an empty Content string (e.g. component value or target field content), use an empty quoted string (`''` or `""`) as [Content Specifier](#content-specifiers).
 * To assign a list of simple words or values as Content (e.g. value specifications such as `47µF 35V 10% X7R`), the Content Specifiers can be naturally listed without quoting or escaping.
@@ -784,61 +838,64 @@ _Examples:_
 
 #### Expression Processing Example
 
-The following figure illustrates the processing of some example Choice Expressions using [Combined Component Expressions](#cce) (the classic Expression Type).
+The following figure illustrates the processing of some example Assignments using [Combined Component Assignment Records](#combined-component-assignment-records-ccar).
 
 ![Expression Processing Illustration](doc/processing.svg)
 
-#### Real-World Examples
+#### Usage Examples
 
-The following examples are taken from real commercial projects.  They show a few configurable variation aspects, their possible choices along with a short explanation of the implementation.
+The following examples are mostly taken from real commercial projects.  They show a few configurable variation Aspects, their possible Choices along with a short explanation of the used Assignments.
 
-To further explore these examples and learn the recommended ways of implementing KiVar rules, check out the [demo project](demo/).
+To further explore these examples and learn the recommended ways of implementing KiVar rule expressions, check out the [demo project](demo/).
 
 In the following sections, each example is illustrated with a schematic snippet including the values of the relevant fields for each related symbol.
 
 ##### Example 1: I²C Device Address Selection
 
-In this very simple example, KiVar is used for address selection of an I²C device.  Address input A0 switches between device addresses 0x54 _(A0=GND)_ and 0x55 _(A0=+3V3)_.
+In this very simple example, KiVar is used to conveniently select the address of an I²C device.  Address input signal A0 switches between device addresses 0x54 _(A0=GND)_ and 0x55 _(A0=+3V3)_.
 
 ![Example 1](doc/examples/1.svg)
 
-The device address is selected by tying the IC input A0 to either GND or +3V3, depending on the selected choice.  Inputs A1 and A2 are tied to fixed levels.
+The device address is selected by tying the IC input A0 to either GND or +3V3, depending on the selected choice.  Inputs A1 and A2 are tied to fixed levels for the sake of simplicity.
 
 How to read the rules:
 
- * Variation aspect is `EEPROM_ADDR` (with choice `0x55` currently applied in the figure).
- * **R1**: For choice `0x55` this part will be fitted (`+!`, resolving to `+fpb`).  There is no default choice required, as implicit defaults (opposite property states, i.e. `-fpb`) are assumed automatically.
- * **R2**: Likewise, for choice `0x54` this part will be fitted, else unfitted (same explanation as for R1).
- * **U1**: A purely informational field called `I2C Address` is assigned the value `0x54` or `0x55`, depending on the choice.  This field can then either be made visible directly, or referenced by other symbols or text boxes within the schematic (using text variable `${U1:I2C Address}`).
+ * Variation Aspect Identifier is `EEPROM_ADDR` (with Choice `0x55` currently applied in the figure).
+ * **R1**: For Choice `0x55` this part will be fitted (`+!`, resolving to `+fpb`).  There is no [Stand-In](#stand-in-choice) or [Default](#default-choice) Choice required, as [Implicit Property Defaults](#implicit-property-defaults) (opposite property states, i.e. `-fpb`) are assumed automatically.
+ * **R2**: Likewise, for Choice `0x54` this part will be fitted, else unfitted (same explanation as for R1).
+ * **U1**: A purely informational field called `I2C Address` is assigned the value `0x54` or `0x55`, depending on the Choice.  This field can then either be made visible directly, or referenced by other symbols or text boxes within the schematic (using text variable `${U1:I2C Address}`).
 
-This example uses only classic [Combined Format](#combined) Expressions.
+This example uses only [Combined Format](#combined-format) Records.
+
+> [!TIP]
+> Text information as used by **U2** lets KiVar annotate your schematic automatically with details like selectable device bus addresses, which is really useful for documentation purposes.
 
 ##### Example 2: Boot Source Selection
 
-This is used for the boot source device selection for an NXP i.MX6ULL SoC.
+This schematic snippet is used for the boot source device selection for an NXP i.MX6ULL SoC.
 
 ![Example 2](doc/examples/2.svg)
 
-The variation choices provide selection between the boot sources `EMMC`, `SD` and `NAND`, as well as an extra choice `JP` (which leaves _all_ configuration resistors unfitted, so that the user can configure the board by manually shorting the solder bridges JP1, JP2, JP3).
+The variation Choices provide selection between the boot sources `EMMC`, `SD` and `NAND`, as well as an extra Choice `JP`, (which leaves _all_ configuration resistors unfitted, so that the user can configure the board by manually shorting the solder bridges JP1, JP2, JP3).
 
 How to read the rules:
 
- * Variation aspect is `BOOT_SRC` (with choice `EMMC` currently applied in the figure).
- * **R9**: For choices `NAND` and `JP` this part is unfitted, else (`SD` and `EMMC`, handled by [Implicit Defaults](#implicit-defaults)) fitted.  
- * **R10**: For choices `SD`, `EMMC` and `JP` this part is unfitted, else (`NAND`) fitted.
- * **R11**: For choices `SD`, `NAND` and `JP` this part is unfitted, else (`EMMC`) fitted.
+ * Variation Aspect Identifier is `BOOT_SRC` (with Choice `EMMC` currently applied in the figure).
+ * **R9**: For Choices `NAND` and `JP` this part is unfitted, else (`SD` and `EMMC`, handled by [Implicit Property Defaults](#implicit-property-defaults)) fitted.  
+ * **R10**: For Choices `SD`, `EMMC` and `JP` this part is unfitted, else (`NAND`) fitted.
+ * **R11**: For Choices `SD`, `NAND` and `JP` this part is unfitted, else (`EMMC`) fitted.
 
 > [!NOTE]
 > **R9** also contains a purely informational field _"ChoiceText"_, which is assigned a readable description of the selected boot device.  That field is then referenced in a text element with the string: `Selected Boot Source: <${R9:ChoiceText}>`.  The corresponding variation rule field (`ChoiceText.Var`) is not visible for the sake of clarity.
 
 > [!NOTE]
-> The Aspect Identifier is specified in a dedicated field for each involved component, so that the (visible) Expressions can be kept short.  
+> The Aspect Identifier is specified in a dedicated field for each involved component, so that the (visible) Records can be kept short.  
 > The Aspect Identifier field (`Var.Aspect`) is kept invisible, except for component R9, from where it is moved to the top of the figure for documentation purposes.  
 
 > [!TIP]
 > In the Schematic Editor, uncheck the "Allow automatic placement" option for manually positioned symbol fields.
 
-This example uses only classic [Combined Format](#combined) Expressions.
+This example uses only [Combined Format](#combined-format) Records.
 
 ##### Example 3: Undervoltage Trip Points
 
@@ -846,14 +903,14 @@ Typical use-cases for variations are resistor divider networks, such as voltage 
 
 ![Example 3](doc/examples/3.svg)
 
-The used variation aspect defines all four resistors (only two of them with varying values), allowing to select the lower (cut-off) and higher (recovery) voltage limits for the supply voltage monitor IC.
+The used variation Aspect defines all four resistors (only two of them with varying values), allowing to select the lower (cut-off) and higher (recovery) voltage limits for the supply voltage monitor IC.
 
 How to read the rules:
 
- * Variation aspect is `UVLO_HYST` (with choice `3.15V/3.57V` currently applied in the figure).
- * **R12**: For choice `2.41V/3.40V` the value is `0Ω`, for choice `3.15V/3.57V`, the value is `309kΩ`.
- * **R13**: The value is always set to `1MΩ`.  It is not really required to apply a value, or to use a variation rule at all for this symbol.  However, in case more choices are added in the future, it is very likely that the value of this resistor will change.  Hence the resistor symbol has the rule entry already prepared for easy introduction of new choices.
- * **R14**: For choice `2.41V/3.40V` the value is `309kΩ`, for choice `3.15V/3.57V`, the value is `100kΩ`.
+ * Variation Aspect Identifier is `UVLO_HYST` (with Choice `3.15V/3.57V` currently applied in the figure).
+ * **R12**: For Choice `2.41V/3.40V` the value is `0Ω`, for Choice `3.15V/3.57V`, the value is `309kΩ`.
+ * **R13**: The value is always (i.e. for all Choices not explicitly mentioned in this Assignment) set to `1MΩ`.  It is not really required to apply a value or to use a variation rule for this symbol at all.  However, in case more Choices are added in the future, it is very likely that the value of this resistor will change.  Hence the resistor symbol has the rule entry already prepared for easy introduction of new Choices.
+ * **R14**: For Choice `2.41V/3.40V` the value is `309kΩ`, for Choice `3.15V/3.57V`, the value is `100kΩ`.
  * **R15**: The value is always set to `750kΩ`.  Same explanation applies as for R13.
 
 > [!NOTE]
@@ -861,7 +918,7 @@ How to read the rules:
 
 ##### Example 4: IC Variant Selection
 
-This is used for selection of peripheral parts on a boost-buck-converter IC, which is available as _fixed_ (IRNZ suffix) and _adjustable_ (IRAZ suffix) voltage variants (just like many LDOs are, too).  Depending on the market availability of those IC variants, this variation aspect helps to quickly select between assembly options.
+This snippet is used for selecting peripheral parts on a boost-buck-converter IC that is available as _fixed_ (IRNZ suffix) and _adjustable_ (IRAZ suffix) voltage IC variants (just like many LDOs are, too).  Depending on the market availability of those IC variants, this variation Aspect helps to quickly select between assembly options.
 
 ![Example 4](doc/examples/4.svg)
 
@@ -869,50 +926,30 @@ The fixed voltage IC variant requires direct feedback of the output voltage to t
 
 How to read the rules:
 
- * Variation aspect is `ISL91127` (with choice `IRAZ` currently applied in the figure).
- * **C5**, **C6**: For choice `IRAZ` this part is fitted, else (`IRAZ`, handled by [Implicit Defaults](#implicit-defaults)) unfitted.
- * **R16**: For choice `IRAZ` the value is `1MΩ` (adjustable version using a voltage divider for feedback), for choice `IRNZ` the value is `0Ω` (fixed version using direct output voltage feedback).
- * **R17**: For choice `IRAZ` this part is fitted, else (`IRNZ`) it is unfitted.
- * **U3**: For choice `IRAZ`, set the component value to `ISL91127IRAZ`, for choice `IRNZ` set it to `ISL91127IRNZ`.  Also, set the `MPN` field accordingly (expression not shown in the schematic, check out the demo project).  
-   Furthermore, for choice `IRAZ`, set the (visible) `Info` field content to `Adjustable`, for choice `IRNZ` set it to `Fixed` for documentation purposes.
+ * Variation Aspect Identifier is `ISL91127` (with Choice `IRAZ` currently applied in the figure).
+ * **C5**, **C6**: For Choice `IRAZ` this part is fitted, else (`IRAZ`, handled by [Implicit Property Defaults](#implicit-property-defaults)) unfitted.
+ * **R16**: For Choice `IRAZ` the value is `1MΩ` (adjustable version using a voltage divider for feedback), for Choice `IRNZ` the value is `0Ω` (fixed version using direct output voltage feedback).
+ * **R17**: For Choice `IRAZ` this part is fitted, else (`IRNZ`) it is unfitted.
+ * **U3**: For Choice `IRAZ`, the component value is set to `ISL91127IRAZ`, for Choice `IRNZ` it is set to `ISL91127IRNZ`.  Also, the `MPN` field is set accordingly (Record not shown in the schematic, check out the demo project for details).  
+   Furthermore, for choice `IRAZ`, the (visible) `Info` field content is set to `Adjustable`, for choice `IRNZ` it is set to `Fixed` for documentation purposes.
 
 > [!NOTE]
-> The Aspect Identifier is referenced by a text field from component U3 using the text variable `${U3:Var.Aspect}`.  Using this technique, the pure Aspect Identifier can be placed inside any text for documentation purposes.
-
-<!-- obsolete, U3 also mentions it... also this is fundamental knowledge and should not only be a side-note in the examples.
-> [!NOTE]
-> The Choice Expression in R16 is the _only_ one explicitly mentioning the Choice Identifier `IRNZ`, declaring that choice name for all rules that refer to the same Aspect Identifier (`ISL91127`).  
-> You need at least one Choice Expression explicitly mentioning a Choice Identifier for it to be declared and available.
--->
+> The Aspect Identifier is referenced by a text field from component U3 using the text variable `${U3:Var.Aspect}`.  By using a the dedicated Aspect Identifier specification Record, the pure Aspect Identifier can be placed inside any text for documentation purposes.
 
 ##### Example 5: IC Type and Address Selection
 
-This is used for selection of an I/O expander IC type (953**5** vs. 953**9**) along with its I²C address.  Different (footprint-compatible!) IC types interpret the input on pin 3 differently ("A2" vs. "/RESET").  See the text callout in the figure for details.
+This schematic snippet is used for selecting an I/O expander's specific IC type (953**5** vs. 953**9**) along with its I²C address.  Different (footprint-compatible!) IC types interpret the input on pin 3 differently ("A2" vs. "/RESET").  See the text box in the figure for details.
 
 ![Example 5](doc/examples/5.svg)
 
-This example really implements two simple sub-aspects in a single variation aspect:
+This example really implements two simple sub-aspects in a single variation Aspect:
  * the type of the IC and
  * the device address.
 
-As both sub-aspects depend on each other and can only be defined in a combined way, all sensible combinations (there are only three) must be defined for the combined aspect.  It is recommended to use the same dedicated sub-aspect separation character (`/` used in this example) in the Aspect Identifier as well as the Choice Identifiers to make it obvious to the user which sub-choice applies to which sub-aspect.
+As both sub-aspects depend on each other and can therefore only be defined in a combined way, all sensible combinations (there are only three) must be defined for the combined Aspect.  It is recommended to use the same dedicated sub-aspect separation character (`/` used in this example) in the Aspect Identifier as well as the Choice Identifiers to make it obvious to the user which sub-choice applies to which sub-aspect.
 
-<!-- Add another example, which uses the classic technique (Infineon BTG PROFETs, for example)! Useful when the solder paste switch feature is implemented. As alternate, use 3D model switching and position offset switching (e.g. for JLCPCB).
-In order to **switch the full set of ordering information or symbol and footprint library references** stored in the symbol fields, this example selects one of two alternate symbol instances, each using a slightly different symbol drawing (note the difference on pin 3).
-
-In general, this variation technique can be used to switch between symbols that refer to either the same footprint (as in this example) or a different footprint shape (e.g. SMT vs. THT, or different SMT package sizes), which can exist side by side or even overlaid in the same spot of the PCB (only the footprints, _not_ the actual components!).
-
-> [!TIP]
-> Should you decide to use multiple overlapping footprint instances (of course, only one of them fitted with the actual component), the following custom DRC rule might become handy:
->
-> ```
-> (version 1)
->
-> (rule "Allow overlapping courtyards for DNP parts"
->     (condition "A.Type == 'Footprint' && B.Type == 'Footprint' && A.Do_not_populate")
->     (constraint courtyard_clearance (min -1mm))
-> )
-> ```
+<!--
+Add another example as in the upcoming tutorial: 3D model switching, MPN switching, custom DRC rule.
 
 > [!NOTE]
 > If copper pads of multiple _alternate(!)_ footprints do overlap, it is important to assign the same net to each set of overlapping pads, in order to avoid DRC errors.  Some overlapping pads of alternate footprints will be applied the same net anyway (as in this example), but _unconnected_ symbol pins will automatically be applied calculated net names which will naturally conflict with those of alternate symbols if their corresponding copper pads overlap in the PCB.  It is then required to connect the unconnected pins with each other in the schematic (using wires or labels).  In the above example, visually distinguishable labels (P00..P17) were chosen for such connections that are otherwise without function.
@@ -920,20 +957,21 @@ In general, this variation technique can be used to switch between symbols that 
 
 How to read the sub-aspects:
 
-This example uses variation aspect `IOEXP_TYPE/ADDR` (read as: sub-aspects `IOEXP_TYPE` and `IOEXP_ADDR`) with choice `9539/0x74` (read as: `9539` selected for `IOEXP_TYPE`, `0x74` selected for `IOEXP_ADDR`) currently applied in the figure.
+This example uses variation Aspect Identifier `IOEXP_TYPE/ADDR` (read as: sub-aspects `IOEXP_TYPE` and `IOEXP_ADDR`) with Choice `9539/0x74` (read as: `9539` selected for `IOEXP_TYPE`, `0x74` selected for `IOEXP_ADDR`) currently applied in the figure.
 
 How to read the rules:
 
- * Variation aspect is `IOEXP_TYPE/ADDR` (see above).
- * **R18**: For choices `9535/0x24` and `9539/0x74` this part will be fitted, else (`9535/0x20`, handled by [Implicit Defaults](#implicit-defaults)) unfitted.
- * **R19**: For choice `9535/0x20` this part will be fitted, else (`9535/0x24`, `9539/0x74`) unfitted.
- * **U4**: The I²C address information field `I2C Address` is set according to the resulting address, depending on the selected choice.  The `MPN` and `Datasheet` fields are set accordingly.  Also, for the 953**9** IC type (choice `9539/0x74`) only the second 3D model will be visible (`-m1+m2`), while for other choices (i.e. 953**5** IC type, default choice), only the first 3D model will be visible instead (`+m1-m2`).  The MPN, Datasheet and 3D model visibility rules are not shown on the symbol to keep the schematic clear.  To see all rules, check out the demo project.
+ * Variation Aspect Identifier is `IOEXP_TYPE/ADDR` (see above).
+ * **R18**: For Choices `9535/0x24` and `9539/0x74` this part will be fitted, else (`9535/0x20`, handled by [Implicit Property Defaults](#implicit-property-defaults)) unfitted.
+ * **R19**: For Choice `9535/0x20` this part will be fitted, else (`9535/0x24`, `9539/0x74`) unfitted.
+ * **U4**: The I²C address information field `I2C Address` is set according to the resulting address, depending on the selected Choice.  The `MPN` and `Datasheet` fields are set accordingly.  Also, for the 953**9** IC type (Choice `9539/0x74`) only the second 3D model will be visible (`+m2`), while for other choices (i.e. 953**5** IC type, default choice), only the first 3D model will be visible instead (`+m1`).  [Implicit Property Defaults](#implicit-property-defaults) take care of hiding 3D models that are mentioned in other Choices, but not in the current one.  
+   The MPN, Datasheet and 3D model visibility rules are not shown on the symbol to keep the schematic clear.  To see all rules, check out the demo project.
 
 > [!NOTE]
-> Depending on the available space in the schematic, the Aspect Identifier can be moved into the dedicated `Var.Aspect` field (and shown or hidden), as for U4, or be part of the Choice Expression, as for R18 and R19.
+> Depending on the available space in the schematic, the Aspect Identifier can be moved into the dedicated `Var.Aspect` specifier Record (and shown or hidden), as for U4, or be part of a [Combined Record](#combined-component-assignment-records-ccar), as for R18 and R19.
 
 > [!NOTE]
-> The different 3D models for U4 were only chosen for feature demonstration purposes.  The two ICs actually use the same TSSOP-24 package.
+> The different 3D models for U4 were only chosen for feature demonstration purposes.  The two ICs really use the identical TSSOP-24 package.
 
 ##### Example 6: Backlight LED Maximum Constant Current Selection
 
@@ -941,34 +979,52 @@ In this example a combination of resistor networks determines the maximum consta
 
 ![Example 6](doc/examples/6.svg)
 
-The resistor network combination allows to select an LED current from 10mA to 150mA in steps of 10mA.  Also, like in example 2, there is an additional choice `JP`, which leaves all four configuration resistors unfitted, so that the user can manually select the current using the solder bridges.
+The resistor network combination allow selecting an LED current from 10mA to 150mA in steps of 10mA.  Also, like in example 2, there is an additional Choice `JP`, which leaves all four configuration resistors unfitted, so that the user can manually select the current using the solder bridges.
 
 How to read the rules:
 
- * Variation aspect is `I_LED_MA` (with choice `100` currently applied in the figure).
- * **R21**: This is the _most significant_ path for 80mA current. For the upper half of the current choices, i.e. `80` up to `150`, the resistor is fitted.  For other choices (incl. `JP`) the part is unfitted (handled by [Implicit Defaults](#implicit-defaults)).
- * **R22**: This is the path for 40mA current. For choices `40` through `70` and `120` through `150` the resistor is fitted.  For other choices (incl. `JP`) it is unfitted.
- * **R29**: This is the path for 20mA current. For choices `20`, `30`, `60`, `70`, `100`, `110`, `140`, `150` the resistor is fitted.  For other choices (incl. `JP`) it is unfitted.
- * **R30**: This is the _least significant_ path for 10mA current. For choices `10`, `30`, `50`, `70`, `90`, `110`, `130`, `150` the resistor is fitted.  For other choices (incl. `JP`) it is unfitted.
+ * Variation Aspect Identifier is `I_LED_MA` (with Choice `100` currently applied in the figure).
+ * **R21**: This is the _most significant_ path for 80mA current. For the upper half of the current Choices, i.e. `80` up to `150`, the resistor is fitted.  For other Choices (incl. `JP`) the part is unfitted (handled by [Implicit Property Defaults](#implicit-property-defaults)).
+ * **R22**: This is the path for 40mA current. For Choices `40` through `70` and `120` through `150` the resistor is fitted.  For other Choices (incl. `JP`) it is unfitted.
+ * **R29**: This is the path for 20mA current. For Choices `20`, `30`, `60`, `70`, `100`, `110`, `140`, `150` the resistor is fitted.  For other Choices (incl. `JP`) it is unfitted.
+ * **R30**: This is the _least significant_ path for 10mA current. For Choices `10`, `30`, `50`, `70`, `90`, `110`, `130`, `150` the resistor is fitted.  For other Choices (incl. `JP`) it is unfitted.
 
 > [!NOTE]
 > Again, to save horizontal space, the Aspect Identifier is moved to the dedicated `Var.Aspect` field (shown), for all involved components.
+
+##### Example 7: LDO Output Voltage Selection
+
+In this example a simple resistor network determines the output voltage of an LDO voltage regulator.
+
+![Example 7](doc/examples/7.svg)
+
+The available resistor combinations allow selecting between four different voltages: 1.2V, 1.8V, 2.5V and 3.3V.  If a resistor is to be unpopulated, the solder paste will be suppressed for that component, too.
+
+How to read the rules:
+
+ * Variation Aspect Identifier is `VOUT` (with Choice `1.8V` currently applied in the figure).
+ * **R34**: This is the first of two parallel resistors connected in parallel, forming the _top_ resistance of the feedback network.  For Choice `1.2V` this will be fitted with a `0Ω` resistor to directly feed the output voltage back to the FB input (1.2V is the LDO's internal reference voltage).  For Choices `1.8V`, `2.5V` and `3.3V` the resistor value will be set to `100kΩ`, `150kΩ` and `175kΩ`, respectively, connected in parallel with R35 to form the required top resistance.
+ * **R35**: This is the second of the two parallel resistors in the _top_ part of the feedback network.  For Choices `1.8V` and `2.5V` the value is set to `100kΩ` and `390kΩ`, respectively, forming the required top resistance with R34.  For all other Choices (i.e. `1.2V` and `3.3V`), a [Stand-In](#stand-in-choice) is provided to set the resistor's value to `DNP`, to unfitted state and to suppress solder paste (`-s`) for the corresponding footprint.
+ * **R36**: This resistor forms the _bottom_ part of the feedback network.  For the Choice `1.2V` (the LDO's internal reference voltage) the resistor component's value is set to `DNP` and the component is unfitted to make the bottom path high-impedance.  Also, as for R35, solder paste is suppressed in this case.  All other Choices (i.e. `1.8V`, `2.5V` and `3.3V`) are covered by the Stand-In Choice definition that sets the resistor value to `100kΩ`.
+
+> [!NOTE]
+> Again, [Implicit Property Defaults](#implicit-property-defaults) apply.  So, as soon as one or more Choices mention a specific Property with only one specific State (for example `-s`), then the opposite (`+s` in this case) is assumed for all other Choices in the same Assignment, unless stated otherwise.  Hence, it is not required to explicitly specify `+s` to avoid sparse definitions of Properties.
 
 ##### Usage Tip: Assembly Variant Codes
 
 For each above example, one essential component was chosen to carry an Aspect Choice variation identifier code (in field `VarID`).  These codes than then be used to form a PCB assembly variant code that is unique for each Configuration (i.e. combination of Aspect Choices).
 
-Even though PCB variants are not really supposed to change any property of the _bare_ PCB (i.e. copper, solder mask, ...), such variant configuration codes can be added to any documentation (or even silkscreen) layer.  Refer to the [PCB 3D views below](#visible-changes) and to the [demo project](demo/) for a usage example.
+Even though PCB variants are not really supposed to change any property of the _bare_ PCB (i.e. copper, solder mask, ...), such variant configuration codes _can_ be added to any documentation (or any other) layer.  Refer to the [PCB 3D views below](#visible-changes) and to the [demo project](demo/) for a usage example.
 
 ### Rules Application
 
-After setting up the rules for each relevant symbol (or footprint), variations can finally be switched using the _KiVar_ plugin or CLI app.
+After setting up rules for each relevant symbol (or footprint), variations can finally be switched using the _KiVar_ plugin or CLI app.
 
 #### Using the KiVar Action Plugin
 
 ##### Update the PCB
 
-If the expressions were set up in the Schematic Editor (eeschema), they need to be updated to the PCB Editor first (menu item _Tools &rarr; Update PCB from Schematic..._).
+If the KiVar Records were set up in the Schematic Editor (eeschema), they need to be updated from the schematic to the PCB first (menu item _Tools &rarr; Update PCB from Schematic..._).
 
 ##### Run the Plugin
 
@@ -976,28 +1032,28 @@ To open the plugin dialog, simply click the KiVar plugin icon in the main toolba
 
 ##### Configuration Identification
 
-Upon start, during the compilation stage, KiVar automatically detects the current variation configuration, i.e., it tries to find one definite choice for each configured aspect, based on the currently assigned values, field contents, attributes and features for each related footprint.
+Upon start, during the rule processing stage, KiVar analyzes the board data and automatically detects the current variation Configuration, i.e. it tries to find one definite Choice for each configured Aspect, based on the currently assigned values, field contents, attributes and features for each related footprint.
 
-If they do not exactly match one definite choice (per variation aspect), then the corresponding variation choice selector is preset to the entry _'\<unset>'_.  This will probably happen before applying a specific choice for the first time or after editing expressions, because not all of the currently assigned footprint properties may perfectly match one of the defined variation choices.
+If KiVar fails to find a matching definite Choice for a variation Aspect, then the corresponding variation Choice selector is preset to the entry _'\<unset>'_.  This will probably happen before applying a specific Choice for the first time or after editing Assignments, because not all of the initial footprint data may perfectly match exactly one of the defined variation Choices (per Aspect).
 
 ##### Possible Error Messages
 
-In case the defined choice expressions cannot be parsed and/or compiled without problems, an error message window with a list of problems is presented.  Each of the listed problems must then be fixed in order to successfully start the plugin.
+In case the user-provided Records cannot be parsed and/or processed without problems, an error message window with a list of problems will be presented.  Each of the listed problems must then be fixed in order to successfully start the plugin.
 
 > [!TIP]
 > Error messages can be clicked to focus the corresponding footprint on the _pcbnew_ canvas in the background.
 
 ##### Variation Choices Selection
 
-If all expressions can be compiled without problems, the plugin dialog window appears.
+If all Records can be processed without problems, the plugin dialog window appears.
 
-For the above [real-world examples](#real-world-examples), the selection dialog window may look similar to the following:
+For the above [usage examples](#usage-examples), the selection dialog window may look similar to the following:
 
 ![Variant Selection Dialog Without Changes](doc/plugin-empty.svg)
 
 For each of the listed Aspect Identifiers a variation Choice Identifier can now be selected.
 
-If the values, field contents, attributes and features of the footprint(s) related to a variation aspect shall not be modified, the entry _'\<unset>'_ can be selected for that variation aspect.  In this case, the corresponding variation will be excluded from the assignment stage and related footprints remain unmodified.
+If the values, field contents, attributes and features of the footprint(s) related to a variation Aspect shall not be modified, the entry _'\<unset>'_ can be selected for that variation Aspect.  In this case, the corresponding variation will be excluded from the assignment stage and related footprints remain unmodified.
 
 The change list section below the selection area summarizes all component changes to be performed for each related footprint if the current variation configuration is applied.
 
@@ -1008,7 +1064,7 @@ After selecting a few different variation choices, the dialog window may look li
 
 ![Variant Selection Dialog With Changes](doc/plugin-changes.svg)
 
-When clicking the _Update PCB_ button, KiVar sets the configured data for all relevant footprints as previewed in the information text box.
+When clicking the _Update PCB_ button, KiVar sets the configured data for all relevant footprints as previewed in the information text box and then closes the selection dialog window.
 
 ##### Visible Changes
 
@@ -1026,11 +1082,11 @@ The following images show the 3D board view for the original settings:
 
 All changes by the plugin are only performed in the board, as KiVar is a plugin for _pcbnew_ (_eeschema_ does not yet have a plugin interface).  That is, the performed changes must be propagated back from the board to the schematic in order to be visible there (e.g. for changed values and DNP markings).
 
-To propagate the changes back to the schematic, use the PCB Editor menu item _Tools &rarr; Update Schematic from PCB..._ and make sure to select the checkboxes _Values_ and _Attributes_\*.  If you have modified the KiVar rules inside the PCB Editor, i.e. edited the footprint fields\* instead of the symbol fields, then also select the checkbox _Other fields_\*, in order to propagate your KiVar rules to the schematic.
+To propagate the changes back to the schematic, use the PCB Editor menu item _Tools &rarr; Update Schematic from PCB..._ and make sure to select the checkboxes _Values_ and _Attributes_\*.  If you have modified KiVar Records inside the PCB Editor, i.e. edited the footprint fields\* instead of the symbol fields, then also select the checkbox _Other fields_\* to propagate your modified KiVar Records to the schematic.
 
 #### Using the KiVar Command Line Application
 
-The KiVar CLI application works similar to the plugin, except that it manipulates an existing `.kicad_pcb` file (which must not be opened in another application).
+The KiVar CLI application uses the same KiVar backend as the plugin, but a different user interface.  Also, the CLI app manipulates existing `.kicad_pcb` files (which must not be opened in another application).
 
 For usage information and available commands and options, run:
 
@@ -1061,7 +1117,7 @@ Further reading: [Choice Expressions](#choice-expressions).
 
 #### Basic Rule Format
 
-While the legacy format of the `KiVar.Rule` field is very similar to the current "[Combined Component Expression Type](#cce)" (using the `Var` field), there have been some changes that may (or may not) break existing legacy rules.  Users will need to revise their legacy rules to be sure that they are parsed as expected with current (and upcoming) versions of KiVar.
+While the legacy format of the `KiVar.Rule` field is very similar to the current "[Combined Component Assignment Record](#combined-component-assignment-records-ccar)" (using the `Var` field), there have been some changes that may (or may not) break existing legacy rules.  Users will need to revise their legacy rules to be sure that they are parsed as expected with current (and upcoming) versions of KiVar.
 
 The following sections will cover the details.
 
@@ -1073,7 +1129,7 @@ Prior to version 0.2.0, KiVar supported "Option" arguments.  An Option always st
 
 <!-- An Option could either be specified or _not_ specified.  There was no way of "overriding" an Option that was set via inheritance from a default Choice. -->
 
-If an Option was specified in a [Default Choice](#default-choices) (specified by the Choice Identifier `*`), that Option was **not inherited** by specific Choice Expressions, but would have to be specified again in all specific expression in order to be effective for those choices.
+If an Option was specified in a [Default Choice](#default-choice) (specified by the Choice Identifier `*`), that Option was **not inherited** by specific Choice Expressions, but would have to be specified again in all specific expression in order to be effective for those choices.
 
 This (questionable) design decision had been made because there was no way to reset an Option specified in a Default Choice when overriding that Default Choice with a specific Choice.  Hence, every Choice declaration/definition caused all Options to be reset for that specific Choice, to allow for providing a fresh set of Options for specific Choices.
 
@@ -1083,11 +1139,11 @@ With version 0.2.0, this behavior has changed.  Default Choice inheritance has b
 
 There are now three supported effective Properties:
 
- * **Fitted** (identifier `f`): Component is fitted.  Clears the "Do not populate" component attribute.
- * **inPos** (identifier `p`): Component is listed in Position files.  Clears the "Exclude from Position Files" component attribute.
- * **inBom** (identifier `b`): Component is listed in Bill of Materials.  Clears the "Exclude from BoM" component attribute.
+ * **Fit** (identifier `f`): Component is fitted.  Clears the "Do not populate" component attribute.
+ * **Pos** (identifier `p`): Component is listed in Position files.  Clears the "Exclude from Position Files" component attribute.
+ * **Bom** (identifier `b`): Component is listed in Bill of Materials.  Clears the "Exclude from BoM" component attribute.
 
-There is also a [Group Property](#group-properties) `!`, which resolves to "Fitted", "InPos" and "InBom", being _nearly_ backwards-compatible to the old `-!` Option.  However, **special care must be taken when `-!` appears in Default choices, as those Properties are now inherited by specific choices**.
+There is also a [Group Property](#group-properties) **Assemble** (identifier `!`), which resolves to "Fit", "Pos" and "Bom", being _nearly_ backwards-compatible to the old `-!` Option.  However, **special care must be taken when `-!` appears in Default choices, as those Properties are now inherited by specific choices**.
 
 The following examples try to illustrate the different handling:
 
@@ -1108,23 +1164,23 @@ Rule String             | Resulting Choice1 Content | Resulting Choice1 Properti
 > Component attributes (DNP, Not in Pos, Not in BoM) are now **kept at their current state** (and ignored in the Choice match) if their corresponding properties are **not defined** (to _true_ or _false_).  
 > In versions prior to 0.2.0 all three component attributes were either set or cleared, depending on the presence of the `-!` option.  They could not be set to different states, and none of them could be kept untouched for component with variation rules.  Version 0.2.0 introduces much more flexibility regarding attribute management.
 
-Further reading: [Default Choices](#default-choices).
+Further reading: [Default Choices](#default-choice).
 
 #### Implicit Property Default States
 
 Severity: **Not critical** (backwards-compatible).
 
-Starting with version 0.2.0, users can choose to _only_ specify the Property State that makes a Choice unique and let the the KiVar rule compiler assume the opposite state to be the [_Implicit_ Default](#implicit-defaults) state (if no default Property State is provided otherwise) for other choices of the same assignment.
+Starting with version 0.2.0, users can choose to _only_ specify the Property State that makes a Choice unique and let the the KiVar rule processor assume the opposite state to be the [_Implicit_ Default](#implicit-property-defaults) state (if no default Property State is provided otherwise) for other choices of the same assignment.
 
-For example, if a component is only fitted (Property Identifier `f`) in one Choice (of many), it is now sufficient to specify `+f` in _that_ Choice Expression and leave the rest of the assignment choices and the [Default Choice](#default-choices) (`*`) without a definition for the `f` Property.  The implicit default state for the `f` (fitted) Property will then automatically assumed to be the opposite (`-f`) for any other Choices.
-
-> [!IMPORTANT]
-> Implicit Property States can only be used if there is only **one** type of State/Polarity (either `+` or `-`) assigned in any of the assignment's choices.
+For example, if a component is only fitted (Property Identifier `f`) in one Choice (of many), it is now sufficient to specify `+f` in _that_ Choice Expression and leave the rest of the assignment choices and the [Default Choice](#default-choice) (`*`) without a definition for the `f` Property.  The implicit default state for the `f` (fitted) Property will then automatically assumed to be the opposite (`-f`) for any other Choices.
 
 > [!IMPORTANT]
-> Implicit default States only work for Property States, as they use _boolean_ states (actually tri-state, but as soon as a Property is provided, it's either _true_ or _false_) and therefore have an (implicit) "opposite" value.
+> Implicit Property Defaults can only be used if there is only **one** type of State/Polarity (either `+` or `-`) assigned in any of the assignment's choices.
 
-Further reading: [Implicit Defaults](#implicit-defaults).
+> [!IMPORTANT]
+> Implicit Property Defaults only work for Property States, as they use _boolean_ states (actually tri-state, but as soon as a Property is provided, it's either _true_ or _false_) and therefore have an (implicit) "opposite" value.
+
+Further reading: [Implicit Property Defaults](#implicit-property-defaults).
 
 #### Values As Multiple Words
 
@@ -1187,7 +1243,7 @@ KiVar 0.3.0 added [Feature Properties](#feature-properties), which allow you to
 
 Severity: **Not critical** (backwards-compatible).
 
-_Base_ and _Auxiliary_ scope were renamed to [Component](#cmp) and [Field](#fld) scope, respectively, to better reflect their usage due to the following change:
+_Base_ and _Auxiliary_ scope were renamed to [Component](#component-scope) and [Field](#field-scope) scope, respectively, to better reflect their usage due to the following change:
 
 It is no longer necessary to declare Choices in Component (ex "Base") scope before they can be used in Field (ex "Auxiliary") scope.  Expressions in Field scope now implicitly declare Choice Identifiers, just as in Component scope.
 
@@ -1195,4 +1251,4 @@ It is no longer necessary to declare Choices in Component (ex "Base") scope befo
 
 Severity: **Not critical** (backwards-compatible).
 
-Version 0.4.0 introduces Stand-In Choices, which act similar to [Default Choices](#default-choices), but do not inherit Content or Properties for declared specific Choices.  Stand-In Choices may therefore be preferred over Default Choices in many cases, for example when making use of [Implicit Defaults](#implicit-defaults).
+Version 0.4.0 introduces Stand-In Choices, which act similarly to [Default Choices](#default-choice), but do not inherit Content or Properties for declared specific Choices.  Stand-In Choices may therefore be preferred over Default Choices in many cases, for example when making use of [Implicit Property Defaults](#implicit-property-defaults).
