@@ -20,7 +20,7 @@ from copy import deepcopy
 # TODO more testing!
 
 def version():
-    return '0.3.9911'
+    return '0.3.9990'
 
 def pcbnew_compatibility_error():
     ver = pcbnew.GetMajorMinorPatchVersion()
@@ -209,7 +209,7 @@ def prop_abbrev(prop_id):
     prop_code, prop_index = split_prop_id(prop_id)
     name = '(unknown)'
     if prop_code is not None:
-        if   prop_code == PropCode.BOM:    name = 'BoM'
+        if   prop_code == PropCode.BOM:    name = 'Bom'
         elif prop_code == PropCode.POS:    name = 'Pos'
         elif prop_code == PropCode.FIT:    name = 'Fit'
         elif prop_code == PropCode.SOLDER: name = 'Solder'
@@ -395,7 +395,7 @@ def add_choice(vardict, uuid, raw_choice_name, raw_choice_def, field=None):
         arg = cook_raw_string(raw_arg)
         if raw_arg[0] in '-+': # not supposed to match if arg starts with \-, \+, '+' or '-'
             if field_scope:
-                errors.append(f"No property specifier allowed in field scope expression")
+                errors.append(f"No property specifiers allowed in field-scope records")
                 continue
             try:
                 parse_prop_str(arg, prop_set)
@@ -496,7 +496,7 @@ def parse_rule_str(rule_str):
         try:
             rule_sections = split_raw_str(rule_str, ' ', True)
         except Exception as error:
-            return [f'Combined format splitter: {str(error)}'], None, None
+            return [f'Combined record splitter: {str(error)}'], None, None
         for section in rule_sections:
             try:
                 name_list, content = split_parens(section)
@@ -551,7 +551,7 @@ def parse_rule_fields(fpdict_uuid_branch):
             target_field = '.'.join(parts[0:-1])
             field_name_error = field_name_check(target_field, fpdict_uuid_branch[Key.FIELDS])
             if field_name_error is not None:
-                errors.append(f"Combined field expression: {field_name_error}")
+                errors.append(f"Combined field record: {field_name_error}")
                 continue
             else:
                 fld_rule_strings.append([target_field, value])
@@ -570,7 +570,7 @@ def parse_rule_fields(fpdict_uuid_branch):
                     target_field = '.'.join(parts[0:-1])
                     field_name_error = field_name_check(target_field, fpdict_uuid_branch[Key.FIELDS])
                     if field_name_error is not None:
-                        errors.append(f"Simple field expression: {field_name_error}")
+                        errors.append(f"Simple field record: {field_name_error}")
                         continue
                     else:
                         fld_choice_sets.append([target_field, name_list, value])
@@ -590,26 +590,26 @@ def build_vardict(fpdict):
             continue
         parse_errors, aspects, choice_sets = parse_rule_str(cmp_rule_string)
         if parse_errors:
-            for parse_error in parse_errors: errors.append([uuid, ref, f"{ref}: Component scope expression parser: {parse_error}."])
+            for parse_error in parse_errors: errors.append([uuid, ref, f"{ref}: Component-scope record parser: {parse_error}."])
             continue
         choice_sets.extend(cmp_choice_sets)
         # TODO decide: shall we really use uncooked aspect name? we have the whole field content only for the pure value.
         if len(aspects) > 1:
-            errors.append([uuid, ref, f"{ref}: Multiple aspect identifiers specified."])
+            errors.append([uuid, ref, f"{ref}: Found multiple aspect identifiers."])
             continue
         elif len(aspects) == 1:
             # about to use the aspect name from the component rule ...
             if aspect is not None and aspect != '':
                 # ... but there is already an aspect set via the aspect field
-                errors.append([uuid, ref, f"{ref}: Conflicting aspect identifier specification styles (combined component expression vs. aspect field)."])
+                errors.append([uuid, ref, f"{ref}: Conflicting aspect identifier specification styles (combined component-scope record vs. aspect field)."])
                 continue
             aspect = aspects[0]
         if aspect is None or aspect == '':
             if choice_sets:
-                errors.append([uuid, ref, f"{ref}: Missing aspect identifier for existing choice expressions."])
+                errors.append([uuid, ref, f"{ref}: Component record(s) found, but missing an aspect identifier."])
             continue
         if uuid in vardict:
-            errors.append([uuid, ref, f"{ref}: Multiple footprints with same UUID containing component expressions."])
+            errors.append([uuid, ref, f"{ref}: Found multiple footprints with same UUID containing component-scope records."])
             continue
         vardict[uuid] = {}
         vardict[uuid][Key.ASPECT] = aspect
@@ -619,7 +619,7 @@ def build_vardict(fpdict):
         for choice_name, choice_content in choice_sets:
             add_errors = add_choice(vardict, uuid, choice_name, choice_content)
             if add_errors:
-                for error in add_errors: errors.append([uuid, ref, f"{ref}: When adding aspect '{aspect}' choice list '{choice_name}' in component expression: {error}."])
+                for error in add_errors: errors.append([uuid, ref, f"{ref}: When adding aspect '{aspect}' choice list '{choice_name}' in component record: {error}."])
                 break
     # Handle field scope
     for uuid in fld_dict:
@@ -627,37 +627,37 @@ def build_vardict(fpdict):
         aspect = vardict[uuid][Key.ASPECT]
         fld_rule_strings, fld_choice_sets = fld_dict[uuid]
         if fld_rule_strings and aspect is None:
-            errors.append([uuid, ref, f"{ref}: Combined field expression(s) found, but missing component expression(s)."])
+            errors.append([uuid, ref, f"{ref}: Combined field record(s) found, but missing an aspect identifier."])
             continue
         valid = False
         for field, rule_str in fld_rule_strings:
             if rule_str is None or rule_str == '': continue
             parse_errors, aspects, choice_sets = parse_rule_str(rule_str)
             if parse_errors:
-                for parse_error in parse_errors: errors.append([uuid, ref, f"{ref}: Combined field expression parser for target field '{field}': {parse_error}."])
+                for parse_error in parse_errors: errors.append([uuid, ref, f"{ref}: Combined field record parser for target field '{field}': {parse_error}."])
                 continue
             if aspects:
-                errors.append([uuid, ref, f"{ref}: Combined field expression for target field '{field}' contains what looks like an aspect identifier (only allowed in combined component expressions)."])
+                errors.append([uuid, ref, f"{ref}: Combined field record for target field '{field}' contains what looks like an aspect identifier (only allowed in combined component-scope records)."])
                 continue
             if field in vardict[uuid][Key.FLD]:
-                errors.append([uuid, ref, f"{ref}: Multiple field expressions for target field '{field}'."]) # TODO wording
+                errors.append([uuid, ref, f"{ref}: Multiple assignments for target field '{field}'."])
                 continue
             for choice_name, choice_content in choice_sets:
                 add_errors = add_choice(vardict, uuid, choice_name, choice_content, field)
                 if add_errors:
-                    for error in add_errors: errors.append([uuid, ref, f"{ref}: Combined field expression for aspect '{aspect}' choice list '{choice_name}' with target field '{field}': {error}."])
+                    for error in add_errors: errors.append([uuid, ref, f"{ref}: Combined field record for aspect '{aspect}' choice list '{choice_name}' with target field '{field}': {error}."])
                     break
         else:
             valid = True
         if not valid: continue
         if fld_choice_sets and aspect is None:
-            errors.append([uuid, ref, f"{ref}: Simple field expression(s) found, but missing aspect identifier."])
+            errors.append([uuid, ref, f"{ref}: Simple field record(s) found, but missing an aspect identifier."])
             continue
         valid = False
         for field, choice_name, choice_content in fld_choice_sets:
             add_errors = add_choice(vardict, uuid, choice_name, choice_content, field)
             if add_errors:
-                for error in add_errors: errors.append([uuid, ref, f"{ref}: Simple field expression for aspect '{aspect}' choice list '{choice_name}' with target field '{field}': {error}."])
+                for error in add_errors: errors.append([uuid, ref, f"{ref}: Simple field record for aspect '{aspect}' choice list '{choice_name}' with target field '{field}': {error}."])
                 break
         else:
             valid = True
@@ -669,13 +669,13 @@ def build_vardict(fpdict):
         fin_errors = finalize_vardict_branch(vardict[uuid][Key.CMP], all_choices[aspect], fpdict[uuid][Key.PROPS])
         if fin_errors:
             # TODO cook and quote names in error message, refine wording
-            for e in fin_errors: errors.append([uuid, ref, f"{ref}: In component expression: {e}."])
+            for e in fin_errors: errors.append([uuid, ref, f"{ref}: In component record: {e}."])
             continue
         for field in vardict[uuid][Key.FLD]:
             fin_errors = finalize_vardict_branch(vardict[uuid][Key.FLD][field], all_choices[aspect])
             if fin_errors:
                 # TODO cook and quote names in error message, refine wording
-                for e in fin_errors: errors.append([uuid, ref, f"{ref}: In field expression for target field '{field}': {e}."])
+                for e in fin_errors: errors.append([uuid, ref, f"{ref}: In field record for target field '{field}': {e}."])
                 continue
     # Check that all solder paste margin values match one of the two allowed ranges (only if the corresponding property is used, else the current value is ignored)
     for uuid in vardict:
@@ -693,7 +693,7 @@ def build_vardict(fpdict):
                 if not prop_id in fpdict[uuid][Key.PROPS]:
                     prop_code, prop_index = split_prop_id(prop_id)
                     ref = fpdict[uuid][Key.REF]
-                    errors.append([uuid, ref, f"{ref}: Cannot match referenced property '{prop_abbrev(prop_id)}' to footprint (probably index out of bounds)."])
+                    errors.append([uuid, ref, f"{ref}: Cannot match property '{prop_abbrev(prop_id)}' to footprint (probably index out of bounds)."])
     if not errors:
         # Check for ambiguous choices (only if data is valid so far)
         for aspect in sorted(all_choices, key=natural_sort_key):
