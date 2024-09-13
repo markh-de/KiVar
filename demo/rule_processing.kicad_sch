@@ -324,7 +324,7 @@
 		)
 		(uuid "54760d29-0db6-463a-a2f5-f7c82d04c02d")
 	)
-	(text_box "KiVar Choice Expression Compiler"
+	(text_box "KiVar Variation Rule Processor"
 		(exclude_from_sim no)
 		(at 71.755 54.61 0)
 		(size 60.96 9.525)
