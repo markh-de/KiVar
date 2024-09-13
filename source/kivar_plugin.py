@@ -23,13 +23,13 @@ class KiVarPlugin(pcbnew.ActionPlugin):
     def Run(self):
         compatibility_problem = pcbnew_compatibility_error()
         if compatibility_problem is not None:
-            wx.MessageBox(message=compatibility_problem, caption=f'KiVar {version()}: Compatibility problem', style=wx.ICON_ERROR)
+            wx.MessageBox(message=compatibility_problem, caption=f'Compatibility Problem | KiVar {version()}', style=wx.ICON_ERROR)
             return
         board = pcbnew.GetBoard()
         fpdict = build_fpdict(board)
         vardict, errors = build_vardict(fpdict)
         if len(errors) > 0:
-            show_error_dialog('Rule errors', errors, board)
+            show_error_dialog(errors, board)
         elif len(vardict) == 0:
             show_missing_rules_dialog(legacy_expressions_found(fpdict))
         else:
@@ -164,7 +164,7 @@ def show_missing_rules_dialog(legacy_found=0):
 
 class MissingRulesDialog(wx.Dialog):
     def __init__(self, legacy_found=0):
-        super().__init__(pcbnew_parent_window(), title=f'KiVar {version()}: No rule definitions found', style=wx.DEFAULT_DIALOG_STYLE)
+        super().__init__(pcbnew_parent_window(), title=f'Missing Rule Definitions | KiVar {version()}', style=wx.DEFAULT_DIALOG_STYLE)
 
         sizer = wx.BoxSizer(wx.VERTICAL)
 
@@ -192,8 +192,8 @@ class MissingRulesDialog(wx.Dialog):
 
         self.SetSizerAndFit(sizer)
 
-def show_error_dialog(title, errors, board=None):
-    dialog = PcbItemListErrorDialog(f'KiVar {version()}: {title}', sorted(errors, key=lambda x: natural_sort_key(x[1])), board) # sort by text
+def show_error_dialog(errors, board=None):
+    dialog = PcbItemListErrorDialog(f'Rule Processing Errors | KiVar {version()}', sorted(errors, key=lambda x: natural_sort_key(x[1])), board) # sort by text
     dialog.ShowModal()
     dialog.Destroy()
 
