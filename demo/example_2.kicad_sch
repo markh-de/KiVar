@@ -6,7 +6,7 @@
 	(paper "A4")
 	(title_block
 		(title "KiVar Demo")
-		(date "2024-08-17")
+		(date "2024-09-14")
 		(rev "0.4.0")
 		(company "Author: Mark Hämmerling <dev@markh.de>")
 		(comment 1 "https://github.com/markh-de/KiVar")
