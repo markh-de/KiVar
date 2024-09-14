@@ -165,7 +165,7 @@ def list_command(in_file=None, long=False, prop_codes=False, detailed=False, sel
             if detailed:
                 for uuid in sorted(ndict[aspect][choice], key=lambda x: natural_sort_key(fpdict[x][Key.REF])):
                     ref = fpdict[uuid][Key.REF]
-                    Msg().text('        ').color('ref').text(ref).reset().text(': ' + ndict[aspect][choice][uuid]).flush() # TODO missing color in last element??
+                    Msg().text('        ').color('ref').text(ref).reset().text(': ' + ndict[aspect][choice][uuid]).flush()
                     for field in sorted(vardict[uuid][Key.FLD], key=natural_sort_key):
                         f = quote_str(field)
                         v = quote_str(vardict[uuid][Key.FLD][field][choice][Key.VALUE])
@@ -241,7 +241,7 @@ def set_command(in_file=None, out_file=None, force_save=False, assign=None, dry_
     sel = detect_current_choices(fpdict, vardict)
     choice_dict = get_choice_dict(vardict)
     for asmt in assign:
-        l = split_raw_str(asmt, '=', False) # TODO: test split
+        l = split_raw_str(asmt, '=', False)
         if len(l) == 2:
             aspect = cook_raw_string(l[0])
             choice = cook_raw_string(l[1])
