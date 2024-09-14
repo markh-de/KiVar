@@ -5,6 +5,11 @@ import pcbnew
 try:                        from  kivar_backend import *
 except ModuleNotFoundError: from .kivar_backend import *
 
+# TODO
+# * r/w local configuration file in plugin directory for
+#   * last used window size
+#   * if desired: add a checkbox "keep window open" and save that state
+
 def doc_vcs_ref():
     return f'v{version()}'
 
