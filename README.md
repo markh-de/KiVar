@@ -9,11 +9,11 @@ KiVar is a tool for **KiCad PCB Assembly Variant selection**, provided as platfo
  * **KiCad Action Plugin** and
  * **Command Line Application**.
 
-PCB component variation rules are defined in component (i.e. symbol or footprint) fields.  This allows for the complete variant configuration to be contained in the schematic and board files without requiring external data from outside the native KiCad design files.
+PCB component variation rules are defined in component (i.e. symbol or footprint) fields.  This allows for the complete variant configuration to be contained in the schematic and board files without requiring external data outside the native KiCad design files.
 
 ## Features
 
-KiVar assigns PCB component **values**, **field content**, **attributes** (such as _Do not populate_, _Not in position files_ or _Not in BoM_) and **features** (such as _individual 3D model visibility_ or _solder paste application_) according to variation rules specified in footprint fields.  When applying those rules, components are modified _in place_, allowing for immediate update of the PCB design as well as the 3D view and enabling compatibility with _any_ exporter.
+KiVar assigns PCB component **values**, **field content**, **attributes** (such as _Do not populate_, _Not in position files_ or _Not in BoM_) and **features** (such as _individual 3D model visibility_ or _solder paste application_) according to variation rules specified in footprint fields.  When applying those rules, components are modified **in place**, allowing for immediate update of the PCB design as well as the 3D view and enabling compatibility with _any_ exporter.
 
 Back-propagation of modified component data from the PCB to the schematic can be done in an extra step.
 
@@ -176,11 +176,11 @@ While it is recommended to define variation rules in the schematic (i.e. in symb
 Basic terms used in this document:
 
  * **Aspect:**  
-   A dimension of variation changes, which are defined by _Choices_ (see below).  One PCB design can refer to multiple aspects.  Each component, which makes use of KiVar variations, must refer to exactly one aspect identifier.  
-   For example, an Aspect can be the I²C address of an EEPROM IC, using an identifier like `EEPROM_I2C_ADDR`.
+   A scope (or dimension) of variation changes, which are defined by _Choices_ (see below).  One PCB design can refer to multiple Aspects.  Each component that makes use of KiVar variations must refer to _exactly one_ [Aspect Identifier](#aspect-identifier).  
+   For example, an Aspect can be the I²C address of an EEPROM IC, using an identifier such as `EEPROM_I2C_ADDR`.
  
  * **Choice:**  
-   A set of values (component values or field contents) and/or properties to be assigned to specific components.  A Choice is always related to a specific _Aspect_.  
+   A set of [Content](#content-specifiers) (component values or component field values) and/or [Properties](#property-specifiers) to be assigned to specific components.  A Choice is always related to a specific _Aspect_.  
    For example, possible Choices for the I²C address Aspect could be `0x50`, `0x51`, `0x52`, `0x53`.
 
  * **Configuration:**  
@@ -191,11 +191,13 @@ Basic terms used in this document:
    An entry in a KiVar-specific custom field of a component (symbol or footprint) to be interpreted by the KiVar rule processor.
 
  * **Assignment:**  
-   A group of one or more Records containing Choice Expressions to assign a set of data to the same assignment target (e.g. the component itself, or an existing custom field of the component).
+   A group of one or more Records containing [Choice Expressions](#choice-expressions) to assign a set of data to the same Assignment target (e.g. the [component itself](#component-scope), or an existing [custom field of the component](#field-scope)).
+
+In the following sections, these and other specific KiVar terms are capitalized.
 
 #### Fundamentals
 
-Each component that uses KiVar variation rules must bind to exactly one variation **Aspect** to which all variation **Choices** for that component will then relate to.
+Each component that uses KiVar variation rules must bind to _exactly one_ variation **Aspect** to which all specified variation **Choices** for that component will then relate to.
 
 > [!IMPORTANT]
 > There may exist _multiple_ Aspects per design, and for each Aspect there may exist _multiple_ Choices.  
@@ -229,16 +231,18 @@ KiVar computes possible sets of Aspect and Choice definitions internally by chec
 
 #### Records
 
-The text expressions that describe the variation rules are noted as **Record**s, i.e. as custom field entries with each field's name containing the keyword `Var` in one of several forms.  Records must appear in the component they relate to.
+The text expressions that describe the variation rules are noted as **Record**s, i.e. as custom field entries with each field's name containing the keyword `Var` in one of [several forms](#record-formats).
+
+Records must appear in the component they relate to.
 
 A usual Record contains the following elements:
 
- * [Assignment](#assignments) Target information _(implicit, depending on the [Assignment Scope](#assignment-scopes))_
- * [Choice Expression(s)](#choice-expressions) _(one or more, depending on the [Record Format](#record-formats))_
-   * [Choice Identifier List](#choice-identifier-lists) _(list of affected Choice names)_
-   * [Choice Argument(s)](#choice-arguments) _(data to be assigned to the affected Choices)_
-     * [Content Specifier(s)](#content-specifiers) _(provide data to be used as component value or custom field value)_
-     * [Property Specifier(s)](#property-specifiers) _(provide settings to switch component attributes or footprint features)_
+ * [Assignment](#assignments) Target information: _implicit, depending on the [Assignment Scope](#assignment-scopes)_
+ * [Choice Expression(s)](#choice-expressions): _one or more, depending on the [Record Format](#record-formats)_
+   * [Choice Identifier List](#choice-identifier-lists): _list of affected Choice names_
+   * [Choice Argument(s)](#choice-arguments): _data to be assigned to the affected Choices_
+     * [Content Specifier(s)](#content-specifiers): _provide data to be used as component value or custom field value_
+     * [Property Specifier(s)](#property-specifiers): _provide settings to switch component attributes or footprint features_
 
 There is a special Aspect Specifier Record type, discussed in the [corresponding section](#aspect-identifier).
 
