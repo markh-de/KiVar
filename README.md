@@ -37,17 +37,17 @@ I_LED_MA: 10 20 30 40 50 60 70 80 90 [100] 110 120 130 140 150 JP
 IOEXP_TYPE/ADDR: 9535/0x20 [9535/0x24] 9539/0x74
 ISL91127: [IRAZ] IRNZ
 UVLO_LO/HI: 2.41V/3.40V [3.15V/3.57V]
-VOUT: 1.2V [1.8V] 3.3V
+VOUT: 1.2V [1.8V] 2.5V 3.3V
 
 $ kivar set --assign 'IOEXP_TYPE/ADDR=9539/0x74' --assign 'VOUT=3.3V' --verbose kivar-demo.kicad_pcb 
 Changes (14):
-    Change R38 value from '100kΩ' to '175kΩ' (VOUT=3.3V).
-    Change R38 field 'VarID' from '18' to '33' (VOUT=3.3V).
-    Change R39 value from '100kΩ' to 'DNP' (VOUT=3.3V).
-    Change R39 'Do not populate' from 'false' to 'true' (VOUT=3.3V).
-    Change R39 'Exclude from bill of materials' from 'false' to 'true' (VOUT=3.3V).
-    Change R39 'Exclude from position files' from 'false' to 'true' (VOUT=3.3V).
-    Change R39 solder paste relative clearance from 0.0% to -4200000.0% (VOUT=3.3V).
+    Change R34 value from '100kΩ' to '175kΩ' (VOUT=3.3V).
+    Change R34 field 'VarID' from '18' to '33' (VOUT=3.3V).
+    Change R34 value from '100kΩ' to 'DNP' (VOUT=3.3V).
+    Change R35 'Do not populate' from 'false' to 'true' (VOUT=3.3V).
+    Change R35 'Exclude from bill of materials' from 'false' to 'true' (VOUT=3.3V).
+    Change R35 'Exclude from position files' from 'false' to 'true' (VOUT=3.3V).
+    Change R35 solder paste relative clearance from 0.0% to -4200000.0% (VOUT=3.3V).
     Change U4 value from 'TCA9535PWR' to 'TCA9539PWR' (IOEXP_TYPE/ADDR=9539/0x74).
     Change U4 visibility of 3D model #1 from 'true' to 'false' (IOEXP_TYPE/ADDR=9539/0x74).
     Change U4 visibility of 3D model #2 from 'false' to 'true' (IOEXP_TYPE/ADDR=9539/0x74).
@@ -64,7 +64,7 @@ I_LED_MA: 10 20 30 40 50 60 70 80 90 [100] 110 120 130 140 150 JP
 IOEXP_TYPE/ADDR: 9535/0x20 9535/0x24 [9539/0x74]
 ISL91127: [IRAZ] IRNZ
 UVLO_LO/HI: 2.41V/3.40V [3.15V/3.57V]
-VOUT: 1.2V 1.8V [3.3V]
+VOUT: 1.2V 1.8V 2.5V [3.3V]
 
 $ kivar check kivar-demo.kicad_pcb 
 Check passed.  Matching choices found for complete set of 7 aspect(s).
