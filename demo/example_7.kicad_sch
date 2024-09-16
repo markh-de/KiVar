@@ -6,7 +6,7 @@
 	(paper "A5")
 	(title_block
 		(title "KiVar Demo")
-		(date "2024-09-14")
+		(date "2024-09-16")
 		(rev "0.4.0")
 		(company "Author: Mark Hämmerling <dev@markh.de>")
 		(comment 1 "https://github.com/markh-de/KiVar")
@@ -1552,7 +1552,7 @@
 				(hide yes)
 			)
 		)
-		(property "VarID.Var" "1.2V(12) 1.8V(18) 3.3V(33)"
+		(property "VarID.Var" "1.2V(12) 1.8V(18) 2.5V(25) 3.3V(33)"
 			(at 104.14 57.15 0)
 			(effects
 				(font
@@ -1652,7 +1652,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "eafd09f4-7b5d-4508-95e6-1050dd5abfda")
-		(property "Reference" "U5"
+		(property "Reference" "U6"
 			(at 83.82 46.99 0)
 			(effects
 				(font
@@ -1714,7 +1714,7 @@
 		(instances
 			(project "kivar-demo"
 				(path "/cd745a5c-45fb-4106-85c8-c86c130b6ee7/6cc89fe7-613b-41f0-9c47-85b72f1b3014"
-					(reference "U5")
+					(reference "U6")
 					(unit 1)
 				)
 			)

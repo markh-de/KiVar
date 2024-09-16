@@ -9,7 +9,7 @@
 	(paper "A5" portrait)
 	(title_block
 		(title "KiVar Demo Board")
-		(date "2024-09-14")
+		(date "2024-09-16")
 		(rev "0.4.0")
 		(company "Author: Mark Hämmerling <dev@markh.de>")
 		(comment 3 "https://github.com/markh-de/KiVar")
@@ -144,7 +144,7 @@
 	(net 54 "Net-(R31-Pad2)")
 	(net 55 "+5V")
 	(net 56 "/Example 7: LDO Output Voltage Selection/VOUT")
-	(net 57 "Net-(U7-FB)")
+	(net 57 "Net-(U6-FB)")
 	(footprint "Resistor_SMD:R_0402_1005Metric"
 		(layer "F.Cu")
 		(uuid "03f0f597-4bea-4d96-8a62-ce05d5cbb2fd")
@@ -165,6 +165,7 @@
 		(property "Value" "10Ω"
 			(at 0 1.17 90)
 			(layer "F.Fab")
+			(hide yes)
 			(uuid "e5b56481-7480-4379-9bb4-7210efbcc7a9")
 			(effects
 				(font
@@ -1111,6 +1112,7 @@
 		(property "Value" "0Ω"
 			(at 0 1.17 0)
 			(layer "F.Fab")
+			(hide yes)
 			(uuid "2d7559a5-7a36-4cea-af16-9255402cc611")
 			(effects
 				(font
@@ -2200,6 +2202,7 @@
 		(property "Value" "10Ω"
 			(at 0 1.17 90)
 			(layer "F.Fab")
+			(hide yes)
 			(uuid "c418f7c8-98f1-4d2a-9430-1713a2fc063a")
 			(effects
 				(font
@@ -2896,7 +2899,7 @@
 		(at 100.25 102.95)
 		(descr "SOT, 5 Pin (https://www.jedec.org/sites/default/files/docs/Mo-178c.PDF variant AA), generated with kicad-footprint-generator ipc_gullwing_generator.py")
 		(tags "SOT TO_SOT_SMD")
-		(property "Reference" "U7"
+		(property "Reference" "U6"
 			(at -2.5 -2.5 0)
 			(layer "F.SilkS")
 			(uuid "3b8ef840-10da-42cc-85df-3ab7fd72dbe4")
@@ -2910,6 +2913,7 @@
 		(property "Value" "LDO"
 			(at 0 2.4 0)
 			(layer "F.Fab")
+			(hide yes)
 			(uuid "b3d13915-11ab-4742-8dcc-83cf2cbe7b38")
 			(effects
 				(font
@@ -2958,7 +2962,7 @@
 			)
 		)
 		(property ki_fp_filters "SOT?23*")
-		(path "/6cc89fe7-613b-41f0-9c47-85b72f1b3014/b48acb25-df96-49ca-9c71-fd3dd50df6a6")
+		(path "/6cc89fe7-613b-41f0-9c47-85b72f1b3014/eafd09f4-7b5d-4508-95e6-1050dd5abfda")
 		(sheetname "Example 7: LDO Output Voltage Selection")
 		(sheetfile "example_7.kicad_sch")
 		(attr smd)
@@ -3150,7 +3154,7 @@
 			(size 1.325 0.6)
 			(layers "F.Cu" "F.Paste" "F.Mask")
 			(roundrect_rratio 0.25)
-			(net 57 "Net-(U7-FB)")
+			(net 57 "Net-(U6-FB)")
 			(pinfunction "FB")
 			(pintype "input")
 			(uuid "a59592ad-d8e0-4d2e-8572-c133d818d1e9")
@@ -4677,6 +4681,7 @@
 		(property "Value" "BT_CFG1_6"
 			(at 0 1.9 0)
 			(layer "F.Fab")
+			(hide yes)
 			(uuid "8395c7b0-091a-499a-9dce-a411d047e01c")
 			(effects
 				(font
@@ -4930,7 +4935,7 @@
 		(at 103.75 103.95 180)
 		(descr "Resistor SMD 0402 (1005 Metric), square (rectangular) end terminal, IPC_7351 nominal with elongated pad for handsoldering. (Body size source: IPC-SM-782 page 72, https://www.pcb-3d.com/wordpress/wp-content/uploads/ipc-sm-782a_amendment_1_and_2.pdf), generated with kicad-footprint-generator")
 		(tags "resistor handsolder")
-		(property "Reference" "R40"
+		(property "Reference" "R36"
 			(at -2.75 -0.25 0)
 			(layer "F.SilkS")
 			(uuid "fd1e3d34-8e93-4214-8cc2-00f25f610e06")
@@ -4944,6 +4949,7 @@
 		(property "Value" "100kΩ"
 			(at 0 1.17 0)
 			(layer "F.Fab")
+			(hide yes)
 			(uuid "7c3071d7-26f4-4082-a0fd-939957b62d3a")
 			(effects
 				(font
@@ -5018,7 +5024,7 @@
 			)
 		)
 		(property ki_fp_filters "R_*")
-		(path "/6cc89fe7-613b-41f0-9c47-85b72f1b3014/3f50c3ff-b40d-4df0-9169-afdf76156a52")
+		(path "/6cc89fe7-613b-41f0-9c47-85b72f1b3014/bc19e497-6b5b-4fe8-80f9-031e364ad1a7")
 		(sheetname "Example 7: LDO Output Voltage Selection")
 		(sheetfile "example_7.kicad_sch")
 		(attr smd)
@@ -5147,7 +5153,7 @@
 			(size 0.715 0.64)
 			(layers "F.Cu" "F.Paste" "F.Mask")
 			(roundrect_rratio 0.25)
-			(net 57 "Net-(U7-FB)")
+			(net 57 "Net-(U6-FB)")
 			(pintype "passive")
 			(uuid "12a22874-a7a8-49c6-8505-686ec1205fb4")
 		)
@@ -5397,6 +5403,7 @@
 		(property "Value" "1µF"
 			(at 0 1.43 90)
 			(layer "F.Fab")
+			(hide yes)
 			(uuid "829a7c25-4a69-4ca1-a132-ca9a12c7604f")
 			(effects
 				(font
@@ -5458,7 +5465,7 @@
 			)
 		)
 		(property ki_fp_filters "C_*")
-		(path "/6cc89fe7-613b-41f0-9c47-85b72f1b3014/b17f3c18-7460-4e06-84d9-b5df2575a872")
+		(path "/6cc89fe7-613b-41f0-9c47-85b72f1b3014/218bf016-6c0a-49c9-8d8f-eb4dc7ce0bbb")
 		(sheetname "Example 7: LDO Output Voltage Selection")
 		(sheetfile "example_7.kicad_sch")
 		(attr smd)
@@ -5623,6 +5630,7 @@
 		(property "Value" "0Ω"
 			(at 0 1.17 0)
 			(layer "F.Fab")
+			(hide yes)
 			(uuid "f05794c3-5695-449d-9cc1-7ee6d41818e7")
 			(effects
 				(font
@@ -7053,6 +7061,7 @@
 		(property "Value" "10Ω"
 			(at 0 1.17 90)
 			(layer "F.Fab")
+			(hide yes)
 			(uuid "2db203c8-0c09-4b3f-a7c5-e0bb3cc79735")
 			(effects
 				(font
@@ -7266,6 +7275,7 @@
 		(property "Value" "1µF 50V"
 			(at 0 1.85 0)
 			(layer "F.Fab")
+			(hide yes)
 			(uuid "c19b697c-eddf-4761-a4ce-e0db787d7c31")
 			(effects
 				(font
@@ -7933,6 +7943,7 @@
 		(property "Value" "0Ω"
 			(at 0 1.17 0)
 			(layer "F.Fab")
+			(hide yes)
 			(uuid "9bca9d82-af5e-4fa2-bff4-f4b57bd2b658")
 			(effects
 				(font
@@ -8386,6 +8397,7 @@
 		(property "Value" "6.8µH"
 			(at 0 3.2 0)
 			(layer "F.Fab")
+			(hide yes)
 			(uuid "d500a4ce-07f2-48ff-9d23-28ee36ca8219")
 			(effects
 				(font
@@ -8599,6 +8611,7 @@
 		(property "Value" "BT_CFG1_6"
 			(at 0 1.9 0)
 			(layer "F.Fab")
+			(hide yes)
 			(uuid "e115230a-fd4c-49bf-b8a8-6e8e817e0703")
 			(effects
 				(font
@@ -9103,7 +9116,7 @@
 		(at 100.75 100.2)
 		(descr "Capacitor SMD 0603 (1608 Metric), square (rectangular) end terminal, IPC_7351 nominal, (Body size source: IPC-SM-782 page 76, https://www.pcb-3d.com/wordpress/wp-content/uploads/ipc-sm-782a_amendment_1_and_2.pdf), generated with kicad-footprint-generator")
 		(tags "capacitor")
-		(property "Reference" "C15"
+		(property "Reference" "C13"
 			(at 0 -1.43 0)
 			(layer "F.SilkS")
 			(uuid "8ed5bedf-8ec0-4cfd-86aa-8f5f3ee7f417")
@@ -9117,6 +9130,7 @@
 		(property "Value" "1µF"
 			(at 0 1.43 0)
 			(layer "F.Fab")
+			(hide yes)
 			(uuid "297bba70-9503-4253-bf9d-7360f8295818")
 			(effects
 				(font
@@ -9165,7 +9179,7 @@
 			)
 		)
 		(property ki_fp_filters "C_*")
-		(path "/6cc89fe7-613b-41f0-9c47-85b72f1b3014/26640aef-d385-4129-b363-b71f2a0532bf")
+		(path "/6cc89fe7-613b-41f0-9c47-85b72f1b3014/4b80fb64-166f-458d-b45b-86654c75d6d4")
 		(sheetname "Example 7: LDO Output Voltage Selection")
 		(sheetfile "example_7.kicad_sch")
 		(attr smd)
@@ -9544,6 +9558,7 @@
 		(property "Value" "10Ω"
 			(at 0 1.17 90)
 			(layer "F.Fab")
+			(hide yes)
 			(uuid "aef00cb1-a2f0-40ee-897c-13db6cff63e9")
 			(effects
 				(font
@@ -9743,7 +9758,7 @@
 		(at 103 102.2 -90)
 		(descr "Resistor SMD 0402 (1005 Metric), square (rectangular) end terminal, IPC_7351 nominal with elongated pad for handsoldering. (Body size source: IPC-SM-782 page 72, https://www.pcb-3d.com/wordpress/wp-content/uploads/ipc-sm-782a_amendment_1_and_2.pdf), generated with kicad-footprint-generator")
 		(tags "resistor handsolder")
-		(property "Reference" "R38"
+		(property "Reference" "R34"
 			(at -2.75 -0.25 90)
 			(layer "F.SilkS")
 			(uuid "71c09a3d-3132-46b4-93ec-2f07dc679d2d")
@@ -9757,6 +9772,7 @@
 		(property "Value" "100kΩ"
 			(at 0 1.17 90)
 			(layer "F.Fab")
+			(hide yes)
 			(uuid "607da0fb-eac1-462a-a623-09f03d933bc2")
 			(effects
 				(font
@@ -9804,7 +9820,7 @@
 				)
 			)
 		)
-		(property "Var" "1.2V(0Ω) 1.8V(100kΩ) 3.3V(175kΩ)"
+		(property "Var" "1.2V(0Ω) 1.8V(100kΩ) 2.5V(150kΩ) 3.3V(175kΩ)"
 			(at 0 0 -90)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -9843,7 +9859,7 @@
 				)
 			)
 		)
-		(property "VarID.Var" "1.2V(12) 1.8V(18) 3.3V(33)"
+		(property "VarID.Var" "1.2V(12) 1.8V(18) 2.5V(25) 3.3V(33)"
 			(at 0 0 -90)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -9857,7 +9873,7 @@
 			)
 		)
 		(property ki_fp_filters "R_*")
-		(path "/6cc89fe7-613b-41f0-9c47-85b72f1b3014/396e62e6-ae51-4f7c-a95d-afb5a6329441")
+		(path "/6cc89fe7-613b-41f0-9c47-85b72f1b3014/c6d6cc0f-8dfb-4f89-808e-de168361bda2")
 		(sheetname "Example 7: LDO Output Voltage Selection")
 		(sheetfile "example_7.kicad_sch")
 		(attr smd)
@@ -9986,7 +10002,7 @@
 			(size 0.715 0.64)
 			(layers "F.Cu" "F.Paste" "F.Mask")
 			(roundrect_rratio 0.25)
-			(net 57 "Net-(U7-FB)")
+			(net 57 "Net-(U6-FB)")
 			(pintype "passive")
 			(uuid "f5315d85-fc57-45ae-8d9f-92b812b1d35e")
 		)
@@ -10450,6 +10466,7 @@
 		(property "Value" "10Ω"
 			(at 0 1.17 90)
 			(layer "F.Fab")
+			(hide yes)
 			(uuid "e379275a-3558-4dd0-97ab-af3a71cb4f6d")
 			(effects
 				(font
@@ -11463,6 +11480,7 @@
 		(property "Value" "10kΩ"
 			(at 0 1.17 0)
 			(layer "F.Fab")
+			(hide yes)
 			(uuid "a82c25af-eef4-455b-96eb-d95e8095a322")
 			(effects
 				(font
@@ -11676,6 +11694,7 @@
 		(property "Value" "10µF"
 			(at 0 1.85 0)
 			(layer "F.Fab")
+			(hide yes)
 			(uuid "8d45d3e6-0f5e-46dc-a8ca-852318dd8e0a")
 			(effects
 				(font
@@ -11889,6 +11908,7 @@
 		(property "Value" "0Ω"
 			(at 0 1.17 0)
 			(layer "F.Fab")
+			(hide yes)
 			(uuid "272910b1-56ce-462b-8106-0b710bf3a5eb")
 			(effects
 				(font
@@ -13230,6 +13250,7 @@
 		(property "Value" "BT_CFG1_6"
 			(at 0 1.9 0)
 			(layer "F.Fab")
+			(hide yes)
 			(uuid "078c29bb-3e74-42e4-a673-d9d8037c101f")
 			(effects
 				(font
@@ -13497,6 +13518,7 @@
 		(property "Value" "10Ω"
 			(at 0 1.17 90)
 			(layer "F.Fab")
+			(hide yes)
 			(uuid "924be071-4ebc-436c-8cd5-6134882b5e63")
 			(effects
 				(font
@@ -13710,6 +13732,7 @@
 		(property "Value" "10Ω"
 			(at 0 1.17 90)
 			(layer "F.Fab")
+			(hide yes)
 			(uuid "c2abd06f-f58f-43c4-987d-c119af06ed26")
 			(effects
 				(font
@@ -14163,6 +14186,7 @@
 		(property "Value" "10Ω"
 			(at 0 1.17 90)
 			(layer "F.Fab")
+			(hide yes)
 			(uuid "c2452513-d260-459a-b592-0703db69c9a3")
 			(effects
 				(font
@@ -14590,6 +14614,7 @@
 		(property "Value" "10Ω"
 			(at 0 1.17 90)
 			(layer "F.Fab")
+			(hide yes)
 			(uuid "322eebb2-30e8-453c-832e-180572cfa413")
 			(effects
 				(font
@@ -15514,6 +15539,7 @@
 		(property "Value" "D_Schottky"
 			(at 0 1.43 -90)
 			(layer "F.Fab")
+			(hide yes)
 			(uuid "9e745eed-9645-4671-90d5-3fcbf39628c2")
 			(effects
 				(font
@@ -15749,6 +15775,7 @@
 		(property "Value" "BT_CFG1_6"
 			(at 0 1.9 0)
 			(layer "F.Fab")
+			(hide yes)
 			(uuid "58683db0-31c6-4f8f-be81-f2274cc8f1f5")
 			(effects
 				(font
@@ -16002,7 +16029,7 @@
 		(at 99.875 81.1)
 		(descr "SOT, 6 Pin (https://www.jedec.org/sites/default/files/docs/Mo-178c.PDF variant AB), generated with kicad-footprint-generator ipc_gullwing_generator.py")
 		(tags "SOT TO_SOT_SMD")
-		(property "Reference" "U6"
+		(property "Reference" "U5"
 			(at -3.2 -0.6 0)
 			(layer "F.SilkS")
 			(uuid "42907d01-c316-4924-be9d-a183351a5f6c")
@@ -16016,6 +16043,7 @@
 		(property "Value" "AP3032"
 			(at 0 2.4 0)
 			(layer "F.Fab")
+			(hide yes)
 			(uuid "6f9c2403-c910-4bfa-b173-50961c6df856")
 			(effects
 				(font
@@ -16287,7 +16315,7 @@
 		(at 104.5 102.2 -90)
 		(descr "Resistor SMD 0402 (1005 Metric), square (rectangular) end terminal, IPC_7351 nominal with elongated pad for handsoldering. (Body size source: IPC-SM-782 page 72, https://www.pcb-3d.com/wordpress/wp-content/uploads/ipc-sm-782a_amendment_1_and_2.pdf), generated with kicad-footprint-generator")
 		(tags "resistor handsolder")
-		(property "Reference" "R39"
+		(property "Reference" "R35"
 			(at -2.75 -0.5 90)
 			(layer "F.SilkS")
 			(uuid "aab7eb30-2fea-4ee3-a045-3af0adf42dfd")
@@ -16301,6 +16329,7 @@
 		(property "Value" "100kΩ"
 			(at 0 1.17 90)
 			(layer "F.Fab")
+			(hide yes)
 			(uuid "4470c870-ae20-4219-9a6d-a892f0b5eaaa")
 			(effects
 				(font
@@ -16348,7 +16377,7 @@
 				)
 			)
 		)
-		(property "Var" "1.8V(100kΩ) ?(DNP -s!)"
+		(property "Var" "1.8V(100kΩ) 2.5V(390kΩ) ?(DNP -s!)"
 			(at 0 0 -90)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -16375,7 +16404,7 @@
 			)
 		)
 		(property ki_fp_filters "R_*")
-		(path "/6cc89fe7-613b-41f0-9c47-85b72f1b3014/7f3ffa90-81e0-4f55-831d-7b4e056f9602")
+		(path "/6cc89fe7-613b-41f0-9c47-85b72f1b3014/3607d33e-606c-4f3d-8885-b7dbbedeca45")
 		(sheetname "Example 7: LDO Output Voltage Selection")
 		(sheetfile "example_7.kicad_sch")
 		(attr smd)
@@ -16504,7 +16533,7 @@
 			(size 0.715 0.64)
 			(layers "F.Cu" "F.Paste" "F.Mask")
 			(roundrect_rratio 0.25)
-			(net 57 "Net-(U7-FB)")
+			(net 57 "Net-(U6-FB)")
 			(pintype "passive")
 			(uuid "6b4164c9-ce7f-47be-b5e7-f356799d7505")
 		)

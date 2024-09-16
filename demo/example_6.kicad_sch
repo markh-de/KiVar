@@ -6,7 +6,7 @@
 	(paper "A4")
 	(title_block
 		(title "KiVar Demo")
-		(date "2024-09-14")
+		(date "2024-09-16")
 		(rev "0.4.0")
 		(company "Author: Mark Hämmerling <dev@markh.de>")
 		(comment 1 "https://github.com/markh-de/KiVar")
@@ -2881,7 +2881,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "88f2433f-a129-4956-b0ca-bab5dcb54cae")
-		(property "Reference" "U6"
+		(property "Reference" "U5"
 			(at 104.14 49.53 0)
 			(effects
 				(font
@@ -2946,7 +2946,7 @@
 		(instances
 			(project "kivar-demo"
 				(path "/cd745a5c-45fb-4106-85c8-c86c130b6ee7/efd04459-986c-49c2-bdc3-96a700b4a724"
-					(reference "U6")
+					(reference "U5")
 					(unit 1)
 				)
 			)
