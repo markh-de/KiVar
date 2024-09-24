@@ -1,20 +1,56 @@
 from os import path as os_path
+import json
 import wx
 import wx.lib.agw.hyperlink as hyperlink
 import pcbnew
 try:                        from  kivar_backend import *
 except ModuleNotFoundError: from .kivar_backend import *
 
-# TODO
-# * r/w local configuration file in plugin directory for
-#   * last used window size
-#   * if desired: add a checkbox "keep window open" and save that state
-
 def doc_vcs_ref():
     return f'v{version()}'
 
 def doc_base_url():
     return f'https://doc.kivar.markh.de/{doc_vcs_ref()}/README.md'
+
+class Config:
+    MAIN_WIN  = 'main_window'
+    ERROR_WIN = 'error_window'
+    WIN_SIZE  = 'size'
+
+    def __init__(self):
+        self.config_file = os_path.join(os_path.dirname(__file__), 'kivar_config.json')
+        self.config_data = {}
+        if os_path.exists(self.config_file):
+            with open(self.config_file, 'r') as f:
+                self.config_data = json.load(f)
+        self.inherit_defaults(
+            {
+                Config.MAIN_WIN:  { Config.WIN_SIZE: [900, 680] },
+                Config.ERROR_WIN: { Config.WIN_SIZE: [800, 480] }
+            }
+        )
+
+    def inherit_defaults(self, default_data):
+        Config._extend_config(self.config_data, default_data)
+
+    @staticmethod
+    def _extend_config(config_data, default_data):
+        for key, default_value in default_data.items():
+            if not key in config_data:
+                config_data[key] = default_value
+            elif isinstance(config_data[key], dict) and isinstance(default_value, dict):
+                Config._extend_config(config_data[key], default_value)
+
+    def get_window_size(self, window_key):
+        return wx.Size(self.config_data[window_key][Config.WIN_SIZE])
+
+    def set_window_size(self, window_key, window_size):
+        self.config_data[window_key][Config.WIN_SIZE] = [window_size.GetWidth(), window_size.GetHeight()]
+        return self
+
+    def save(self):
+        with open(self.config_file, 'w') as f:
+            json.dump(dict(sorted(self.config_data.items())), f)
 
 class KiVarPlugin(pcbnew.ActionPlugin):
     def defaults(self):
@@ -132,6 +168,10 @@ class VariantDialog(wx.Dialog):
         ok_button = wx.Button(self, id=wx.ID_OK, label='Update PCB')
         cancel_button = wx.Button(self, id=wx.ID_CANCEL, label='Close')
 
+        ok_button.Bind(wx.EVT_BUTTON, self.on_close)
+        cancel_button.Bind(wx.EVT_BUTTON, self.on_close)
+        self.Bind(wx.EVT_CLOSE, self.on_close)
+
         button_sizer.Add(link, 0, wx.LEFT, 5)
         button_sizer.AddStretchSpacer(1)
         button_sizer.AddButton(ok_button)
@@ -141,7 +181,7 @@ class VariantDialog(wx.Dialog):
         sizer.Add(button_sizer, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 5)
 
         self.SetSizerAndFit(sizer)
-        self.SetSize((900, 680))
+        self.SetSize(Config().get_window_size(Config.MAIN_WIN))
         self.CentreOnParent()
 
     def selections(self):
@@ -157,6 +197,10 @@ class VariantDialog(wx.Dialog):
     def on_change(self, event):
         self.update_list()
         self.Layout()
+
+    def on_close(self, event):
+        config = Config().set_window_size(Config.MAIN_WIN, self.GetSize()).save()
+        event.Skip()
 
     def update_list(self):
         changes = apply_selection(self.fpdict, self.vardict, self.selections(), True)
@@ -245,21 +289,28 @@ class PcbItemListErrorDialog(wx.Dialog):
         link.SetColours(link=default_color, visited=default_color)
         link.SetToolTip('Opens a web browser at ' + help_url())
         link.EnableRollover(False)
-        self.ok_button = wx.Button(self, wx.ID_OK, 'Close')
+        ok_button = wx.Button(self, wx.ID_OK, 'Close')
 
         # Bottom (help link and button)
         button_sizer = wx.BoxSizer(wx.HORIZONTAL)
         button_sizer.Add(link, 0)
         button_sizer.AddStretchSpacer(1)
-        button_sizer.Add(self.ok_button, 0)
+        button_sizer.Add(ok_button, 0)
 
         sizer.Add(button_sizer, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 10)
         sizer.AddSpacer(5)
 
         self.SetSizerAndFit(sizer)
-        self.SetSize((800, 480))
+        self.SetSize(Config().get_window_size(Config.ERROR_WIN))
         self.CentreOnParent()
 
-        self.ok_button.SetFocus()
+        ok_button.Bind(wx.EVT_BUTTON, self.on_close)
+        self.Bind(wx.EVT_CLOSE, self.on_close)
+
+        ok_button.SetFocus()
+
+    def on_close(self, event):
+        config = Config().set_window_size(Config.ERROR_WIN, self.GetSize()).save()
+        event.Skip()
 
 KiVarPlugin().register()
