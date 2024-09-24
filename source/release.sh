@@ -25,7 +25,7 @@ release_pcm() {
     cp "$src_pcm_dir/icon.png" \
        "$tmp_dir/resources/"
 
-    sed "s/<<VERSION>>/$VERSION/g" "$src_pcm_dir/metadata.json.tpl" > "$tmp_dir/metadata.json"
+    sed "s/<<VERSION>>/$VERSION/g" "$src_pcm_dir/metadata-template.json" > "$tmp_dir/metadata.json"
 
     rm  -f "$out_file"
     cd "$tmp_dir"

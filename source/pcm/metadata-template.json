@@ -18,6 +18,9 @@
         "Issue Tracker": "https://github.com/markh-de/KiVar/issues",
         "License": "https://raw.githubusercontent.com/markh-de/KiVar/v<<VERSION>>/LICENSE"
     },
+    "keep_on_update": [
+        ".*/kivar_config\\.json$"
+    ],
     "versions": [
         {
             "version": "<<VERSION>>",
