@@ -20,7 +20,7 @@ from copy import deepcopy
 # TODO more testing!
 
 def version():
-    return '0.4.0'
+    return '0.4.1'
 
 def pcbnew_compatibility_error():
     ver = pcbnew.GetMajorMinorPatchVersion()
