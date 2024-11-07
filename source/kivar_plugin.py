@@ -141,7 +141,7 @@ class VariantDialog(wx.Dialog):
         sizer.Add(var_box_sizer, 12, wx.EXPAND | wx.ALL, 10)
 
         # Changes Text
-        changes_box = wx.StaticBox(self, label='Changes To Be Applied')
+        changes_box = wx.StaticBox(self, label='Changes to Be Applied')
         changes_box_sizer = wx.StaticBoxSizer(changes_box)
         self.changes_list = PcbItemListBox(changes_box, board)
         self.changes_list.SetMinSize((360, 100))
