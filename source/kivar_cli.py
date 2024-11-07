@@ -317,7 +317,7 @@ def main():
         compatibility_problem = pcbnew_compatibility_error()
         if compatibility_problem is not None:
             ErrMsg().c().text('Compatibility error:').flush()
-            ErrMsg().text(compatibility_problem)
+            ErrMsg().text(compatibility_problem).flush()
             exitcode = 3
         else:
             cmd = args.command
