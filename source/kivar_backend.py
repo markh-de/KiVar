@@ -20,7 +20,7 @@ from copy import deepcopy
 # TODO more testing!
 
 def version():
-    return '0.4.1'
+    return '0.4.2-dev1'
 
 def pcbnew_compatibility_error():
     ver = pcbnew.GetMajorMinorPatchVersion()
@@ -47,17 +47,45 @@ def legacy_expressions_found(fpdict):
             if field == 'KiVar.Rule' and fpdict[uuid][Key.FIELDS][field]: found += 1
     return found
 
-class FootprintPasteMargin:
-    OFFSET = -42000.00
-    TOLERANCE = 100.00
+class PasteRatio:
+    OFFSET      = -42000.0
+    TOLERANCE   =    100.0
+    INHERIT     = -42420.0
+    INHERIT_EPS =      0.1
 
-def footprint_paste_state(paste_margin_ratio):
-    if paste_margin_ratio <= (FootprintPasteMargin.OFFSET + FootprintPasteMargin.TOLERANCE) and paste_margin_ratio >= (FootprintPasteMargin.OFFSET - FootprintPasteMargin.TOLERANCE):
-        state = False
-    elif paste_margin_ratio <= (FootprintPasteMargin.TOLERANCE) and paste_margin_ratio >= (-FootprintPasteMargin.TOLERANCE):
-        state = True
-    else:
-        state = None
+class PasteMode:
+    INVALID         = 0
+    ON_IS_INHERIT   = 1
+    ON_WITH_RATIO   = 2
+    OFF_WAS_INHERIT = 3
+    OFF_WAS_RATIO   = 4
+
+def paste_mode_from_ratio(pratio):
+    mode = PasteMode.INVALID
+    if pratio is None:
+        mode = PasteMode.ON_IS_INHERIT
+    elif pratio <= (PasteRatio.TOLERANCE) and pratio >= (-PasteRatio.TOLERANCE):
+        mode = PasteMode.ON_WITH_RATIO
+    elif pratio <= (PasteRatio.INHERIT + PasteRatio.INHERIT_EPS) and pratio >= (PasteRatio.INHERIT - PasteRatio.INHERIT_EPS):
+        mode = PasteMode.OFF_WAS_INHERIT
+    elif pratio <= (PasteRatio.OFFSET + PasteRatio.TOLERANCE) and pratio >= (PasteRatio.OFFSET - PasteRatio.TOLERANCE):
+        mode = PasteMode.OFF_WAS_RATIO
+    return mode
+
+def paste_state_from_ratio(pratio):
+    mode = paste_mode_from_ratio(pratio)
+    state = None
+    if   mode in (PasteMode.ON_IS_INHERIT, PasteMode.ON_WITH_RATIO):   state = True
+    elif mode in (PasteMode.OFF_WAS_INHERIT, PasteMode.OFF_WAS_RATIO): state = False
+    return state
+
+def paste_ratio_text(pratio):
+    if pratio is None: s = 'Inherited'
+    else:              s = f'{round(pratio*100, 6)}%'
+    return s
+
+def convert_attrib_prop_state(prop_code, state):
+    if prop_code in inverted_prop_codes(): state = not state
     return state
 
 def build_fpdict(board):
@@ -67,23 +95,22 @@ def build_fpdict(board):
         # if UUID is already present, skip any footprint with same UUID.
         # TODO return error if same UUIDs are found. silently ignoring entries is bad.
         if not uuid in fpdict:
+            fields_text = fp.GetFieldsText()
+            paste_margin_ratio = fp.GetLocalSolderPasteMarginRatio()
             fpdict[uuid] = {}
             fpdict[uuid][Key.REF] = fp.GetReferenceAsString()
-            fields_text = fp.GetFieldsText()
             fpdict[uuid][Key.FIELDS] = {}
             for field in fields_text:
                 if field_accepted(field): fpdict[uuid][Key.FIELDS][field] = fields_text[field]
             fpdict[uuid][Key.VALUE] = fp.GetValue()
             fpdict[uuid][Key.PROPS] = {}
-            fpdict[uuid][Key.PROPS][PropCode.FIT] = convert_prop_attrib(PropCode.FIT, fp.IsDNP())
-            fpdict[uuid][Key.PROPS][PropCode.BOM] = convert_prop_attrib(PropCode.BOM, fp.IsExcludedFromBOM())
-            fpdict[uuid][Key.PROPS][PropCode.POS] = convert_prop_attrib(PropCode.POS, fp.IsExcludedFromPosFiles())
-            # Solder paste property is handled differently. The fpdict prop contains the raw ratio value, but
-            # the vardict contains the bool value. This is done because the raw value is required in some places.
-            # Whenever both props need to be compared or set, proper conversions must be done.
-            # TODO tidy this up with generic converter functions that automatically trigger for solder paste props.
-            fpdict[uuid][Key.PROPS][PropCode.SOLDER] = fp.GetLocalSolderPasteMarginRatio()
+            fpdict[uuid][Key.PROPS][PropCode.FIT]    = convert_attrib_prop_state(PropCode.FIT,    fp.IsDNP())
+            fpdict[uuid][Key.PROPS][PropCode.BOM]    = convert_attrib_prop_state(PropCode.BOM,    fp.IsExcludedFromBOM())
+            fpdict[uuid][Key.PROPS][PropCode.POS]    = convert_attrib_prop_state(PropCode.POS,    fp.IsExcludedFromPosFiles())
+            fpdict[uuid][Key.PROPS][PropCode.SOLDER] = paste_state_from_ratio(paste_margin_ratio)
             for i, model in enumerate(fp.Models()): apply_indexed_prop(fpdict[uuid][Key.PROPS], PropCode.MODEL, i + 1, model.m_Show)
+            fpdict[uuid][Key.RAW] = {}
+            fpdict[uuid][Key.RAW][Key.PRATIO] = paste_margin_ratio
     return fpdict
 
 def store_fpdict(board, fpdict):
@@ -98,18 +125,20 @@ def store_fpdict(board, fpdict):
             new_prop_value = fpdict[uuid][Key.PROPS][prop_id]
             if new_prop_value is not None:
                 old_prop_value = None
-                if   prop_code == PropCode.FIT:    old_prop_value = convert_prop_attrib(PropCode.FIT, fp.IsDNP())
-                elif prop_code == PropCode.BOM:    old_prop_value = convert_prop_attrib(PropCode.BOM, fp.IsExcludedFromBOM())
-                elif prop_code == PropCode.POS:    old_prop_value = convert_prop_attrib(PropCode.POS, fp.IsExcludedFromPosFiles())
-                elif prop_code == PropCode.SOLDER: old_prop_value = fp.GetLocalSolderPasteMarginRatio() # special
-                elif prop_code == PropCode.MODEL:  old_prop_value = fp.Models()[prop_index - 1].m_Show
+                if   prop_code == PropCode.FIT:   old_prop_value = convert_attrib_prop_state(prop_code, fp.IsDNP())
+                elif prop_code == PropCode.BOM:   old_prop_value = convert_attrib_prop_state(prop_code, fp.IsExcludedFromBOM())
+                elif prop_code == PropCode.POS:   old_prop_value = convert_attrib_prop_state(prop_code, fp.IsExcludedFromPosFiles())
+                elif prop_code == PropCode.MODEL: old_prop_value = convert_attrib_prop_state(prop_code, fp.Models()[prop_index - 1].m_Show)
                 if old_prop_value is not None:
                     if old_prop_value != new_prop_value:
-                        if   prop_code == PropCode.FIT:    fp.SetDNP(convert_prop_attrib(PropCode.FIT, new_prop_value))
-                        elif prop_code == PropCode.BOM:    fp.SetExcludedFromBOM(convert_prop_attrib(PropCode.BOM, new_prop_value))
-                        elif prop_code == PropCode.POS:    fp.SetExcludedFromPosFiles(convert_prop_attrib(PropCode.POS, new_prop_value))
-                        elif prop_code == PropCode.SOLDER: fp.SetLocalSolderPasteMarginRatio(new_prop_value) # special
-                        elif prop_code == PropCode.MODEL:  fp.Models()[prop_index - 1].m_Show = new_prop_value
+                        if   prop_code == PropCode.FIT:   fp.SetDNP(convert_attrib_prop_state(prop_code, new_prop_value))
+                        elif prop_code == PropCode.BOM:   fp.SetExcludedFromBOM(convert_attrib_prop_state(prop_code, new_prop_value))
+                        elif prop_code == PropCode.POS:   fp.SetExcludedFromPosFiles(convert_attrib_prop_state(prop_code, new_prop_value))
+                        elif prop_code == PropCode.MODEL: fp.Models()[prop_index - 1].m_Show = convert_attrib_prop_state(prop_code, new_prop_value)
+        old_pratio_value = fp.GetLocalSolderPasteMarginRatio()
+        new_pratio_value = fpdict[uuid][Key.RAW][Key.PRATIO]
+        if old_pratio_value != new_pratio_value:
+            fp.SetLocalSolderPasteMarginRatio(new_pratio_value)
         old_fp_field_values = fp.GetFieldsText()
         for field in fpdict[uuid][Key.FIELDS]:
             old_fp_field_value = old_fp_field_values[field]
@@ -165,13 +194,15 @@ class Key:
     PROPS   = 'p'
     REF     = 'R'
     FIELDS  = 'F'
+    RAW     = 'Raw'
+    PRATIO  = 'PR'
 
 class PropCode: # all of these must be uppercase
-    FIT = 'F'
-    BOM = 'B'
-    POS = 'P'
-    SOLDER = 'S' # special: fpdict contains ratio, not bool value
-    MODEL = 'M'
+    FIT    = 'F'
+    BOM    = 'B'
+    POS    = 'P'
+    SOLDER = 'S'
+    MODEL  = 'M'
 
 class PropGroup:
     ASSEMBLE = '!'
@@ -217,11 +248,6 @@ def prop_abbrev(prop_id):
         if prop_index is not None:         name += '#' + str(prop_index)
     return name
 
-def convert_prop_attrib(prop_code, state):
-    # inverts prop/attrib state (conversion between prop and attrib state, and vice versa), depending on prop_code
-    if prop_code in inverted_prop_codes(): state = not state
-    return state
-
 def mismatches_fp_choice(fpdict_branch, vardict_choice_branch):
     # TODO in returned mismatches, add mismatching fp and choice states
     mismatches = []
@@ -232,7 +258,6 @@ def mismatches_fp_choice(fpdict_branch, vardict_choice_branch):
     for prop_id in fpdict_branch[Key.PROPS]:
         choice_prop = prop_state(vardict_choice_branch[Key.PROPS], prop_id)
         fp_prop = prop_state(fpdict_branch[Key.PROPS], prop_id)
-        if prop_id == PropCode.SOLDER: fp_prop = footprint_paste_state(fp_prop) # special
         if choice_prop is not None and fp_prop is not None and choice_prop != fp_prop:
             mismatches.append(f"prop '{prop_id}'")
     return mismatches
@@ -288,26 +313,35 @@ def apply_selection(fpdict, vardict, selection, dry_run = False):
                 changes.append([uuid, ref, f"Change {ref} value from '{escape_str(old_value)}' to '{escape_str(new_value)}' ({choice_text})."])
                 if not dry_run: fpdict[uuid][Key.VALUE] = new_value
         for prop_id in fpdict[uuid][Key.PROPS]:
-            new_value = vardict[uuid][Key.CMP][selected_choice][Key.PROPS][prop_id]
-            if new_value is not None:
-                old_value_text = None
-                new_value_text = None
-                old_value = fpdict[uuid][Key.PROPS][prop_id]
-                if prop_id == PropCode.SOLDER: # solder paste prop requires conversion
-                    old_paste_state = footprint_paste_state(old_value)
-                    if old_paste_state is not None and old_paste_state != new_value:
-                        if new_value: new_paste_ratio = old_value - FootprintPasteMargin.OFFSET
-                        else:         new_paste_ratio = old_value + FootprintPasteMargin.OFFSET
-                        old_value_text = f'{round(old_value*100, 6)}%'
-                        new_value_text = f'{round(new_paste_ratio*100, 6)}%'
-                        new_value = new_paste_ratio
-                else:
-                    if old_value is not None and old_value != new_value:
-                        old_value_text = f"'{bool_as_text(convert_prop_attrib(prop_id, old_value))}'"
-                        new_value_text = f"'{bool_as_text(convert_prop_attrib(prop_id, new_value))}'"
-                if not (old_value_text is None or new_value_text is None):
-                    changes.append([uuid, ref, f"Change {ref} {prop_attrib_descr(prop_id)} from {old_value_text} to {new_value_text} ({choice_text})."])
-                    if not dry_run: fpdict[uuid][Key.PROPS][prop_id] = new_value
+            new_state = vardict[uuid][Key.CMP][selected_choice][Key.PROPS][prop_id]
+            if new_state is not None:
+                old_state = fpdict[uuid][Key.PROPS][prop_id]
+                if old_state is not None and new_state != old_state:
+                    old_state_text = None
+                    new_state_text = None
+                    new_pratio = None
+                    if prop_id == PropCode.SOLDER:
+                        # calculate new solder paste margin ratio
+                        old_pratio = fpdict[uuid][Key.RAW][Key.PRATIO]
+                        old_pmode = paste_mode_from_ratio(old_pratio)
+                        if new_state: # off -> on
+                            if   old_pmode == PasteMode.OFF_WAS_INHERIT: new_pratio = None
+                            elif old_pmode == PasteMode.OFF_WAS_RATIO:   new_pratio = old_pratio - PasteRatio.OFFSET
+                            else: raise ValueError(f"Unexpected old paste mode ({old_pmode}) in OFF-to-ON transition")
+                        else: # on -> off
+                            if   old_pmode == PasteMode.ON_IS_INHERIT: new_pratio = PasteRatio.INHERIT
+                            elif old_pmode == PasteMode.ON_WITH_RATIO: new_pratio = old_pratio + PasteRatio.OFFSET
+                            else: raise ValueError(f"Unexpected old paste mode ({old_pmode}) in ON-to-OFF transition")
+                        old_state_text = paste_ratio_text(old_pratio)
+                        new_state_text = paste_ratio_text(new_pratio)
+                    else:
+                        old_state_text = f"'{bool_as_text(convert_attrib_prop_state(prop_id, old_state))}'"
+                        new_state_text = f"'{bool_as_text(convert_attrib_prop_state(prop_id, new_state))}'"
+                    if not (old_state_text is None or new_state_text is None):
+                        changes.append([uuid, ref, f"Change {ref} {prop_attrib_descr(prop_id)} from {old_state_text} to {new_state_text} ({choice_text})."])
+                        if not dry_run:
+                            fpdict[uuid][Key.PROPS][prop_id] = new_state
+                            if prop_id == PropCode.SOLDER: fpdict[uuid][Key.RAW][Key.PRATIO] = new_pratio
         for field in vardict[uuid][Key.FLD]:
             new_field_value = vardict[uuid][Key.FLD][field][selected_choice][Key.VALUE]
             if new_field_value is not None:
@@ -680,11 +714,11 @@ def build_vardict(fpdict):
     # Check that all solder paste margin values match one of the two allowed ranges (only if the corresponding property is used, else the current value is ignored)
     for uuid in vardict:
         for choice in vardict[uuid][Key.CMP]:
-            if PropCode.SOLDER in vardict[uuid][Key.CMP][choice][Key.PROPS] and vardict[uuid][Key.CMP][choice][Key.PROPS][PropCode.SOLDER] is not None:
-                ratio = fpdict[uuid][Key.PROPS][PropCode.SOLDER]
-                if footprint_paste_state(ratio) is None:
+            if (PropCode.SOLDER in vardict[uuid][Key.CMP][choice][Key.PROPS]) and (not vardict[uuid][Key.CMP][choice][Key.PROPS][PropCode.SOLDER] is None) and (Key.PRATIO in fpdict[uuid][Key.RAW]):
+                pratio = fpdict[uuid][Key.RAW][Key.PRATIO]
+                if paste_state_from_ratio(pratio) is None:
                     ref = fpdict[uuid][Key.REF]
-                    errors.append([uuid, ref, f"{ref}: Cannot classify current solder paste relative clearance ({round(ratio*100, 5)}%) to be used for '{prop_abbrev(PropCode.SOLDER)}' property."])
+                    errors.append([uuid, ref, f"{ref}: Cannot classify current solder paste relative clearance ({paste_ratio_text(pratio)}) to be used for '{prop_abbrev(PropCode.SOLDER)}' property."])
                     break
     # Check that all (indexed) properties are really present in the fpdict (extra loops for dedicated break handling)
     for uuid in vardict:
