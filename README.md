@@ -372,7 +372,7 @@ Additionally, the following Properties allow controlling footprint _features_:
 > For indexed Properties, i.e. Properties including an integer index value, each index is treated as an individual and independent Property.  For example, the Properties _Model#1_ and _Model#2_ do not affect each other.  This independence also applies to [Default Property Inheritance](#default-property-inheritance) and [Implicit Property Defaults](#implicit-property-defaults) discussed below.
 
 > [!NOTE]
-> As KiCad does not provide a dedicated footprint attribute for disabling solder paste application, KiVar instead makes use of the _solder paste relative clearance_ value.  To disable or enable solder paste application for a footprint, KiVar applies or removes an offset value of &minus;4,200,000%.  This technique allows retaining user-provided clearance values.  However, in order to ensure safe classification of KiVar-applied solder paste control, those user-provided relative clearance values must be in the range from &minus;10,000% to &plus;10,000%.
+> As KiCad does not provide a dedicated footprint attribute for suppressing solder paste application, KiVar instead makes use of the _solder paste relative clearance_ value.  To disable or enable solder paste application for a footprint, KiVar applies or removes negative offset values to/from that clearance value.  This technique allows almost transparent operation and retaining user-provided clearance values.  However, in order to ensure safe classification of KiVar-applied solder paste clearance control, those user-provided relative clearance values must be in the range from &minus;10,000% to &plus;10,000%.
 
 ###### Group Properties
 
