@@ -1,5 +1,4 @@
 import pcbnew
-from copy import deepcopy
 
 # Note about field case-sensitivity:
 # As long as KiCad can easily be tricked* into having multiple fields whose names only differ in casing, we
@@ -20,7 +19,7 @@ from copy import deepcopy
 # TODO more testing!
 
 def version():
-    return '0.4.2-dev1'
+    return '0.4.2-dev2'
 
 def pcbnew_compatibility_error():
     ver = pcbnew.GetMajorMinorPatchVersion()
@@ -730,22 +729,35 @@ def build_vardict(fpdict):
                     errors.append([uuid, ref, f"{ref}: Cannot match property '{prop_abbrev(prop_id)}' to footprint (probably index out of bounds)."])
     if not errors:
         # Check for ambiguous choices (only if data is valid so far)
+        check_dict = {} # structure: /aspect/choice/uuid/...
+        for uuid in vardict:
+            aspect = vardict[uuid][Key.ASPECT]
+            if not aspect in check_dict: check_dict[aspect] = {}
+            for choice in all_choices[aspect]:
+                if not choice in check_dict[aspect]: check_dict[aspect][choice] = {}
+                if not uuid in check_dict[aspect][choice]: check_dict[aspect][choice][uuid] = {}
+                # copy reference to component-scope sub-tree
+                check_dict[aspect][choice][uuid][Key.CMP] = vardict[uuid][Key.CMP][choice]
+                # copy references to field-scope sub-trees (per field)
+                if not Key.FLD in check_dict[aspect][choice][uuid]: check_dict[aspect][choice][uuid][Key.FLD] = {}
+                for field in vardict[uuid][Key.FLD]:
+                    if not field in check_dict[aspect][choice][uuid][Key.FLD]: check_dict[aspect][choice][uuid][Key.FLD][field] = {}
+                    check_dict[aspect][choice][uuid][Key.FLD][field] = vardict[uuid][Key.FLD][field][choice]
         for aspect in sorted(all_choices, key=natural_sort_key):
             choices = sorted(all_choices[aspect], key=natural_sort_key)
-            for choice_a in choices:
-                fpdict_a = deepcopy(fpdict)
-                apply_selection(fpdict_a, vardict, {aspect: choice_a})
+            for choice_a in choices: # matrix dimension 1
                 ambiguous = []
-                for choice_b in choices:
+                for choice_b in choices: # matrix dimension 2
                     if choice_a == choice_b:
-                        if ambiguous: break
-                        else: continue
-                    fpdict_b = deepcopy(fpdict)
-                    apply_selection(fpdict_b, vardict, {aspect: choice_b})
-                    if fpdict_a == fpdict_b: ambiguous.append(f"'{escape_str(choice_b)}'")
+                        # at center. if we found an ambiguity already, continue to collect all for this dimension
+                        # (for error reporting) ...
+                        if ambiguous: continue
+                        # ... but if not, then it's sufficient to check one half of the matrix.
+                        else: break
+                    if check_dict[aspect][choice_a] == check_dict[aspect][choice_b]:
+                        ambiguous.append(f"'{escape_str(choice_b)}'")
                 if ambiguous:
                     errors.append([None, '0', f"Illegal ambiguity: Aspect '{escape_str(aspect)}' choice '{escape_str(choice_a)}' is identical with choice(s) {', '.join(ambiguous)}."])
-                    break
     if errors: vardict = {} # make sure an incomplete vardict cannot be used by the caller
     return vardict, errors
 
