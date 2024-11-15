@@ -19,7 +19,7 @@ import pcbnew
 # TODO more testing!
 
 def version():
-    return '0.4.2-dev2'
+    return '0.4.2-dev3'
 
 def pcbnew_compatibility_error():
     ver = pcbnew.GetMajorMinorPatchVersion()
@@ -696,6 +696,9 @@ def build_vardict(fpdict):
             valid = True
         if not valid: continue
     all_choices = get_choice_dict(vardict)
+    for aspect in all_choices:
+        if len(all_choices[aspect]) == 0:
+            errors.append([None, '0', f"Aspect '{escape_str(aspect)}' has no choices defined."])
     for uuid in fld_dict:
         ref = fpdict[uuid][Key.REF]
         aspect = vardict[uuid][Key.ASPECT]
