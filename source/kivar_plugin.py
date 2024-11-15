@@ -86,7 +86,7 @@ def pcbnew_parent_window():
     return wx.FindWindowByName('PcbFrame')
 
 def show_selection_dialog(board, fpdict, vardict):
-    dialog = VariantDialog(board, fpdict, vardict)
+    dialog = VariantDialog(pcbnew_parent_window(), board, fpdict, vardict)
     result = dialog.ShowModal()
     dialog.Destroy()
     if result == wx.ID_OK:
@@ -95,8 +95,8 @@ def show_selection_dialog(board, fpdict, vardict):
         pcbnew.Refresh()
 
 class VariantDialog(wx.Dialog):
-    def __init__(self, board, fpdict, vardict):
-        super().__init__(pcbnew_parent_window(), title=f'Variant Selection | KiVar {version()}', style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER | wx.MAXIMIZE_BOX)
+    def __init__(self, parent, board, fpdict, vardict):
+        super().__init__(parent=parent, title=f'Variant Selection | KiVar {version()}', style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER | wx.MAXIMIZE_BOX)
 
         self.board = board
         self.vardict = vardict
@@ -207,13 +207,13 @@ class VariantDialog(wx.Dialog):
         self.changes_list.set_item_list(sorted(changes, key=lambda x: natural_sort_key(x[1])))
 
 def show_missing_rules_dialog(legacy_found=0):
-    dialog = MissingRulesDialog(legacy_found)
+    dialog = MissingRulesDialog(pcbnew_parent_window(), legacy_found)
     dialog.ShowModal()
     dialog.Destroy()
 
 class MissingRulesDialog(wx.Dialog):
-    def __init__(self, legacy_found=0):
-        super().__init__(pcbnew_parent_window(), title=f'Missing Rule Definitions | KiVar {version()}', style=wx.DEFAULT_DIALOG_STYLE)
+    def __init__(self, parent, legacy_found=0):
+        super().__init__(parent=parent, title=f'Missing Rule Definitions | KiVar {version()}', style=wx.DEFAULT_DIALOG_STYLE)
 
         sizer = wx.BoxSizer(wx.VERTICAL)
 
@@ -242,13 +242,13 @@ class MissingRulesDialog(wx.Dialog):
         self.SetSizerAndFit(sizer)
 
 def show_error_dialog(errors, board=None):
-    dialog = PcbItemListErrorDialog(f'Rule Processing Errors | KiVar {version()}', sorted(errors, key=lambda x: natural_sort_key(x[1])), board) # sort by text
+    dialog = PcbItemListErrorDialog(pcbnew_parent_window(), f'Rule Processing Errors | KiVar {version()}', sorted(errors, key=lambda x: natural_sort_key(x[1])), board) # sort by text
     dialog.ShowModal()
     dialog.Destroy()
 
 class PcbItemListBox(wx.ListBox):
     def __init__(self, parent, board=None):
-        super().__init__(parent, style=wx.LB_SINGLE | wx.LB_HSCROLL)
+        super().__init__(parent=parent, style=wx.LB_SINGLE | wx.LB_HSCROLL)
         self.board = board
         self.uuids = []
         self.Bind(wx.EVT_LISTBOX, self.on_list_item_selected)
@@ -270,8 +270,8 @@ class PcbItemListBox(wx.ListBox):
                     pcbnew.FocusOnItem(fp)
 
 class PcbItemListErrorDialog(wx.Dialog):
-    def __init__(self, title, itemlist, board=None):
-        super().__init__(pcbnew_parent_window(), title=title, style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER | wx.MAXIMIZE_BOX)
+    def __init__(self, parent, title, itemlist, board=None):
+        super().__init__(parent=parent, title=title, style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER | wx.MAXIMIZE_BOX)
         self.refs = []
         sizer = wx.BoxSizer(wx.VERTICAL)
 
