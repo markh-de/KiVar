@@ -19,7 +19,7 @@ import pcbnew
 # TODO more testing!
 
 def version():
-    return '0.4.2-dev3'
+    return '0.4.2-dev4'
 
 def pcbnew_compatibility_error():
     ver = pcbnew.GetMajorMinorPatchVersion()
@@ -748,20 +748,21 @@ def build_vardict(fpdict):
                     check_dict[aspect][choice][uuid][Key.FLD][field] = vardict[uuid][Key.FLD][field][choice]
         for aspect in sorted(all_choices, key=natural_sort_key):
             choices = sorted(all_choices[aspect], key=natural_sort_key)
-            for choice_a in choices: # matrix dimension 1
+            reported = []
+            for choice_a in choices: # matrix rows
+                if choice_a in reported: continue
                 ambiguous = []
-                for choice_b in choices: # matrix dimension 2
-                    if choice_a == choice_b:
-                        # at center. if we found an ambiguity already, continue to collect all for this dimension
-                        # (for error reporting) ...
-                        if ambiguous: continue
-                        # ... but if not, then it's sufficient to check one half of the matrix.
-                        else: break
-                    if check_dict[aspect][choice_a] == check_dict[aspect][choice_b]:
-                        ambiguous.append(f"'{escape_str(choice_b)}'")
+                for choice_b in reversed(choices): # matrix columns
+                    if choice_a == choice_b: break # at main diagonal, only check upper triangle
+                    if not choice_b in reported:
+                        if check_dict[aspect][choice_a] == check_dict[aspect][choice_b]:
+                            ambiguous.append(choice_b)
                 if ambiguous:
-                    errors.append([None, '0', f"Illegal ambiguity: Aspect '{escape_str(aspect)}' choice '{escape_str(choice_a)}' is identical with choice(s) {', '.join(ambiguous)}."])
-    if errors: vardict = {} # make sure an incomplete vardict cannot be used by the caller
+                    ambiguous.append(choice_a)
+                    choice_names = map(lambda x: f"'{escape_str(x)}'", reversed(ambiguous))
+                    errors.append([None, '0', f"Illegal ambiguity: Aspect '{escape_str(aspect)}' has equivalent choices {', '.join(choice_names)}."])
+                    reported.extend(ambiguous)
+    if errors: vardict = None # make sure an incomplete vardict cannot be used by the caller
     return vardict, errors
 
 def get_choice_dict(vardict):
