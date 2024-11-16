@@ -94,9 +94,13 @@ Key concepts of KiVar are:
 
 ## Supported KiCad Versions
 
-KiVar releases 0.2.0 and later require at least **KiCad release 8**.
+KiVar Releases            | Supported KiCad Releases
+------------------------- | ------------------------
+0.0.1 &ndash; 0.1.2       | 7.x
+0.2.0 &ndash; _latest_    | 8.x
+0.4.2 &ndash; _latest_    | 9.x _(Nightly)_
 
-KiVar uses the Python API wrapper for pcbnew, the KiCad PCB Editor.
+KiVar currently uses the SWIG-based Python bindings of pcbnew (KiCad PCB Editor).
 
 ## Installation
 
