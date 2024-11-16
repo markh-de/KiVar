@@ -19,7 +19,7 @@ import pcbnew
 # TODO more testing!
 
 def version():
-    return '0.4.2-dev4'
+    return '0.4.2'
 
 def pcbnew_compatibility_error():
     ver = pcbnew.GetMajorMinorPatchVersion()
