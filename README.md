@@ -1,7 +1,5 @@
 # KiVar − PCB Assembly Variants for KiCad
 
-## Introduction
-
 <img align='right' style='width:6em;' src='doc/kivar-icon.inkscape.svg'>
 
 KiVar is a tool for **KiCad PCB Assembly Variant selection**, provided as platform-independent
@@ -10,6 +8,16 @@ KiVar is a tool for **KiCad PCB Assembly Variant selection**, provided as platfo
  * **Command Line Application**.
 
 PCB component variation rules are defined in component (i.e. symbol or footprint) fields.  This allows for the complete variant configuration to be contained in the schematic and board files without requiring external data outside the native KiCad design files.
+
+## Featured at KiCon Europe 2024
+
+<a href='https://youtu.be/SpXH380KWUA' target='_blank'><img align='right' style='width:14em;' src='https://i.ytimg.com/vi/SpXH380KWUA/mqdefault.jpg'></a>
+
+For a presentation of the **concepts** and **features** of KiVar, including a **short tutorial**, you can watch the talk ["**Managing PCB Assembly Variants with KiVar**"](https://youtu.be/SpXH380KWUA), which was recorded at KiCon Europe 2024 in Bochum, Germany.
+
+The presentation **slides** including the embedded screencast videos can be downloaded from the [pretalx page](https://pretalx.kicad.org/kicon-europe-2024/talk/QMYVCL/).
+
+Many thanks to Seth for the invitation.
 
 ## Features
 
