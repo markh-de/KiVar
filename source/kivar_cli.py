@@ -4,8 +4,11 @@ import os
 import sys
 import argparse
 import pcbnew
-try:                        from  kivar_backend import *
-except ModuleNotFoundError: from .kivar_backend import *
+
+try:                        from  kivar_engine  import *
+except ModuleNotFoundError: from .kivar_engine  import *
+try:                        from  kivar_version import version
+except ModuleNotFoundError: from .kivar_version import version
 
 # TODO for list, allow another structure: aspect -> component -> choice (in addition to current aspect -> choice -> component)
 # TODO make use of verbose options, where applicable

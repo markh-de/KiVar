@@ -1,6 +1,6 @@
 #!/bin/sh -e
 
-release_pcm() {
+release_plugin_pcm() {
     out_base_name="${RELEASE_NAME}-${VERSION}-pcm.zip"
     meta_version="$VERSION"
     meta_status="testing"
@@ -14,10 +14,12 @@ release_pcm() {
 
     mkdir -p "$tmp_dir/plugins"
 
-    cp "$SRC_DIR/kivar_plugin.py" \
-       "$tmp_dir/plugins/__init__.py"
-
-    cp "$SRC_DIR/kivar_backend.py" \
+    cp "$SRC_DIR/__init__.py" \
+       "$SRC_DIR/kivar_engine.py" \
+       "$SRC_DIR/kivar_forms.py" \
+       "$SRC_DIR/kivar_gui.py" \
+       "$SRC_DIR/kivar_gui_custom.py" \
+       "$SRC_DIR/kivar_version.py" \
        "$SRC_DIR/$ID-icon-"*.png \
        "$tmp_dir/plugins/"
 
@@ -50,7 +52,7 @@ EOF
     echo '>>>'
 }
 
-release_pypi() {
+release_cli_pypi() {
     release_dir="$RELEASE_DIR"
     src_tmp_dir="$SRC_DIR/pypi"
     tmp_dir=$(mktemp -d)
@@ -61,7 +63,8 @@ release_pypi() {
 
     cp "$src_tmp_dir/__init__.py" \
        "$SRC_DIR/kivar_cli.py" \
-       "$SRC_DIR/kivar_backend.py" \
+       "$SRC_DIR/kivar_engine.py" \
+       "$SRC_DIR/kivar_version.py" \
        "$tmp_dir/$RELEASE_NAME/"
 
     cp "$src_tmp_dir/README.md" \
@@ -77,29 +80,10 @@ release_pypi() {
     rm -rf "$tmp_dir"
 }
 
-release_zip() {
-    release_dir="$RELEASE_DIR"
-    tmp_dir=$(mktemp -d)
-    out_file="$release_dir/${RELEASE_NAME}-${VERSION}-plugin.zip"
-
-    cp "$SRC_DIR/$ID-"*.png \
-       "$SRC_DIR/kivar_plugin.py" \
-       "$SRC_DIR/kivar_backend.py" \
-       "$tmp_dir/"
-
-    rm -f "$out_file"
-
-    cd "$tmp_dir"
-    zip -r "$out_file" .
-    cd - >/dev/null
-
-    rm -rf "$tmp_dir"
-}
-
 # main
 
 SRC_DIR=$(readlink -f "$(dirname "$0")")
-VERSION=$(python3 ${SRC_DIR}/version.py)
+VERSION=$(python3 ${SRC_DIR}/kivar_version.py)
 RELEASE_NAME='kivar'
 ID='de_markh_kivar'
 RELEASE_DIR=$(readlink -f "$(dirname "$0")")"/../release/v$VERSION"
@@ -110,16 +94,12 @@ echo ''
 rm -rf "$RELEASE_DIR/"
 mkdir -p "$RELEASE_DIR/"
 
-echo "--- ZIP ---"
-release_zip
-echo ''
-
 echo "--- PyPI ---"
-release_pypi
+release_cli_pypi
 echo ''
 
 echo "--- PCM ---"
-release_pcm
+release_plugin_pcm
 echo ''
 
 echo 'Release files created.'
