@@ -20,9 +20,9 @@ import wx.adv
 class VariantDialog ( wx.Dialog ):
 
     def __init__( self, parent ):
-        wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = u"Variant Selection", pos = wx.DefaultPosition, size = wx.Size( -1,-1 ), style = wx.DEFAULT_DIALOG_STYLE|wx.MAXIMIZE_BOX|wx.RESIZE_BORDER, name = u"kivar_sel" )
+        wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = u"Variant Selection", pos = wx.DefaultPosition, size = wx.DefaultSize, style = wx.DEFAULT_DIALOG_STYLE|wx.MAXIMIZE_BOX|wx.RESIZE_BORDER, name = u"kivar_sel" )
 
-        self.SetSizeHints( wx.Size( -1,-1 ), wx.DefaultSize )
+        self.SetSizeHints( wx.Size( 700,350 ), wx.DefaultSize )
 
         sz_main = wx.BoxSizer( wx.VERTICAL )
 
@@ -30,7 +30,6 @@ class VariantDialog ( wx.Dialog ):
 
         sz_var_left = wx.BoxSizer( wx.VERTICAL )
 
-        sz_var_left.SetMinSize( wx.Size( 200,100 ) )
         sz_variant = wx.BoxSizer( wx.HORIZONTAL )
 
         self.lbl_variant = wx.StaticText( self, wx.ID_ANY, u"Variant:", wx.DefaultPosition, wx.DefaultSize, 0 )
@@ -83,7 +82,6 @@ class VariantDialog ( wx.Dialog ):
 
         sz_var_right = wx.BoxSizer( wx.VERTICAL )
 
-        sz_var_right.SetMinSize( wx.Size( 200,100 ) )
         sbox_free = wx.StaticBoxSizer( wx.StaticBox( self, wx.ID_ANY, u"Free Aspects" ), wx.VERTICAL )
 
         self.scw_free = wx.ScrolledWindow( sbox_free.GetStaticBox(), wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.HSCROLL|wx.VSCROLL )
@@ -118,8 +116,6 @@ class VariantDialog ( wx.Dialog ):
 
         lbx_changesChoices = []
         self.lbx_changes = PcbItemListBox( sz_changes.GetStaticBox(), wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, lbx_changesChoices, wx.LB_HSCROLL|wx.LB_NEEDED_SB|wx.LB_SINGLE )
-        self.lbx_changes.SetMinSize( wx.Size( 360,100 ) )
-
         sz_changes.Add( self.lbx_changes, 1, wx.ALL|wx.EXPAND, 5 )
 
 
@@ -201,6 +197,92 @@ class VariantDialog ( wx.Dialog ):
 
     def on_mi_reload( self, event ):
         event.Skip()
+
+
+###########################################################################
+## Class MissingRulesDialog
+###########################################################################
+
+class MissingRulesDialog ( wx.Dialog ):
+
+    def __init__( self, parent ):
+        wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = u"Missing Rule Definitions", pos = wx.DefaultPosition, size = wx.DefaultSize, style = wx.DEFAULT_DIALOG_STYLE )
+
+        self.SetSizeHints( wx.DefaultSize, wx.DefaultSize )
+
+        sz_main = wx.BoxSizer( wx.VERTICAL )
+
+        self.txt_info = wx.StaticText( self, wx.ID_ANY, u"KiVar could not find any valid rule definitions.\n\nPlease consult the KiVar documentation to learn how to\nassign variation rules to symbols or footprints:", wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.txt_info.SetLabelMarkup( u"KiVar could not find any valid rule definitions.\n\nPlease consult the KiVar documentation to learn how to\nassign variation rules to symbols or footprints:" )
+        self.txt_info.Wrap( -1 )
+
+        sz_main.Add( self.txt_info, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL|wx.EXPAND, 20 )
+
+        self.link_help = wx.adv.HyperlinkCtrl( self, wx.ID_ANY, u"...", wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, wx.adv.HL_DEFAULT_STYLE )
+        sz_main.Add( self.link_help, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL|wx.EXPAND, 5 )
+
+        self.btn_close = wx.Button( self, wx.ID_OK, u"Close", wx.DefaultPosition, wx.DefaultSize, 0 )
+        sz_main.Add( self.btn_close, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.ALL, 20 )
+
+
+        self.SetSizer( sz_main )
+        self.Layout()
+        sz_main.Fit( self )
+
+        self.Centre( wx.BOTH )
+
+    def __del__( self ):
+        pass
+
+
+###########################################################################
+## Class ErrorListDialog
+###########################################################################
+
+class ErrorListDialog ( wx.Dialog ):
+
+    def __init__( self, parent ):
+        wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = u"Initialization Failure", pos = wx.DefaultPosition, size = wx.DefaultSize, style = wx.DEFAULT_DIALOG_STYLE|wx.MAXIMIZE_BOX|wx.RESIZE_BORDER )
+
+        self.SetSizeHints( wx.Size( 400,200 ), wx.DefaultSize )
+
+        sz_main = wx.BoxSizer( wx.VERTICAL )
+
+        sz_errors = wx.StaticBoxSizer( wx.StaticBox( self, wx.ID_ANY, u"Errors" ), wx.VERTICAL )
+
+        lbx_errorsChoices = []
+        self.lbx_errors = PcbItemListBox( sz_errors.GetStaticBox(), wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, lbx_errorsChoices, wx.LB_HSCROLL|wx.LB_NEEDED_SB|wx.LB_SINGLE )
+        sz_errors.Add( self.lbx_errors, 1, wx.ALL|wx.EXPAND, 5 )
+
+
+        sz_main.Add( sz_errors, 1, wx.ALL|wx.EXPAND, 10 )
+
+        sz_bottom = wx.BoxSizer( wx.HORIZONTAL )
+
+        self.link_help = wx.adv.HyperlinkCtrl( self, wx.ID_ANY, u"Usage Guide", u"...", wx.DefaultPosition, wx.DefaultSize, wx.adv.HL_DEFAULT_STYLE )
+        sz_bottom.Add( self.link_help, 0, wx.ALIGN_CENTER_VERTICAL, 5 )
+
+
+        sz_bottom.Add( ( 0, 0), 1, wx.EXPAND, 5 )
+
+        self.btn_close = wx.Button( self, wx.ID_OK, u"Close", wx.DefaultPosition, wx.DefaultSize, 0 )
+        sz_bottom.Add( self.btn_close, 0, wx.ALIGN_CENTER_VERTICAL, 5 )
+
+
+        sz_main.Add( sz_bottom, 0, wx.EXPAND|wx.LEFT|wx.RIGHT, 10 )
+
+
+        sz_main.Add( ( 0, 5), 0, 0, 5 )
+
+
+        self.SetSizer( sz_main )
+        self.Layout()
+        sz_main.Fit( self )
+
+        self.Centre( wx.BOTH )
+
+    def __del__( self ):
+        pass
 
 
 ###########################################################################
@@ -347,91 +429,5 @@ class AddVariantDialog ( wx.Dialog ):
     def on_confirm( self, event ):
         event.Skip()
 
-
-
-###########################################################################
-## Class MissingRulesDialog
-###########################################################################
-
-class MissingRulesDialog ( wx.Dialog ):
-
-    def __init__( self, parent ):
-        wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = u"Missing Rule Definitions", pos = wx.DefaultPosition, size = wx.Size( -1,-1 ), style = wx.DEFAULT_DIALOG_STYLE )
-
-        self.SetSizeHints( wx.DefaultSize, wx.DefaultSize )
-
-        sz_main = wx.BoxSizer( wx.VERTICAL )
-
-        self.txt_info = wx.StaticText( self, wx.ID_ANY, u"KiVar could not find any valid rule definitions.\n\nPlease consult the KiVar documentation to learn how to\nassign variation rules to symbols or footprints:", wx.DefaultPosition, wx.DefaultSize, 0 )
-        self.txt_info.SetLabelMarkup( u"KiVar could not find any valid rule definitions.\n\nPlease consult the KiVar documentation to learn how to\nassign variation rules to symbols or footprints:" )
-        self.txt_info.Wrap( -1 )
-
-        sz_main.Add( self.txt_info, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL|wx.EXPAND, 20 )
-
-        self.link_help = wx.adv.HyperlinkCtrl( self, wx.ID_ANY, u"...", wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, wx.adv.HL_DEFAULT_STYLE )
-        sz_main.Add( self.link_help, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL|wx.EXPAND, 5 )
-
-        self.btn_close = wx.Button( self, wx.ID_OK, u"Close", wx.DefaultPosition, wx.DefaultSize, 0 )
-        sz_main.Add( self.btn_close, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.ALL, 20 )
-
-
-        self.SetSizer( sz_main )
-        self.Layout()
-        sz_main.Fit( self )
-
-        self.Centre( wx.BOTH )
-
-    def __del__( self ):
-        pass
-
-
-###########################################################################
-## Class ErrorListDialog
-###########################################################################
-
-class ErrorListDialog ( wx.Dialog ):
-
-    def __init__( self, parent ):
-        wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = u"Initialization Failure", pos = wx.DefaultPosition, size = wx.DefaultSize, style = wx.DEFAULT_DIALOG_STYLE|wx.MAXIMIZE_BOX|wx.RESIZE_BORDER )
-
-        self.SetSizeHints( wx.Size( 400,200 ), wx.DefaultSize )
-
-        sz_main = wx.BoxSizer( wx.VERTICAL )
-
-        sz_errors = wx.StaticBoxSizer( wx.StaticBox( self, wx.ID_ANY, u"Errors" ), wx.VERTICAL )
-
-        lbx_errorsChoices = []
-        self.lbx_errors = PcbItemListBox( sz_errors.GetStaticBox(), wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, lbx_errorsChoices, wx.LB_HSCROLL|wx.LB_NEEDED_SB|wx.LB_SINGLE )
-        sz_errors.Add( self.lbx_errors, 1, wx.ALL|wx.EXPAND, 5 )
-
-
-        sz_main.Add( sz_errors, 1, wx.ALL|wx.EXPAND, 10 )
-
-        sz_bottom = wx.BoxSizer( wx.HORIZONTAL )
-
-        self.link_help = wx.adv.HyperlinkCtrl( self, wx.ID_ANY, u"Usage Guide", u"...", wx.DefaultPosition, wx.DefaultSize, wx.adv.HL_DEFAULT_STYLE )
-        sz_bottom.Add( self.link_help, 0, wx.ALIGN_CENTER_VERTICAL, 5 )
-
-
-        sz_bottom.Add( ( 0, 0), 1, wx.EXPAND, 5 )
-
-        self.btn_close = wx.Button( self, wx.ID_OK, u"Close", wx.DefaultPosition, wx.DefaultSize, 0 )
-        sz_bottom.Add( self.btn_close, 0, wx.ALIGN_CENTER_VERTICAL, 5 )
-
-
-        sz_main.Add( sz_bottom, 0, wx.EXPAND|wx.LEFT|wx.RIGHT, 10 )
-
-
-        sz_main.Add( ( 0, 5), 0, 0, 5 )
-
-
-        self.SetSizer( sz_main )
-        self.Layout()
-        sz_main.Fit( self )
-
-        self.Centre( wx.BOTH )
-
-    def __del__( self ):
-        pass
 
 

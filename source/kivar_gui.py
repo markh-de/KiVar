@@ -123,7 +123,6 @@ class GuiVariantDialog(forms.VariantDialog):
     def __init__(self, parent, board, fpdict, vardict, variant_info):
         super().__init__(parent=parent)
         dialog_base_config(self)
-        self.SetMinSize(wx.Size(800, 400))
 
         self.board = board
         self.fpdict = fpdict
@@ -209,12 +208,12 @@ class GuiVariantDialog(forms.VariantDialog):
         self.mi_del_def.Enable(vi.is_loaded() and self.chc_variant.GetSelection() > 0)
 
     def on_mi_create_defs(self, event):
-        if self.variant_info.file_path() is None: return # not allowed, should be blocked from menu
+        if self.variant_info.file_path() is None: return # double-check
         sel = {}
         for aspect, (label, choice) in self.aspects_gui.items():
             if choice.GetSelection() > 0:
                 sel[aspect] = choice.GetStringSelection()
-        if len(sel) == 0: return # not allowed, should be blocked from menu
+        if len(sel) == 0: return # double-check
         dialog = GuiCreateTableDialog(self, sel)
         result = dialog.ShowModal()
         if result == wx.ID_OK:
@@ -226,7 +225,7 @@ class GuiVariantDialog(forms.VariantDialog):
         dialog.Destroy()
 
     def on_mi_add_def(self, event):
-        if not self.variant_info.is_loaded(): return # not allowed, should be blocked from menu
+        if not self.variant_info.is_loaded(): return # double-check
         bound = self.variant_info.aspects()
         sel = {}
         for aspect, (label, choice) in self.aspects_gui.items():
@@ -234,12 +233,12 @@ class GuiVariantDialog(forms.VariantDialog):
                 if choice.GetSelection() > 0:
                     sel[aspect] = choice.GetStringSelection()
                 else:
-                    return # all bound choices must be specified, should be blocked
+                    return # all bound choices must be specified, double-check
         dialog = GuiAddVariantDialog(self, sel)
         dialog.set_existing_varids(self.variant_info.variants())
         result = dialog.ShowModal()
         if result == wx.ID_OK:
-            if not dialog.entered_varid_exists(): # blocked, but double-check
+            if not dialog.entered_varid_exists(): # double-check
                 if self.variant_file_write_allowed():
                     self.variant_info.add_variant(dialog.entered_varid(), sel)
                     self.variant_info.write_csv()
@@ -250,7 +249,7 @@ class GuiVariantDialog(forms.VariantDialog):
         wx.LaunchDefaultApplication(self.variant_info.file_path())
 
     def on_mi_del_def(self, event):
-        if self.chc_variant.GetSelection() == 0: return # blocked, but double-check
+        if self.chc_variant.GetSelection() == 0: return # double-check
         varid = self.chc_variant.GetStringSelection()
         if self.variant_info.variants() == [varid]:
             dialog = wx.MessageDialog(self, f'Deleting the definition of the last variant identifier will cause the table file to be removed as well.\nYou will therefore lose all your aspect bindings.\n\nAre you sure you want to remove the variant identifier "{varid}" and all aspect bindings?', 'Delete Last Variant Definition', style=wx.YES_NO|wx.NO_DEFAULT|wx.ICON_WARNING)
