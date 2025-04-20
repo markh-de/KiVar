@@ -4,7 +4,7 @@
 
 KiVar is a tool for **KiCad PCB Assembly Variant selection**, provided as platform-independent
 
- * **KiCad Action Plugin** and
+ * **KiCad Plugin** and
  * **Command Line Application**.
 
 PCB component variation rules are defined in component (i.e. symbol or footprint) fields.  This allows for the complete variant configuration to be contained in the schematic and board files without requiring external data outside the native KiCad design files.
@@ -27,11 +27,13 @@ Back-propagation of modified component data from the PCB to the schematic can be
 
 ## What to Expect
 
-### KiCad Action Plugin
+### KiCad Plugin
 
-Example selection dialog of the **KiVar Action Plugin for KiCad**:
+Example selection dialog of the **KiVar Plugin for KiCad**:
 
-![KiVar Action Plugin Example](doc/plugin-changes.svg)
+***TODO*** update screenshot, pixel? bright theme! windows 11?
+
+![KiVar Plugin Example](doc/plugin-changes.svg)
 
 ### Command Line Interface Application
 
@@ -106,20 +108,18 @@ KiVar Releases            | Supported KiCad Releases
 ------------------------- | ------------------------
 0.0.1 &ndash; 0.1.2       | 7.x
 0.2.0 &ndash; _latest_    | 8.x
-0.4.2 &ndash; _latest_    | 9.x _(Nightly)_
+0.4.2 &ndash; _latest_    | 9.x
 
 KiVar currently uses the SWIG-based Python bindings of pcbnew (KiCad PCB Editor).
 
 ## Installation
 
 > [!NOTE]
-> The Action Plugin and the CLI app can be installed independently of each other.  As the Action Plugin does not have external dependencies, it does not require the CLI package to be installed.
+> The KiCad Plugin and the CLI app can be installed independently of each other.  As the KiCad Plugin does not have external module dependencies, it does not require the CLI package to be installed.
 
-### KiVar Action Plugin
+### KiVar Plugin
 
 The recommended plugin installation method is to use KiCad's integrated **Plugin and Content Manager**.  KiVar is included in the **official PCM repository**, allowing a smooth and safe installation and update experience.  For manual installation users can also choose to download the plugin archive package.
-
-#### Using the Plugin and Content Manager
 
 Required steps:
 
@@ -128,50 +128,46 @@ Required steps:
 3. Mark it for installation and apply the pending changes.
 4. The _KiVar_ plugin icon should now appear in the PCB Editor (pcbnew) toolbar.
 
-#### Using Manual Archive Extraction
-
-Required steps:
-
-1. Open the KiCad PCB Editor (pcbnew).
-2. In the PCB Editor, choose the menu option _Tools &rarr; External Plugins &rarr; Open Plugin Directory_.  This will open a file browser at the location of your KiCad plugin directory.
-3. Unzip the contents of an official [KiVar release archive](https://github.com/markh-de/KiVar/releases) (the ZIP file _without_ the `-pcm` suffix) to that KiCad plugin directory you opened in the previous step.  
-   _Important:_ Do not create another directory inside the target plugin directory, but only place the files from the release archive directly in the plugin directory.
-4. Switch back to the PCB Editor and choose the menu option _Tools &rarr; External Plugins &rarr; Refresh Plugins_.  The _KiVar_ plugin icon should now appear in the toolbar and in the plugin list under _Tools &rarr; External Plugins_.
-
-If the installation does not work for you this way, consider reporting your problem as an issue in the KiVar bug tracker.
-
 ### KiVar Command Line Application
-
-#### Using pip
 
 The KiVar CLI (command line interface) Python package can be installed using the following methods.
 
-##### From the PyPI Repository
+#### Using the PyPI Repository
 
-To install the latest KiVar CLI app from the official KiVar PyPI repository, open a shell and run:
-
-```
-pip install kivar
-```
-
-##### From a Release Archive
-
-The KiVar CLI app can also be installed using a downloaded (or locally created) Python Package (replace `${VERSION}` by the actual package version):
+To install (or upgrade to) the latest KiVar CLI app directly from the official KiVar PyPI repository, open a shell and run:
 
 ```
-pip install kivar-${VERSION}.tar.gz
+python -m pip install --upgrade kivar
 ```
+
+> [!NOTE]
+> On newer Python installations you might need to add the `--break-system-packages` option to install the app so that it can load the `pcbnew` module provided by KiCad.
+
+#### Using a Release Archive
+
+The KiVar CLI app can also be installed using a downloaded or locally created Python Package.
+
+Use the following command (replace `${VERSION}` by the actual package version):
+
+```
+python -m pip install kivar-${VERSION}.tar.gz
+```
+
+> [!NOTE]
+> Same note about the `--break-system-packages` option applies (see above).
 
 ## Usage
 
 > [!IMPORTANT]
-> This manual refers to the **0.4.x** series of KiVar.  If you are still using an older version, please consider [updating](#installation) KiVar and [migrating](#migrate) your variation rules.
+> This manual refers to the **0.5.x** series of KiVar.  If you are still using an older version, please consider [updating](#installation) KiVar and [migrating](#migrate) your variation rules.
 
 The process of writing and assigning rules to components (i.e. symbols and footprints) is done manually using simple text expressions.
 
-Once all relevant components are equipped with their variation rules, KiVar allows the selection of variation choices using either an easy-to-use dialog interface (when using the Action Plugin) or a command-line interface (when using the CLI app) and takes care of the automatic analysis and assignment of the corresponding component values, fields, attributes and features.
+In addition, groups of configurations can be conveniently managed in tables (CSV files).
 
-The following sections describe the process of configuring your schematic or board and - after that - selecting a variation configuration from the previously configured variation choices.  Examples are given where appropriate.
+Once all relevant components are equipped with their variation rules and variant tables are set up (optionally), KiVar allows the selection of variation choices using either an easy-to-use dialog interface (when using the KiCad Plugin) or a command-line interface (when using the CLI app) and takes care of the automatic analysis and assignment of the corresponding component values, fields, attributes and features.
+
+The following sections describe the process of configuring your schematic or board, your variant table (if desired) and - after that - selecting a variation configuration from the previously configured variation choices.  Examples are provided where appropriate.
 
 ### Component Variation Setup
 
@@ -185,14 +181,14 @@ While it is recommended to define variation rules in the schematic (i.e. in symb
 
 #### Definition of Terms
 
-Basic terms used in this document:
+Whenever specific terms appear capitalized in this document, the following definitions apply:
 
  * **Aspect:**  
    A scope (or dimension) of variation changes, which are defined by _Choices_ (see below).  One PCB design can refer to multiple Aspects.  Each component that makes use of KiVar variations must refer to _exactly one_ [Aspect Identifier](#aspect-identifier).  
    For example, an Aspect can be the I²C address of an EEPROM IC, using an identifier such as `EEPROM_I2C_ADDR`.
  
  * **Choice:**  
-   A set of [Content](#content-specifiers) (component values or component field values) and/or [Properties](#property-specifiers) to be assigned to specific components.  A Choice is always related to a specific _Aspect_.  
+   A state of an _Aspect_.  Defined with a set of [Content](#content-specifiers) (component values or component field values) and/or [Properties](#property-specifiers) to be assigned to specific components.  A Choice is _always_ related to a specific _Aspect_ and only valid in its context.  
    For example, possible Choices for the I²C address Aspect could be `0x50`, `0x51`, `0x52`, `0x53`.
 
  * **Configuration:**  
@@ -205,9 +201,37 @@ Basic terms used in this document:
  * **Assignment:**  
    A group of one or more Records containing [Choice Expressions](#choice-expressions) to assign a set of data to the same Assignment target (e.g. the [component itself](#component-scope), or an existing [custom field of the component](#field-scope)).
 
-In the following sections, these and other specific KiVar terms are capitalized.
+ * **Variant:**  
+   A set of _Choices_ applying to a selected set of _Aspects_ (so-called _Bound Aspects_ - in contrast to _Free Aspects_, which can be modified independently of the selected Variant).  
+   The use of Variants is optional.  If used, Variants are configured independently "on top" of the existing _Aspect_ configuration.
 
-#### Fundamentals
+#### Variants
+
+##### Multi-Scope Concept
+
+A central point of KiVar's concepts is that one design can use any number of **independent** Aspect scopes and each scope can be switched to a specific Choice (Aspect state).
+
+##### Flat Variants
+
+However, in real-world projects, it is often desired to have a **single global** (i.e. top-level) switch to choose between assembly options, for example to switch between product models that always combine a specific set of assembly choices.  Most EDA tools offer this kind of "flat variant" assignment and selection feature.
+
+##### Mixed Approach
+
+KiVar uses a mixed approach, providing the benefits of both worlds:
+
+Defining Variants allows for having a single switch, while configuring each Variant is still very convenient, as it is only required to **switch between Aspect Choices, not between the full set of component values and attribute data**.  This extra abstraction layer of Aspects keeps Variant definitions very simple.
+
+In addition to a single Variant switch, KiVar also allows having so-called _Free Aspects_, i.e. scopes that are not modified when selecting a specific Variant.  So even after switching the main Variant, it is still possible to have a few independent switches for further assembly options, if desired.
+
+##### Division of Resposibilities
+
+Component value and attributes are configured in "low-level" Aspect definitions, while "top-level" Variants are configured independently in an external table.
+
+This makes it possible to divide the management of each of these parts between different people or departments.
+
+While Aspects are managed by the KiCad hardware designers themselves during design, the person who manages Variant definitions is not even required to use KiCad (or KiVar) - it is sufficient to edit the Variant definition table (e.g. with a spreadsheet editor).
+
+#### Relation of Aspects and Choices
 
 Each component that uses KiVar variation rules must bind to _exactly one_ variation **Aspect** to which all specified variation **Choices** for that component will then relate to.
 
@@ -1032,11 +1056,51 @@ For each above example, one essential component was chosen to carry an Aspect Ch
 
 Even though PCB variants are not really supposed to change any property of the _bare_ PCB (i.e. copper, solder mask, ...), such variant configuration codes _can_ be added to any documentation (or any other) layer.  Refer to the [PCB 3D views below](#visible-changes) and to the [demo project](demo/) for a usage example.
 
+### Top-Level Variants
+
+Defining possible assignments for the single top-level Variant switch is done in the Variant Table.
+
+#### Supported File Formats
+
+Currently, KiVar only supports the **CSV** (comma-separated values) file format for Variant definitions.
+
+#### Table Structure
+
+The Variant Table must have the following general structure:
+
+|               | Aspect_A    | Aspect_B    | Aspect_C    | ...         |
+| ------------- | ----------- | ----------- | ----------- | ----------- |
+| Variant_One   | Choice_A1   | Choice_B1   | Choice_C1   | ...         |
+| Variant_Two   | Choice_A2   | Choice_B2   | Choice_C2   | ...         |
+| Variant_Three | Choice_A3   | Choice_B3   | Choice_C3   | ...         |
+| ...           | ...         | ...         | ...         | ...         |
+
+An example table defining various Aspect Choice assignments for each product Variant (e.g. model or feature series) that uses the project's bare PCB could look like this:
+
+|               | Sensor_A   | Sensor_B   | Output_Power | Display_Type | Input_Interface  |
+| ------------- | ---------- | ---------- | ------------ | ------------ | ---------------- |
+| Model 1000    | Unfit      | Unfit      | 100W         | 7_Seg        | 3_Buttons        |
+| Model 2000    | TWI_0x50   | Unfit      | 200W         | 7_Seg        | 3_Buttons        |
+| Model 3000    | TWI_0x50   | Unfit      | 400W         | LCD_Mono     | 5_Buttons_Wheel  |
+| Model 5000    | TWI_0x50   | TWI_0x51   | 500W         | LCD_TFT      | 7_Buttons_Wheel  |
+| Model 7000    | TWI_0x50   | TWI_0x51   | 600W         | LCD_IPS      | 7_Buttons_Wheel  |
+
+#### Requirements
+
+At least the following critical requirements must be met for a table to be valid:
+
+ * each Variant must have a unique name,
+ * for each Variant, there must be a unique and fully defined set of Choices assigned to the Bound Aspects.
+
+#### Examples
+
+For a working example Variant table file, please check out to the [demo project](demo/).
+
 ### Rules Application
 
 After setting up rules for each relevant symbol (or footprint), variations can finally be switched using the _KiVar_ plugin or CLI app.
 
-#### Using the KiVar Action Plugin
+#### Using the KiVar Plugin
 
 ##### Update the PCB
 
@@ -1052,16 +1116,34 @@ Upon start, during the rule processing stage, KiVar analyzes the board data and 
 
 If KiVar fails to find a matching definite Choice for a variation Aspect, then the corresponding variation Choice selector is preset to the entry _'\<unset>'_.  This will probably happen before applying a specific Choice for the first time or after editing Assignments, because not all of the initial footprint data may perfectly match exactly one of the defined variation Choices (per Aspect).
 
+Also, KiVar tries to match the corresponding Variant according to the selected Aspect Choices.
+
+If all Records and Variant data can be processed without problems, the plugin's main selection dialog window appears.
+
 ##### Possible Error Messages
 
-In case the user-provided Records cannot be parsed and/or processed without problems, an error message window with a list of problems will be presented.  Each of the listed problems must then be fixed in order to successfully start the plugin.
+In case the user-provided Records or Variant data cannot be parsed and/or processed without problems, an error message window with a list of problems will be presented.  Each of the listed problems must then be fixed in order to successfully start the plugin.
 
 > [!TIP]
-> Error messages can be clicked to focus the corresponding footprint on the _pcbnew_ canvas in the background.
+> Error messages can be clicked to focus the corresponding footprint on the _pcbnew_ canvas in the background, if applicable.
+
+##### Variant Selection
+
+If a Variant is selected (requires Variants to be defined), then all Bound Aspects will be preset to their corresponding Choice.
+
+##### Variant Management
+
+Rudimentary functions are implemented in the KiVar Plugin to
+
+ * create a new Variant definition table binding a specific set of Aspects,
+ * add a new Variant definition with a specific set of assigned Choices (one per Bound Aspect),
+ * delete a Variant definition,
+ * launch the system's default CSV editor to directly edit the Variant definition table,
+ * reload the table file from disk.
+
+These functions can be found in the three-dot menu next to the plugin's Variant selector.
 
 ##### Variation Choices Selection
-
-If all Records can be processed without problems, the plugin dialog window appears.
 
 For the above [usage examples](#usage-examples), the selection dialog window may look similar to the following:
 
@@ -1102,7 +1184,7 @@ To propagate the changes back to the schematic, use the PCB Editor menu item _To
 
 #### Using the KiVar Command Line Application
 
-The KiVar CLI application uses the same KiVar backend as the plugin, but a different user interface.  Also, the CLI app manipulates existing `.kicad_pcb` files (which must not be opened in another application).
+The KiVar CLI application uses the same KiVar processing engine as the plugin, but a different user interface.  Also, the CLI app manipulates existing `.kicad_pcb` files (which must not be opened in another application).
 
 For usage information and available commands and options, run:
 
@@ -1268,3 +1350,11 @@ It is no longer necessary to declare Choices in Component (ex "Base") scope befo
 Severity: **Not critical** (backwards-compatible).
 
 Version 0.4.0 introduces Stand-In Choices, which act similarly to [Default Choices](#default-choice), but do not inherit Content or Properties for declared specific Choices.  Stand-In Choices may therefore be preferred over Default Choices in many cases, for example when making use of [Implicit Property Defaults](#implicit-property-defaults).
+
+### Migrating from KiVar 0.4.x
+
+#### Introduction of Variant Aspect Bindings
+
+Severity: **Not critical** (backwards-compatible).
+
+Version 0.5.0 introduces the option to modify a set of bound Aspects as a group by selecting one specific Variant.  Variants are configured independently from the Aspects themselves, so existing projects do not need to be adapted.
