@@ -182,6 +182,8 @@ class GuiVariantDialog(forms.VariantDialog):
 
         self.select_matching_variant()
 
+        self.sdbszOK.SetFocus()
+
     def on_change_item_selected(self, uuid):
         if self.board is not None and uuid is not None:
             fp = uuid_to_fp(self.board, uuid)
