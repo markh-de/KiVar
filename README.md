@@ -1079,6 +1079,17 @@ An example table defining various Aspect Choice assignments for each product Var
 | Model 5000    | TWI_0x50   | TWI_0x51   | 500W         | LCD_TFT      | 7_Buttons_Wheel  |
 | Model 7000    | TWI_0x50   | TWI_0x51   | 600W         | LCD_IPS      | 7_Buttons_Wheel  |
 
+#### Order Determination
+
+KiVar user applications (KiCad Plugin and CLI app) will use the **same order** of
+
+ * **Variants** _(listed in rows from top to bottom)_ and
+ * **Bound Aspects** _(listed in columns from left to right)_
+
+as defined in the Variants table.
+
+This enables a custom sorting of Variants (e.g. based on the implemented product/series/model identifier), as well as custom compilation of Bound Aspects.
+
 #### Requirements
 
 At least the following critical requirements must be met for a table to be valid:
