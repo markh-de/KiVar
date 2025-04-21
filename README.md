@@ -33,7 +33,7 @@ Example selection dialog of the **KiVar Plugin for KiCad**:
 
 ***TODO*** update screenshot, pixel? bright theme! windows 11?
 
-![KiVar Plugin Example](doc/plugin-changes.svg)
+![KiVar Plugin Example](doc/plugin-changes.png)
 
 ### Command Line Interface Application
 
@@ -1147,7 +1147,7 @@ These functions can be found in the three-dot menu next to the plugin's Variant 
 
 For the above [usage examples](#usage-examples), the selection dialog window may look similar to the following:
 
-![Variant Selection Dialog Without Changes](doc/plugin-empty.svg)
+![Variant Selection Dialog Without Changes](doc/plugin-empty.png)
 
 For each of the listed Aspect Identifiers a variation Choice Identifier can now be selected.
 
@@ -1160,7 +1160,7 @@ The change list section below the selection area summarizes all component change
 
 After selecting a few different variation choices, the dialog window may look like the following:
 
-![Variant Selection Dialog With Changes](doc/plugin-changes.svg)
+![Variant Selection Dialog With Changes](doc/plugin-changes.png)
 
 When clicking the _Update PCB_ button, KiVar sets the configured data for all relevant footprints as previewed in the information text box and then closes the selection dialog window.
 
