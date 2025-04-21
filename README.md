@@ -31,8 +31,6 @@ Back-propagation of modified component data from the PCB to the schematic can be
 
 Example selection dialog of the **KiVar Plugin for KiCad**:
 
-***TODO*** update screenshot, pixel? bright theme! windows 11?
-
 ![KiVar Plugin Example](doc/plugin-changes.png)
 
 ### Command Line Interface Application
@@ -482,8 +480,6 @@ The reserved Choice Identifier used for Default Choices is "`?`".
 
 Data assigned to a Stand-In Choice is used for specific Choices that are declared in _other_ Assignments, but are _undefined_ in the Assignment for which the Stand-In Choice is defined.
 
-<!-- TODO add example that illustrates usefulness in conjunction with Implicit Defaults -->
-
 ##### Default Choice
 
 ###### Purpose
@@ -579,8 +575,6 @@ _(none)_       | _(none)_       | _(none)_                                      
 `-!`           | `+p`           | `+fb`                                                    | `-p`             | `-fbp`    | `+fb` `+p`| `+fb` `-p`
 `-s`           | `+!`           | `-fbp` `+s`                                              | _(none)_         | `-fbps`   | `+fbps`   | `-fbp` `+s`
 `+m1`          | `+m2`          | `-m1m2`                                                  | _(none)_         | `+m1` `-m2` | `-m1` `+m2` | `-m1m2`
-
-<!-- TODO more (creative) examples -->
 
 #### Assignment Scopes
 
