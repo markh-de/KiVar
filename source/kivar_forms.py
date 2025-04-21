@@ -26,10 +26,13 @@ class VariantDialog ( wx.Dialog ):
 
         sz_main = wx.BoxSizer( wx.VERTICAL )
 
+        sz_main.SetMinSize( wx.Size( 700,350 ) )
         sz_var_hor = wx.BoxSizer( wx.HORIZONTAL )
 
+        sz_var_hor.SetMinSize( wx.Size( 700,100 ) )
         sz_var_left = wx.BoxSizer( wx.VERTICAL )
 
+        sz_var_left.SetMinSize( wx.Size( 300,100 ) )
         sz_variant = wx.BoxSizer( wx.HORIZONTAL )
 
         self.lbl_variant = wx.StaticText( self, wx.ID_ANY, u"Variant:", wx.DefaultPosition, wx.DefaultSize, 0 )
@@ -82,6 +85,7 @@ class VariantDialog ( wx.Dialog ):
 
         sz_var_right = wx.BoxSizer( wx.VERTICAL )
 
+        sz_var_right.SetMinSize( wx.Size( 300,100 ) )
         sbox_free = wx.StaticBoxSizer( wx.StaticBox( self, wx.ID_ANY, u"Free Aspects" ), wx.VERTICAL )
 
         self.scw_free = wx.ScrolledWindow( sbox_free.GetStaticBox(), wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.HSCROLL|wx.VSCROLL )
@@ -114,8 +118,11 @@ class VariantDialog ( wx.Dialog ):
 
         sz_changes = wx.StaticBoxSizer( wx.StaticBox( self, wx.ID_ANY, u"Changes to Be Applied" ), wx.VERTICAL )
 
+        sz_changes.SetMinSize( wx.Size( 700,100 ) )
         lbx_changesChoices = []
         self.lbx_changes = PcbItemListBox( sz_changes.GetStaticBox(), wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, lbx_changesChoices, wx.LB_HSCROLL|wx.LB_NEEDED_SB|wx.LB_SINGLE )
+        self.lbx_changes.SetMinSize( wx.Size( 700,100 ) )
+
         sz_changes.Add( self.lbx_changes, 1, wx.ALL|wx.EXPAND, 5 )
 
 

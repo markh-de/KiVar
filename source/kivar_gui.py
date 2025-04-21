@@ -308,6 +308,7 @@ class GuiVariantDialog(forms.VariantDialog):
             self.on_aspect_change(None)
         else:
             self.select_matching_variant()
+        self.Layout()
 
     def select_matching_variant(self):
         sel = self.selections()
@@ -328,6 +329,7 @@ class GuiVariantDialog(forms.VariantDialog):
     def update_changes_list(self):
         changes = apply_selection(self.fpdict, self.vardict, self.selections(), True)
         self.lbx_changes.set_item_list(sorted(changes, key=lambda x: natural_sort_key(x[1])))
+        self.Layout()
 
     @staticmethod
     def on_choice_mousewheel(event, target):
