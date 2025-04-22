@@ -9,11 +9,10 @@
 	(paper "A5" portrait)
 	(title_block
 		(title "KiVar Demo Board")
-		(date "2024-09-16")
-		(rev "0.4.0")
+		(date "2025-04-22")
+		(rev "0.5.0")
 		(company "Author: Mark Hämmerling <dev@markh.de>")
-		(comment 3 "https://github.com/markh-de/KiVar")
-		(comment 4 "Download KiVar:")
+		(comment 4 "https://kivar.markh.de")
 	)
 	(layers
 		(0 "F.Cu" signal)
@@ -16788,7 +16787,7 @@
 		(layer "Edge.Cuts")
 		(uuid "1a575f67-c800-4998-aae9-d02d4362903c")
 	)
-	(gr_text "https://github.com/markh-de/KiVar"
+	(gr_text "https://kivar.markh.de"
 		(at 111 112.3 0)
 		(layer "F.SilkS")
 		(uuid "0c25fda2-57dc-439b-a0d4-db6c1302c508")

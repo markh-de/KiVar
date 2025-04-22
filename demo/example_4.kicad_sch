@@ -6,10 +6,10 @@
 	(paper "A4")
 	(title_block
 		(title "KiVar Demo")
-		(date "2024-09-16")
-		(rev "0.4.0")
+		(date "2025-04-22")
+		(rev "0.5.0")
 		(company "Author: Mark Hämmerling <dev@markh.de>")
-		(comment 1 "https://github.com/markh-de/KiVar")
+		(comment 1 "https://kivar.markh.de")
 		(comment 4 "IC Variant Selection")
 	)
 	(lib_symbols
@@ -1684,7 +1684,6 @@
 	)
 	(label "LX1"
 		(at 118.11 92.71 90)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -1695,7 +1694,6 @@
 	)
 	(label "LX2"
 		(at 125.73 92.71 90)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -1706,7 +1704,6 @@
 	)
 	(label "EN_+3V3"
 		(at 93.98 106.68 0)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)

@@ -6,10 +6,10 @@
 	(paper "A5")
 	(title_block
 		(title "KiVar Demo")
-		(date "2024-09-16")
-		(rev "0.4.0")
+		(date "2025-04-22")
+		(rev "0.5.0")
 		(company "Author: Mark Hämmerling <dev@markh.de>")
-		(comment 1 "https://github.com/markh-de/KiVar")
+		(comment 1 "https://kivar.markh.de")
 		(comment 4 "I²C Device Address Selection")
 	)
 	(lib_symbols
@@ -939,7 +939,6 @@
 	)
 	(label "A2"
 		(at 109.22 63.5 180)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -950,7 +949,6 @@
 	)
 	(label "A1"
 		(at 100.33 52.07 180)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -961,7 +959,6 @@
 	)
 	(label "I2C.SDA"
 		(at 129.54 58.42 0)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -972,7 +969,6 @@
 	)
 	(label "~{WREN}"
 		(at 129.54 63.5 0)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -983,7 +979,6 @@
 	)
 	(label "A1"
 		(at 109.22 60.96 180)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -994,7 +989,6 @@
 	)
 	(label "I2C.SCL"
 		(at 129.54 60.96 0)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -1005,7 +999,6 @@
 	)
 	(label "A2"
 		(at 100.33 46.99 180)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -1016,7 +1009,6 @@
 	)
 	(label "A0"
 		(at 109.22 58.42 180)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -1027,7 +1019,6 @@
 	)
 	(label "A0"
 		(at 92.71 49.53 180)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -1039,7 +1030,6 @@
 	(hierarchical_label "I2C{I2C}"
 		(shape bidirectional)
 		(at 142.24 54.61 0)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)

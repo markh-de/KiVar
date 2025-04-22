@@ -6,10 +6,10 @@
 	(paper "A4")
 	(title_block
 		(title "KiVar Demo")
-		(date "2024-09-16")
-		(rev "0.4.0")
+		(date "2025-04-22")
+		(rev "0.5.0")
 		(company "Author: Mark Hämmerling <dev@markh.de>")
-		(comment 1 "https://github.com/markh-de/KiVar")
+		(comment 1 "https://kivar.markh.de")
 		(comment 4 "Maximum LED Backlight Drive Current Selection")
 	)
 	(lib_symbols
@@ -2000,7 +2000,6 @@
 	)
 	(label "SW"
 		(at 114.3 51.435 0)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -2011,7 +2010,6 @@
 	)
 	(label "LED_80MA"
 		(at 124.46 81.28 0)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -2022,7 +2020,6 @@
 	)
 	(label "LED_PWM"
 		(at 74.295 64.135 0)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -2033,7 +2030,6 @@
 	)
 	(label "LED_10MA"
 		(at 177.8 121.92 0)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -2044,7 +2040,6 @@
 	)
 	(label "LED_40MA"
 		(at 177.8 81.28 0)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -2055,7 +2050,6 @@
 	)
 	(label "LED_K"
 		(at 116.84 64.135 0)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -2066,7 +2060,6 @@
 	)
 	(label "LED_A"
 		(at 141.605 45.085 180)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -2077,7 +2070,6 @@
 	)
 	(label "LED_K"
 		(at 116.84 105.41 0)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -2088,7 +2080,6 @@
 	)
 	(label "LED_20MA"
 		(at 124.46 121.92 0)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
