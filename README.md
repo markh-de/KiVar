@@ -1119,7 +1119,7 @@ To open the plugin dialog, simply click the KiVar plugin icon in the main toolba
 
 Upon start, during the rule processing stage, KiVar analyzes the board data and automatically detects the current variation Configuration, i.e. it tries to find one definite Choice for each configured Aspect, based on the currently assigned values, field contents, attributes and features for each related footprint.
 
-If KiVar fails to find a matching definite Choice for a variation Aspect, then the corresponding variation Choice selector is preset to the entry _'\<unset>'_.  This will probably happen before applying a specific Choice for the first time or after editing Assignments, because not all of the initial footprint data may perfectly match exactly one of the defined variation Choices (per Aspect).
+If KiVar fails to find a matching definite Choice for a variation Aspect, then the corresponding variation Choice selector is preset to the _'unspecified'_ entry.  This will probably happen before applying a specific Choice for the first time or after editing Assignments, because not all of the initial footprint data may perfectly match exactly one of the defined variation Choices (per Aspect).
 
 Also, KiVar tries to match the corresponding Variant according to the selected Aspect Choices.
 
@@ -1156,7 +1156,7 @@ For the above [usage examples](#usage-examples), the selection dialog window may
 
 For each of the listed Aspect Identifiers a variation Choice Identifier can now be selected.
 
-If the values, field contents, attributes and features of the footprint(s) related to a variation Aspect shall not be modified, the entry _'\<unset>'_ can be selected for that variation Aspect.  In this case, the corresponding variation will be excluded from the assignment stage and related footprints remain unmodified.
+If the values, field contents, attributes and features of the footprint(s) related to a variation Aspect shall not be modified, the _'unspecified`_ entry can be selected for that variation Aspect.  In this case, the corresponding variation will be excluded from the assignment stage and related footprints remain unmodified.
 
 The change list section below the selection area summarizes all component changes to be performed for each related footprint if the current variation configuration is applied.
 
