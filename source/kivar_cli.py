@@ -3,12 +3,17 @@
 import os
 import sys
 import argparse
-import pcbnew
 
 try:                        from  kivar_engine  import *
 except ModuleNotFoundError: from .kivar_engine  import *
 try:                        from  kivar_version import version
 except ModuleNotFoundError: from .kivar_version import version
+
+# TODO support variants
+# * assigning variants
+# * have a switch that forbids changing bound aspects
+# * add a simple "create table" command, which simply binds all aspects (user needs to edit csv manually)
+# * ... more ideas ... (CLI support may be implemented later than GUI, unsure about usage stats)
 
 # TODO for list, allow another structure: aspect -> component -> choice (in addition to current aspect -> choice -> component)
 # TODO make use of verbose options, where applicable
@@ -22,6 +27,7 @@ def doc_base_url():
     return f'https://doc.kivar.markh.de/{doc_vcs_ref()}/README.md'
 
 no_color = False
+load_errors = None
 
 class Msg:
     RESET = '\033[0m'
@@ -34,6 +40,9 @@ class Msg:
         'value':   '\033[0;1m',
         'field':   '\033[0;3;34m',
         'fvalue':  '\033[0;1m',
+        'var':     '\033[0;33m',
+        'avar':    '\033[0;1;30;43m',
+        'bound':   '\033[0;33m',
         'aspect':  '\033[0;35m',
         'choice':  '\033[0;36m',
         'achoice': '\033[0;1;37;46m',
@@ -85,6 +94,9 @@ class ErrMsg(Msg):
         self.color('error')
         return self
 
+def sym_variant():
+    return '~'
+
 def load_board(in_file):
     if not os.path.isfile(in_file) or not os.access(in_file, os.R_OK):
         ErrMsg().c().text(f'Error: "{in_file}" is not a readable file.').flush()
@@ -107,13 +119,28 @@ def build_vardict_wrapper(fpdict):
         return None
     return vardict
 
-def list_command(in_file=None, long=False, prop_codes=False, detailed=False, selected=False, verbose=False):
+def list_command(in_file=None, long=False, prop_codes=False, detailed=False, selected=False, verbose=False, show_variants=False, only_variants=False, cust_asp_order=False):
     b = load_board(in_file)
     if b is None: return False
+
     fpdict = build_fpdict(b)
     vardict = build_vardict_wrapper(fpdict)
     if vardict is None: return False
-    if selected: sel = detect_current_choices(fpdict, vardict)
+
+    if selected:
+        sel = detect_current_choices(fpdict, vardict)
+
+    if show_variants:
+        varinfo = VariantInfo(in_file)
+        choicedict = get_choice_dict(vardict)
+        errors = varinfo.read_csv(choicedict)
+        if not varinfo.is_loaded(): show_variants = False # if not loaded, disable variants altogether
+        if len(errors) > 0:
+            ErrMsg().c().text(f'Errors when loading variant table:').flush()
+            for error in errors:
+                ErrMsg().text('    ' + error).flush()
+            return None
+
     ndict = {}
     for uuid in vardict:
         aspect = vardict[uuid][Key.ASPECT]
@@ -147,34 +174,74 @@ def list_command(in_file=None, long=False, prop_codes=False, detailed=False, sel
                                 state_text = 'No'
                             cmp_info.append(m.text(prop_abbrev(prop_code) + ':' + state_text).reset().text('>').content())
                 ndict[aspect][choice][uuid] = ' '.join(cmp_info)
-    for aspect in sorted(ndict, key=natural_sort_key):
-        p_aspect = quote_str(aspect)
+
+    all_aspects = sorted(ndict, key=natural_sort_key)
+    if show_variants:
+        if cust_asp_order:
+            bound_aspects = varinfo.aspects()
+            free_aspects = [aspect for aspect in all_aspects if aspect not in bound_aspects]
+            all_aspects = bound_aspects + free_aspects
+        if selected:
+            varsel = varinfo.match_variant(sel)
         if long:
-            Msg().color('aspect').text(p_aspect).flush()
+            Msg().color('var').text(sym_variant()).flush()
         else:
-            Msg().color('aspect').text(p_aspect).reset().text(':').flush(end='')
-        for choice in sorted(ndict[aspect], key=natural_sort_key):
-            p_choice = quote_str(choice)
-            if selected and sel[aspect] == choice:
+            Msg().color('var').text(sym_variant()).reset().text(':').flush(end='')
+        for variant in varinfo.variants():
+            p_var = quote_str(variant)
+            if selected and variant == varsel:
                 if long:
-                    Msg().text(f'  + ').color('achoice').text(p_choice).flush()
+                    Msg().text('  + ').color('avar').text(p_var).flush()
                 else:
-                    Msg().text(f' [').color('achoice').text(p_choice).reset().text(']').flush(end='')
+                    Msg().text(' [').color('avar').text(p_var).reset().text(']').flush(end='')
             else:
                 if long:
-                    Msg().text(f'    ').color('choice').text(p_choice).flush()
+                    Msg().text('    ').color('var').text(p_var).flush()
                 else:
-                    Msg().text(f' ').color('choice').text(p_choice).flush(end='')
+                    Msg().text(' ').color('var').text(p_var).flush(end='')
             if detailed:
-                for uuid in sorted(ndict[aspect][choice], key=lambda x: natural_sort_key(fpdict[x][Key.REF])):
-                    ref = fpdict[uuid][Key.REF]
-                    Msg().text('        ').color('ref').text(ref).reset().text(': ' + ndict[aspect][choice][uuid]).flush()
-                    for field in sorted(vardict[uuid][Key.FLD], key=natural_sort_key):
-                        f = quote_str(field)
-                        v = quote_str(vardict[uuid][Key.FLD][field][choice][Key.VALUE])
-                        Msg().text('            ').color('field').text(f).reset().text(': ').color('fvalue').text(v).flush()
-                        # Future note: When properties for field scope expressions are allowed, print them here
+                choices = varinfo.choices()[variant]
+                for index, aspect in enumerate(varinfo.aspects()):
+                    Msg().text('        ').color('aspect').text(quote_str(aspect)).reset().text(': ').color('choice').text(choices[index]).flush()
+
         Msg().flush()
+
+    if not only_variants:
+        for aspect in all_aspects:
+            p_aspect = quote_str(aspect)
+            if long:
+                m = Msg().color('aspect').text(p_aspect)
+                if show_variants and aspect in varinfo.aspects():
+                    m.color('bound').text(sym_variant())
+                m.flush()
+            else:
+                m = Msg().color('aspect').text(p_aspect)
+                if show_variants and aspect in varinfo.aspects():
+                    m.color('bound').text(sym_variant())
+                m.reset().text(':').flush(end='')
+            for choice in sorted(ndict[aspect], key=natural_sort_key):
+                p_choice = quote_str(choice)
+                if selected and sel[aspect] == choice:
+                    if long:
+                        Msg().text('  + ').color('achoice').text(p_choice).flush()
+                    else:
+                        Msg().text(' [').color('achoice').text(p_choice).reset().text(']').flush(end='')
+                else:
+                    if long:
+                        Msg().text('    ').color('choice').text(p_choice).flush()
+                    else:
+                        Msg().text(' ').color('choice').text(p_choice).flush(end='')
+                if detailed:
+                    for uuid in sorted(ndict[aspect][choice], key=lambda x: natural_sort_key(fpdict[x][Key.REF])):
+                        ref = fpdict[uuid][Key.REF]
+                        Msg().text('        ').color('ref').text(ref).reset().text(': ' + ndict[aspect][choice][uuid]).flush()
+                        for field in sorted(vardict[uuid][Key.FLD], key=natural_sort_key):
+                            f = quote_str(field)
+                            variant = quote_str(vardict[uuid][Key.FLD][field][choice][Key.VALUE])
+                            Msg().text('            ').color('field').text(f).reset().text(': ').color('fvalue').text(variant).flush()
+                            # Future note: When properties for field scope expressions are allowed, print them here
+            Msg().flush()
+
     return True
 
 def state_command(in_file=None, all=False, query_aspect=None, verbose=False):
@@ -185,9 +252,6 @@ def state_command(in_file=None, all=False, query_aspect=None, verbose=False):
     if vardict is None: return False
     sel = detect_current_choices(fpdict, vardict)
     if query_aspect is not None:
-        if all:
-            ErrMsg().c().text('Error: Options "--all" and "--query" are mutually exclusive.').flush()
-            return False
         choices = []
         for qa in query_aspect:
             q = cook_raw_string(qa)
@@ -208,6 +272,7 @@ def state_command(in_file=None, all=False, query_aspect=None, verbose=False):
     return True
 
 def check_command(in_file=None, verbose=False):
+    # TODO add option that requires a valid variant to be set
     b = load_board(in_file)
     if b is None: return False
     fpdict = build_fpdict(b)
@@ -282,19 +347,22 @@ def main():
     global no_color
     parser = argparse.ArgumentParser(description=f"KiVar Command Line Interface ({version()})")
     parser.add_argument("-n", "--no-color", action="store_true", help="suppress output coloring (default for stdout redirection)")
-    parser.add_argument("-V", "--version",  action="store_true", help="print version information and exit")
+    parser.add_argument(      "--version",  action="store_true", help="print version information and exit")
     subparsers = parser.add_subparsers(dest="command")
 
     list_parser = subparsers.add_parser("list", help="list all available aspects and choices")
-    list_parser.add_argument("-s", "--selection",  action="store_true", help="mark currently matching choices")
-    list_parser.add_argument("-l", "--long",       action="store_true", help="long output style")
-    list_parser.add_argument("-d", "--detailed",   action="store_true", help="show component assignments (implies --long)")
-    list_parser.add_argument("-c", "--prop-codes", action="store_true", help="display property codes (implies --detailed)")
+    list_parser.add_argument("-V", "--variants",    action="store_true", help="variant information only, skip aspect list")
+    list_parser.add_argument("-N", "--no-variants", action="store_true", help="suppress variant information")
+    list_parser.add_argument("-O", "--std-order",   action="store_true", help="ignore aspect order from variant table")
+    list_parser.add_argument("-s", "--selection",   action="store_true", help="mark currently matching choices")
+    list_parser.add_argument("-l", "--long",        action="store_true", help="long output style")
+    list_parser.add_argument("-d", "--detailed",    action="store_true", help="show component assignments (implies --long)")
+    list_parser.add_argument("-c", "--prop-codes",  action="store_true", help="display property codes (implies --detailed)")
     list_parser.add_argument("pcb", help="input KiCad PCB file name")
 
     state_parser = subparsers.add_parser("state", help="show currently matching choice for each aspect")
-    state_parser.add_argument("-Q", "--query",   action="append",     help="add aspect to query for matching choice", metavar="aspect")
-    state_parser.add_argument("-a", "--all",     action="store_true", help="list all aspects (default: list only aspects with matching choice)")
+    state_parser.add_argument("-Q", "--query", action="append",     help="add aspect to query for matching choice", metavar="aspect")
+    state_parser.add_argument("-a", "--all",   action="store_true", help="list all aspects (default: list only aspects with matching choice)")
     state_parser.add_argument("pcb", help="input KiCad PCB file name")
 
     check_parser = subparsers.add_parser("check", help="check all aspects for matching choices, exit with error if check fails")
@@ -312,7 +380,10 @@ def main():
     no_color = args.no_color
     exitcode = 0
 
-    if args.version:
+    if load_errors is not None:
+        for e in load_errors: ErrMsg().c().text(e).flush()
+        exitcode = 4
+    elif args.version:
         Msg().text(f"KiVar {version()} (using pcbnew {pcbnew.Version()})").flush()
         exitcode = 0
     else:
@@ -327,9 +398,15 @@ def main():
             if cmd == "list":
                 if args.prop_codes: args.detailed = True
                 if args.detailed:   args.long = True
-                if not list_command(in_file=args.pcb, long=args.long, prop_codes=args.prop_codes, detailed=args.detailed, selected=args.selection): exitcode = 1
+                if args.variants and args.no_variants:
+                    ErrMsg().c().text('Error: Options "--variants" and "--no-variants" are mutually exclusive.').flush()
+                    exitcode = 5
+                elif not list_command(in_file=args.pcb, long=args.long, prop_codes=args.prop_codes, detailed=args.detailed, selected=args.selection, show_variants=not args.no_variants, only_variants=args.variants, cust_asp_order=not args.std_order): exitcode = 1
             elif cmd == "state":
-                if not state_command(in_file=args.pcb, all=args.all, query_aspect=args.query): exitcode = 1
+                if args.all and args.query_aspect:
+                    ErrMsg().c().text('Error: Options "--all" and "--query" are mutually exclusive.').flush()
+                    exitcode = 5
+                elif not state_command(in_file=args.pcb, all=args.all, query_aspect=args.query): exitcode = 1
             elif cmd == "check":
                 if not check_command(in_file=args.pcb): exitcode = 1
             elif cmd == "set":
@@ -346,6 +423,10 @@ def main():
                 exitcode = 2
 
     return exitcode
+
+try: import pcbnew
+except ModuleNotFoundError as e:
+    load_errors = [f"Error: The '{e.name}' Python module cannot be loaded.", "Please ensure that KiCad is installed and that your Python environment is configured to access KiCad's scripting modules."]
 
 if __name__ == "__main__":
     sys.exit(main())
