@@ -176,7 +176,7 @@ def quote_str(string):
     # we prefer single-quotes for output
     if string == '': result = "''"
     else:
-        if any(c in string for c in ', -\\()="\''):
+        if any(c in string for c in ', -~\\[]()="\''):
             q = '"' if string.count("'") > string.count('"') else "'"
             result = q
             for c in string:
