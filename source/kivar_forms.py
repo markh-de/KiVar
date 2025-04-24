@@ -316,8 +316,8 @@ class CreateTableDialog ( wx.Dialog ):
 
         sz_main.Add( self.txt_aspects, 0, wx.ALIGN_CENTER|wx.ALL, 12 )
 
-        self.txt_explain_sel = wx.StaticText( self, wx.ID_ANY, u"To <b>bind</b> aspects to the variant definitions, assign the desired specific\nchoices to them in the main dialog.\nTo keep aspects as <b>free</b>, select the <i>unspecified</i> choice for them.\nIf you are not yet satisfied with the above bindings, go back to the main dialog\nand make the appropriate selections now.", wx.DefaultPosition, wx.DefaultSize, 0 )
-        self.txt_explain_sel.SetLabelMarkup( u"To <b>bind</b> aspects to the variant definitions, assign the desired specific\nchoices to them in the main dialog.\nTo keep aspects as <b>free</b>, select the <i>unspecified</i> choice for them.\nIf you are not yet satisfied with the above bindings, go back to the main dialog\nand make the appropriate selections now." )
+        self.txt_explain_sel = wx.StaticText( self, wx.ID_ANY, u"<i>Aspect binding:</i>\nTo <b>bind</b> aspects to the variant definitions, assign the desired <i>specific choices</i> to them\nin the main dialog.  To keep aspects as <b>free</b>, select the <i>unspecified</i> choice for them.\n\nIf you are not yet satisfied with the above bindings, go back to the main dialog and make the\nappropriate selections now.\n\n<i>Tip:</i> You can customize the display order of aspects and variants by modifying their order\nin the variants table file (use the 'Edit ..' option).", wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.txt_explain_sel.SetLabelMarkup( u"<i>Aspect binding:</i>\nTo <b>bind</b> aspects to the variant definitions, assign the desired <i>specific choices</i> to them\nin the main dialog.  To keep aspects as <b>free</b>, select the <i>unspecified</i> choice for them.\n\nIf you are not yet satisfied with the above bindings, go back to the main dialog and make the\nappropriate selections now.\n\n<i>Tip:</i> You can customize the display order of aspects and variants by modifying their order\nin the variants table file (use the 'Edit ..' option)." )
         self.txt_explain_sel.Wrap( -1 )
 
         sz_main.Add( self.txt_explain_sel, 0, wx.ALIGN_CENTER|wx.ALL|wx.EXPAND, 12 )
@@ -389,8 +389,8 @@ class AddVariantDialog ( wx.Dialog ):
 
         sz_main.Add( self.txt_aspects, 0, wx.ALIGN_CENTER|wx.ALL, 12 )
 
-        self.txt_explain_sel = wx.StaticText( self, wx.ID_ANY, u"If you are not yet satisfied with the above assignments, go back to the main dialog\nand make the appropriate selections now.", wx.DefaultPosition, wx.DefaultSize, 0 )
-        self.txt_explain_sel.SetLabelMarkup( u"If you are not yet satisfied with the above assignments, go back to the main dialog\nand make the appropriate selections now." )
+        self.txt_explain_sel = wx.StaticText( self, wx.ID_ANY, u"If you are not yet satisfied with the above assignments, go back\nto the main dialog and make the appropriate selections now.", wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.txt_explain_sel.SetLabelMarkup( u"If you are not yet satisfied with the above assignments, go back\nto the main dialog and make the appropriate selections now." )
         self.txt_explain_sel.Wrap( -1 )
 
         sz_main.Add( self.txt_explain_sel, 0, wx.ALIGN_CENTER|wx.ALL|wx.EXPAND, 12 )

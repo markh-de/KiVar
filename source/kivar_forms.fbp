@@ -1583,7 +1583,7 @@
             <property name="gripper">0</property>
             <property name="hidden">0</property>
             <property name="id">wxID_ANY</property>
-            <property name="label">To &lt;b&gt;bind&lt;/b&gt; aspects to the variant definitions, assign the desired specific&#x0A;choices to them in the main dialog.&#x0A;To keep aspects as &lt;b&gt;free&lt;/b&gt;, select the &lt;i&gt;unspecified&lt;/i&gt; choice for them.&#x0A;If you are not yet satisfied with the above bindings, go back to the main dialog&#x0A;and make the appropriate selections now.</property>
+            <property name="label">&lt;i&gt;Aspect binding:&lt;/i&gt;  To &lt;b&gt;bind&lt;/b&gt; aspects to the variant definitions, assign the desired &lt;i&gt;specific choices&lt;/i&gt;&#x0A;to them in the main dialog.  To keep aspects as &lt;b&gt;free&lt;/b&gt;, select the &lt;i&gt;unspecified&lt;/i&gt; choice for them.&#x0A;&#x0A;If you are not yet satisfied with the above bindings, go back to the main dialog and make the&#x0A;appropriate selections now.&#x0A;&#x0A;&lt;i&gt;Tip:&lt;/i&gt; You can customize the display order of aspects and variants by modifying their order in&#x0A;the variants table file (use the &lt;i&gt;&apos;Edit Definition Table...&apos;&lt;/i&gt; option).</property>
             <property name="markup">1</property>
             <property name="max_size"></property>
             <property name="maximize_button">0</property>
@@ -1962,7 +1962,7 @@
             <property name="gripper">0</property>
             <property name="hidden">0</property>
             <property name="id">wxID_ANY</property>
-            <property name="label">If you are not yet satisfied with the above assignments, go back to the main dialog&#x0A;and make the appropriate selections now.</property>
+            <property name="label">If you are not yet satisfied with the above assignments, go back&#x0A;to the main dialog and make the appropriate selections now.</property>
             <property name="markup">1</property>
             <property name="max_size"></property>
             <property name="maximize_button">0</property>
