@@ -119,7 +119,22 @@ def build_vardict_wrapper(fpdict):
         return None
     return vardict
 
-def list_command(in_file=None, long=False, prop_codes=False, detailed=False, selected=False, verbose=False, show_variants=False, only_variants=False, cust_asp_order=False):
+def load_varinfo_wrapper(in_file, vardict):
+    varinfo = VariantInfo(in_file)
+    errors = varinfo.read_csv(get_choice_dict(vardict))
+    if not varinfo.is_loaded(): show_variants = False # if not loaded, disable variants altogether
+    if len(errors) > 0:
+        ErrMsg().c().text(f'Errors when loading variant table:').flush()
+        for error in errors:
+            ErrMsg().text('    ' + error).flush()
+        return None
+    return varinfo
+
+def reorder_aspects(all_aspects, bound_aspects):
+    free_aspects = [aspect for aspect in all_aspects if aspect not in bound_aspects]
+    return bound_aspects + free_aspects
+
+def list_command(in_file=None, long=False, prop_codes=False, detailed=False, selected=False, use_variants=False, only_variants=False, cust_asp_order=False):
     b = load_board(in_file)
     if b is None: return False
 
@@ -130,16 +145,10 @@ def list_command(in_file=None, long=False, prop_codes=False, detailed=False, sel
     if selected:
         sel = detect_current_choices(fpdict, vardict)
 
-    if show_variants:
-        varinfo = VariantInfo(in_file)
-        choicedict = get_choice_dict(vardict)
-        errors = varinfo.read_csv(choicedict)
-        if not varinfo.is_loaded(): show_variants = False # if not loaded, disable variants altogether
-        if len(errors) > 0:
-            ErrMsg().c().text(f'Errors when loading variant table:').flush()
-            for error in errors:
-                ErrMsg().text('    ' + error).flush()
-            return None
+    if use_variants:
+        varinfo = load_varinfo_wrapper(in_file, vardict)
+        if varinfo is None: return False
+        if not varinfo.is_loaded(): use_variants = False
 
     ndict = {}
     for uuid in vardict:
@@ -176,11 +185,9 @@ def list_command(in_file=None, long=False, prop_codes=False, detailed=False, sel
                 ndict[aspect][choice][uuid] = ' '.join(cmp_info)
 
     all_aspects = sorted(ndict, key=natural_sort_key)
-    if show_variants:
+    if use_variants:
         if cust_asp_order:
-            bound_aspects = varinfo.aspects()
-            free_aspects = [aspect for aspect in all_aspects if aspect not in bound_aspects]
-            all_aspects = bound_aspects + free_aspects
+            all_aspects = reorder_aspects(all_aspects, varinfo.aspects())
         if selected:
             varsel = varinfo.match_variant(sel)
         if long:
@@ -211,12 +218,12 @@ def list_command(in_file=None, long=False, prop_codes=False, detailed=False, sel
             p_aspect = quote_str(aspect)
             if long:
                 m = Msg().color('aspect').text(p_aspect)
-                if show_variants and aspect in varinfo.aspects():
+                if use_variants and aspect in varinfo.aspects():
                     m.color('bound').text(sym_variant())
                 m.flush()
             else:
                 m = Msg().color('aspect').text(p_aspect)
-                if show_variants and aspect in varinfo.aspects():
+                if use_variants and aspect in varinfo.aspects():
                     m.color('bound').text(sym_variant())
                 m.reset().text(':').flush(end='')
             for choice in sorted(ndict[aspect], key=natural_sort_key):
@@ -244,12 +251,19 @@ def list_command(in_file=None, long=False, prop_codes=False, detailed=False, sel
 
     return True
 
-def state_command(in_file=None, all=False, query_aspect=None, verbose=False):
+def state_command(in_file=None, all=False, query_aspect=None, use_variants=False, only_variants=False, cust_asp_order=False):
     b = load_board(in_file)
     if b is None: return False
+
     fpdict = build_fpdict(b)
     vardict = build_vardict_wrapper(fpdict)
     if vardict is None: return False
+
+    if use_variants:
+        varinfo = load_varinfo_wrapper(in_file, vardict)
+        if varinfo is None: return False
+        if not varinfo.is_loaded(): use_variants = False
+
     sel = detect_current_choices(fpdict, vardict)
     if query_aspect is not None:
         choices = []
@@ -263,21 +277,35 @@ def state_command(in_file=None, all=False, query_aspect=None, verbose=False):
         for c in choices:
             Msg().color('choice').text(c).flush()
     else:
-        for aspect in sorted(sel, key=natural_sort_key):
-            choice = sel[aspect]
-            if all or choice is not None:
-                p_aspect = quote_str(aspect)
-                p_c = '' if choice is None else quote_str(choice)
-                Msg().color('aspect').text(p_aspect).reset().text('=').color('choice').text(p_c).flush()
+        if use_variants:
+            varsel = varinfo.match_variant(sel)
+            p_v = '' if varsel is None else quote_str(varsel)
+            Msg().color('var').text(sym_variant()).reset().text('=').color('var').text(p_v).flush()
+
+        if not only_variants:
+            all_aspects = sorted(sel, key=natural_sort_key)
+            if use_variants and cust_asp_order:
+                all_aspects = reorder_aspects(all_aspects, varinfo.aspects())
+            for aspect in all_aspects:
+                choice = sel[aspect]
+                if all or choice is not None:
+                    p_aspect = quote_str(aspect)
+                    p_c = '' if choice is None else quote_str(choice)
+                    Msg().color('aspect').text(p_aspect).reset().text('=').color('choice').text(p_c).flush()
+
     return True
 
-def check_command(in_file=None, verbose=False):
-    # TODO add option that requires a valid variant to be set
+def check_command(in_file=None, no_variants=False):
+
+    # TODO variant checking!
+
     b = load_board(in_file)
     if b is None: return False
+
     fpdict = build_fpdict(b)
     vardict = build_vardict_wrapper(fpdict)
     if vardict is None: return False
+
     sel = detect_current_choices(fpdict, vardict)
     failed = []
     for aspect in sorted(sel, key=natural_sort_key):
@@ -285,6 +313,7 @@ def check_command(in_file=None, verbose=False):
         # TODO if verbose: print result of each check here!
         if choice is None:
             failed.append(aspect)
+
     if len(failed) > 0:
         Msg().color('fail').text('Check failed.').reset().text(f'  No matching choice found for {len(failed)} (of {len(sel)}) aspect(s):').flush()
         for aspect in failed:
@@ -293,38 +322,48 @@ def check_command(in_file=None, verbose=False):
         return False
     else:
         Msg().color('pass').text('Check passed.').reset().text(f'  Matching choices found for complete set of {len(sel)} aspect(s).').flush()
+
     return True
 
-def set_command(in_file=None, out_file=None, force_save=False, assign=None, dry_run=False, verbose=False):
+def set_command(in_file=None, out_file=None, force_save=False, variant=None, assign=None, dry_run=False, verbose=False):
     # TODO how to handle errors? ignore failing assignments, or abort?
     #      collect errors, then print & return?
-    if assign is None:
-        ErrMsg().c().text('Error: No assignments passed.').flush()
+    if variant is None and assign is None:
+        ErrMsg().c().text('Error: No variant or aspect assignments passed.').flush()
         return False
+
     b = load_board(in_file)
     if b is None: return False
+
     fpdict = build_fpdict(b)
     vardict = build_vardict_wrapper(fpdict)
     if vardict is None: return False
+
     sel = detect_current_choices(fpdict, vardict)
-    choice_dict = get_choice_dict(vardict)
-    for asmt in assign:
-        l = split_raw_str(asmt, '=', False)
-        if len(l) == 2:
-            aspect = cook_raw_string(l[0])
-            choice = cook_raw_string(l[1])
-            p_aspect = escape_str(aspect)
-            p_choice = escape_str(choice)
-            p_asmt = f'{p_aspect}={p_choice}'
-            if aspect in sel:
-                if choice in choice_dict[aspect]:
-                    sel[aspect] = choice
+
+# TODO first, apply variants
+#   .............
+
+    if assign is not None:
+        choice_dict = get_choice_dict(vardict)
+        for asmt in assign:
+            l = split_raw_str(asmt, '=', False)
+            if len(l) == 2:
+                aspect = cook_raw_string(l[0])
+                choice = cook_raw_string(l[1])
+                p_aspect = escape_str(aspect)
+                p_choice = escape_str(choice)
+                p_asmt = f'{p_aspect}={p_choice}'
+                if aspect in sel:
+                    if choice in choice_dict[aspect]:
+                        sel[aspect] = choice
+                    else:
+                        ErrMsg().c().text(f"Error: Assignment '{p_asmt}' failed: No such choice '{p_choice}' for aspect '{p_aspect}'.").flush()
                 else:
-                    ErrMsg().c().text(f"Error: Assignment '{p_asmt}' failed: No such choice '{p_choice}' for aspect '{p_aspect}'.").flush()
+                    ErrMsg().c().text(f"Error: Assignment '{p_asmt}' failed: No such aspect '{p_aspect}'.").flush()
             else:
-                ErrMsg().c().text(f"Error: Assignment '{p_asmt}' failed: No such aspect '{p_aspect}'.").flush()
-        else:
-            ErrMsg().c().text(f"Error: Assignment '{asmt}' failed: Format error: Wrong number of '=' separators.").flush()
+                ErrMsg().c().text(f"Error: Assignment '{asmt}' failed: Format error: Wrong number of '=' separators.").flush()
+
     changes = apply_selection(fpdict, vardict, sel, dry_run=False)
     if verbose: # or dry_run:
         if changes:
@@ -333,6 +372,7 @@ def set_command(in_file=None, out_file=None, force_save=False, assign=None, dry_
                 Msg().text('    ').color('mod').text(change).flush()
         else:
             Msg().text('No changes.').flush()
+
     if not dry_run and (changes or force_save):
         store_fpdict(b, fpdict)
         if save_board(out_file, b):
@@ -341,6 +381,7 @@ def set_command(in_file=None, out_file=None, force_save=False, assign=None, dry_
         else:
             ErrMsg().c().text(f'Error: Failed to save board to file "{out_file}".').flush()
             return False
+
     return True
 
 def main():
@@ -361,16 +402,21 @@ def main():
     list_parser.add_argument("pcb", help="input KiCad PCB file name")
 
     state_parser = subparsers.add_parser("state", help="show currently matching choice for each aspect")
-    state_parser.add_argument("-Q", "--query", action="append",     help="add aspect to query for matching choice", metavar="aspect")
-    state_parser.add_argument("-a", "--all",   action="store_true", help="list all aspects (default: list only aspects with matching choice)")
+    state_parser.add_argument("-V", "--variants",    action="store_true", help="variant information only, skip aspect list")
+    state_parser.add_argument("-N", "--no-variants", action="store_true", help="suppress variant information")
+    state_parser.add_argument("-O", "--std-order",   action="store_true", help="ignore aspect order from variant table")
+    state_parser.add_argument("-Q", "--query",       action="append",     help="add aspect to query for matching choice", metavar="aspect")
+    state_parser.add_argument("-a", "--all",         action="store_true", help="list all aspects (default: list only aspects with matching choice)")
     state_parser.add_argument("pcb", help="input KiCad PCB file name")
 
-    check_parser = subparsers.add_parser("check", help="check all aspects for matching choices, exit with error if check fails")
-    # TODO add option to check only for dedicated list of aspects
+    check_parser = subparsers.add_parser("check", help="check variants and/or aspects for matching choices, exit with error if check fails")
+    check_parser.add_argument("-N", "--no-variants", action="store_true", help="check only aspects, not variants")
     check_parser.add_argument("pcb", help="input KiCad PCB file name")
 
     set_parser = subparsers.add_parser("set", help="assign choices to aspects")
+    set_parser.add_argument("-V", "--variant", action="append",     help="switch to specific variant", metavar="str")
     set_parser.add_argument("-A", "--assign",  action="append",     help="assign choice to aspect ('str' format: \"aspect=choice\")", metavar="str")
+    set_parser.add_argument("-b", "--bound",   action="store_true", help="allow overriding bound aspects (applied after variant)")
     set_parser.add_argument("-D", "--dry-run", action="store_true", help="only print assignments, do not really perform/save them")
     set_parser.add_argument("-o", "--output",  action="append",     help="override output file name and force saving", metavar="out_pcb")
     set_parser.add_argument("-v", "--verbose", action="store_true", help="verbose output")
@@ -401,22 +447,26 @@ def main():
                 if args.variants and args.no_variants:
                     ErrMsg().c().text('Error: Options "--variants" and "--no-variants" are mutually exclusive.').flush()
                     exitcode = 5
-                elif not list_command(in_file=args.pcb, long=args.long, prop_codes=args.prop_codes, detailed=args.detailed, selected=args.selection, show_variants=not args.no_variants, only_variants=args.variants, cust_asp_order=not args.std_order): exitcode = 1
+                elif not list_command(in_file=args.pcb, long=args.long, prop_codes=args.prop_codes, detailed=args.detailed, selected=args.selection, use_variants=not args.no_variants, only_variants=args.variants, cust_asp_order=not args.std_order): exitcode = 1
             elif cmd == "state":
                 if args.all and args.query_aspect:
                     ErrMsg().c().text('Error: Options "--all" and "--query" are mutually exclusive.').flush()
                     exitcode = 5
-                elif not state_command(in_file=args.pcb, all=args.all, query_aspect=args.query): exitcode = 1
+                elif not state_command(in_file=args.pcb, all=args.all, query_aspect=args.query, use_variants=not args.no_variants, only_variants=args.variants, cust_asp_order=not args.std_order): exitcode = 1
             elif cmd == "check":
-                if not check_command(in_file=args.pcb): exitcode = 1
+                if not check_command(in_file=args.pcb, no_variants=args.no_variants): exitcode = 1
             elif cmd == "set":
-                if args.output:
-                    out_file = args.output[-1]
-                    force_save = True
+                if args.output is not None and len(args.output) > 1:
+                    ErrMsg().c().text('Error: Option "--output" cannot be used multiple times.').flush()
+                    exitcode = 5
                 else:
-                    out_file = args.pcb
-                    force_save = False
-                if not set_command(in_file=args.pcb, out_file=out_file, force_save=force_save, assign=args.assign, dry_run=args.dry_run, verbose=args.verbose): exitcode = 1
+                    if args.output is not None and len(args.output) == 1:
+                        out_file = args.output[0]
+                        force_save = True
+                    else:
+                        out_file = args.pcb
+                        force_save = False
+                    if not set_command(in_file=args.pcb, out_file=out_file, force_save=force_save, variant=args.variant, assign=args.assign, dry_run=args.dry_run, verbose=args.verbose): exitcode = 1
             else:
                 Msg().text(f'This is the KiVar CLI, version {version()}.').flush()
                 parser.print_usage()
