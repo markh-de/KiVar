@@ -325,9 +325,7 @@ def check_command(in_file=None, no_variants=False):
 
     return True
 
-def set_command(in_file=None, out_file=None, force_save=False, variant=None, assign=None, dry_run=False, verbose=False):
-    # TODO how to handle errors? ignore failing assignments, or abort?
-    #      collect errors, then print & return?
+def set_command(in_file=None, out_file=None, force_save=False, variant=None, assign=None, bound=False, dry_run=False, verbose=False):
     if variant is None and assign is None:
         ErrMsg().c().text('Error: No variant or aspect assignments passed.').flush()
         return False
@@ -341,8 +339,20 @@ def set_command(in_file=None, out_file=None, force_save=False, variant=None, ass
 
     sel = detect_current_choices(fpdict, vardict)
 
-# TODO first, apply variants
-#   .............
+    if variant is not None:
+        varinfo = load_varinfo_wrapper(in_file, vardict)
+        if varinfo is None: return False
+        if varinfo.is_loaded():
+            if variant not in varinfo.variants():
+                ErrMsg().c().text(f"Error: Undefined variant identifier '{quote_str(variant)}'.").flush()
+                return False
+            else:
+                choices = varinfo.choices()[variant]
+                for aspect_index, aspect in enumerate(varinfo.aspects()):
+                    sel[aspect] = choices[aspect_index]
+        else:
+            ErrMsg().c().text("Error: Cannot set variant without a valid variant definition table.").flush()
+            return False
 
     if assign is not None:
         choice_dict = get_choice_dict(vardict)
@@ -355,14 +365,21 @@ def set_command(in_file=None, out_file=None, force_save=False, variant=None, ass
                 p_choice = escape_str(choice)
                 p_asmt = f'{p_aspect}={p_choice}'
                 if aspect in sel:
-                    if choice in choice_dict[aspect]:
-                        sel[aspect] = choice
+                    if not (variant is not None and aspect in varinfo.aspects() and not bound):
+                        if choice in choice_dict[aspect]:
+                            sel[aspect] = choice
+                        else:
+                            ErrMsg().c().text(f"Error: Assignment '{p_asmt}' failed: No such choice '{quote_str(p_choice)}' for aspect '{quote_str(p_aspect)}'.").flush()
+                            return False
                     else:
-                        ErrMsg().c().text(f"Error: Assignment '{p_asmt}' failed: No such choice '{p_choice}' for aspect '{p_aspect}'.").flush()
+                        ErrMsg().c().text(f"Error: Overriding choices of bound aspect '{quote_str(aspect)}' is forbidden (use option '--bound' to allow).").flush()
+                        return False
                 else:
-                    ErrMsg().c().text(f"Error: Assignment '{p_asmt}' failed: No such aspect '{p_aspect}'.").flush()
+                    ErrMsg().c().text(f"Error: Assignment '{p_asmt}' failed: No such aspect '{quote_str(p_aspect)}'.").flush()
+                    return False
             else:
                 ErrMsg().c().text(f"Error: Assignment '{asmt}' failed: Format error: Wrong number of '=' separators.").flush()
+                return False
 
     changes = apply_selection(fpdict, vardict, sel, dry_run=False)
     if verbose: # or dry_run:
@@ -410,7 +427,7 @@ def main():
     state_parser.add_argument("pcb", help="input KiCad PCB file name")
 
     check_parser = subparsers.add_parser("check", help="check variants and/or aspects for matching choices, exit with error if check fails")
-    check_parser.add_argument("-N", "--no-variants", action="store_true", help="check only aspects, not variants")
+    check_parser.add_argument("-N", "--no-variants", action="store_true", help="only check aspects, not variants")
     check_parser.add_argument("pcb", help="input KiCad PCB file name")
 
     set_parser = subparsers.add_parser("set", help="assign choices to aspects")
@@ -459,6 +476,9 @@ def main():
                 if args.output is not None and len(args.output) > 1:
                     ErrMsg().c().text('Error: Option "--output" cannot be used multiple times.').flush()
                     exitcode = 5
+                elif args.variant is not None and len(args.variant) > 1:
+                    ErrMsg().c().text('Error: Option "--variant" cannot be used multiple times.').flush()
+                    exitcode = 5
                 else:
                     if args.output is not None and len(args.output) == 1:
                         out_file = args.output[0]
@@ -466,7 +486,8 @@ def main():
                     else:
                         out_file = args.pcb
                         force_save = False
-                    if not set_command(in_file=args.pcb, out_file=out_file, force_save=force_save, variant=args.variant, assign=args.assign, dry_run=args.dry_run, verbose=args.verbose): exitcode = 1
+                    variant = None if args.variant is None else args.variant[0]
+                    if not set_command(in_file=args.pcb, out_file=out_file, force_save=force_save, variant=variant, assign=args.assign, bound=args.bound, dry_run=args.dry_run, verbose=args.verbose): exitcode = 1
             else:
                 Msg().text(f'This is the KiVar CLI, version {version()}.').flush()
                 parser.print_usage()
