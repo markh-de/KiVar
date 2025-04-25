@@ -300,8 +300,7 @@ class GuiVariantDialog(forms.VariantDialog):
         if index > 0:
             index -= 1
             variant = self.variant_info.variants()[index]
-            dd = self.variant_info.choices()
-            choices = dd[variant]
+            choices = self.variant_info.choices()[variant]
             for aspect_index, aspect in enumerate(self.variant_info.aspects()):
                 choice_str = choices[aspect_index]
                 choice_gui = self.aspects_gui[aspect][1]
