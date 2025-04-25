@@ -359,7 +359,7 @@ class GuiCreateTableDialog(forms.CreateTableDialog):
         # child dialog, hence no base config
         sel = []
         for aspect in sorted(choice_dict, key=natural_sort_key):
-            sel.append(f'• {aspect} = {choice_dict[aspect]}')
+            sel.append(u"\u2022" + f' {aspect} = {choice_dict[aspect]}')
         self.txt_aspects.SetLabelText('\n'.join(sel))
         self.Fit()
         self.CenterOnParent()
@@ -380,7 +380,7 @@ class GuiAddVariantDialog(forms.AddVariantDialog):
         sel = []
         self.existing_varids = []
         for aspect in sorted(choice_dict, key=natural_sort_key):
-            sel.append(f'• {aspect} = {choice_dict[aspect]}')
+            sel.append(u"\u2022" + f' {aspect} = {choice_dict[aspect]}')
         self.txt_aspects.SetLabelText('\n'.join(sel))
         self.Fit()
         self.CenterOnParent()
