@@ -1,0 +1,6 @@
+,"BOOT_SRC","IOEXP_TYPE/ADDR","EEPROM_ADDR","I_LED_MA","ISL91127"
+"Series 1000","NAND","9535/0x20","0x54","50","IRNZ"
+"Series 3000 Basic","NAND","9535/0x24","0x54","70","IRNZ"
+"Series 3000 Pro","SD","9535/0x24","0x54","100","IRAZ"
+"Series 5000 Basic","EMMC","9539/0x74","0x55","80","IRNZ"
+"Series 5000 Pro","SD","9539/0x74","0x55","110","IRAZ"
