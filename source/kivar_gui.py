@@ -151,7 +151,7 @@ class GuiVariantDialog(forms.VariantDialog):
         for aspect in enum_aspects:
             is_bound = aspect in bound_aspects
             panel = self.pnl_bound if is_bound else self.pnl_free
-            label = wx.StaticText(panel, label=aspect)
+            label = wx.StaticText(panel, wx.ALIGN_RIGHT) # label text assigned later
             sorted_choices = sorted(choice_dict[aspect], key=natural_sort_key)
             choice = wx.Choice(panel, choices=[unset_str()] + sorted_choices)
             sel_choice = self.preselect[aspect]
@@ -161,7 +161,10 @@ class GuiVariantDialog(forms.VariantDialog):
             choice.Bind(wx.EVT_MOUSEWHEEL, lambda event, target=self.scw_bound if is_bound else self.scw_free: self.on_choice_mousewheel(event, target))
             panel.GetSizer().Add(label, 1, wx.ALIGN_CENTRE_VERTICAL | wx.ALIGN_RIGHT | wx.EXPAND)
             panel.GetSizer().Add(choice, 1, wx.ALIGN_CENTRE_VERTICAL | wx.EXPAND)
-            self.aspects_gui[aspect] = (label, choice)
+            self.aspects_gui[aspect] = (label, choice, panel)
+
+        # set label texts
+        self.highlight_changed_aspects()
 
         self.lbx_changes.set_select_handler(self.on_change_item_selected)
         self.update_changes_list()
@@ -197,12 +200,11 @@ class GuiVariantDialog(forms.VariantDialog):
         bound = self.variant_info.aspects()
         all_bound_specified = True
         none_specified = True
-        for aspect, (label, choice) in self.aspects_gui.items():
+        for aspect, (label, choice, panel) in self.aspects_gui.items():
             if choice.GetSelection() > 0:
                 none_specified = False
             else:
-                if aspect in bound:
-                    all_bound_specified = False
+                if aspect in bound: all_bound_specified = False
 
         self.mi_create_defs.Enable((file_path is not None) and (not none_specified) and (not vi.is_loaded()))
         self.mi_add_def.Enable(all_bound_specified and vi.is_loaded() and self.chc_variant.GetSelection() == 0)
@@ -212,7 +214,7 @@ class GuiVariantDialog(forms.VariantDialog):
     def on_mi_create_defs(self, event):
         if self.variant_info.file_path() is None: return # double-check
         sel = {}
-        for aspect, (label, choice) in self.aspects_gui.items():
+        for aspect, (label, choice, panel) in self.aspects_gui.items():
             if choice.GetSelection() > 0:
                 sel[aspect] = choice.GetStringSelection()
         if len(sel) == 0: return # double-check
@@ -230,7 +232,7 @@ class GuiVariantDialog(forms.VariantDialog):
         if not self.variant_info.is_loaded(): return # double-check
         bound = self.variant_info.aspects()
         sel = {}
-        for aspect, (label, choice) in self.aspects_gui.items():
+        for aspect, (label, choice, panel) in self.aspects_gui.items():
             if aspect in bound:
                 if choice.GetSelection() > 0:
                     sel[aspect] = choice.GetStringSelection()
@@ -270,20 +272,31 @@ class GuiVariantDialog(forms.VariantDialog):
 
     def selections(self):
         sel = {}
-        for aspect, (label, choice) in self.aspects_gui.items():
+        for aspect, (label, choice, panel) in self.aspects_gui.items():
             index = choice.GetSelection()
             sel[aspect] = choice.GetStringSelection() if index > 0 else None
         return sel
 
     def highlight_changed_aspects(self):
-        for aspect, (label, choice) in self.aspects_gui.items():
+        changed = False
+        for aspect, (label, choice, panel) in self.aspects_gui.items():
             selected = choice.GetSelection()
             selected_str = choice.GetStringSelection()
-            changed = selected_str != self.preselect[aspect] if selected > 0 else False
-            font = label.GetFont()
-            font.SetWeight(wx.FONTWEIGHT_BOLD if changed else self.GetFont().GetWeight())
-            label.SetFont(font)
-            label.Refresh()
+            new_changed = selected_str != self.preselect[aspect] if selected > 0 else False
+            current_changed = label.GetLabel() != aspect
+            if new_changed != current_changed:
+                label.SetLabelText(aspect + (u" \u25CF" if new_changed else ''))
+                panel.Refresh()
+                changed = True
+
+# TODO test MAC behavior!!
+
+        # GTK issue:
+        # changing label texts requires re-fitting the scroll-windows for window
+        # size changes to work properly afterwards
+        if wx.Platform == '__WXGTK__' and changed:
+            self.scw_bound.Fit()
+            self.scw_free.Fit()
 
     def variant_file_write_allowed(self):
         if self.variant_info.file_has_changed():
