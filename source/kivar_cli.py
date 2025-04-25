@@ -295,10 +295,7 @@ def state_command(in_file=None, all=False, query_aspect=None, use_variants=False
 
     return True
 
-def check_command(in_file=None, no_variants=False):
-
-    # TODO variant checking!
-
+def check_command(in_file=None, variants=False, no_variants=False):
     b = load_board(in_file)
     if b is None: return False
 
@@ -307,10 +304,18 @@ def check_command(in_file=None, no_variants=False):
     if vardict is None: return False
 
     sel = detect_current_choices(fpdict, vardict)
+
+    varinfo = load_varinfo_wrapper(in_file, vardict)
+    if varinfo is None: return False
+    if variants and not varinfo.is_loaded():
+        ErrMsg().c().text("Error: No variant definitions found (omit option '--variants' to skip check).").flush()
+        return False
+
+    check_variant_match = varinfo.is_loaded() and not no_variants
+
     failed = []
     for aspect in sorted(sel, key=natural_sort_key):
         choice = sel[aspect]
-        # TODO if verbose: print result of each check here!
         if choice is None:
             failed.append(aspect)
 
@@ -320,9 +325,14 @@ def check_command(in_file=None, no_variants=False):
             p_aspect = quote_str(aspect)
             Msg().text('    ').color('aspect').text(p_aspect).flush()
         return False
-    else:
-        Msg().color('pass').text('Check passed.').reset().text(f'  Matching choices found for complete set of {len(sel)} aspect(s).').flush()
 
+    if check_variant_match:
+        var_match = varinfo.match_variant(sel)
+        if var_match is None:
+            Msg().color('fail').text('Check failed.').reset().text(f'  No matching variant found for the current set of aspect choices.').flush()
+            return False
+
+    Msg().color('pass').text('Check passed.').reset().text(f'  Matching {'variant and ' if check_variant_match else ''}choices found for complete set of {len(sel)} aspect(s).').flush()
     return True
 
 def set_command(in_file=None, out_file=None, force_save=False, variant=None, assign=None, bound=False, dry_run=False, verbose=False):
@@ -427,6 +437,7 @@ def main():
     state_parser.add_argument("pcb", help="input KiCad PCB file name")
 
     check_parser = subparsers.add_parser("check", help="check variants and/or aspects for matching choices, exit with error if check fails")
+    check_parser.add_argument("-V", "--variants",    action="store_true", help="fail if no variant definition table exists")
     check_parser.add_argument("-N", "--no-variants", action="store_true", help="only check aspects, not variants")
     check_parser.add_argument("pcb", help="input KiCad PCB file name")
 
@@ -471,7 +482,7 @@ def main():
                     exitcode = 5
                 elif not state_command(in_file=args.pcb, all=args.all, query_aspect=args.query, use_variants=not args.no_variants, only_variants=args.variants, cust_asp_order=not args.std_order): exitcode = 1
             elif cmd == "check":
-                if not check_command(in_file=args.pcb, no_variants=args.no_variants): exitcode = 1
+                if not check_command(in_file=args.pcb, variants=args.variants, no_variants=args.no_variants): exitcode = 1
             elif cmd == "set":
                 if args.output is not None and len(args.output) > 1:
                     ErrMsg().c().text('Error: Option "--output" cannot be used multiple times.').flush()
