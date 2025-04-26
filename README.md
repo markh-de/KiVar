@@ -223,11 +223,11 @@ In addition to a single Variant switch, KiVar also allows having so-called _Free
 
 ##### Division of Resposibilities
 
-Component value and attributes are configured in "low-level" Aspect definitions, while "top-level" Variants are configured independently in an external table.
+Component value and attributes are configured in "low-level" Aspect definitions directly in the native KiCad design files, while "top-level" Variants are configured independently in an external table.
 
-This makes it possible to divide the management of each of these parts between different people or departments.
+This makes it possible to divide the administration of each of these parts between different departments or editors, providing a _development_ and _management_ view:
 
-While Aspects are managed by the KiCad hardware designers themselves during design, the person who manages Variant definitions is not even required to use KiCad (or KiVar) - it is sufficient to edit the Variant definition table (e.g. with a spreadsheet editor).
+While low-level Aspects can be defined by the KiCad hardware _developers_ during design, the project _manager_ can be in charge of defining model/series/product feature configurations by mapping Aspect Choices to specific Variants.  For the _management_ view, it is not even required to use an installation of KiCad (or KiVar).  A simple spreadsheet editor is sufficient to manage the Variants table.
 
 #### Relation of Aspects and Choices
 
@@ -1052,15 +1052,15 @@ Even though PCB variants are not really supposed to change any property of the _
 
 ### Top-Level Variants
 
-Defining possible assignments for the single top-level Variant switch is done in the Variant Table.
+Defining possible assignments for the single top-level Variant switch is done in the Variant definition table.
 
 #### Supported File Formats
 
-Currently, KiVar only supports the **CSV** (comma-separated values) file format for Variant definitions.
+Currently, KiVar only supports the **CSV** (comma-separated values) file format for Variant Definition Tables.
 
 #### Table Structure
 
-The Variant Table must have the following general structure:
+A Variant definition table must have the following general structure:
 
 |               | Aspect_A    | Aspect_B    | Aspect_C    | ...         |
 | ------------- | ----------- | ----------- | ----------- | ----------- |
@@ -1086,7 +1086,7 @@ KiVar user applications (KiCad Plugin and CLI app) will use the **same order** o
  * **Variants** _(listed in rows from top to bottom)_ and
  * **Bound Aspects** _(listed in columns from left to right)_
 
-as defined in the Variants table.
+as defined in the Variant definition table.
 
 This enables a custom sorting of Variants (e.g. based on the implemented product/series/model identifier), as well as custom compilation of Bound Aspects.
 
@@ -1097,9 +1097,9 @@ At least the following critical requirements must be met for a table to be valid
  * each Variant must have a unique name,
  * for each Variant, there must be a unique and fully defined set of Choices assigned to the Bound Aspects.
 
-#### Examples
+#### Working Example
 
-For a working example Variant table file, please check out to the [demo project](demo/).
+An example of a Variant definition table CSV file referencing project-provided Aspect and Choice identifiers can be found in the [demo project](demo/).
 
 ### Rules Application
 
