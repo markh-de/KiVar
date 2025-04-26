@@ -17,7 +17,7 @@ __PARROT__
 }
 
 render() {
-  kicad-cli pcb render -o "$2" --quality basic --zoom 1.431 --width 2500 --height 1800 "$1"
+  kicad-cli pcb render -o "$2" --quality basic --zoom 1.44 --width 2500 --height 1800 "$1"
 }
 
 kivar_cli="$(dirname "$0")/../../source/kivar_cli.py"
