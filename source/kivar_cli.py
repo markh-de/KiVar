@@ -354,7 +354,7 @@ def set_command(in_file=None, out_file=None, force_save=False, variant=None, ass
         if varinfo is None: return False
         if varinfo.is_loaded():
             if variant not in varinfo.variants():
-                ErrMsg().c().text(f"Error: Undefined variant identifier '{quote_str(variant)}'.").flush()
+                ErrMsg().c().text(f"Error: Undefined variant identifier '{escape_str(variant)}'.").flush()
                 return False
             else:
                 choices = varinfo.choices()[variant]
@@ -379,13 +379,13 @@ def set_command(in_file=None, out_file=None, force_save=False, variant=None, ass
                         if choice in choice_dict[aspect]:
                             sel[aspect] = choice
                         else:
-                            ErrMsg().c().text(f"Error: Assignment '{p_asmt}' failed: No such choice '{quote_str(p_choice)}' for aspect '{quote_str(p_aspect)}'.").flush()
+                            ErrMsg().c().text(f"Error: Assignment '{p_asmt}' failed: No such choice '{escape_str(p_choice)}' for aspect '{escape_str(p_aspect)}'.").flush()
                             return False
                     else:
-                        ErrMsg().c().text(f"Error: Overriding choices of bound aspect '{quote_str(aspect)}' is forbidden (use option '--bound' to allow).").flush()
+                        ErrMsg().c().text(f"Error: Overriding choices of bound aspect '{escape_str(aspect)}' is forbidden (use option '--bound' to allow).").flush()
                         return False
                 else:
-                    ErrMsg().c().text(f"Error: Assignment '{p_asmt}' failed: No such aspect '{quote_str(p_aspect)}'.").flush()
+                    ErrMsg().c().text(f"Error: Assignment '{p_asmt}' failed: No such aspect '{escape_str(p_aspect)}'.").flush()
                     return False
             else:
                 ErrMsg().c().text(f"Error: Assignment '{asmt}' failed: Format error: Wrong number of '=' separators.").flush()
