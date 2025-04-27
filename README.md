@@ -7,7 +7,9 @@ KiVar is a tool for **KiCad PCB Assembly Variant selection**, provided as platfo
  * **KiCad Plugin** and
  * **Command Line Application**.
 
-PCB component variation rules are defined in component (i.e. symbol or footprint) fields.  This allows for the complete variant configuration to be contained in the schematic and board files without requiring external data outside the native KiCad design files.
+PCB component variation rules for multiple limited design scopes are defined in component (i.e. symbol or footprint) fields.  This allows for the complete low-level variation configuration to be contained in the schematic and board files without requiring external data outside the native KiCad design.
+
+In addition, KiCad-independent table files (CSV) can be used to summarize the configuration of these low-level scopes in classic flat variants, which can then be switched between.
 
 ## Featured at KiCon Europe 2024
 
@@ -16,6 +18,9 @@ PCB component variation rules are defined in component (i.e. symbol or footprint
 For a presentation of the **concepts** and **features** of KiVar, including a **short tutorial**, you can watch the talk ["**Managing PCB Assembly Variants with KiVar**"](https://youtu.be/SpXH380KWUA), which was recorded at KiCon Europe 2024 in Bochum, Germany.
 
 The presentation **slides** including the embedded screencast videos can be downloaded from the [pretalx page](https://pretalx.kicad.org/kicon-europe-2024/talk/QMYVCL/).
+
+> [!NOTE]
+> The presentation covered KiVar 0.4.0, which did not yet support flat variants (added in 0.5.0).
 
 Many thanks to Seth for the invitation.
 
@@ -39,23 +44,29 @@ Example usage of the **KiVar Command Line Interface app**:
 
 ```
 $ kivar list --selection kivar-demo.kicad_pcb 
-BOOT_SRC: [EMMC] JP NAND SD
-EEPROM_ADDR: 0x54 [0x55]
-I_LED_MA: 10 20 30 40 50 60 70 80 90 [100] 110 120 130 140 150 JP
-IOEXP_TYPE/ADDR: 9535/0x20 [9535/0x24] 9539/0x74
-ISL91127: [IRAZ] IRNZ
+~: 'Series 1000' 'Series 3000 Basic' ['Series 3000 Pro'] 'Series 5000 Basic' 'Series 5000 Pro'
+BOOT_SRC~: EMMC JP NAND [SD]
+IOEXP_TYPE/ADDR~: 9535/0x20 [9535/0x24] 9539/0x74
+EEPROM_ADDR~: [0x54] 0x55
+I_LED_MA~: 10 20 30 40 50 60 70 80 90 [100] 110 120 130 140 150 JP
+ISL91127~: [IRAZ] IRNZ
 UVLO_LO/HI: 2.41V/3.40V [3.15V/3.57V]
 VOUT: 1.2V [1.8V] 2.5V 3.3V
 
-$ kivar set --assign 'IOEXP_TYPE/ADDR=9539/0x74' --assign 'VOUT=3.3V' --verbose kivar-demo.kicad_pcb 
-Changes (14):
-    Change R34 value from '100kΩ' to '175kΩ' (VOUT=3.3V).
-    Change R34 field 'VarID' from '18' to '33' (VOUT=3.3V).
-    Change R34 value from '100kΩ' to 'DNP' (VOUT=3.3V).
-    Change R35 'Do not populate' from 'false' to 'true' (VOUT=3.3V).
-    Change R35 'Exclude from bill of materials' from 'false' to 'true' (VOUT=3.3V).
-    Change R35 'Exclude from position files' from 'false' to 'true' (VOUT=3.3V).
-    Change R35 solder paste relative clearance from 0.0% to -4200000.0% (VOUT=3.3V).
+$ kivar set --variant 'Series 5000 Pro' --verbose kivar-demo.kicad_pcb 
+Changes (19):
+    Change R1 'Do not populate' from 'true' to 'false' (EEPROM_ADDR=0x55).
+    Change R1 'Exclude from bill of materials' from 'true' to 'false' (EEPROM_ADDR=0x55).
+    Change R1 'Exclude from position files' from 'true' to 'false' (EEPROM_ADDR=0x55).
+    Change R2 'Do not populate' from 'false' to 'true' (EEPROM_ADDR=0x55).
+    Change R2 'Exclude from bill of materials' from 'false' to 'true' (EEPROM_ADDR=0x55).
+    Change R2 'Exclude from position files' from 'false' to 'true' (EEPROM_ADDR=0x55).
+    Change R21 field 'VarID' from 'A' to 'B' (I_LED_MA=110).
+    Change R30 'Do not populate' from 'true' to 'false' (I_LED_MA=110).
+    Change R30 'Exclude from bill of materials' from 'true' to 'false' (I_LED_MA=110).
+    Change R30 'Exclude from position files' from 'true' to 'false' (I_LED_MA=110).
+    Change U1 field 'I2C Address' from '0x54' to '0x55' (EEPROM_ADDR=0x55).
+    Change U1 field 'VarID' from '54' to '55' (EEPROM_ADDR=0x55).
     Change U4 value from 'TCA9535PWR' to 'TCA9539PWR' (IOEXP_TYPE/ADDR=9539/0x74).
     Change U4 visibility of 3D model #1 from 'true' to 'false' (IOEXP_TYPE/ADDR=9539/0x74).
     Change U4 visibility of 3D model #2 from 'false' to 'true' (IOEXP_TYPE/ADDR=9539/0x74).
@@ -66,20 +77,21 @@ Changes (14):
 Board saved to file "kivar-demo.kicad_pcb".
 
 $ kivar list --selection kivar-demo.kicad_pcb 
-BOOT_SRC: [EMMC] JP NAND SD
-EEPROM_ADDR: 0x54 [0x55]
-I_LED_MA: 10 20 30 40 50 60 70 80 90 [100] 110 120 130 140 150 JP
-IOEXP_TYPE/ADDR: 9535/0x20 9535/0x24 [9539/0x74]
-ISL91127: [IRAZ] IRNZ
+~: 'Series 1000' 'Series 3000 Basic' 'Series 3000 Pro' 'Series 5000 Basic' ['Series 5000 Pro']
+BOOT_SRC~: EMMC JP NAND [SD]
+IOEXP_TYPE/ADDR~: 9535/0x20 9535/0x24 [9539/0x74]
+EEPROM_ADDR~: 0x54 [0x55]
+I_LED_MA~: 10 20 30 40 50 60 70 80 90 100 [110] 120 130 140 150 JP
+ISL91127~: [IRAZ] IRNZ
 UVLO_LO/HI: 2.41V/3.40V [3.15V/3.57V]
-VOUT: 1.2V 1.8V 2.5V [3.3V]
+VOUT: 1.2V [1.8V] 2.5V 3.3V
 
 $ kivar check kivar-demo.kicad_pcb 
-Check passed.  Matching choices found for complete set of 7 aspect(s).
+Check passed.  Matching variant and choices found for complete set of 7 aspect(s).
 
-$ kivar state --query VOUT --query EEPROM_ADDR kivar-demo.kicad_pcb 
-3.3V
+$ kivar state --query EEPROM_ADDR --query BOOT_SRC kivar-demo.kicad_pcb 
 0x55
+SD
 ```
 
 The KiVar CLI provides support for 
@@ -95,10 +107,11 @@ variation data, either manually or - for example - integrated in a Continuous In
 
 Key concepts of KiVar are:
 
- * Designs may contain **multiple** independent variation **aspects** (i.e. dimensions or degrees of freedom).
+ * Designs may contain **multiple** independent variation **aspects** (i.e. scopes/dimensions/degrees of freedom).
  * Variation rules are **fully contained** in component fields of native design files (no external configuration files involved) and **portable** (i.e. copying components to another design keeps their variation specification intact).
  * Component values, fields, attributes and features are modified **in place** with immediate effect, enabling compatibility with all exporters that work on the actual component data.
  * **No external state information** is stored; currently matching variation choices are detected automatically.
+ * Optional external **variant table** in independent file format (CSV) enables switching of aspect groups based on a single variant name
 
 ## Supported KiCad Versions
 
@@ -215,9 +228,9 @@ However, in real-world projects, it is often desired to have a **single global**
 
 ##### Mixed Approach
 
-KiVar uses a mixed approach, providing the benefits of both worlds:
+KiVar uses a mixed approach, combining the benefits of both concepts:
 
-Defining Variants allows for having a single switch, while configuring each Variant is still very convenient, as it is only required to **switch between Aspect Choices, not between the full set of component values and attribute data**.  This extra abstraction layer of Aspects keeps Variant definitions very simple.
+The definition of Variants makes it possible to work with a single switch, while the configuration of the individual Variants is still very convenient, as it is only necessary to **switch between Choices for Bound Aspects, not between the full set of component values and attribute data**.  This additional layer of abstraction keeps Variant definitions very simple and readable.
 
 In addition to a single Variant switch, KiVar also allows having so-called _Free Aspects_, i.e. scopes that are not modified when selecting a specific Variant.  So even after switching the main Variant, it is still possible to have a few independent switches for further assembly options, if desired.
 
@@ -228,6 +241,10 @@ Component value and attributes are configured in "low-level" Aspect definitions 
 This makes it possible to divide the administration of each of these parts between different departments or editors, providing a _development_ and _management_ view:
 
 While low-level Aspects can be defined by the KiCad hardware _developers_ during design, the project _manager_ can be in charge of defining model/series/product feature configurations by mapping Aspect Choices to specific Variants.  For the _management_ view, it is not even required to use an installation of KiCad (or KiVar).  A simple spreadsheet editor is sufficient to manage the Variants table.
+
+##### Specification
+
+Details about the specification of Variants can be found later in this manual in the [Top-Level Variants section](#top-level-variants).
 
 #### Relation of Aspects and Choices
 
@@ -1052,7 +1069,7 @@ Even though PCB variants are not really supposed to change any property of the _
 
 ### Top-Level Variants
 
-Defining possible assignments for the single top-level Variant switch is done in the Variant definition table.
+Assigning sets of Choices for [Bound Aspects](#definition-of-terms) to single top-level [Variants](#variants) is done in the Variant definition table.
 
 #### Supported File Formats
 
@@ -1099,7 +1116,7 @@ At least the following critical requirements must be met for a table to be valid
 
 #### Working Example
 
-An example of a Variant definition table CSV file referencing project-provided Aspect and Choice identifiers can be found in the [demo project](demo/).
+An example of a Variant definition table CSV file referencing project-provided Aspect and Choice identifiers can be found in the [demo project](demo/kivar-demo.kivar.csv).
 
 ### Rules Application
 
@@ -1362,4 +1379,4 @@ Version 0.4.0 introduces Stand-In Choices, which act similarly to [Default Choic
 
 Severity: **Not critical** (backwards-compatible).
 
-Version 0.5.0 introduces the option to modify a set of bound Aspects as a group by selecting one specific Variant.  Variants are configured independently from the Aspects themselves, so existing projects do not need to be adapted.
+Version 0.5.0 introduces the option to modify a set of [Bound Aspects](#definition-of-terms) as a group by selecting one specific top-level [Variant](#variants).  Variants are [configured independently](#top-level-variants) from the Aspects themselves, so existing projects do not need to be adapted.
