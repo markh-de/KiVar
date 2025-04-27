@@ -94,14 +94,14 @@ $ kivar state --query EEPROM_ADDR --query BOOT_SRC kivar-demo.kicad_pcb
 SD
 ```
 
-The KiVar CLI provides support for 
+The KiVar CLI application provides support for
 
  * setting,
  * querying,
  * listing and
  * analyzing
 
-variation data, either manually or - for example - integrated in a Continuous Integration service.
+variation data and current settings.  It can also be used in Continuous Integration services.
 
 ## Concepts
 
@@ -111,7 +111,7 @@ Key concepts of KiVar are:
  * Variation rules are **fully contained** in component fields of native design files (no external configuration files involved) and **portable** (i.e. copying components to another design keeps their variation specification intact).
  * Component values, fields, attributes and features are modified **in place** with immediate effect, enabling compatibility with all exporters that work on the actual component data.
  * **No external state information** is stored; currently matching variation choices are detected automatically.
- * Optional external **variant table** in independent file format (CSV) enables switching of aspect groups based on a single variant name
+ * Optional external **variant table** in independent file format (CSV) enables switching of aspect groups based on a single variant name.
 
 ## Supported KiCad Versions
 
@@ -214,7 +214,7 @@ Whenever specific terms appear capitalized in this document, the following defin
 
  * **Variant:**  
    A set of _Choices_ applying to a selected set of _Aspects_ (so-called _Bound Aspects_ - in contrast to _Free Aspects_, which can be modified independently of the selected Variant).  
-   The use of Variants is optional.  If used, Variants are configured independently "on top" of the existing _Aspect_ configuration.
+   The use of Variants is optional.  If used, Variants are [configured independently](#top-level-variants) "on top" of the existing _Aspect_ configuration.
 
 #### Variants
 
