@@ -407,7 +407,7 @@ class GuiMissingRulesDialog(forms.MissingRulesDialog):
         super().__init__(parent=parent)
         dialog_base_config(self)
         if legacy_found: # override text and URL
-            self.txt_info.SetLabelMarkup(f'KiVar could not find any rules in the current format.\n\nHowever, there were found <b>{legacy_found} rule(s) in the legacy format</b>, which\nis not supported anymore.\n\nPlease consult the KiVar documentation to learn how to\nmigrate the rules of your existing designs to the current format.')
+            self.txt_info.SetLabelMarkup(f'KiVar could not find any rules in the current format.\n\nHowever, there were found <b>{legacy_found} rule(s) in the legacy format</b>,\nwhich is not supported anymore.\n\nPlease consult the KiVar documentation to learn how to migrate\nthe rules of your existing designs to the current format.')
             self.link_help.SetLabel('KiVar Migration Guide')
             self.link_help.SetURL(help_migrate_url())
         else:
