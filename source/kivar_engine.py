@@ -920,7 +920,7 @@ class VariantInfo:
         self._file_path = os.path.splitext(pcb_filename)[0] + ext if pcb_filename is not None and pcb_filename != '' else None
 
     def read_csv(self, choice_dict):
-        if not (os.path.exists(self._file_path) and os.access(self._file_path, os.R_OK)):
+        if self._file_path is None or not os.path.exists(self._file_path) or not os.access(self._file_path, os.R_OK):
             return []
 
         with open(self._file_path, newline='', encoding='utf-8') as csvfile:
