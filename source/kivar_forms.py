@@ -45,10 +45,12 @@ class VariantDialog ( wx.Dialog ):
         self.chc_variant.SetSelection( 0 )
         sz_variant.Add( self.chc_variant, 1, wx.ALIGN_CENTER_VERTICAL|wx.EXPAND|wx.LEFT, 5 )
 
-        self.bt_var_menu = MenuButton( self, wx.ID_ANY, u"  ︙  ", wx.DefaultPosition, wx.DefaultSize, wx.BU_EXACTFIT )
+        self.bt_var_menu = MenuButton( self, wx.ID_ANY, u"︙", wx.DefaultPosition, wx.Size( 32,-1 ), wx.BU_EXACTFIT )
         self.bt_var_menu.SetToolTip( u"Manage variant definitions" )
+        self.bt_var_menu.SetMinSize( wx.Size( 32,-1 ) )
+        self.bt_var_menu.SetMaxSize( wx.Size( 32,-1 ) )
 
-        sz_variant.Add( self.bt_var_menu, 0, wx.ALIGN_CENTER_VERTICAL|wx.EXPAND|wx.LEFT, 5 )
+        sz_variant.Add( self.bt_var_menu, 0, wx.ALIGN_CENTER|wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_CENTER_VERTICAL|wx.EXPAND|wx.LEFT, 5 )
 
 
         sz_var_left.Add( sz_variant, 0, wx.BOTTOM|wx.EXPAND|wx.TOP, 5 )
@@ -60,13 +62,17 @@ class VariantDialog ( wx.Dialog ):
         sz_bound = wx.BoxSizer( wx.VERTICAL )
 
         self.pnl_bound = wx.Panel( self.scw_bound, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
-        gsz_bound = wx.GridSizer( 0, 2, 6, 10 )
+        fgsz_bound = wx.FlexGridSizer( 0, 3, 5, 5 )
+        fgsz_bound.AddGrowableCol( 0, 1 )
+        fgsz_bound.AddGrowableCol( 2, 1 )
+        fgsz_bound.SetFlexibleDirection( wx.BOTH )
+        fgsz_bound.SetNonFlexibleGrowMode( wx.FLEX_GROWMODE_SPECIFIED )
 
 
-        self.pnl_bound.SetSizer( gsz_bound )
+        self.pnl_bound.SetSizer( fgsz_bound )
         self.pnl_bound.Layout()
-        gsz_bound.Fit( self.pnl_bound )
-        sz_bound.Add( self.pnl_bound, 0, wx.EXPAND |wx.ALL, 5 )
+        fgsz_bound.Fit( self.pnl_bound )
+        sz_bound.Add( self.pnl_bound, 1, wx.EXPAND |wx.ALL, 5 )
 
 
         self.scw_bound.SetSizer( sz_bound )
@@ -93,13 +99,17 @@ class VariantDialog ( wx.Dialog ):
         sz_free = wx.BoxSizer( wx.VERTICAL )
 
         self.pnl_free = wx.Panel( self.scw_free, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
-        gsz_free = wx.GridSizer( 0, 2, 6, 10 )
+        fgsz_free = wx.FlexGridSizer( 0, 3, 5, 5 )
+        fgsz_free.AddGrowableCol( 0, 1 )
+        fgsz_free.AddGrowableCol( 2, 1 )
+        fgsz_free.SetFlexibleDirection( wx.BOTH )
+        fgsz_free.SetNonFlexibleGrowMode( wx.FLEX_GROWMODE_SPECIFIED )
 
 
-        self.pnl_free.SetSizer( gsz_free )
+        self.pnl_free.SetSizer( fgsz_free )
         self.pnl_free.Layout()
-        gsz_free.Fit( self.pnl_free )
-        sz_free.Add( self.pnl_free, 0, wx.ALL|wx.EXPAND, 5 )
+        fgsz_free.Fit( self.pnl_free )
+        sz_free.Add( self.pnl_free, 1, wx.ALL|wx.EXPAND, 5 )
 
 
         self.scw_free.SetSizer( sz_free )

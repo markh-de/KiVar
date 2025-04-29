@@ -75,8 +75,9 @@ def pcbnew_parent_window():
     return wx.FindWindowByName('PcbFrame')
 
 def dialog_base_config(dialog):
+    # TODO okay to use the master icon (192px) here?
     theme = 'dark' if dialog.GetBackgroundColour().GetLuminance() < 0.5 else 'light'
-    dialog.SetIcon(wx.Icon(os.path.join(os.path.dirname(__file__), f'de_markh_kivar-icon-{theme}.png'), wx.BITMAP_TYPE_PNG))
+    dialog.SetIcon(wx.Icon(os.path.join(os.path.dirname(__file__), f'kivar_icon_{theme}.png'), wx.BITMAP_TYPE_PNG))
     dialog.SetTitle(dialog.GetTitle() + window_suffix())
 
 def show_selection_dialog(board, fpdict, vardict, parent=pcbnew_parent_window()):
@@ -151,7 +152,8 @@ class GuiVariantDialog(forms.VariantDialog):
         for aspect in enum_aspects:
             is_bound = aspect in bound_aspects
             panel = self.pnl_bound if is_bound else self.pnl_free
-            label = wx.StaticText(panel, wx.ALIGN_RIGHT) # label text assigned later
+            label = wx.StaticText(panel, wx.ID_ANY, aspect, wx.DefaultPosition, wx.DefaultSize, 0)
+            marking = wx.StaticText(panel, wx.ID_ANY, '', wx.DefaultPosition, wx.DefaultSize, 0)
             sorted_choices = sorted(choice_dict[aspect], key=natural_sort_key)
             choice = wx.Choice(panel, choices=[unset_str()] + sorted_choices)
             sel_choice = self.preselect[aspect]
@@ -159,9 +161,10 @@ class GuiVariantDialog(forms.VariantDialog):
             choice.SetSelection(sel_index)
             choice.Bind(wx.EVT_CHOICE, self.on_aspect_change)
             choice.Bind(wx.EVT_MOUSEWHEEL, lambda event, target=self.scw_bound if is_bound else self.scw_free: self.on_choice_mousewheel(event, target))
-            panel.GetSizer().Add(label, 1, wx.ALIGN_CENTRE_VERTICAL | wx.ALIGN_RIGHT | wx.EXPAND)
-            panel.GetSizer().Add(choice, 1, wx.ALIGN_CENTRE_VERTICAL | wx.EXPAND)
-            self.aspects_gui[aspect] = (label, choice, panel)
+            panel.GetSizer().Add(label,   1, wx.ALIGN_CENTRE_VERTICAL | wx.ALIGN_RIGHT | wx.EXPAND)
+            panel.GetSizer().Add(marking, 1, wx.ALIGN_CENTRE_VERTICAL | wx.ALIGN_CENTRE_HORIZONTAL)
+            panel.GetSizer().Add(choice,  1, wx.ALIGN_CENTRE_VERTICAL | wx.ALIGN_LEFT  | wx.EXPAND)
+            self.aspects_gui[aspect] = (label, marking, choice, panel)
 
         # set label texts
         self.highlight_changed_aspects()
@@ -200,7 +203,7 @@ class GuiVariantDialog(forms.VariantDialog):
         bound = self.variant_info.aspects()
         all_bound_specified = True
         none_specified = True
-        for aspect, (label, choice, panel) in self.aspects_gui.items():
+        for aspect, (label, marking, choice, panel) in self.aspects_gui.items():
             if choice.GetSelection() > 0:
                 none_specified = False
             else:
@@ -214,7 +217,7 @@ class GuiVariantDialog(forms.VariantDialog):
     def on_mi_create_defs(self, event):
         if self.variant_info.file_path() is None: return # double-check
         sel = {}
-        for aspect, (label, choice, panel) in self.aspects_gui.items():
+        for aspect, (label, marking, choice, panel) in self.aspects_gui.items():
             if choice.GetSelection() > 0:
                 sel[aspect] = choice.GetStringSelection()
         if len(sel) == 0: return # double-check
@@ -232,7 +235,7 @@ class GuiVariantDialog(forms.VariantDialog):
         if not self.variant_info.is_loaded(): return # double-check
         bound = self.variant_info.aspects()
         sel = {}
-        for aspect, (label, choice, panel) in self.aspects_gui.items():
+        for aspect, (label, marking, choice, panel) in self.aspects_gui.items():
             if aspect in bound:
                 if choice.GetSelection() > 0:
                     sel[aspect] = choice.GetStringSelection()
@@ -272,29 +275,31 @@ class GuiVariantDialog(forms.VariantDialog):
 
     def selections(self):
         sel = {}
-        for aspect, (label, choice, panel) in self.aspects_gui.items():
+        for aspect, (label, marking, choice, panel) in self.aspects_gui.items():
             index = choice.GetSelection()
             sel[aspect] = choice.GetStringSelection() if index > 0 else None
         return sel
 
     def highlight_changed_aspects(self):
         changed = False
-        for aspect, (label, choice, panel) in self.aspects_gui.items():
+        mark_modified = u"\u25CF"
+        mark_original = ''
+        for aspect, (label, marking, choice, panel) in self.aspects_gui.items():
             selected = choice.GetSelection()
             selected_str = choice.GetStringSelection()
-            new_changed = selected_str != self.preselect[aspect] if selected > 0 else False
-            current_changed = label.GetLabel() != aspect
-            if new_changed != current_changed:
-                label.SetLabelText(aspect + (u" \u25CF" if new_changed else ''))
+            new_modified = selected_str != self.preselect[aspect] if selected > 0 else False
+            current_modified = marking.GetLabel() == mark_modified
+            if new_modified != current_modified:
+                marking.SetLabelText(mark_modified if new_modified else mark_original)
                 panel.Refresh()
                 changed = True
 
-# TODO test MAC behavior!!
+# TODO test: resolved on mac?
 
-        # GTK issue:
+        # GTK and MacOS issue:
         # changing label texts requires re-fitting the scroll-windows for window
         # size changes to work properly afterwards
-        if wx.Platform == '__WXGTK__' and changed:
+        if (wx.Platform == '__WXGTK__' or wx.Platform == '__WXMAC__') and changed:
             self.scw_bound.Fit()
             self.scw_free.Fit()
 
@@ -316,7 +321,7 @@ class GuiVariantDialog(forms.VariantDialog):
             choices = self.variant_info.choices()[variant]
             for aspect_index, aspect in enumerate(self.variant_info.aspects()):
                 choice_str = choices[aspect_index]
-                choice_gui = self.aspects_gui[aspect][1]
+                choice_gui = self.aspects_gui[aspect][2]
                 choice_idx = choice_gui.FindString(choice_str, caseSensitive=True)
                 choice_gui.SetSelection(choice_idx)
             self.on_aspect_change(None)

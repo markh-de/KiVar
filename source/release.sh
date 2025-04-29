@@ -20,7 +20,10 @@ release_plugin_pcm() {
        "$SRC_DIR/kivar_gui.py" \
        "$SRC_DIR/kivar_gui_custom.py" \
        "$SRC_DIR/kivar_version.py" \
-       "$SRC_DIR/$ID-icon-"*.png \
+       "$SRC_DIR/kivar_icon_light.png" \
+       "$SRC_DIR/kivar_icon_light_24.png" \
+       "$SRC_DIR/kivar_icon_dark.png" \
+       "$SRC_DIR/kivar_icon_dark_24.png" \
        "$tmp_dir/plugins/"
 
     mkdir -p "$tmp_dir/resources"
