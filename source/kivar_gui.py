@@ -362,7 +362,7 @@ class GuiCreateTableDialog(forms.CreateTableDialog):
             sel.append(u"\u2022" + f' {aspect} = {choice_dict[aspect]}')
         self.txt_aspects.SetLabelText('\n'.join(sel))
         self.Fit()
-        self.CenterOnParent()
+        self.CentreOnParent()
 
     def on_confirm(self, event):
         if not self.entered_varid().strip():
@@ -383,7 +383,7 @@ class GuiAddVariantDialog(forms.AddVariantDialog):
             sel.append(u"\u2022" + f' {aspect} = {choice_dict[aspect]}')
         self.txt_aspects.SetLabelText('\n'.join(sel))
         self.Fit()
-        self.CenterOnParent()
+        self.CentreOnParent()
 
     def set_existing_varids(self, varids):
         self.existing_varids = varids
@@ -415,20 +415,18 @@ class GuiMissingRulesDialog(forms.MissingRulesDialog):
             self.link_help.SetURL(help_url())
         self.btn_close.SetFocus()
         self.Fit()
-        self.CenterOnParent()
+        self.CentreOnParent()
 
 class GuiErrorListDialog(forms.ErrorListDialog):
     def __init__(self, parent, errors=None, board=None):
         super().__init__(parent=parent)
         dialog_base_config(self)
         self.board = board
-
         self.lbx_errors.set_item_list(errors)
         self.lbx_errors.set_select_handler(self.on_item_selected)
-
         self.btn_close.SetFocus()
         self.Fit()
-        self.CenterOnParent()
+        self.CentreOnParent()
 
     def on_item_selected(self, uuid):
         if self.board is not None and uuid is not None:
