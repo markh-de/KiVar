@@ -136,7 +136,6 @@ class GuiVariantDialog(forms.VariantDialog):
         self.chc_variant.SetItems([unset_str()] + self.variant_info.variants())
         self.chc_variant.SetSelection(0)
         self.chc_variant.Enable(self.variant_info.is_loaded())
-        self.chc_variant.Bind(wx.EVT_MOUSEWHEEL, lambda event, target=None: self.on_choice_mousewheel(event, target))
 
         self.bt_var_menu.set_menu_config(self.menu_var, self.on_menu_update)
 
@@ -160,7 +159,6 @@ class GuiVariantDialog(forms.VariantDialog):
             sel_index = 0 if sel_choice is None else sorted_choices.index(sel_choice) + 1
             choice.SetSelection(sel_index)
             choice.Bind(wx.EVT_CHOICE, self.on_aspect_change)
-            choice.Bind(wx.EVT_MOUSEWHEEL, lambda event, target=self.scw_bound if is_bound else self.scw_free: self.on_choice_mousewheel(event, target))
             panel.GetSizer().Add(label,   1, wx.ALIGN_CENTRE_VERTICAL | wx.ALIGN_RIGHT | wx.EXPAND)
             panel.GetSizer().Add(marking, 1, wx.ALIGN_CENTRE_VERTICAL | wx.ALIGN_CENTRE_HORIZONTAL)
             panel.GetSizer().Add(choice,  1, wx.ALIGN_CENTRE_VERTICAL | wx.ALIGN_LEFT  | wx.EXPAND)
@@ -349,14 +347,6 @@ class GuiVariantDialog(forms.VariantDialog):
         changes = apply_selection(self.fpdict, self.vardict, self.selections(), True)
         self.lbx_changes.set_item_list(sorted(changes, key=lambda x: natural_sort_key(x[1])))
         self.Layout()
-
-    @staticmethod
-    def on_choice_mousewheel(event, target):
-        if target is not None:
-            scroll_x, scroll_y = target.GetViewStart()
-            pixels_per_unit_x, pixels_per_unit_y = target.GetScrollPixelsPerUnit()
-            step = event.GetLinesPerAction() * event.GetWheelRotation() // event.GetWheelDelta()
-            target.Scroll(scroll_x, max(scroll_y - step, 0))
 
 class GuiCreateTableDialog(forms.CreateTableDialog):
     def __init__(self, parent, choice_dict):
