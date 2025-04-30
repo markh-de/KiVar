@@ -1388,3 +1388,17 @@ Version 0.4.0 introduces Stand-In Choices, which act similarly to [Default Choic
 Severity: **Not critical** (backwards-compatible).
 
 Version 0.5.0 introduces the option to modify a set of [Bound Aspects](#definition-of-terms) as a group by selecting one specific top-level [Variant](#variants).  Variants are [configured independently](#top-level-variants) from the Aspects themselves, so existing projects do not need to be adapted.
+
+## Acknowledgments
+
+The author of KiVar would like to thank the following people in particular:
+
+**Mike Williams** for working on back-propagation from PCB to schematic, the last missing KiCad feature in the early days of KiVar.
+
+**Jon Evans** for his input and support regarding KiCad SWIG issues.
+
+**Honza Hladík** for his motivating very first feedback, feature inspiration and issue reports.
+
+**Seth Hillbrand** for responding to my first release announcement by inviting me to give a talk at KiCon Europe 2024.
+
+**Leonard Bargenda** for recurring pre-release testing sessions on macOS.
