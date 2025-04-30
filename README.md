@@ -1075,6 +1075,14 @@ Assigning sets of Choices for [Bound Aspects](#definition-of-terms) to single to
 
 Currently, KiVar only supports the **CSV** (comma-separated values) file format for Variant Definition Tables.
 
+#### Supported File Names
+
+The Variant definition table must be located in the **same directory** as the board file it relates to.
+
+The name of the table file must be the **board's base name** with the **extension `.kivar.csv`**.
+
+For example, if the board file path is `/foo/bar/hello-world.kicad_pcb` then the table is expected at `/foo/bar/hello-world.kivar.csv`.
+
 #### Table Structure
 
 A Variant definition table must have the following general structure:
