@@ -6,10 +6,10 @@
 	(paper "A4")
 	(title_block
 		(title "KiVar Demo")
-		(date "2024-09-16")
-		(rev "0.4.0")
+		(date "2025-04-30")
+		(rev "0.5.0")
 		(company "Author: Mark Hämmerling <dev@markh.de>")
-		(comment 1 "https://github.com/markh-de/KiVar")
+		(comment 1 "https://kivar.markh.de")
 		(comment 4 "IC Type and Address Selection")
 	)
 	(lib_symbols
@@ -1292,7 +1292,6 @@
 	)
 	(label "A2{slash}~{RST}"
 		(at 140.97 119.38 0)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -1303,7 +1302,6 @@
 	)
 	(label "I2C1.SCL"
 		(at 142.24 82.55 0)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -1314,7 +1312,6 @@
 	)
 	(label "I2C1.SDA"
 		(at 142.24 80.01 0)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -1395,9 +1392,9 @@
 		(mirror x)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
-		(dnp no)
+		(dnp yes)
 		(fields_autoplaced yes)
 		(uuid "0dcdb367-4337-40e6-a708-4f58579aebef")
 		(property "Reference" "R18"
@@ -1675,7 +1672,7 @@
 				(hide yes)
 			)
 		)
-		(property "I2C Address" "0x24"
+		(property "I2C Address" "0x20"
 			(at 172.3741 69.85 0)
 			(show_name yes)
 			(effects
@@ -1751,7 +1748,7 @@
 				(hide yes)
 			)
 		)
-		(property "VarID" "24"
+		(property "VarID" "20"
 			(at 170.18 100.33 0)
 			(effects
 				(font
@@ -2194,9 +2191,9 @@
 		(mirror x)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom no)
+		(in_bom yes)
 		(on_board yes)
-		(dnp yes)
+		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "de30442e-e974-4637-b9c5-51297c7aa674")
 		(property "Reference" "R19"

@@ -6,10 +6,10 @@
 	(paper "A4")
 	(title_block
 		(title "KiVar Demo")
-		(date "2024-09-16")
-		(rev "0.4.0")
+		(date "2025-04-30")
+		(rev "0.5.0")
 		(company "Author: Mark Hämmerling <dev@markh.de>")
-		(comment 1 "https://github.com/markh-de/KiVar")
+		(comment 1 "https://kivar.markh.de")
 		(comment 4 "IC Variant Selection")
 	)
 	(lib_symbols
@@ -1684,7 +1684,6 @@
 	)
 	(label "LX1"
 		(at 118.11 92.71 90)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -1695,7 +1694,6 @@
 	)
 	(label "LX2"
 		(at 125.73 92.71 90)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -1706,7 +1704,6 @@
 	)
 	(label "EN_+3V3"
 		(at 93.98 106.68 0)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -1866,7 +1863,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "1MΩ"
+		(property "Value" "0Ω"
 			(at 176.53 101.5999 0)
 			(effects
 				(font
@@ -2293,7 +2290,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "ISL91127IRAZ"
+		(property "Value" "ISL91127IRNZ"
 			(at 127.9241 87.63 0)
 			(effects
 				(font
@@ -2338,7 +2335,7 @@
 				(hide yes)
 			)
 		)
-		(property "MPN" "ISL91127IRAZ-T7A"
+		(property "MPN" "ISL91127IRNZ-T7A"
 			(at 121.92 104.14 0)
 			(effects
 				(font
@@ -2347,7 +2344,7 @@
 				(hide yes)
 			)
 		)
-		(property "Info" "Adjustable"
+		(property "Info" "Fixed"
 			(at 127.9241 90.17 0)
 			(effects
 				(font
@@ -2395,7 +2392,7 @@
 				(hide yes)
 			)
 		)
-		(property "VarID" "A"
+		(property "VarID" "N"
 			(at 121.92 104.14 0)
 			(effects
 				(font
@@ -2688,9 +2685,9 @@
 		(at 157.48 101.6 0)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
-		(dnp no)
+		(dnp yes)
 		(fields_autoplaced yes)
 		(uuid "a4ade26b-8133-417f-a3c4-f707e58b4e1d")
 		(property "Reference" "C6"
@@ -2777,9 +2774,9 @@
 		(at 173.99 109.22 0)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
-		(dnp no)
+		(dnp yes)
 		(fields_autoplaced yes)
 		(uuid "a9bf9950-5f5b-43e4-8b8c-8c8b79f444c7")
 		(property "Reference" "R17"
@@ -2866,9 +2863,9 @@
 		(at 140.97 101.6 0)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
-		(dnp no)
+		(dnp yes)
 		(fields_autoplaced yes)
 		(uuid "abb20631-1ddd-48a5-a6d8-1b902ca094b4")
 		(property "Reference" "C5"

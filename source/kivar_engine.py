@@ -1,4 +1,8 @@
 import pcbnew
+import os
+import csv
+import hashlib
+import difflib
 
 # Note about field case-sensitivity:
 # As long as KiCad can easily be tricked* into having multiple fields whose names only differ in casing, we
@@ -14,12 +18,9 @@ import pcbnew
 
 # TODO in field scope, accept only target fields which are no KiVar fields themselves (avoid recursion!)
 
-# TODO wrap the backend with a class.
+# TODO clean-up wrap engine code in classes
 
-# TODO more testing!
-
-def version():
-    return '0.4.2'
+# TODO use setdefault where useful
 
 def pcbnew_compatibility_error():
     ver = pcbnew.GetMajorMinorPatchVersion()
@@ -173,7 +174,7 @@ def quote_str(string):
     # we prefer single-quotes for output
     if string == '': result = "''"
     else:
-        if any(c in string for c in ', -\\()="\''):
+        if any(c in string for c in ', -~\\[]()="\''):
             q = '"' if string.count("'") > string.count('"') else "'"
             result = q
             for c in string:
@@ -890,3 +891,206 @@ def cook_raw_string(string):
     if quoted_s: raise ValueError("Unmatched single-quote (') character in string")
     if quoted_d: raise ValueError('Unmatched double-quote (") character in string')
     return ''.join(result)
+
+def count_duplicates(item_list):
+    seen = {}
+    dups = []
+    for item in item_list:
+        if item in seen: dups.append(item)
+        else: seen[item] = True
+    return dups
+
+def count_empty(item_list):
+    return sum(1 for item in item_list if item == '')
+
+def did_you_mean(user_input, valid_options):
+    suggestions = difflib.get_close_matches(user_input, valid_options, n=1, cutoff=0.6)
+    return f' Did you mean "{suggestions[0]}"?' if suggestions else ''
+
+class VariantInfo:
+    def __init__(self, pcb_filename):
+        ext='.kivar_vdt.csv'
+        self._aspects = []
+        self._variants = []
+        self._choices = {}
+        self._hash_at_load = None
+        self._is_loaded = False
+        self._file_path = os.path.splitext(pcb_filename)[0] + ext if pcb_filename is not None and pcb_filename != '' else None
+
+    def read_csv(self, choice_dict):
+        if self._file_path is None or not os.path.exists(self._file_path) or not os.access(self._file_path, os.R_OK):
+            return []
+
+        with open(self._file_path, newline='', encoding='utf-8') as csvfile:
+            table = list(csv.reader(csvfile))
+
+        # Validate table structure
+        errors = []
+        if len(table) < 2: # Note: want to allow aspect binding without variant definitions? then change this part!
+            errors.append(f'Table has less than two rows.')
+        else:
+            len_prev = None
+            for n, row in enumerate(table):
+                len_this = len(row)
+                if len_this < 2: # variants without aspect bindings don't make sense
+                    errors.append(f'Row {n+1} has less than two columns.')
+                    break
+                if len_prev is None:
+                    len_prev = len_this
+                else:
+                    if len_this != len_prev:
+                        errors.append(f'Row {n+1} has a different number of columns ({len_this}) than previous rows ({len_prev}).')
+                        break
+
+        if errors: return errors
+
+        # Load data
+        variants = [row[0] for row in table[1:]]
+        aspects = table[0][1:]
+        choices = {row[0]: row[1:] for row in table[1:]}
+
+        # Validate variant identifiers
+        empty = count_empty(variants)
+        if empty:
+            errors.append(f'Found {empty} empty variant identifiers.')
+        dups = count_duplicates(variants)
+        if dups:
+            dup_report = ', '.join([f'"{dup}"' for dup in dups])
+            errors.append(f'Found duplicate variant identifiers: {dup_report}.')
+
+        if errors: return errors
+
+        # Validate aspect references
+        empty = count_empty(aspects)
+        if empty:
+            errors.append(f'Found {empty} empty aspect identifiers.')
+        dups = count_duplicates(aspects)
+        if dups:
+            dup_report = ', '.join([f'"{dup}"' for dup in dups])
+            errors.append(f'Found duplicate aspect identifiers: {dup_report}.')
+        invs = []
+        for aspect in aspects:
+            if aspect not in choice_dict:
+                errors.append(f'Aspect "{aspect}" is invalid.{did_you_mean(aspect, choice_dict)}')
+
+        if errors: return errors
+
+        # Validate choice references
+        for variant in variants:
+            for index, aspect in enumerate(aspects):
+                choice = choices[variant][index]
+                if choice not in choice_dict[aspect]:
+                    errors.append(f'For aspect "{aspect}", choice "{choice}" is invalid.{did_you_mean(choice, choice_dict[aspect])}')
+
+        if errors: return errors
+
+        # Validate variant assignments
+        seen = {}
+        dup = False
+        for variant, choice_list in choices.items():
+            choice_tuple = tuple(choice_list) # hashable
+            if choice_tuple in seen:
+                dup = True
+                break
+            else:
+                seen[choice_tuple] = True
+        if dup:
+            errors.append('Found identical choice assignments for multiple variants.')
+
+        if errors: return errors
+
+        # Finally, use loaded data
+        self._hash_at_load = self.current_file_hash()
+        self._variants = variants
+        self._aspects = aspects
+        self._choices = choices
+        self._is_loaded = True
+        return []
+
+    def write_csv(self, force=False):
+        if len(self._variants) == 0 and len(self._aspects) == 0:
+            # if table is empty, remove the file
+            os.remove(self._file_path)
+        else:
+            with open(self._file_path, mode='w', newline='', encoding='utf-8') as csvfile:
+                csv_writer = csv.writer(csvfile, quoting=csv.QUOTE_ALL)
+                csv_writer.writerow([""] + self._aspects)
+                for variant in self._variants:
+                    csv_writer.writerow([variant] + self._choices[variant])
+
+    def create_table(self, variant, aspects, choice_dict):
+        choices = []
+        for aspect in aspects:
+            choices.append(choice_dict[aspect])
+        self._choices = { variant: choices }
+        self._variants = [variant]
+        self._aspects = aspects
+        return True
+
+    def delete_table(self):
+        self._aspects = []
+        self._variants = []
+        self._choices = {}
+        return True
+
+    def add_variant(self, variant, choice_dict):
+        if variant in self._variants: # double-check, should be blocked
+            return False
+        else:
+            choices = []
+            for aspect in self._aspects:
+                choices.append(choice_dict[aspect])
+            self._choices[variant] = choices
+            self._variants.append(variant)
+            return True
+
+    def delete_variant(self, variant):
+        if variant not in self._variants: # double-check, should be blocked
+            return False
+        else:
+            self._choices.pop(variant)
+            self._variants.remove(variant)
+            if len(self._variants) == 0:
+                self.delete_table()
+            return True
+
+    def variants(self):
+        return self._variants
+
+    def aspects(self):
+        return self._aspects
+
+    def choices(self):
+        return self._choices
+
+    def is_loaded(self):
+        return self._is_loaded
+
+    def file_path(self):
+        return self._file_path
+
+    def current_file_hash(self):
+        if os.path.exists(self._file_path) and os.access(self._file_path, os.R_OK):
+            algo = hashlib.sha256()
+            with open(self._file_path, "rb") as f:
+                for chunk in iter(lambda: f.read(4096), b""):
+                    algo.update(chunk)
+            return algo.hexdigest()
+        else:
+            return None
+
+    def file_has_changed(self):
+        old_hash = self._hash_at_load
+        new_hash = self.current_file_hash()
+        return new_hash != old_hash
+
+    def match_variant(self, selections):
+        matching = []
+        for variant in self._variants:
+            miss = False
+            for index, aspect in enumerate(self._aspects):
+                if self._choices[variant][index] != selections[aspect]:
+                    miss = True
+                    break
+            if not miss: matching.append(variant)
+        return None if len(matching) != 1 else matching[0]

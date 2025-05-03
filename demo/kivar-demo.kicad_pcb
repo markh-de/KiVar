@@ -9,11 +9,10 @@
 	(paper "A5" portrait)
 	(title_block
 		(title "KiVar Demo Board")
-		(date "2024-09-16")
-		(rev "0.4.0")
+		(date "2025-04-30")
+		(rev "0.5.0")
 		(company "Author: Mark Hämmerling <dev@markh.de>")
-		(comment 3 "https://github.com/markh-de/KiVar")
-		(comment 4 "Download KiVar:")
+		(comment 4 "https://kivar.markh.de")
 	)
 	(layers
 		(0 "F.Cu" signal)
@@ -47,6 +46,57 @@
 		(58 "User.9" user)
 	)
 	(setup
+		(stackup
+			(layer "F.SilkS"
+				(type "Top Silk Screen")
+				(color "#000000FF")
+				(material "Direct Printing")
+			)
+			(layer "F.Paste"
+				(type "Top Solder Paste")
+			)
+			(layer "F.Mask"
+				(type "Top Solder Mask")
+				(color "#FFFFFFFF")
+				(thickness 0.01)
+				(material "Dry Film")
+				(epsilon_r 3.3)
+				(loss_tangent 0)
+			)
+			(layer "F.Cu"
+				(type "copper")
+				(thickness 0.035)
+			)
+			(layer "dielectric 1"
+				(type "core")
+				(thickness 1.51)
+				(material "FR4")
+				(epsilon_r 4.5)
+				(loss_tangent 0.02)
+			)
+			(layer "B.Cu"
+				(type "copper")
+				(thickness 0.035)
+			)
+			(layer "B.Mask"
+				(type "Bottom Solder Mask")
+				(color "#FFFFFFFF")
+				(thickness 0.01)
+				(material "Dry Film")
+				(epsilon_r 3.3)
+				(loss_tangent 0)
+			)
+			(layer "B.Paste"
+				(type "Bottom Solder Paste")
+			)
+			(layer "B.SilkS"
+				(type "Bottom Silk Screen")
+				(color "#000000FF")
+				(material "Direct Printing")
+			)
+			(copper_finish "None")
+			(dielectric_constraints no)
+		)
 		(pad_to_mask_clearance 0)
 		(allow_soldermask_bridges_in_footprints no)
 		(pcbplotparams
@@ -457,7 +507,7 @@
 		(path "/b90e2ece-31a9-44a1-a7e2-4f98d0159cd7/a4ade26b-8133-417f-a3c4-f707e58b4e1d")
 		(sheetname "Example 4: IC Variant Selection")
 		(sheetfile "example_4.kicad_sch")
-		(attr smd)
+		(attr smd exclude_from_pos_files exclude_from_bom dnp)
 		(fp_line
 			(start -0.107836 0.36)
 			(end 0.107836 0.36)
@@ -684,7 +734,7 @@
 		(path "/0e980ce9-433f-4ae1-b84f-fd5b1f452ede/de30442e-e974-4637-b9c5-51297c7aa674")
 		(sheetname "Example 5: IC Type and Address Selection")
 		(sheetfile "example_5.kicad_sch")
-		(attr smd exclude_from_pos_files exclude_from_bom dnp)
+		(attr smd)
 		(fp_line
 			(start -0.153641 -0.38)
 			(end 0.153641 -0.38)
@@ -1190,7 +1240,7 @@
 		(path "/efd04459-986c-49c2-bdc3-96a700b4a724/164bd475-ad6d-4b42-bb69-8bd29034c492")
 		(sheetname "Example 6: Maximum LED Backlight Drive Current Selection")
 		(sheetfile "example_6.kicad_sch")
-		(attr smd)
+		(attr smd exclude_from_pos_files exclude_from_bom dnp)
 		(fp_line
 			(start -0.153641 -0.38)
 			(end 0.153641 -0.38)
@@ -1589,7 +1639,7 @@
 				)
 			)
 		)
-		(property "Value" "ISL91127IRAZ"
+		(property "Value" "ISL91127IRNZ"
 			(at 0 3.3 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -1653,7 +1703,7 @@
 				)
 			)
 		)
-		(property "MPN" "ISL91127IRAZ-T7A"
+		(property "MPN" "ISL91127IRNZ-T7A"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -1666,7 +1716,7 @@
 				)
 			)
 		)
-		(property "Info" "Adjustable"
+		(property "Info" "Fixed"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -1731,7 +1781,7 @@
 				)
 			)
 		)
-		(property "VarID" "A"
+		(property "VarID" "N"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -2481,7 +2531,7 @@
 		(path "/0e980ce9-433f-4ae1-b84f-fd5b1f452ede/0dcdb367-4337-40e6-a708-4f58579aebef")
 		(sheetname "Example 5: IC Type and Address Selection")
 		(sheetfile "example_5.kicad_sch")
-		(attr smd)
+		(attr smd exclude_from_pos_files exclude_from_bom dnp)
 		(fp_line
 			(start -0.153641 0.38)
 			(end 0.153641 0.38)
@@ -3747,7 +3797,7 @@
 		(path "/f1bdcd00-da00-4cca-b21f-4862aa5c3200/ba45e535-493c-4b78-88ea-d29e167d7324")
 		(sheetname "Example 2: Boot Source Selection")
 		(sheetfile "example_2.kicad_sch")
-		(attr smd exclude_from_pos_files exclude_from_bom dnp)
+		(attr smd)
 		(fp_line
 			(start -0.153641 -0.38)
 			(end 0.153641 -0.38)
@@ -3906,7 +3956,7 @@
 				)
 			)
 		)
-		(property "Value" "1MΩ"
+		(property "Value" "0Ω"
 			(at 0 1.17 90)
 			(layer "F.Fab")
 			(hide yes)
@@ -4210,7 +4260,7 @@
 				)
 			)
 		)
-		(property "ChoiceText" "SoM eMMC"
+		(property "ChoiceText" "SoM NAND"
 			(at 0 0 90)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -4249,7 +4299,7 @@
 				)
 			)
 		)
-		(property "VarID" "E"
+		(property "VarID" "N"
 			(at 0 0 90)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -4279,7 +4329,7 @@
 		(path "/f1bdcd00-da00-4cca-b21f-4862aa5c3200/730ed1d1-b7f3-4cc2-b7e6-bb531a213568")
 		(sheetname "Example 2: Boot Source Selection")
 		(sheetfile "example_2.kicad_sch")
-		(attr smd)
+		(attr smd exclude_from_pos_files exclude_from_bom dnp)
 		(fp_line
 			(start -0.153641 -0.38)
 			(end 0.153641 -0.38)
@@ -5708,7 +5758,7 @@
 		(path "/efd04459-986c-49c2-bdc3-96a700b4a724/e25e246c-820d-4eb0-bbde-ad6604c8b22f")
 		(sheetname "Example 6: Maximum LED Backlight Drive Current Selection")
 		(sheetfile "example_6.kicad_sch")
-		(attr smd exclude_from_pos_files exclude_from_bom dnp)
+		(attr smd)
 		(fp_line
 			(start -0.153641 -0.38)
 			(end 0.153641 -0.38)
@@ -6389,7 +6439,7 @@
 		(path "/819719b2-602e-433d-a771-1f2596d21337/3b6f2e16-d085-47da-9ab8-1a779fd78711")
 		(sheetname "Example 1: I²C Device Address Selection")
 		(sheetfile "example_1.kicad_sch")
-		(attr smd exclude_from_pos_files exclude_from_bom dnp)
+		(attr smd)
 		(fp_line
 			(start -0.153641 -0.38)
 			(end 0.153641 -0.38)
@@ -6629,7 +6679,7 @@
 		(path "/b90e2ece-31a9-44a1-a7e2-4f98d0159cd7/abb20631-1ddd-48a5-a6d8-1b902ca094b4")
 		(sheetname "Example 4: IC Variant Selection")
 		(sheetfile "example_4.kicad_sch")
-		(attr smd)
+		(attr smd exclude_from_pos_files exclude_from_bom dnp)
 		(fp_line
 			(start -0.107836 0.36)
 			(end 0.107836 0.36)
@@ -7781,7 +7831,7 @@
 		(path "/f1bdcd00-da00-4cca-b21f-4862aa5c3200/d11fb2ac-e945-42aa-a1ec-cde596cb273c")
 		(sheetname "Example 2: Boot Source Selection")
 		(sheetfile "example_2.kicad_sch")
-		(attr smd)
+		(attr smd exclude_from_pos_files exclude_from_bom dnp)
 		(fp_line
 			(start -0.153641 -0.38)
 			(end 0.153641 -0.38)
@@ -8021,7 +8071,7 @@
 		(path "/efd04459-986c-49c2-bdc3-96a700b4a724/ee48da60-6876-4ef0-84f6-cffde08936df")
 		(sheetname "Example 6: Maximum LED Backlight Drive Current Selection")
 		(sheetfile "example_6.kicad_sch")
-		(attr smd exclude_from_pos_files exclude_from_bom dnp)
+		(attr smd)
 		(fp_line
 			(start -0.153641 -0.38)
 			(end 0.153641 -0.38)
@@ -11170,7 +11220,7 @@
 				)
 			)
 		)
-		(property "I2C Address" "0x55"
+		(property "I2C Address" "0x54"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -11209,7 +11259,7 @@
 				)
 			)
 		)
-		(property "VarID" "55"
+		(property "VarID" "54"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -11995,7 +12045,7 @@
 				)
 			)
 		)
-		(property "VarID" "A"
+		(property "VarID" "5"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -12025,7 +12075,7 @@
 		(path "/efd04459-986c-49c2-bdc3-96a700b4a724/a8aed226-866e-4dad-9144-c3cfc1bfddc3")
 		(sheetname "Example 6: Maximum LED Backlight Drive Current Selection")
 		(sheetfile "example_6.kicad_sch")
-		(attr smd)
+		(attr smd exclude_from_pos_files exclude_from_bom dnp)
 		(fp_line
 			(start -0.153641 -0.38)
 			(end 0.153641 -0.38)
@@ -12339,7 +12389,7 @@
 				)
 			)
 		)
-		(property "I2C Address" "0x24"
+		(property "I2C Address" "0x20"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -12365,7 +12415,7 @@
 				)
 			)
 		)
-		(property "VarID" "24"
+		(property "VarID" "20"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -14024,7 +14074,7 @@
 		(path "/b90e2ece-31a9-44a1-a7e2-4f98d0159cd7/a9bf9950-5f5b-43e4-8b8c-8c8b79f444c7")
 		(sheetname "Example 4: IC Variant Selection")
 		(sheetfile "example_4.kicad_sch")
-		(attr smd)
+		(attr smd exclude_from_pos_files exclude_from_bom dnp)
 		(fp_line
 			(start -0.153641 -0.38)
 			(end 0.153641 -0.38)
@@ -14893,7 +14943,7 @@
 		(path "/819719b2-602e-433d-a771-1f2596d21337/6b3c9e5e-6b0a-47b4-95c1-5b04e0623345")
 		(sheetname "Example 1: I²C Device Address Selection")
 		(sheetfile "example_1.kicad_sch")
-		(attr smd)
+		(attr smd exclude_from_pos_files exclude_from_bom dnp)
 		(fp_line
 			(start -0.153641 0.38)
 			(end 0.153641 0.38)
@@ -16788,7 +16838,7 @@
 		(layer "Edge.Cuts")
 		(uuid "1a575f67-c800-4998-aae9-d02d4362903c")
 	)
-	(gr_text "https://github.com/markh-de/KiVar"
+	(gr_text "https://kivar.markh.de"
 		(at 111 112.3 0)
 		(layer "F.SilkS")
 		(uuid "0c25fda2-57dc-439b-a0d4-db6c1302c508")
