@@ -9,7 +9,7 @@ KiVar is a tool for **KiCad PCB Assembly Variant selection**, provided as platfo
 
 PCB component variation rules for multiple limited design scopes are defined in component (i.e. symbol or footprint) fields.  This allows for the complete low-level variation configuration to be contained in the schematic and board files without requiring external data outside the native KiCad design.
 
-In addition, KiCad-independent table files (CSV) can be used to summarize the configuration of these low-level scopes in classic flat variants, which can then be switched between.
+In addition, variant definition tables (KiCad-independent CSV format) can be used to summarize the configuration of these low-level scopes in classic flat variants, which can then be switched between.
 
 ## Featured at KiCon Europe 2024
 
