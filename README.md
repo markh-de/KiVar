@@ -141,20 +141,25 @@ Required steps:
 
 ### KiVar Command Line Application
 
-The KiVar CLI (command line interface) Python package can be installed using the following methods.
+> [!IMPORTANT]
+> The KiVar CLI application requires access to the KiCad **pcbnew** Python module.  
+> On _Linux_ systems, KiCad provides this module system-wide, so all Python applications with access to system packages can use it (see installation note below).  
+> On _Windows_ and _macOS_, KiCad provides its own Python distribution.  In the following installation instructions, users must therefore replace `python` by the appropriate KiCad Python executable, for example `"C:\Program Files\KiCad\9.0\bin\python.exe"` on Windows.
 
-#### Using the PyPI Repository
+interpreter in order for the CLI application to be able to access the _pcbnew_ module.  For example, on Windows, the correct Python executable may be located at ``.
 
-To install (or upgrade to) the latest KiVar CLI app directly from the official KiVar PyPI repository, open a shell and run:
+#### Installation From PyPI Repository
+
+To install (or upgrade to) the latest KiVar CLI app directly from the official KiVar PyPI repository, open a shell (see note above) and run:
 
 ```
 python -m pip install --upgrade kivar
 ```
 
 > [!NOTE]
-> On newer Python installations you might need to add the `--break-system-packages` option to install the app so that it can load the `pcbnew` module provided by KiCad.
+> On newer _Linux_ Python installations, users might consider adding the `--break-system-packages` option for the app to be able to access KiCad's system-wide installed `pcbnew` module.
 
-#### Using a Release Archive
+#### Installation Using a Release Archive
 
 The KiVar CLI app can also be installed using a downloaded or locally created Python Package.
 
