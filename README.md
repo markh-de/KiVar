@@ -101,7 +101,7 @@ The KiVar CLI application provides support for
  * listing and
  * analyzing
 
-variation data and current settings.  It can also be used in Continuous Integration services.
+low-level and high-level variant data and current settings of a PCB.  It can also be used in Continuous Integration services.
 
 ## Concepts
 
@@ -144,7 +144,7 @@ Required steps:
 > [!IMPORTANT]
 > The KiVar CLI application requires access to the KiCad **pcbnew** Python module.  
 > On _Linux_ systems, KiCad provides this module system-wide, so all Python applications with access to system packages can use it (see installation note below).  
-> On _Windows_ and _macOS_, KiCad provides its own Python distribution.  In the following installation instructions, users must therefore replace `python` by the appropriate KiCad Python executable, for example `"C:\Program Files\KiCad\9.0\bin\python.exe"` on Windows.
+> On _Windows_ and _macOS_, KiCad provides its own Python distribution.  In the following installation instructions, users must therefore replace `python` by the appropriate KiCad Python executable, for example `C:\Program Files\KiCad\9.0\bin\python.exe` on Windows.
 
 interpreter in order for the CLI application to be able to access the _pcbnew_ module.  For example, on Windows, the correct Python executable may be located at ``.
 
@@ -241,7 +241,7 @@ In addition to a single Variant switch, KiVar also allows having so-called _Free
 
 ##### Division of Resposibilities
 
-Component value and attributes are configured in "low-level" Aspect definitions directly in the native KiCad design files, while "top-level" Variants are configured independently in an external table.
+Component value and attributes are configured in _low-level_ Aspect definitions directly in the native KiCad design files, while _top-level_ Variants are configured independently in an external table.
 
 This makes it possible to divide the administration of each of these parts between different departments or editors, providing a _development_ and _management_ view:
 

@@ -80,7 +80,7 @@ The KiVar CLI application provides support for
  * listing and
  * analyzing
 
-variation data and current settings.  It can also be used in Continuous Integration services.
+low-level and high-level variant data and current settings of a PCB.  It can also be used in Continuous Integration services.
 
 ## Concepts
 
