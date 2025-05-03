@@ -111,7 +111,7 @@ Key concepts of KiVar are:
  * Variation rules are **fully contained** in component fields of native design files (no external configuration files involved) and **portable** (i.e. copying components to another design keeps their variation specification intact).
  * Component values, fields, attributes and features are modified **in place** with immediate effect, enabling compatibility with all exporters that work on the actual component data.
  * **No external state information** is stored; currently matching variation choices are detected automatically.
- * Optional external **variant table** in independent file format (CSV) enables switching of aspect groups based on a single variant name.
+ * Optional external **variant** definition table in independent file format (CSV) enables switching of aspect groups based on a single variant name.
 
 ## Supported KiCad Versions
 
@@ -1069,7 +1069,7 @@ Even though PCB variants are not really supposed to change any property of the _
 
 ### Top-Level Variants
 
-Assigning sets of Choices for [Bound Aspects](#definition-of-terms) to single top-level [Variants](#variants) is done in the Variant definition table.
+Assigning sets of Choices for [Bound Aspects](#definition-of-terms) to single top-level [Variants](#variants) is done in the Variant Definition Table (VDT).
 
 #### Supported File Formats
 
@@ -1077,15 +1077,15 @@ Currently, KiVar only supports the **CSV** (comma-separated values) file format 
 
 #### Supported File Names
 
-The Variant definition table must be located in the **same directory** as the board file it relates to.
+The Variant Definition Table must be located in the **same directory** as the board file it relates to.
 
-The name of the table file must be the **board's base name** with the **extension `.kivar.csv`**.
+The name of the table file must be the **board's base name** with the **extension `.kivar_vdt.csv`**.
 
-For example, if the board file path is `/foo/bar/hello-world.kicad_pcb` then the table is expected at `/foo/bar/hello-world.kivar.csv`.
+For example, if the board file path is `/foo/bar/hello-world.kicad_pcb` then the table is expected at `/foo/bar/hello-world.kivar_vdt.csv`.
 
 #### Table Structure
 
-A Variant definition table must have the following general structure:
+A Variant Definition Table must have the following general structure:
 
 |               | Aspect_A    | Aspect_B    | Aspect_C    | ...         |
 | ------------- | ----------- | ----------- | ----------- | ----------- |
@@ -1111,7 +1111,7 @@ KiVar user applications (KiCad Plugin and CLI app) will use the **same order** o
  * **Variants** _(listed in rows from top to bottom)_ and
  * **Bound Aspects** _(listed in columns from left to right)_
 
-as defined in the Variant definition table.
+as defined in the Variant Definition Table.
 
 This enables a custom sorting of Variants (e.g. based on the implemented product/series/model identifier), as well as custom compilation of Bound Aspects.
 
@@ -1124,7 +1124,7 @@ At least the following critical requirements must be met for a table to be valid
 
 #### Working Example
 
-An example of a Variant definition table CSV file referencing project-provided Aspect and Choice identifiers can be found in the [demo project](demo/kivar-demo.kivar.csv).
+An example of a Variant Definition Table file referencing project-provided Aspect and Choice identifiers can be found in the [demo project](demo/kivar-demo.kivar_vdt.csv).
 
 ### Rules Application
 
@@ -1165,10 +1165,10 @@ If a Variant is selected (requires Variants to be defined), then all Bound Aspec
 
 Rudimentary functions are implemented in the KiVar Plugin to
 
- * create a new Variant definition table binding a specific set of Aspects,
+ * create a new Variant Definition Table binding a specific set of Aspects,
  * add a new Variant definition with a specific set of assigned Choices (one per Bound Aspect),
  * delete a Variant definition,
- * launch the system's default CSV editor to directly edit the Variant definition table,
+ * launch the system's default CSV editor to directly edit the Variant Definition Table,
  * reload the table file from disk.
 
 These functions can be found in the three-dot menu next to the plugin's Variant selector.
