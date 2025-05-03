@@ -3,7 +3,7 @@
 release_plugin_pcm() {
     out_base_name="${RELEASE_NAME}-${VERSION}-pcm.zip"
     meta_version="$VERSION"
-    meta_status="testing"
+    meta_status="stable"
     meta_kicad_version="8.0"
     meta_download_url="https://github.com/markh-de/KiVar/releases/download/v${VERSION}/${out_base_name}"
 

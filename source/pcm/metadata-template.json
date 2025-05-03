@@ -24,7 +24,7 @@
     "versions": [
         {
             "version": "<<VERSION>>",
-            "status": "testing",
+            "status": "stable",
             "kicad_version": "8.0"
         }
     ]
