@@ -1392,9 +1392,9 @@
 		(mirror x)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
-		(dnp no)
+		(dnp yes)
 		(fields_autoplaced yes)
 		(uuid "0dcdb367-4337-40e6-a708-4f58579aebef")
 		(property "Reference" "R18"
@@ -1672,7 +1672,7 @@
 				(hide yes)
 			)
 		)
-		(property "I2C Address" "0x24"
+		(property "I2C Address" "0x20"
 			(at 172.3741 69.85 0)
 			(show_name yes)
 			(effects
@@ -1748,7 +1748,7 @@
 				(hide yes)
 			)
 		)
-		(property "VarID" "24"
+		(property "VarID" "20"
 			(at 170.18 100.33 0)
 			(effects
 				(font
@@ -2191,9 +2191,9 @@
 		(mirror x)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom no)
+		(in_bom yes)
 		(on_board yes)
-		(dnp yes)
+		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "de30442e-e974-4637-b9c5-51297c7aa674")
 		(property "Reference" "R19"

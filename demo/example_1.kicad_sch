@@ -1103,7 +1103,7 @@
 				(hide yes)
 			)
 		)
-		(property "I2C Address" "0x55"
+		(property "I2C Address" "0x54"
 			(at 121.5741 53.34 0)
 			(show_name yes)
 			(effects
@@ -1123,7 +1123,7 @@
 				(hide yes)
 			)
 		)
-		(property "VarID" "55"
+		(property "VarID" "54"
 			(at 119.38 60.96 0)
 			(effects
 				(font
@@ -1180,9 +1180,9 @@
 		(mirror x)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom no)
+		(in_bom yes)
 		(on_board yes)
-		(dnp yes)
+		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "3b6f2e16-d085-47da-9ab8-1a779fd78711")
 		(property "Reference" "R2"
@@ -1397,9 +1397,9 @@
 		(mirror x)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
-		(dnp no)
+		(dnp yes)
 		(fields_autoplaced yes)
 		(uuid "6b3c9e5e-6b0a-47b4-95c1-5b04e0623345")
 		(property "Reference" "R1"

@@ -2229,9 +2229,9 @@
 		(mirror x)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
-		(dnp no)
+		(dnp yes)
 		(fields_autoplaced yes)
 		(uuid "164bd475-ad6d-4b42-bb69-8bd29034c492")
 		(property "Reference" "R29"
@@ -3085,9 +3085,9 @@
 		(mirror x)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
-		(dnp no)
+		(dnp yes)
 		(fields_autoplaced yes)
 		(uuid "a8aed226-866e-4dad-9144-c3cfc1bfddc3")
 		(property "Reference" "R21"
@@ -3164,7 +3164,7 @@
 				(hide yes)
 			)
 		)
-		(property "VarID" "A"
+		(property "VarID" "5"
 			(at 129.54 73.025 0)
 			(effects
 				(font
@@ -3894,9 +3894,9 @@
 		(mirror x)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom no)
+		(in_bom yes)
 		(on_board yes)
-		(dnp yes)
+		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "e25e246c-820d-4eb0-bbde-ad6604c8b22f")
 		(property "Reference" "R22"
@@ -4121,9 +4121,9 @@
 		(mirror x)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom no)
+		(in_bom yes)
 		(on_board yes)
-		(dnp yes)
+		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "ee48da60-6876-4ef0-84f6-cffde08936df")
 		(property "Reference" "R30"

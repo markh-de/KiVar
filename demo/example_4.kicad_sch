@@ -1863,7 +1863,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "1MΩ"
+		(property "Value" "0Ω"
 			(at 176.53 101.5999 0)
 			(effects
 				(font
@@ -2290,7 +2290,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "ISL91127IRAZ"
+		(property "Value" "ISL91127IRNZ"
 			(at 127.9241 87.63 0)
 			(effects
 				(font
@@ -2335,7 +2335,7 @@
 				(hide yes)
 			)
 		)
-		(property "MPN" "ISL91127IRAZ-T7A"
+		(property "MPN" "ISL91127IRNZ-T7A"
 			(at 121.92 104.14 0)
 			(effects
 				(font
@@ -2344,7 +2344,7 @@
 				(hide yes)
 			)
 		)
-		(property "Info" "Adjustable"
+		(property "Info" "Fixed"
 			(at 127.9241 90.17 0)
 			(effects
 				(font
@@ -2392,7 +2392,7 @@
 				(hide yes)
 			)
 		)
-		(property "VarID" "A"
+		(property "VarID" "N"
 			(at 121.92 104.14 0)
 			(effects
 				(font
@@ -2685,9 +2685,9 @@
 		(at 157.48 101.6 0)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
-		(dnp no)
+		(dnp yes)
 		(fields_autoplaced yes)
 		(uuid "a4ade26b-8133-417f-a3c4-f707e58b4e1d")
 		(property "Reference" "C6"
@@ -2774,9 +2774,9 @@
 		(at 173.99 109.22 0)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
-		(dnp no)
+		(dnp yes)
 		(fields_autoplaced yes)
 		(uuid "a9bf9950-5f5b-43e4-8b8c-8c8b79f444c7")
 		(property "Reference" "R17"
@@ -2863,9 +2863,9 @@
 		(at 140.97 101.6 0)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
-		(dnp no)
+		(dnp yes)
 		(fields_autoplaced yes)
 		(uuid "abb20631-1ddd-48a5-a6d8-1b902ca094b4")
 		(property "Reference" "C5"

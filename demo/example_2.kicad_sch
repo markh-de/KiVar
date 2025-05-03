@@ -1253,9 +1253,9 @@
 		(mirror x)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
-		(dnp no)
+		(dnp yes)
 		(uuid "730ed1d1-b7f3-4cc2-b7e6-bb531a213568")
 		(property "Reference" "R9"
 			(at 140.97 82.5499 0)
@@ -1323,7 +1323,7 @@
 				(justify left)
 			)
 		)
-		(property "ChoiceText" "SoM eMMC"
+		(property "ChoiceText" "SoM NAND"
 			(at 139.065 85.09 0)
 			(effects
 				(font
@@ -1341,7 +1341,7 @@
 				(hide yes)
 			)
 		)
-		(property "VarID" "E"
+		(property "VarID" "N"
 			(at 139.065 85.09 0)
 			(effects
 				(font
@@ -1660,9 +1660,9 @@
 		(mirror x)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom no)
+		(in_bom yes)
 		(on_board yes)
-		(dnp yes)
+		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "ba45e535-493c-4b78-88ea-d29e167d7324")
 		(property "Reference" "R10"
@@ -1820,9 +1820,9 @@
 		(mirror x)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
-		(dnp no)
+		(dnp yes)
 		(fields_autoplaced yes)
 		(uuid "d11fb2ac-e945-42aa-a1ec-cde596cb273c")
 		(property "Reference" "R11"
