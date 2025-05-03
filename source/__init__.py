@@ -8,12 +8,14 @@ from . import kivar_gui as gui
 from . import kivar_engine as engine
 
 DEBUG = False
-# TODO error handling (try/except, do not crash)
 def create_icon(source_icon, cached_icon, icon_size, max_size=64):
     if not os.path.exists(cached_icon):
-        image = wx.Image(source_icon, wx.BITMAP_TYPE_PNG)
-        image = image.Scale(icon_size, icon_size, wx.IMAGE_QUALITY_HIGH)
-        image.SaveFile(cached_icon, wx.BITMAP_TYPE_PNG)
+        try:
+            image = wx.Image(source_icon, wx.BITMAP_TYPE_PNG)
+            image = image.Scale(icon_size, icon_size, wx.IMAGE_QUALITY_HIGH)
+            image.SaveFile(cached_icon, wx.BITMAP_TYPE_PNG)
+        except (PermissionError, FileNotFoundError):
+            pass
 
 def get_icon_size():
     icon_size = 24 # default size
