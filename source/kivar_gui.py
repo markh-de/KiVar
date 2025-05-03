@@ -283,12 +283,22 @@ class GuiVariantDialog(forms.VariantDialog):
         mark_modified = u"\u25CF"
         mark_original = ''
         for aspect, (label, marking, choice, panel) in self.aspects_gui.items():
+            preselect = self.preselect[aspect]
             selected = choice.GetSelection()
             selected_str = choice.GetStringSelection()
-            new_modified = selected_str != self.preselect[aspect] if selected > 0 else False
+            new_modified = selected_str != preselect if selected > 0 else False
             current_modified = marking.GetLabel() == mark_modified
             if new_modified != current_modified:
-                marking.SetLabelText(mark_modified if new_modified else mark_original)
+                if new_modified:
+                    marking.SetLabelText(mark_modified)
+                    if preselect is not None:
+                        marking.SetToolTip(f"Modified (from '{preselect}')")
+                    else:
+                        marking.SetToolTip('Modified')
+                else:
+                    marking.SetLabelText(mark_original)
+                    marking.SetToolTip(None)
+
                 panel.Refresh()
                 changed = True
 
