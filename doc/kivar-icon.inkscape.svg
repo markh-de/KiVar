@@ -43,7 +43,7 @@
      inkscape:bbox-nodes="true"
      inkscape:bbox-paths="true"
      inkscape:zoom="22.627417"
-     inkscape:cx="5.1044271"
+     inkscape:cx="3.6902135"
      inkscape:cy="13.015184"
      inkscape:window-width="1920"
      inkscape:window-height="1029"
@@ -250,7 +250,7 @@
      inkscape:groupmode="layer"
      id="layer5"
      inkscape:label="Contours Bottom"
-     style="display:none"
+     style="display:inline"
      sodipodi:insensitive="true">
     <path
        id="path6228"
@@ -349,7 +349,7 @@
      inkscape:groupmode="layer"
      id="layer4"
      inkscape:label="Contours"
-     style="display:none"
+     style="display:inline"
      sodipodi:insensitive="true">
     <path
        id="path2505"
