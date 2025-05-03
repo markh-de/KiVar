@@ -57,20 +57,21 @@ EOF
 
 release_cli_pypi() {
     release_dir="$RELEASE_DIR"
-    src_tmp_dir="$SRC_DIR/pypi"
+    pypi_meta_dir="$SRC_DIR/pypi"
     tmp_dir=$(mktemp -d)
 
-    sed "s/<<VERSION>>/$VERSION/g" "$src_tmp_dir/setup.py.tpl" > "$tmp_dir/setup.py"
+    sed "s/<<VERSION>>/$VERSION/g" "$pypi_meta_dir/setup.py.tpl" > "$tmp_dir/setup.py"
 
     mkdir -p "$tmp_dir/$RELEASE_NAME/"
 
-    cp "$src_tmp_dir/__init__.py" \
+    cp "$pypi_meta_dir/__init__.py" \
        "$SRC_DIR/kivar_cli.py" \
        "$SRC_DIR/kivar_engine.py" \
        "$SRC_DIR/kivar_version.py" \
        "$tmp_dir/$RELEASE_NAME/"
 
-    cp "$src_tmp_dir/README.md" \
+    cp "$pypi_meta_dir/README.md" \
+       "$pypi_meta_dir/pyproject.toml" \
        "$tmp_dir/"
 
     cd "$tmp_dir/"
