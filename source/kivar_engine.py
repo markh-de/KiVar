@@ -18,9 +18,7 @@ import difflib
 
 # TODO in field scope, accept only target fields which are no KiVar fields themselves (avoid recursion!)
 
-# TODO wrap the backend with a class.
-
-# TODO more testing!
+# TODO clean-up wrap engine code in classes
 
 # TODO use setdefault where useful
 
@@ -1096,7 +1094,3 @@ class VariantInfo:
                     break
             if not miss: matching.append(variant)
         return None if len(matching) != 1 else matching[0]
-
-def log(message):
-    print(message)
-    #with open(log_file, "a") as file: file.write(message + "\n")

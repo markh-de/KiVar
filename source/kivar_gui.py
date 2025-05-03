@@ -3,7 +3,7 @@ import json
 import wx
 import pcbnew
 
-from .kivar_engine  import * # TODO clean-up
+from .kivar_engine  import *
 from .kivar_version import version
 from . import kivar_gui_custom as custom
 from . import kivar_forms as forms
@@ -164,9 +164,7 @@ class GuiVariantDialog(forms.VariantDialog):
             panel.GetSizer().Add(choice,  1, wx.ALIGN_CENTRE_VERTICAL | wx.ALIGN_LEFT  | wx.EXPAND)
             self.aspects_gui[aspect] = (label, marking, choice, panel)
 
-        # set label texts
         self.highlight_changed_aspects()
-
         self.lbx_changes.set_select_handler(self.on_change_item_selected)
         self.update_changes_list()
 
