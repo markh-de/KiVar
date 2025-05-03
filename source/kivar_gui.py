@@ -75,7 +75,7 @@ def pcbnew_parent_window():
     return wx.FindWindowByName('PcbFrame')
 
 def dialog_base_config(dialog):
-    # TODO okay to use the master icon (192px) here?
+    # uses the hires icon, relies on internal down-scaling
     theme = 'dark' if dialog.GetBackgroundColour().GetLuminance() < 0.5 else 'light'
     dialog.SetIcon(wx.Icon(os.path.join(os.path.dirname(__file__), f'kivar_icon_{theme}.png'), wx.BITMAP_TYPE_PNG))
     dialog.SetTitle(dialog.GetTitle() + window_suffix())
@@ -292,11 +292,8 @@ class GuiVariantDialog(forms.VariantDialog):
                 panel.Refresh()
                 changed = True
 
-# TODO test: resolved on mac?
-
-        # GTK and MacOS issue:
-        # changing label texts requires re-fitting the scroll-windows for window
-        # size changes to work properly afterwards
+        # GTK and macOS issue:
+        # changing label texts requires re-fitting the scroll-windows for manual window width reduction to work properly afterwards
         if (wx.Platform == '__WXGTK__' or wx.Platform == '__WXMAC__') and changed:
             self.scw_bound.Fit()
             self.scw_free.Fit()
