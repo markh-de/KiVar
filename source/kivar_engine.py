@@ -911,7 +911,7 @@ def did_you_mean(user_input, valid_options):
 
 class VariantInfo:
     def __init__(self, pcb_filename):
-        ext='.kivar.csv'
+        ext='.kivar_vdt.csv'
         self._aspects = []
         self._variants = []
         self._choices = {}
