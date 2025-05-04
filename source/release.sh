@@ -5,7 +5,7 @@ release_plugin_pcm() {
     meta_version="$VERSION"
     meta_status="stable"
     meta_kicad_version="8.0"
-    meta_download_url="https://github.com/markh-de/KiVar/releases/download/v${VERSION}/${out_base_name}"
+    meta_download_url="https://pcm.kivar.markh.de/${out_base_name}"
 
     release_dir="$RELEASE_DIR"
     src_pcm_dir="$SRC_DIR/pcm"
