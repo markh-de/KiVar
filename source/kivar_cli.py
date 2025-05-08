@@ -99,7 +99,7 @@ def sym_variant():
 
 def load_board(in_file):
     if not os.path.isfile(in_file) or not os.access(in_file, os.R_OK):
-        ErrMsg().c().text(f'Error: "{in_file}" is not a readable file.').flush()
+        ErrMsg().c().text(f"Error: '{in_file}' is not a readable file.").flush()
         return None
     return pcbnew.LoadBoard(in_file)
 
@@ -404,9 +404,9 @@ def set_command(in_file=None, out_file=None, force_save=False, variant=None, ass
         store_fpdict(b, fpdict)
         if save_board(out_file, b):
             if verbose:
-                Msg().text(f'Board saved to file "{out_file}".').flush()
+                Msg().text(f"Board saved to file '{out_file}'.").flush()
         else:
-            ErrMsg().c().text(f'Error: Failed to save board to file "{out_file}".').flush()
+            ErrMsg().c().text(f"Error: Failed to save board to file '{out_file}'.").flush()
             return False
 
     return True
@@ -473,22 +473,22 @@ def main():
                 if args.prop_codes: args.detailed = True
                 if args.detailed:   args.long = True
                 if args.variants and args.no_variants:
-                    ErrMsg().c().text('Error: Options "--variants" and "--no-variants" are mutually exclusive.').flush()
+                    ErrMsg().c().text("Error: Options '--variants' and '--no-variants' are mutually exclusive.").flush()
                     exitcode = 5
                 elif not list_command(in_file=args.pcb, long=args.long, prop_codes=args.prop_codes, detailed=args.detailed, selected=args.selection, use_variants=not args.no_variants, only_variants=args.variants, cust_asp_order=not args.std_order): exitcode = 1
             elif cmd == "state":
                 if args.all and args.query_aspect:
-                    ErrMsg().c().text('Error: Options "--all" and "--query" are mutually exclusive.').flush()
+                    ErrMsg().c().text("Error: Options '--all' and '--query' are mutually exclusive.").flush()
                     exitcode = 5
                 elif not state_command(in_file=args.pcb, all=args.all, query_aspect=args.query, use_variants=not args.no_variants, only_variants=args.variants, cust_asp_order=not args.std_order): exitcode = 1
             elif cmd == "check":
                 if not check_command(in_file=args.pcb, variants=args.variants, no_variants=args.no_variants): exitcode = 1
             elif cmd == "set":
                 if args.output is not None and len(args.output) > 1:
-                    ErrMsg().c().text('Error: Option "--output" cannot be used multiple times.').flush()
+                    ErrMsg().c().text("Error: Option '--output' cannot be used multiple times.").flush()
                     exitcode = 5
                 elif args.variant is not None and len(args.variant) > 1:
-                    ErrMsg().c().text('Error: Option "--variant" cannot be used multiple times.').flush()
+                    ErrMsg().c().text("Error: Option '--variant' cannot be used multiple times.").flush()
                     exitcode = 5
                 else:
                     if args.output is not None and len(args.output) == 1:
