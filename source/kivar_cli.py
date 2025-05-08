@@ -332,7 +332,7 @@ def check_command(in_file=None, variants=False, no_variants=False):
             Msg().color('fail').text('Check failed.').reset().text(f'  No matching variant found for the current set of aspect choices.').flush()
             return False
 
-    Msg().color('pass').text('Check passed.').reset().text(f'  Matching {'variant and ' if check_variant_match else ''}choices found for complete set of {len(sel)} aspect(s).').flush()
+    Msg().color('pass').text('Check passed.').reset().text(f"  Matching {'variant and ' if check_variant_match else ''}choices found for complete set of {len(sel)} aspect(s).").flush()
     return True
 
 def set_command(in_file=None, out_file=None, force_save=False, variant=None, assign=None, bound=False, dry_run=False, verbose=False):
