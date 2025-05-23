@@ -578,9 +578,9 @@ def determine_fieldID_base(fpdict):
     # looking for any component which has a field with one of the 
     # available field options as the base
     # first non-empty one found wins
-    for uuid in fpdict:
-        fpdict_uuid_branch = fpdict[uuid]
-        for base in FieldIDOptions:
+    for base in FieldIDOptions:
+        for uuid in fpdict:
+            fpdict_uuid_branch = fpdict[uuid]
             for fp_field in fpdict_uuid_branch[Key.FIELDS]:
                 value = fpdict_uuid_branch[Key.FIELDS][fp_field]
                 if value is None or not len(value):
