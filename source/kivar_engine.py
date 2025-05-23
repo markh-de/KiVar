@@ -4,6 +4,15 @@ import csv
 import hashlib
 import difflib
 
+
+# in any given project, ONE base may be used throughout, e.g. 'Var', for fields or as the base ('Var.Aspect')
+# but this allows the choice to use, e.g. 'Variant'
+#   Variant.Aspect
+#   Variant(option) ... etc
+# and auto-detects this project-wide selection automatically.  
+# All available options listed here:
+FieldIDOptions = ['Var', 'Variant', 'Config', 'Build']
+
 # Note about field case-sensitivity:
 # As long as KiCad can easily be tricked* into having multiple fields whose names only differ in casing, we
 # will not allow case-insensitive field parsing/assignment.
@@ -208,7 +217,7 @@ class PropGroup:
     ASSEMBLE = '!'
 
 class FieldID: # case-sensitive
-    BASE   = 'Var'
+    BASE   = None
     ASPECT = 'Aspect'
 
 def base_prop_codes(): return PropCode.FIT + PropCode.BOM + PropCode.POS + PropCode.SOLDER + PropCode.MODEL
@@ -564,6 +573,37 @@ def field_name_check(field_name, available_fields):
         error = f"Target field '{field_name}' does not exist" # TODO escape field name
     return error
 
+def determine_fieldID_base(fpdict):
+    global FieldIDOptions
+    # looking for any component which has a field with one of the 
+    # available field options as the base
+    # first non-empty one found wins
+    for uuid in fpdict:
+        fpdict_uuid_branch = fpdict[uuid]
+        for base in FieldIDOptions:
+            for fp_field in fpdict_uuid_branch[Key.FIELDS]:
+                value = fpdict_uuid_branch[Key.FIELDS][fp_field]
+                if value is None or not len(value):
+                    # the field is here but its just empty, ignore
+                    continue
+                try: parts = split_raw_str(fp_field, '.', False)
+                except: continue
+                if len(parts) == 2 and parts[0] == base and parts[1] == FieldID.ASPECT:
+                    return base
+                elif len(parts) == 1 and parts[0] == base:
+                    return base
+                elif len(parts) > 1 and parts[-1] == base:
+                    return base
+                else:
+                    try: prefix, name_list = split_parens(parts[-1])
+                    except: continue
+                    if prefix == base:
+                        return base
+    
+    return None
+         
+    
+
 def parse_rule_fields(fpdict_uuid_branch):
     errors = []
     aspect = None
@@ -616,6 +656,19 @@ def build_vardict(fpdict):
     fld_dict = {}
     all_choices = {}
     # Handle component rule
+    if FieldID.BASE is None:
+        # if we've not decided on the BASE yet,
+        # scan through
+        f_base = determine_fieldID_base(fpdict)
+        if f_base is None:
+            # nothing found
+            # set a default, just to satisfy any 
+            # other parts of the system/error messages, etc
+            FieldID.BASE = FieldIDOptions[0]
+            return vardict, errors
+        # found something, yay. Remember that.
+        FieldID.BASE = f_base
+
     for uuid in fpdict:
         ref = fpdict[uuid][Key.REF]
         parse_errors, aspect, cmp_rule_string, cmp_choice_sets, fld_rule_strings, fld_choice_sets = parse_rule_fields(fpdict[uuid])
