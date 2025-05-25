@@ -80,7 +80,7 @@ class KiVarPlugin(pcbnew.ActionPlugin):
             return
         board = pcbnew.GetBoard()
         fpdict = engine.build_fpdict(board)
-        vardict, errors = engine.build_vardict(fpdict)
+        vardict, errors = engine.build_vardict(fpdict, engine.field_ids(board))
         if len(errors) > 0:
             gui.show_error_dialog(errors, board)
         elif len(vardict) == 0:

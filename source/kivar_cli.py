@@ -106,8 +106,8 @@ def load_board(in_file):
 def save_board(out_file, board):
     return pcbnew.SaveBoard(out_file, board)
 
-def build_vardict_wrapper(fpdict):
-    vardict, errors = build_vardict(fpdict)
+def build_vardict_wrapper(fpdict, field_ids):
+    vardict, errors = build_vardict(fpdict, field_ids)
     if len(errors) > 0:
         ErrMsg().c().text(f'Errors ({len(errors)}):').flush()
         for uuid, order, error in sorted(errors, key=lambda x: natural_sort_key(x[1])):
@@ -139,7 +139,7 @@ def list_command(in_file=None, long=False, prop_codes=False, detailed=False, sel
     if b is None: return False
 
     fpdict = build_fpdict(b)
-    vardict = build_vardict_wrapper(fpdict)
+    vardict = build_vardict_wrapper(fpdict, field_ids(b))
     if vardict is None: return False
 
     if selected:
@@ -256,7 +256,7 @@ def state_command(in_file=None, all=False, query_aspect=None, use_variants=False
     if b is None: return False
 
     fpdict = build_fpdict(b)
-    vardict = build_vardict_wrapper(fpdict)
+    vardict = build_vardict_wrapper(fpdict, field_ids(b))
     if vardict is None: return False
 
     if use_variants:
@@ -300,7 +300,7 @@ def check_command(in_file=None, variants=False, no_variants=False):
     if b is None: return False
 
     fpdict = build_fpdict(b)
-    vardict = build_vardict_wrapper(fpdict)
+    vardict = build_vardict_wrapper(fpdict, field_ids(b))
     if vardict is None: return False
 
     sel = detect_current_choices(fpdict, vardict)
@@ -344,7 +344,7 @@ def set_command(in_file=None, out_file=None, force_save=False, variant=None, ass
     if b is None: return False
 
     fpdict = build_fpdict(b)
-    vardict = build_vardict_wrapper(fpdict)
+    vardict = build_vardict_wrapper(fpdict, field_ids(b))
     if vardict is None: return False
 
     sel = detect_current_choices(fpdict, vardict)
