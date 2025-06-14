@@ -193,6 +193,10 @@ While it is recommended to define variation rules in the schematic (i.e. in symb
 > [!TIP]
 > If you are already experienced with writing variation rules for older KiVar versions (especially 0.1.x), it is highly recommended to read the [KiVar Migration Guide](#migrate), which covers the most important changes introduced with newer KiVar releases.
 
+> [!TIP]
+> The keywords used in component fields for identifying variation rules and aspect identifiers (`Var` and `Aspect` by default) can be customized.  
+> See [Overriding KiVar Record Keywords](#overriding-kivar-record-keywords) for details on how to use project text variables to change these keywords.
+
 #### Definition of Terms
 
 Whenever specific terms appear capitalized in this document, the following definitions apply:
@@ -283,6 +287,16 @@ One possible resulting example _Configuration_ for this design:
 
 KiVar computes possible sets of Aspect and Choice definitions internally by checking each component's field data for KiVar [Records](#records) and the [Assignments](#assignments) resulting from them.  The structure and syntax of the expressions used in such Records are described in the following sections.
 
+#### Overriding KiVar Record Keywords
+
+By default, KiVar uses the keywords `Var` and `Aspect` in component fields to identify variation rules and aspect identifiers.
+
+**You can override these default keywords** by defining the KiCad project text variables `KIVAR_KEYWORD_VAR` and `KIVAR_KEYWORD_ASPECT`, respectively.
+
+For example, to use `Scope` instead of `Aspect`, set `KIVAR_KEYWORD_ASPECT` = `Scope` in your project's text variables.
+
+This allows you to adapt KiVar to your own naming conventions or to avoid conflicts with other tools.  However, using custom keywords may make your variation rules less portable.
+
 #### Records
 
 The text expressions that describe the variation rules are noted as **Record**s, i.e. as custom field entries with each field's name containing the keyword `Var` in one of [several forms](#record-formats).
@@ -301,6 +315,10 @@ A usual Record contains the following elements:
 There is a special Aspect Specifier Record type, discussed in the [corresponding section](#aspect-identifier).
 
 Records can use various notations, depending on their [Format](#record-formats).  Details are described in the following sections.
+
+> [!NOTE]
+> The default field keywords `Var` and `Aspect` can be changed per project.  
+> See [Overriding KiVar Record Keywords](#overriding-kivar-record-keywords) for details.
 
 #### Assignments
 
@@ -703,6 +721,10 @@ Used placeholders:
  * `<CIL>` specifies the [Choice Identifiers List](#choice-identifiers).
  * `<CAL>` specifies the corresponding [Choice Arguments List](#choice-arguments).
 
+> [!NOTE]
+> The keyword `Var` in the field name can be customized via a project text variable.  
+> See [Overriding KiVar Record Keywords](#overriding-kivar-record-keywords).
+
 ###### Examples
 
 The following entries could be used for a capacitor.  Note how the Aspect Identifier must be passed with a dedicated entry, because [SCARs](#simple-component-assignment-records-scar) cannot include the Aspect Identifier, as is possible for [CCARs](#combined-component-assignment-records-ccar).
@@ -742,6 +764,10 @@ Used placeholders:
 > [!NOTE]
 > The [Aspect Identifier](#aspect-identifier) can be passed at _any_ element position within the Combined Expression (first or last position recommended for readability).
 
+> [!NOTE]
+> The keyword `Var` in the field name can be customized via a project text variable.  
+> See [Overriding KiVar Record Keywords](#overriding-kivar-record-keywords).
+
 ###### Examples
 
 The following single entry serves the same purpose as the above [SCAR](#simple-component-assignment-records-scar) example.  Note how even the [Aspect Identifier](#aspect-identifier) is included in the same single Assignment.
@@ -769,6 +795,10 @@ Used placeholders:
  * `<TARGET_FIELD_NAME>` specifies the name of the component's field to assign specified Content to.
  * `<CIL>` specifies the [Choice Identifiers List](#choice-identifiers).
  * `<CAL>` specifies the corresponding [Choice Arguments List](#choice-arguments).
+
+> [!NOTE]
+> The keyword `Var` in the field name can be customized via a project text variable.  
+> See [Overriding KiVar Record Keywords](#overriding-kivar-record-keywords).
 
 ###### Examples
 
@@ -806,6 +836,10 @@ Used placeholders:
  * `<CIL_1>` .. `<CIL_N>` specify the [Choice Identifiers Lists](#choice-identifiers).
  * `<CAL_1>` .. `<CAL_N>` specify the corresponding [Choice Arguments Lists](#choice-arguments).
 
+> [!NOTE]
+> The keyword `Var` in the field name can be customized via a project text variable.  
+> See [Overriding KiVar Record Keywords](#overriding-kivar-record-keywords).
+
 ###### Examples
 
 The following few entries serve the same purpose as the above [SFAR](#simple-field-assignment-records-sfar) example.
@@ -841,6 +875,10 @@ There are two methods of specifying the **Aspect Identifier**:
 2. as part of a [_Combined Component Assignment Record_](#combined-component-assignment-records-ccar).
 
 Details and examples can be found in the following sections.
+
+> [!NOTE]
+> The keywords `Var` and `Aspect` in the field name can be customized via project text variables.  
+> See [Overriding KiVar Record Keywords](#overriding-kivar-record-keywords).
 
 <a name="all-or-none"></a>
 

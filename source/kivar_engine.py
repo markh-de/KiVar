@@ -210,6 +210,8 @@ class PropGroup:
 class FieldID: # case-sensitive
     BASE   = 'Var'
     ASPECT = 'Aspect'
+    CustomVar_BASE   = 'KIVAR_KEYWORD_VAR'
+    CustomVar_ASPECT = 'KIVAR_KEYWORD_ASPECT'
 
 def base_prop_codes(): return PropCode.FIT + PropCode.BOM + PropCode.POS + PropCode.SOLDER + PropCode.MODEL
 
@@ -564,9 +566,17 @@ def field_name_check(field_name, available_fields):
         error = f"Target field '{field_name}' does not exist" # TODO escape field name
     return error
 
-def parse_rule_fields(fpdict_uuid_branch):
+def field_ids(board):
+    props = board.GetProperties()
+    fid_base = props[FieldID.CustomVar_BASE] if FieldID.CustomVar_BASE in props else FieldID.BASE
+    fid_aspect = props[FieldID.CustomVar_ASPECT] if FieldID.CustomVar_ASPECT in props else FieldID.ASPECT
+    return {FieldID.BASE: fid_base, FieldID.ASPECT: fid_aspect}
+
+def parse_rule_fields(fpdict_uuid_branch, field_ids):
     errors = []
     aspect = None
+    fid_base   = field_ids[FieldID.BASE]
+    fid_aspect = field_ids[FieldID.ASPECT]
     cmp_rule_string = None
     cmp_choice_sets = []
     fld_rule_strings = []
@@ -577,11 +587,11 @@ def parse_rule_fields(fpdict_uuid_branch):
         # an error message. we don't want to misinterpret user's fields.
         try: parts = split_raw_str(fp_field, '.', False)
         except: continue
-        if len(parts) == 2 and parts[0] == FieldID.BASE and parts[1] == FieldID.ASPECT:
+        if len(parts) == 2 and parts[0] == fid_base and parts[1] == fid_aspect:
             aspect = value
-        elif len(parts) == 1 and parts[0] == FieldID.BASE:
+        elif len(parts) == 1 and parts[0] == fid_base:
             cmp_rule_string = value
-        elif len(parts) > 1 and parts[-1] == FieldID.BASE:
+        elif len(parts) > 1 and parts[-1] == fid_base:
             target_field = '.'.join(parts[0:-1])
             field_name_error = field_name_check(target_field, fpdict_uuid_branch[Key.FIELDS])
             if field_name_error is not None:
@@ -592,7 +602,7 @@ def parse_rule_fields(fpdict_uuid_branch):
         else:
             try: prefix, name_list = split_parens(parts[-1])
             except: continue
-            if prefix == FieldID.BASE:
+            if prefix == fid_base:
                 try: parts_in_parens = split_raw_str(name_list, ' ', True)
                 except: continue
                 if len(parts_in_parens) > 1:
@@ -610,7 +620,7 @@ def parse_rule_fields(fpdict_uuid_branch):
                         fld_choice_sets.append([target_field, name_list, value])
     return errors, aspect, cmp_rule_string, cmp_choice_sets, fld_rule_strings, fld_choice_sets
 
-def build_vardict(fpdict):
+def build_vardict(fpdict, field_ids):
     vardict = {}
     errors = []
     fld_dict = {}
@@ -618,7 +628,7 @@ def build_vardict(fpdict):
     # Handle component rule
     for uuid in fpdict:
         ref = fpdict[uuid][Key.REF]
-        parse_errors, aspect, cmp_rule_string, cmp_choice_sets, fld_rule_strings, fld_choice_sets = parse_rule_fields(fpdict[uuid])
+        parse_errors, aspect, cmp_rule_string, cmp_choice_sets, fld_rule_strings, fld_choice_sets = parse_rule_fields(fpdict[uuid], field_ids)
         if parse_errors:
             for parse_error in parse_errors: errors.append([uuid, ref, f"{ref}: Field parser: {parse_error}."])
             continue
