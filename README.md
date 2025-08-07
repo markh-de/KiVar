@@ -467,7 +467,7 @@ Choice Argument List input | Resulting Property states  | Explanation
 `-!+b`                     |  _not_ Fit, Bom, _not_ Pos | Equivalent to prior example.  Multiple modifiers may appear inside a single specifier argument.
 `-s`                       |  _not_ Solder              | Remove solder paste from the component's footprint SMD pads.
 `-!s`                      |  _not_ Fit, Bom, _not_ Pos, _not_ Solder | Do not assemble component, and remove solder paste from its footprint.
-`+m1-m2`                   |  _not_ Model#1, Model#2    | Show first 3D model, hide second one.
+`+m1-m2`                   |  Model#1, _not_ Model#2    | Show first 3D model, hide second one.
 `-m1m2m3 +m4`              |  _not_ Model#1, _not_ Model#2, _not_ Model#3, Model#4 | Hide first three 3D models, show fourth one.
 
 #### Choice Identifiers
