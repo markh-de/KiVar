@@ -727,7 +727,7 @@ def build_vardict(fpdict, field_ids):
             fin_errors = finalize_vardict_branch(vardict[uuid][Key.FLD][field], all_choices[aspect])
             if fin_errors:
                 # TODO cook and quote names in error message, refine wording
-                for e in fin_errors: errors.append([uuid, ref, f"{ref}: In field record of aspect {aspect} for target field '{field}': {e}."])
+                for e in fin_errors: errors.append([uuid, ref, f"{ref}: In field record for aspect {aspect} for target field '{field}': {e}."])
                 continue
     # Check that all solder paste margin values match one of the two allowed ranges (only if the corresponding property is used, else the current value is ignored)
     for uuid in vardict:
