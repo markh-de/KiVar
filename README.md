@@ -462,7 +462,7 @@ Choice Argument List input | Resulting Property states  | Explanation
 `-f`                       |  _not_ Fit                 | The `-` causes _false_ to be assigned to the subsequent properties, i.e. _Fitted_.  The footprint's attribute _Do not populate_ will be set to _true_.
 `-fbp`                     |  _not_ Fit, _not_ Bom, _not_ Pos | One modifier (`-`) can be used for any number of subsequent identifiers.
 `-!`                       |  _not_ Fit, _not_ Bom, _not_ Pos | Equivalent to prior example.
-`+!`                       |  Fit, Bom, Pos             | Place this component to the board, include it in the BoM and in position files.
+`+!`                       |  Fit, Bom, Pos             | Place this component on the board, include it in the BoM and in position files.
 `-! +b`                    |  _not_ Fit, Bom, _not_ Pos | After setting `f`, `b`, `p` to false, `b` is set to true again.  Useful if you want your BoM to include unfitted parts, that are otherwise marked "DNP".
 `-!+b`                     |  _not_ Fit, Bom, _not_ Pos | Equivalent to prior example.  Multiple modifiers may appear inside a single specifier argument.
 `-s`                       |  _not_ Solder              | Remove solder paste from the component's footprint SMD pads.
@@ -541,7 +541,7 @@ The following table explains Content inheritance rules using an example Choice I
 Default Choice (`*`) Content | Specific Choice (`A`) Content | Resulting Specific Choice (`A`) Content
 ---------------------------- | ----------------------------- | ---------------------------------------
 _(none)_                     | _(none)_                      | _(none)_
-_(none)_                     | `123`                         | `def`
+_(none)_                     | `123`                         | `123`
 `abc`                        | _(none)_                      | `abc`
 `abc`                        | `123`                         | `123`
 
