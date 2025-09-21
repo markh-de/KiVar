@@ -270,7 +270,7 @@ def mismatches_fp_choice_fld(fp_fields, vardict_fld_branch, choice):
     for field in vardict_fld_branch:
         choice_field_value = vardict_fld_branch[field][choice][Key.VALUE]
         if choice_field_value is not None and choice_field_value != fp_fields[field]:
-            mismatches.append(f"field '{field}' for choice '{choice}'")
+            mismatches.append(f"field '{escape_str(field)}' for choice '{escape_str(choice)}'")
     return mismatches
 
 def detect_current_choices(fpdict, vardict):
@@ -455,19 +455,19 @@ def add_choice(vardict, uuid, raw_choice_name, raw_choice_def, field=None):
             if vardict_branch[choice][Key.VALUE] is None:
                 vardict_branch[choice][Key.VALUE] = value
             else:
-                errors.append(f"Illegal additional content '{value}' assignment for choice '{choice}'")
+                errors.append(f"Illegal extra content '{escape_str(value)}' assignment for choice '{escape_str(choice)}'")
         for prop_code in prop_set:
             if not prop_code in vardict_branch[choice][Key.PROPS]:
                 vardict_branch[choice][Key.PROPS][prop_code] = None
             if vardict_branch[choice][Key.PROPS][prop_code] is None:
                 vardict_branch[choice][Key.PROPS][prop_code] = prop_set[prop_code]
             else:
-                errors.append(f"Illegal additional '{prop_abbrev(prop_code)}' property assignment for choice '{choice}'")
+                errors.append(f"Illegal extra '{prop_abbrev(prop_code)}' property assignment for choice '{escape_str(choice)}'")
     return errors
 
 def _finalize_vardict_branch_list_str_format(all_choices:list[str], defined_choices:list[str]):
-    defined_choices_str = ', '.join((f'"{c}"' for c in defined_choices))
-    undefined_choices_str = ', '.join((f'"{c}"' for c in all_choices if c not in defined_choices))
+    defined_choices_str = ', '.join((f"'{escape_str(c)}'" for c in defined_choices))
+    undefined_choices_str = ', '.join((f"'{escape_str(c)}'" for c in all_choices if c not in defined_choices))
     return defined_choices_str, undefined_choices_str
 
 def finalize_vardict_branch(vardict_branch, all_aspect_choices, fp_props=None):
@@ -566,9 +566,9 @@ def parse_rule_str(rule_str):
 def field_name_check(field_name, available_fields):
     error = None
     if not field_accepted(field_name):
-        error = f"Target field '{field_name}' is forbidden" # TODO escape field name
+        error = f"Target field '{escape_str(field_name)}' is forbidden"
     elif not field_name in available_fields:
-        error = f"Target field '{field_name}' does not exist" # TODO escape field name
+        error = f"Target field '{escape_str(field_name)}' does not exist"
     return error
 
 def field_ids(board):
@@ -668,7 +668,7 @@ def build_vardict(fpdict, field_ids):
         for choice_name, choice_content in choice_sets:
             add_errors = add_choice(vardict, uuid, choice_name, choice_content)
             if add_errors:
-                for error in add_errors: errors.append([uuid, ref, f"{ref}: When adding aspect '{aspect}' choice list '{choice_name}' in component record: {error}."])
+                for error in add_errors: errors.append([uuid, ref, f"{ref}: When adding aspect '{escape_str(aspect)}' choice list '{escape_str(choice_name)}' in component record: {error}."])
                 break
     # Handle field scope
     for uuid in fld_dict:
@@ -683,18 +683,18 @@ def build_vardict(fpdict, field_ids):
             if rule_str is None or rule_str == '': continue
             parse_errors, aspects, choice_sets = parse_rule_str(rule_str)
             if parse_errors:
-                for parse_error in parse_errors: errors.append([uuid, ref, f"{ref}: Combined field record parser for target field '{field}': {parse_error}."])
+                for parse_error in parse_errors: errors.append([uuid, ref, f"{ref}: Combined field record parser for target field '{escape_str(field)}': {parse_error}."])
                 continue
             if aspects:
-                errors.append([uuid, ref, f"{ref}: Combined field record for target field '{field}' contains what looks like an aspect identifier (only allowed in combined component-scope records)."])
+                errors.append([uuid, ref, f"{ref}: Combined field record for target field '{escape_str(field)}' contains what looks like an aspect identifier (only allowed in combined component-scope records)."])
                 continue
             if field in vardict[uuid][Key.FLD]:
-                errors.append([uuid, ref, f"{ref}: Multiple assignments for target field '{field}'."])
+                errors.append([uuid, ref, f"{ref}: Multiple assignments for target field '{escape_str(field)}'."])
                 continue
             for choice_name, choice_content in choice_sets:
                 add_errors = add_choice(vardict, uuid, choice_name, choice_content, field)
                 if add_errors:
-                    for error in add_errors: errors.append([uuid, ref, f"{ref}: Combined field record for aspect '{aspect}' choice list '{choice_name}' with target field '{field}': {error}."])
+                    for error in add_errors: errors.append([uuid, ref, f"{ref}: Combined field record for aspect '{escape_str(aspect)}' choice list '{escape_str(choice_name)}' with target field '{escape_str(field)}': {error}."])
                     break
         else:
             valid = True
@@ -706,7 +706,7 @@ def build_vardict(fpdict, field_ids):
         for field, choice_name, choice_content in fld_choice_sets:
             add_errors = add_choice(vardict, uuid, choice_name, choice_content, field)
             if add_errors:
-                for error in add_errors: errors.append([uuid, ref, f"{ref}: Simple field record for aspect '{aspect}' choice list '{choice_name}' with target field '{field}': {error}."])
+                for error in add_errors: errors.append([uuid, ref, f"{ref}: Simple field record for aspect '{escape_str(aspect)}' choice list '{escape_str(choice_name)}' with target field '{escape_str(field)}': {error}."])
                 break
         else:
             valid = True
@@ -720,14 +720,12 @@ def build_vardict(fpdict, field_ids):
         aspect = vardict[uuid][Key.ASPECT]
         fin_errors = finalize_vardict_branch(vardict[uuid][Key.CMP], all_choices[aspect], fpdict[uuid][Key.PROPS])
         if fin_errors:
-            # TODO cook and quote names in error message, refine wording
-            for e in fin_errors: errors.append([uuid, ref, f"{ref}: In component record for aspect {aspect}: {e}."])
+            for e in fin_errors: errors.append([uuid, ref, f"{ref}: In component record for aspect '{escape_str(aspect)}': {e}."])
             continue
         for field in vardict[uuid][Key.FLD]:
             fin_errors = finalize_vardict_branch(vardict[uuid][Key.FLD][field], all_choices[aspect])
             if fin_errors:
-                # TODO cook and quote names in error message, refine wording
-                for e in fin_errors: errors.append([uuid, ref, f"{ref}: In field record for aspect {aspect} for target field '{field}': {e}."])
+                for e in fin_errors: errors.append([uuid, ref, f"{ref}: In field record for aspect '{escape_str(aspect)}', target field '{escape_str(field)}': {e}."])
                 continue
     # Check that all solder paste margin values match one of the two allowed ranges (only if the corresponding property is used, else the current value is ignored)
     for uuid in vardict:
