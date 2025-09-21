@@ -465,6 +465,11 @@ def add_choice(vardict, uuid, raw_choice_name, raw_choice_def, field=None):
                 errors.append(f"Illegal additional '{prop_abbrev(prop_code)}' property assignment for choice '{choice}'")
     return errors
 
+def _finalize_vardict_branch_list_str_format(all_choices:list[str], defined_choices:list[str]):
+    defined_choices_str = ', '.join((f'"{c}"' for c in defined_choices))
+    undefined_choices_str = ', '.join((f'"{c}"' for c in all_choices if c not in defined_choices))
+    return defined_choices_str, undefined_choices_str
+
 def finalize_vardict_branch(vardict_branch, all_aspect_choices, fp_props=None):
     """
     Finalizes (flattens) a branch of the vardict (either component or field scope).
@@ -472,10 +477,8 @@ def finalize_vardict_branch(vardict_branch, all_aspect_choices, fp_props=None):
     """
     errors = []
     # Flatten values
-    # TODO instead of counting, append (quoted) name of choice to two lists,
-    #      then print their content (joined with comma) in the error messages!
     # check for mixed defined and undefined content
-    choices_with_value_defined = 0
+    choices_with_value_defined = []
     for choice in all_aspect_choices:
         if not choice in vardict_branch:
             vardict_branch[choice] = {}
@@ -489,9 +492,10 @@ def finalize_vardict_branch(vardict_branch, all_aspect_choices, fp_props=None):
             if vardict_branch[choice][Key.VALUE] is None:
                 vardict_branch[choice][Key.VALUE] = vardict_branch[Key.DEFAULT][Key.VALUE]
         if vardict_branch[choice][Key.VALUE] is not None:
-            choices_with_value_defined += 1
-    if not (choices_with_value_defined == 0 or choices_with_value_defined == len(all_aspect_choices)):
-        errors.append(f"Mixed choices with defined ({choices_with_value_defined}x) and undefined ({len(all_aspect_choices) - choices_with_value_defined}x) content (either all or none must be defined)")
+            choices_with_value_defined.append(choice)
+    if choices_with_value_defined and len(choices_with_value_defined) != len(all_aspect_choices):
+        choices_with_value_defined_str, choices_with_value_undefined_str = _finalize_vardict_branch_list_str_format(all_aspect_choices, choices_with_value_defined)
+        errors.append(f"Mixed choices with defined ({choices_with_value_defined_str}) and undefined ({choices_with_value_undefined_str}) content (either all or none must be defined)")
     if fp_props is not None:
         # Flatten properties
         for prop_code in fp_props:
@@ -511,14 +515,15 @@ def finalize_vardict_branch(vardict_branch, all_aspect_choices, fp_props=None):
                 if   choices_with_false and not choices_with_true: default_prop_value = True
                 elif not choices_with_false and choices_with_true: default_prop_value = False
             # check for mixed defined and undefined properties
-            choices_with_prop_defined = 0
+            choices_with_prop_defined = []
             for choice in all_aspect_choices:
                 if not prop_code in vardict_branch[choice][Key.PROPS] or vardict_branch[choice][Key.PROPS][prop_code] is None:
                     vardict_branch[choice][Key.PROPS][prop_code] = default_prop_value
                 if vardict_branch[choice][Key.PROPS][prop_code] is not None:
-                    choices_with_prop_defined += 1
-            if not (choices_with_prop_defined == 0 or choices_with_prop_defined == len(all_aspect_choices)):
-                errors.append(f"Mixed choices with defined ({choices_with_prop_defined}x) and undefined ({len(all_aspect_choices) - choices_with_prop_defined}x) {prop_abbrev(prop_code)} property ('{prop_code}') state (either all or none must be defined)")
+                    choices_with_prop_defined.append(choice)
+            if choices_with_prop_defined and len(choices_with_prop_defined) != len(all_aspect_choices):
+                choices_with_prop_defined_str, choices_with_prop_undefined_str = _finalize_vardict_branch_list_str_format(all_aspect_choices, choices_with_prop_defined)
+                errors.append(f"Mixed choices with defined ({choices_with_prop_defined_str}) and undefined ({choices_with_prop_undefined_str}) {prop_abbrev(prop_code)} property ('{prop_code}') state (either all or none must be defined)")
     # Remove default choice entries from branch
     vardict_branch.pop(Key.DEFAULT, None)
     vardict_branch.pop(Key.STANDIN, None)
@@ -716,13 +721,13 @@ def build_vardict(fpdict, field_ids):
         fin_errors = finalize_vardict_branch(vardict[uuid][Key.CMP], all_choices[aspect], fpdict[uuid][Key.PROPS])
         if fin_errors:
             # TODO cook and quote names in error message, refine wording
-            for e in fin_errors: errors.append([uuid, ref, f"{ref}: In component record: {e}."])
+            for e in fin_errors: errors.append([uuid, ref, f"{ref}: In component record for aspect {aspect}: {e}."])
             continue
         for field in vardict[uuid][Key.FLD]:
             fin_errors = finalize_vardict_branch(vardict[uuid][Key.FLD][field], all_choices[aspect])
             if fin_errors:
                 # TODO cook and quote names in error message, refine wording
-                for e in fin_errors: errors.append([uuid, ref, f"{ref}: In field record for target field '{field}': {e}."])
+                for e in fin_errors: errors.append([uuid, ref, f"{ref}: In field record for aspect {aspect} for target field '{field}': {e}."])
                 continue
     # Check that all solder paste margin values match one of the two allowed ranges (only if the corresponding property is used, else the current value is ignored)
     for uuid in vardict:
