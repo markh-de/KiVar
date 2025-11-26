@@ -52,13 +52,12 @@ jobs:
           print("pcbnew version:", version)
           PY
 
-      - name: List KiCad app directory tree
-        run: |
-          KICAD_APP="/Applications/KiCad/KiCad.app"
-          echo "Listing all files under $KICAD_APP"
-          ls -lR "$KICAD_APP"
-
-      - name: Test KiVar executable directly
+      - name: Test KiVar executable
         run: |
           KICAD_BIN_DIR=$(dirname "${{ steps.kicad.outputs.PY }}")
           "${KICAD_BIN_DIR}/kivar" --version
+
+      - name: Test KiVar with demo project
+        run: |
+          KICAD_BIN_DIR=$(dirname "${{ steps.kicad.outputs.PY }}")
+          "${KICAD_BIN_DIR}/kivar" list demo/kivar-demo.kicad_pcb
