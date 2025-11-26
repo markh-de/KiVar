@@ -2,6 +2,12 @@ name: Test KiVar on macOS
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - doc-fix-cli-install-guide
+  pull_request:
+    branches:
+      - main
 
 jobs:
   test:
