@@ -1,0 +1,53 @@
+name: Test KiVar on macOS
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: macos-latest
+    timeout-minutes: 360
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install KiCad
+        run: |
+          brew update
+          brew install --cask kicad
+
+      - name: Detect KiCad Python
+        id: kicad
+        run: |
+          app="/Applications/KiCad/KiCad.app"
+          py="$app/Contents/Frameworks/Python.framework/Versions/Current/bin/python3"
+          site="$app/Contents/Frameworks/python/site-packages"
+          echo "PY=$py" >> $GITHUB_OUTPUT
+          echo "SITE=$site" >> $GITHUB_OUTPUT
+
+      - name: Upgrade pip
+        run: |
+          "${{ steps.kicad.outputs.PY }}" -m pip install --upgrade pip
+
+      - name: Install KiVar
+        run: |
+          "${{ steps.kicad.outputs.PY }}" -m pip install kivar
+
+      - name: Test pcbnew import
+        run: |
+          "${{ steps.kicad.outputs.PY }}" - <<'PY'
+import sys
+sys.path.insert(0, "${{ steps.kicad.outputs.SITE }}")
+import pcbnew
+print("pcbnew OK")
+PY
+
+      - name: Test KiVar
+        run: |
+          "${{ steps.kicad.outputs.PY }}" - <<'PY'
+import sys
+sys.path.insert(0, "${{ steps.kicad.outputs.SITE }}")
+from kivar.__main__ import main
+main(["--version"])
+PY
