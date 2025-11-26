@@ -61,3 +61,7 @@ jobs:
         run: |
           KICAD_BIN_DIR=$(dirname "${{ steps.kicad.outputs.PY }}")
           "${KICAD_BIN_DIR}/kivar" list demo/kivar-demo.kicad_pcb
+
+      - name: Test KiVar with demo project, alternative syntax
+        run: |
+          "$(dirname "${{ steps.kicad.outputs.PY }}")/kivar" list demo/kivar-demo.kicad_pcb
