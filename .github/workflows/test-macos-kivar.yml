@@ -28,9 +28,7 @@ jobs:
         run: |
           app="/Applications/KiCad/KiCad.app"
           py="$app/Contents/Frameworks/Python.framework/Versions/Current/bin/python3"
-          site="$app/Contents/Frameworks/python/site-packages"
           echo "PY=$py" >> $GITHUB_OUTPUT
-          echo "SITE=$site" >> $GITHUB_OUTPUT
 
       - name: Upgrade pip
         run: |
@@ -40,20 +38,25 @@ jobs:
         run: |
           "${{ steps.kicad.outputs.PY }}" -m pip install kivar
 
-      - name: Test pcbnew import
+      - name: Show pcbnew version
         run: |
           "${{ steps.kicad.outputs.PY }}" - << 'PY'
-          import sys
-          sys.path.insert(0, "${{ steps.kicad.outputs.SITE }}")
           import pcbnew
-          print("pcbnew OK")
+          version = None
+          if hasattr(pcbnew, 'GetBuildVersion'):
+              version = pcbnew.GetBuildVersion()
+          elif hasattr(pcbnew, '__version__'):
+              version = pcbnew.__version__
+          else:
+              version = 'unknown-version'
+          print("pcbnew version:", version)
           PY
 
-      - name: Test KiVar
+      - name: Test KiVar via KiCad Python
         run: |
-          "${{ steps.kicad.outputs.PY }}" - << 'PY'
-          import sys
-          sys.path.insert(0, "${{ steps.kicad.outputs.SITE }}")
-          from kivar.__main__ import main
-          main(["--version"])
-          PY
+          "${{ steps.kicad.outputs.PY }}" -m kivar --version
+
+      - name: Test KiVar executable directly
+        run: |
+          KICAD_BIN_DIR=$(dirname "${{ steps.kicad.outputs.PY }}")
+          "${KICAD_BIN_DIR}/kivar" --version
