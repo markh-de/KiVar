@@ -36,18 +36,18 @@ jobs:
 
       - name: Test pcbnew import
         run: |
-          "${{ steps.kicad.outputs.PY }}" - <<'PY'
-import sys
-sys.path.insert(0, "${{ steps.kicad.outputs.SITE }}")
-import pcbnew
-print("pcbnew OK")
-PY
+          "${{ steps.kicad.outputs.PY }}" - << 'PY'
+          import sys
+          sys.path.insert(0, "${{ steps.kicad.outputs.SITE }}")
+          import pcbnew
+          print("pcbnew OK")
+          PY
 
       - name: Test KiVar
         run: |
-          "${{ steps.kicad.outputs.PY }}" - <<'PY'
-import sys
-sys.path.insert(0, "${{ steps.kicad.outputs.SITE }}")
-from kivar.__main__ import main
-main(["--version"])
-PY
+          "${{ steps.kicad.outputs.PY }}" - << 'PY'
+          import sys
+          sys.path.insert(0, "${{ steps.kicad.outputs.SITE }}")
+          from kivar.__main__ import main
+          main(["--version"])
+          PY
