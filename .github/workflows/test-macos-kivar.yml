@@ -54,6 +54,13 @@ jobs:
           echo "Listing all files under $DIRNAME"
           ls -lR "$DIRNAME"
 
+      - name: List Python base and site
+        run: |
+          echo "user-base"
+          "${{ steps.kicad.outputs.PY }}" -m site --user-base
+          echo "user-site"
+          "${{ steps.kicad.outputs.PY }}" -m site --user-site
+
       - name: Show pcbnew version
         run: |
           "${{ steps.kicad.outputs.PY }}" - << 'PY'
@@ -78,4 +85,4 @@ jobs:
 
       - name: Test KiVar with demo project, using tilde path
         run: |
-          "~/Library/Python/3.9/bin/kivar" list -s demo/kivar-demo.kicad_pcb
+          "$HOME/Library/Python/3.9/bin/kivar" list -s demo/kivar-demo.kicad_pcb
