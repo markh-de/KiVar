@@ -34,9 +34,15 @@ jobs:
         run: |
           "${{ steps.kicad.outputs.PY }}" -m pip install --upgrade pip
 
-      - name: Install KiVar
+      - name: Install KiVar with user option
         run: |
-          "${{ steps.kicad.outputs.PY }}" -m pip install kivar
+          "${{ steps.kicad.outputs.PY }}" -m pip install --user kivar
+
+      - name: List KiCad app directory tree
+        run: |
+          KICAD_APP="/Applications/KiCad/KiCad.app"
+          echo "Listing all files under $KICAD_APP"
+          ls -lR "$KICAD_APP"
 
       - name: Show pcbnew version
         run: |
