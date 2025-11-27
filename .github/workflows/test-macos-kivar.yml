@@ -30,6 +30,10 @@ jobs:
           py="$app/Contents/Frameworks/Python.framework/Versions/Current/bin/python3"
           echo "PY=$py" >> $GITHUB_OUTPUT
 
+      - name: Detect KiCad Python version
+        run: |
+          "${{ steps.kicad.outputs.PY }}" --version
+
       - name: Upgrade pip
         run: |
           "${{ steps.kicad.outputs.PY }}" -m pip install --upgrade pip
@@ -43,6 +47,12 @@ jobs:
           KICAD_APP="/Applications/KiCad/KiCad.app"
           echo "Listing all files under $KICAD_APP"
           ls -lR "$KICAD_APP"
+
+      - name: List Python user modules tree
+        run: |
+          DIRNAME="/Users/runner/Library/Python/3.9/bin"
+          echo "Listing all files under $DIRNAME"
+          ls -lR "$DIRNAME"
 
       - name: Show pcbnew version
         run: |
@@ -60,14 +70,12 @@ jobs:
 
       - name: Test KiVar executable
         run: |
-          KICAD_BIN_DIR=$(dirname "${{ steps.kicad.outputs.PY }}")
-          "${KICAD_BIN_DIR}/kivar" --version
+          "/Users/runner/Library/Python/3.9/bin/kivar" --version
 
       - name: Test KiVar with demo project
         run: |
-          KICAD_BIN_DIR=$(dirname "${{ steps.kicad.outputs.PY }}")
-          "${KICAD_BIN_DIR}/kivar" list demo/kivar-demo.kicad_pcb
+          "/Users/runner/Library/Python/3.9/bin/kivar" list -s demo/kivar-demo.kicad_pcb
 
-      - name: Test KiVar with demo project, alternative syntax
+      - name: Test KiVar with demo project, using tilde path
         run: |
-          "$(dirname "${{ steps.kicad.outputs.PY }}")/kivar" list demo/kivar-demo.kicad_pcb
+          "~/Library/Python/3.9/bin/kivar" list -s demo/kivar-demo.kicad_pcb
