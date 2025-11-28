@@ -130,7 +130,7 @@ KiVar currently (still) uses the SWIG-based Python bindings of pcbnew (KiCad PCB
 
 ### KiVar Plugin
 
-The recommended plugin installation method is to use KiCad's integrated **Plugin and Content Manager**.  KiVar is included in the **official PCM repository**, allowing a smooth and safe installation and update experience.  For manual installation users can also choose to download the plugin archive package.
+The recommended plugin installation method is to use KiCad's integrated **Plugin and Content Manager**.  KiVar is included in the **official PCM repository**, allowing a smooth and safe installation and update experience.
 
 Required steps:
 
@@ -141,34 +141,87 @@ Required steps:
 
 ### KiVar Command Line Application
 
-> [!IMPORTANT]
-> The KiVar CLI application requires access to the KiCad **pcbnew** Python module.  
-> On _Linux_ systems, KiCad provides this module system-wide, so all Python applications with access to system packages can use it (see installation note below).  
-> On _Windows_ and _macOS_, KiCad provides its own Python distribution.  In the following installation instructions, users must therefore replace `python` by the appropriate KiCad Python executable, for example `C:\Program Files\KiCad\9.0\bin\python.exe` on Windows.
+To install the latest KiVar CLI app directly from the official **KiVar PyPI repository**, follow the instructions below depending on your operating system.
 
-#### Installation From PyPI Repository
+#### Installation on Linux
 
-To install (or upgrade to) the latest KiVar CLI app directly from the official KiVar PyPI repository, open a shell (see note above) and run:
+For conveniently installing the KiVar CLI app inside a dedicated Virtual Environment, it is recommended to use `pipx`.  Install it, if required, depending on your type of Linux distribution.  With `pipx` in place, open a shell and run:
 
 ```
-python -m pip install --upgrade kivar
+pipx install --system-site-packages kivar
+```
+
+This will install the KiVar CLI app in a location available in your search path.  The name of the executable is `kivar`.
+
+To check that the installation was successful and that the correct `pcbnew` module version is used, run:
+
+```
+kivar --version
+```
+
+#### Installation on Windows
+
+On _Windows_ systems, KiCad ships with a Python distribution included.  It is important to **use the KiCad-provided Python interpreter** for installing the KiVar CLI app.
+
+To install the `kivar` executable, open a `cmd.exe` shell and run:
+
+```
+"%ProgramFiles%\KiCad\9.0\bin\python.exe" -m pip install --user kivar
 ```
 
 > [!NOTE]
-> On newer _Linux_ Python installations, users might consider adding the `--break-system-packages` option for the app to be able to access KiCad's system-wide installed `pcbnew` module.
+> The above command assumes that KiCad version 9.0 is used.  Please adapt the version part (`9.0`) of the command, if required.
 
-#### Installation Using a Release Archive
-
-The KiVar CLI app can also be installed using a downloaded or locally created Python Package.
-
-Use the following command (replace `${VERSION}` by the actual package version):
+If you don't happen to have the app installation directory already listed in your `PATH` variable, then `pip` will print a warning including the actual installation directory:
 
 ```
-python -m pip install kivar-${VERSION}.tar.gz
+WARNING: The script kivar.exe is installed in '...' which is not on PATH.
+```
+
+This message includes the location of the directory in which the `kivar` executable is installed.
+
+You will need to call `kivar` from this exact location.  If desired, you can add the installation directory to your `PATH` variable (as suggested by `pip`), or use any other preferred method of making the executable callable from any working directory.
+
+To check that the installation was successful and that the correct `pcbnew` module version is used, run:
+
+```
+"%USERPROFILE%\Documents\KiCad\9.0\3rdparty\Python311\Scripts\kivar" --version
 ```
 
 > [!NOTE]
-> Same note about the `--break-system-packages` option applies (see above).
+> The path used in the above command may differ on your system.  If in doubt, use the directory printed in the `pip` installation warning.  If no such warning appeared, you might be able to simply use `kivar --version` (without path specifier).
+
+#### Installation on macOS
+
+On _macOS_ systems, KiCad ships with a Python distribution included.  It is important to **use the KiCad-provided Python interpreter** for installing the KiVar CLI app.
+
+To install the `kivar` executable, open a shell and run:
+
+```
+"/Applications/KiCad/KiCad.app/Contents/Frameworks/Python.framework/Versions/Current/bin/python3" -m pip install --user kivar
+```
+
+If you don't happen to have the app installation directory already listed in your `PATH` variable, then `pip` will print a warning including the actual installation directory:
+
+```
+WARNING: The script kivar is installed in '...' which is not on PATH.
+```
+
+To be able to call `kivar` from _any_ working directory without using the executable's full path, run the following commands to create a symlink in your `~/.local/bin` directory (which should be part of `PATH`).  The actual Python version part (`3.9` here) may vary, depending on the KiCad-included Python version.
+
+```
+mkdir -p "$HOME/.local/bin"
+ln -s "$HOME/Library/Python/3.9/bin/kivar" "$HOME/.local/bin/kivar"
+```
+
+> [!NOTE]
+> The path used in the above command may differ on your system.  If in doubt, use the directory printed in the `pip` installation warning.
+
+To check that the installation was successful and that the correct `pcbnew` module version is used, run:
+
+```
+kivar --version
+```
 
 ## Usage
 
