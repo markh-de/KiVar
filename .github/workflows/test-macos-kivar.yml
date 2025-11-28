@@ -61,6 +61,10 @@ jobs:
           echo "user-site"
           "${{ steps.kicad.outputs.PY }}" -m site --user-site
 
+      - name: Show PATH
+        run: |
+          echo "Current PATH: $PATH"
+
       - name: Show pcbnew version
         run: |
           "${{ steps.kicad.outputs.PY }}" - << 'PY'
@@ -83,6 +87,14 @@ jobs:
         run: |
           "/Users/runner/Library/Python/3.9/bin/kivar" list -s demo/kivar-demo.kicad_pcb
 
-      - name: Test KiVar with demo project, using tilde path
+      - name: Test KiVar with demo project, using home path
         run: |
           "$HOME/Library/Python/3.9/bin/kivar" list -s demo/kivar-demo.kicad_pcb
+
+      - name: Create a symlink to KiVar inside home
+        run: |
+          ln -s "$HOME/Library/Python/3.9/bin/kivar" "$HOME/.local/bin/kivar"
+
+      - name: Run KiVar using symlink
+        run: |
+          kivar list -s demo/kivar-demo.kicad_pcb
