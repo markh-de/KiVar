@@ -161,7 +161,7 @@ kivar --version
 
 #### Installation on Windows
 
-On _Windows_ systems, KiCad ships with a Python distribution included.  It is important to **use the KiCad-provided Python interpreter** for installing the KiVar CLI app.
+On Windows systems, KiCad ships with its own Python distribution included.  It is important to **use the KiCad-provided Python interpreter** for installing the KiVar CLI app.
 
 To install the `kivar` executable, open a `cmd.exe` shell and run:
 
@@ -193,7 +193,7 @@ To check that the installation was successful and that the correct `pcbnew` modu
 
 #### Installation on macOS
 
-On _macOS_ systems, KiCad ships with a Python distribution included.  It is important to **use the KiCad-provided Python interpreter** for installing the KiVar CLI app.
+On macOS systems, KiCad ships with its own Python distribution included.  It is important to **use the KiCad-provided Python interpreter** for installing the KiVar CLI app.
 
 To install the `kivar` executable, open a shell and run:
 
