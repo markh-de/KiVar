@@ -226,7 +226,7 @@ kivar --version
 ## Usage
 
 > [!TIP]
-> This manual may seem very formal and complicated, especially to new users.  To get a first impression how KiVar works, it is highly recommended to watch the live presentation ["**Managing PCB Assembly Variants with KiVar**"](https://youtu.be/SpXH380KWUA) and have a look at some **[usage examples](#usage-examples)** as well as the **[demo project](demo/)** (from which the some examples are taken).
+> This manual may seem very formal and complicated, especially to new users.  To get a first impression how KiVar works, it is highly recommended to watch the live presentation ["**Managing PCB Assembly Variants with KiVar**"](https://youtu.be/SpXH380KWUA) and have a look at the **[usage examples](#usage-examples)** as well as the **[demo project](demo/)** (from which the examples are taken).
 
 > [!IMPORTANT]
 > This manual refers to the **0.5.x** series of KiVar.  If you are still using an older version, please consider [updating](#installation) KiVar and [migrating](#migrate) your variation rules.
