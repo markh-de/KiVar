@@ -163,7 +163,7 @@ kivar --version
 
 On Windows systems, KiCad ships with its own Python distribution included.  It is important to **use the KiCad-provided Python interpreter** for installing the KiVar CLI app.
 
-To install the `kivar` executable, open a `cmd.exe` shell and run:
+To install the `kivar.exe` executable, open a `cmd.exe` shell and run:
 
 ```
 "%ProgramFiles%\KiCad\9.0\bin\python.exe" -m pip install --user kivar
@@ -178,9 +178,9 @@ If you don't happen to have the app installation directory already listed in you
 WARNING: The script kivar.exe is installed in '...' which is not on PATH.
 ```
 
-This message includes the location of the directory in which the `kivar` executable is installed.
+This message includes the location of the directory in which the `kivar.exe` executable is installed.
 
-You will need to call `kivar` from this exact location.  If desired, you can add the installation directory to your `PATH` variable (as suggested by `pip`), or use any other preferred method of making the executable callable from any working directory.
+You will need to run `kivar` from this exact location.  If desired, you can add the installation directory to your `PATH` variable (as suggested by `pip`), or use any other preferred method of making the executable callable from any working directory.
 
 To check that the installation was successful and that the correct `pcbnew` module version is used, run:
 
