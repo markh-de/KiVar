@@ -130,7 +130,7 @@ KiVar currently (still) uses the SWIG-based Python bindings of pcbnew (KiCad PCB
 
 ### KiVar Plugin
 
-The recommended plugin installation method is to use KiCad's integrated **Plugin and Content Manager**.  KiVar is included in the **official PCM repository**, allowing a smooth and safe installation and update experience.  For manual installation users can also choose to download the plugin archive package.
+The recommended plugin installation method is to use KiCad's integrated **Plugin and Content Manager**.  KiVar is included in the **official PCM repository**, allowing a smooth and safe installation and update experience.
 
 Required steps:
 
@@ -141,36 +141,92 @@ Required steps:
 
 ### KiVar Command Line Application
 
-> [!IMPORTANT]
-> The KiVar CLI application requires access to the KiCad **pcbnew** Python module.  
-> On _Linux_ systems, KiCad provides this module system-wide, so all Python applications with access to system packages can use it (see installation note below).  
-> On _Windows_ and _macOS_, KiCad provides its own Python distribution.  In the following installation instructions, users must therefore replace `python` by the appropriate KiCad Python executable, for example `C:\Program Files\KiCad\9.0\bin\python.exe` on Windows.
+To install the latest KiVar CLI app directly from the official **KiVar PyPI repository**, follow the instructions below depending on your operating system.
 
-#### Installation From PyPI Repository
+#### Installation on Linux
 
-To install (or upgrade to) the latest KiVar CLI app directly from the official KiVar PyPI repository, open a shell (see note above) and run:
+For conveniently installing the KiVar CLI app inside a dedicated Virtual Environment, it is recommended to use `pipx`.  Install it, if required, depending on your type of Linux distribution.  With `pipx` in place, open a shell and run:
 
 ```
-python -m pip install --upgrade kivar
+pipx install --system-site-packages kivar
+```
+
+This will install the KiVar CLI app in a location available in your search path.  The name of the executable is `kivar`.
+
+To check that the installation was successful and that the correct `pcbnew` module version is used, run:
+
+```
+kivar --version
+```
+
+#### Installation on Windows
+
+On Windows systems, KiCad ships with its own Python distribution included.  It is important to **use the KiCad-provided Python interpreter** for installing the KiVar CLI app.
+
+To install the `kivar.exe` executable, open a `cmd.exe` shell and run:
+
+```
+"%ProgramFiles%\KiCad\9.0\bin\python.exe" -m pip install --user kivar
 ```
 
 > [!NOTE]
-> On newer _Linux_ Python installations, users might consider adding the `--break-system-packages` option for the app to be able to access KiCad's system-wide installed `pcbnew` module.
+> The above command assumes that KiCad version 9.0 is used.  Please adapt the version part (`9.0`) of the command, if required.
 
-#### Installation Using a Release Archive
-
-The KiVar CLI app can also be installed using a downloaded or locally created Python Package.
-
-Use the following command (replace `${VERSION}` by the actual package version):
+If you don't happen to have the app installation directory already listed in your `PATH` variable, then `pip` will print a warning including the actual installation directory:
 
 ```
-python -m pip install kivar-${VERSION}.tar.gz
+WARNING: The script kivar.exe is installed in '...' which is not on PATH.
+```
+
+This message includes the location of the directory in which the `kivar.exe` executable is installed.
+
+You will need to run `kivar` from this exact location.  If desired, you can add the installation directory to your `PATH` variable (as suggested by `pip`), or use any other preferred method of making the executable callable from any working directory.
+
+To check that the installation was successful and that the correct `pcbnew` module version is used, run:
+
+```
+"%USERPROFILE%\Documents\KiCad\9.0\3rdparty\Python311\Scripts\kivar" --version
 ```
 
 > [!NOTE]
-> Same note about the `--break-system-packages` option applies (see above).
+> The path used in the above command may differ on your system.  If in doubt, use the directory printed in the `pip` installation warning.  If no such warning appeared, you might be able to simply use `kivar --version` (without path specifier).
+
+#### Installation on macOS
+
+On macOS systems, KiCad ships with its own Python distribution included.  It is important to **use the KiCad-provided Python interpreter** for installing the KiVar CLI app.
+
+To install the `kivar` executable, open a shell and run:
+
+```
+"/Applications/KiCad/KiCad.app/Contents/Frameworks/Python.framework/Versions/Current/bin/python3" -m pip install --user kivar
+```
+
+If you don't happen to have the app installation directory already listed in your `PATH` variable, then `pip` will print a warning including the actual installation directory:
+
+```
+WARNING: The script kivar is installed in '...' which is not on PATH.
+```
+
+To be able to call `kivar` from _any_ working directory without using the executable's full path, run the following commands to create a symlink in your `~/.local/bin` directory (which should be part of `PATH`).  The actual Python version part (`3.9` here) may vary, depending on the KiCad-included Python version.
+
+```
+mkdir -p "$HOME/.local/bin"
+ln -s "$HOME/Library/Python/3.9/bin/kivar" "$HOME/.local/bin/kivar"
+```
+
+> [!NOTE]
+> The path used in the above command may differ on your system.  If in doubt, use the directory printed in the `pip` installation warning.
+
+To check that the installation was successful and that the correct `pcbnew` module version is used, run:
+
+```
+kivar --version
+```
 
 ## Usage
+
+> [!TIP]
+> This manual may seem very formal and complicated, especially to new users.  To get a first impression how KiVar works, it is highly recommended to watch the live presentation ["**Managing PCB Assembly Variants with KiVar**"](https://youtu.be/SpXH380KWUA) and have a look at the **[usage examples](#usage-examples)** as well as the **[demo project](demo/)** (from which the examples are taken).
 
 > [!IMPORTANT]
 > This manual refers to the **0.5.x** series of KiVar.  If you are still using an older version, please consider [updating](#installation) KiVar and [migrating](#migrate) your variation rules.
@@ -188,14 +244,7 @@ The following sections describe the process of configuring your schematic or boa
 While it is recommended to define variation rules in the schematic (i.e. in symbol fields) and propagate them to the board, it is also possible to define those rules directly in the board (i.e. in footprint fields) and propagate them back to the schematic.  Either way, in order for KiVar to utilize the variation rules, they must be present in the footprint fields, as KiVar uses the _pcbnew_ API wrapper and can therefore only operate on the board (not schematic) data, which must then be [propagated back to the schematic](#updating-the-schematic).
 
 > [!TIP]
-> Before diving into the more or less formal specification of KiVar variation rules, you might want to have a look at some [usage examples](#usage-examples) or the [demo project](demo/) (from which the examples are taken) for a start.  These will give you a first impression of how KiVar rules work.
-
-> [!TIP]
-> If you are already experienced with writing variation rules for older KiVar versions (especially 0.1.x), it is highly recommended to read the [KiVar Migration Guide](#migrate), which covers the most important changes introduced with newer KiVar releases.
-
-> [!TIP]
-> The keywords used in component fields for identifying variation rules and aspect identifiers (`Var` and `Aspect` by default) can be customized.  
-> See [Overriding KiVar Record Keywords](#overriding-kivar-record-keywords) for details on how to use project text variables to change these keywords.
+> If you are already experienced with writing variation rules for **older KiVar versions**, it is highly recommended to read the **[KiVar Migration Guide](#migrate)**, which covers the most important changes introduced with newer KiVar releases.
 
 #### Definition of Terms
 
@@ -1440,6 +1489,6 @@ The author of KiVar would like to thank the following people in particular:
 
 **Honza Hladík** for his motivating very first feedback, feature inspiration and issue reports.
 
-**Seth Hillbrand** for responding to my first release announcement by inviting me to give a talk at KiCon Europe 2024.
+**Seth Hillbrand** for inviting me to give a talk at KiCon Europe 2024, in response to my first [release announcement](https://forum.kicad.info/t/introducing-kivar-pcb-assembly-variants-for-kicad/51467).
 
-**Leonard Bargenda** for recurring pre-release testing sessions on macOS.
+**Leonard Bargenda** for our v0.5.0 pre-release macOS testing sessions.
