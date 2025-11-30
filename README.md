@@ -225,6 +225,9 @@ kivar --version
 
 ## Usage
 
+> [!TIP]
+> This manual may seem very formal and complicated, especially to new users.  To get a first impression how KiVar works, it is highly recommended to watch the live presentation ["**Managing PCB Assembly Variants with KiVar**"](https://youtu.be/SpXH380KWUA) and have a look at some **[usage examples](#usage-examples)** as well as the **[demo project](demo/)** (from which the some examples are taken).
+
 > [!IMPORTANT]
 > This manual refers to the **0.5.x** series of KiVar.  If you are still using an older version, please consider [updating](#installation) KiVar and [migrating](#migrate) your variation rules.
 
@@ -241,14 +244,7 @@ The following sections describe the process of configuring your schematic or boa
 While it is recommended to define variation rules in the schematic (i.e. in symbol fields) and propagate them to the board, it is also possible to define those rules directly in the board (i.e. in footprint fields) and propagate them back to the schematic.  Either way, in order for KiVar to utilize the variation rules, they must be present in the footprint fields, as KiVar uses the _pcbnew_ API wrapper and can therefore only operate on the board (not schematic) data, which must then be [propagated back to the schematic](#updating-the-schematic).
 
 > [!TIP]
-> Before diving into the more or less formal specification of KiVar variation rules, you might want to have a look at some [usage examples](#usage-examples) or the [demo project](demo/) (from which the examples are taken) for a start.  These will give you a first impression of how KiVar rules work.
-
-> [!TIP]
-> If you are already experienced with writing variation rules for older KiVar versions (especially 0.1.x), it is highly recommended to read the [KiVar Migration Guide](#migrate), which covers the most important changes introduced with newer KiVar releases.
-
-> [!TIP]
-> The keywords used in component fields for identifying variation rules and aspect identifiers (`Var` and `Aspect` by default) can be customized.  
-> See [Overriding KiVar Record Keywords](#overriding-kivar-record-keywords) for details on how to use project text variables to change these keywords.
+> If you are already experienced with writing variation rules for **older KiVar versions**, it is highly recommended to read the **[KiVar Migration Guide](#migrate)**, which covers the most important changes introduced with newer KiVar releases.
 
 #### Definition of Terms
 
@@ -1493,6 +1489,6 @@ The author of KiVar would like to thank the following people in particular:
 
 **Honza Hladík** for his motivating very first feedback, feature inspiration and issue reports.
 
-**Seth Hillbrand** for responding to my first release announcement by inviting me to give a talk at KiCon Europe 2024.
+**Seth Hillbrand** for inviting me to give a talk at KiCon Europe 2024, in response to my first [release announcement](https://forum.kicad.info/t/introducing-kivar-pcb-assembly-variants-for-kicad/51467).
 
-**Leonard Bargenda** for recurring pre-release testing sessions on macOS.
+**Leonard Bargenda** for our v0.5.0 pre-release macOS testing sessions.
