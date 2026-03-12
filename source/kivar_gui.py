@@ -436,7 +436,6 @@ class GuiErrorListDialog(forms.ErrorListDialog):
         super().__init__(parent=parent)
         dialog_base_config(self)
         if vdt is None: self.btn_edit_vdt.Hide()
-        # save vdt path??
         self.board = board
         self.lbx_errors.set_item_list(errors)
         self.lbx_errors.set_select_handler(self.on_item_selected)
