@@ -16,6 +16,9 @@ def doc_vcs_ref():
 def doc_base_url():
     return f'https://doc.kivar.markh.de/{doc_vcs_ref()}/README.md'
 
+def doc_demo_project_url():
+    return f'https://kivar.markh.de/tree/{doc_vcs_ref()}/demo/'
+
 def window_suffix():
     return f' | KiVar {version()}'
 
@@ -87,7 +90,7 @@ def show_selection_dialog(board, fpdict, vardict, parent=pcbnew_parent_window())
         variant_info = VariantInfo(board.GetFileName())
         errors = variant_info.read_csv(get_choice_dict(vardict))
         if errors:
-            show_error_dialog([['', '', 'Variant Table: '+error] for error in errors])
+            show_error_dialog([['', '', 'Variant Table: '+error] for error in errors], board=board, parent=parent, vdt=variant_info.file_path())
             exit_ui = True
         else:
             dialog = GuiVariantDialog(parent, board, fpdict, vardict, variant_info)
@@ -107,16 +110,22 @@ def show_selection_dialog(board, fpdict, vardict, parent=pcbnew_parent_window())
             if result != wx.ID_REFRESH:
                 exit_ui = True
 
-def show_error_dialog(errors, board=None, parent=pcbnew_parent_window()):
-    dialog = GuiErrorListDialog(parent, errors=sorted(errors, key=lambda x: natural_sort_key(x[1])), board=board) # sort by text
+def show_error_dialog(errors, board=None, parent=pcbnew_parent_window(), vdt=None):
+    dialog = GuiErrorListDialog(parent, errors=sorted(errors, key=lambda x: natural_sort_key(x[1])), board=board, vdt=vdt) # sort by text
+    dialog.btn_edit_vdt.Bind(wx.EVT_BUTTON, lambda e: dialog.EndModal(forms.ID_EDIT_VDT))
     dialog.SetSize(Config().get_window_size(Config.ERROR_WIN))
     dialog.CentreOnParent()
-    dialog.ShowModal()
+    result = dialog.ShowModal()
     Config().set_window_size(Config.ERROR_WIN, dialog.GetSize()).save()
     dialog.Destroy()
+    if result == forms.ID_EDIT_VDT and vdt is not None:
+        wx.LaunchDefaultApplication(vdt)
 
 def show_missing_rules_dialog(legacy_found=0, parent=pcbnew_parent_window()):
-    dialog = GuiMissingRulesDialog(parent, legacy_found)
+    if legacy_found:
+        dialog = GuiMissingRulesLegacyFoundDialog(parent, legacy_found)
+    else:
+        dialog = GuiMissingRulesDialog(parent)
     dialog.ShowModal()
     dialog.Destroy()
 
@@ -255,7 +264,7 @@ class GuiVariantDialog(forms.VariantDialog):
         if self.chc_variant.GetSelection() == 0: return # double-check
         varid = self.chc_variant.GetStringSelection()
         if self.variant_info.variants() == [varid]:
-            dialog = wx.MessageDialog(self, f'Deleting the definition of the last variant identifier will cause the table file to be removed as well.\nYou will therefore lose all your aspect bindings.\n\nAre you sure you want to remove the variant identifier "{varid}" and all aspect bindings?', 'Delete Last Variant Definition', style=wx.YES_NO|wx.NO_DEFAULT|wx.ICON_WARNING)
+            dialog = wx.MessageDialog(self, f'Deleting the definition of the last variant identifier will cause the table file to be removed as well.\nYou will therefore lose all your aspect bindings.\n\nAre you sure you want to remove the variant identifier "{varid}" and all aspect bindings?', 'Delete Variant Definition Table', style=wx.YES_NO|wx.NO_DEFAULT|wx.ICON_WARNING)
         else:
             dialog = wx.MessageDialog(self, f'Are you sure you want to remove the variant identifier "{varid}"?', 'Delete Variant Definition', style=wx.YES_NO|wx.NO_DEFAULT|wx.ICON_WARNING)
         answer = dialog.ShowModal()
@@ -403,24 +412,31 @@ class GuiAddVariantDialog(forms.AddVariantDialog):
         return self.txc_varid.GetValue()
 
 class GuiMissingRulesDialog(forms.MissingRulesDialog):
+    def __init__(self, parent):
+        super().__init__(parent=parent)
+        dialog_base_config(self)
+        self.link_help.SetURL(help_url())
+        self.link_demo.SetURL(doc_demo_project_url())
+        self.btn_close.SetFocus()
+        self.Fit()
+        self.CentreOnParent()
+
+class GuiMissingRulesLegacyFoundDialog(forms.MissingRulesLegacyFoundDialog):
     def __init__(self, parent, legacy_found=0):
         super().__init__(parent=parent)
         dialog_base_config(self)
-        if legacy_found: # override text and URL
-            self.txt_info.SetLabelMarkup(f'KiVar could not find any rules in the current format.\n\nHowever, there were found <b>{legacy_found} rule(s) in the legacy format</b>,\nwhich is not supported anymore.\n\nPlease consult the KiVar documentation to learn how to migrate\nthe rules of your existing designs to the current format.')
-            self.link_help.SetLabel('KiVar Migration Guide')
-            self.link_help.SetURL(help_migrate_url())
-        else:
-            self.link_help.SetLabel('KiVar Usage Guide')
-            self.link_help.SetURL(help_url())
+        self.txt_info_intro.SetLabelMarkup(self.txt_info_intro.GetLabelText().replace('###', str(legacy_found)))
+        self.link_help.SetURL(help_migrate_url())
         self.btn_close.SetFocus()
         self.Fit()
         self.CentreOnParent()
 
 class GuiErrorListDialog(forms.ErrorListDialog):
-    def __init__(self, parent, errors=None, board=None):
+    def __init__(self, parent, errors=None, board=None, vdt=None):
         super().__init__(parent=parent)
         dialog_base_config(self)
+        if vdt is None: self.btn_edit_vdt.Hide()
+        # save vdt path??
         self.board = board
         self.lbx_errors.set_item_list(errors)
         self.lbx_errors.set_select_handler(self.on_item_selected)

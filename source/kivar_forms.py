@@ -13,6 +13,8 @@ import wx
 import wx.xrc
 import wx.adv
 
+ID_EDIT_VDT = 6000
+
 ###########################################################################
 ## Class VariantDialog
 ###########################################################################
@@ -229,17 +231,80 @@ class MissingRulesDialog ( wx.Dialog ):
 
         sz_main = wx.BoxSizer( wx.VERTICAL )
 
-        self.txt_info = wx.StaticText( self, wx.ID_ANY, u"KiVar could not find any valid rule definitions.\n\nPlease consult the KiVar documentation to learn how to\nassign variation rules to symbols or footprints:", wx.DefaultPosition, wx.DefaultSize, 0 )
-        self.txt_info.SetLabelMarkup( u"KiVar could not find any valid rule definitions.\n\nPlease consult the KiVar documentation to learn how to\nassign variation rules to symbols or footprints:" )
-        self.txt_info.Wrap( -1 )
+        sz_inner = wx.BoxSizer( wx.VERTICAL )
 
-        sz_main.Add( self.txt_info, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL|wx.EXPAND, 20 )
+        self.txt_info_intro = wx.StaticText( self, wx.ID_ANY, u"<b>Welcome to KiVar.</b>\n\nNo rule definitions could be found in your board's footprints. This probably means that you are still new\nto KiVar and have not yet added any variation rules to your design.\n\nIn KiVar, design variations are specified using <b>text-based rules</b> in the <b>footprint fields</b> of your board.\nThere is no user interface for setting up the rules, but the rule syntax is <b>easy to learn</b> and <b>very powerful</b>.\n\nYou are invited to explore the <b>comprehensive documentation</b> for KiVar, including many useful <b>examples</b>:", wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.txt_info_intro.SetLabelMarkup( u"<b>Welcome to KiVar.</b>\n\nNo rule definitions could be found in your board's footprints. This probably means that you are still new\nto KiVar and have not yet added any variation rules to your design.\n\nIn KiVar, design variations are specified using <b>text-based rules</b> in the <b>footprint fields</b> of your board.\nThere is no user interface for setting up the rules, but the rule syntax is <b>easy to learn</b> and <b>very powerful</b>.\n\nYou are invited to explore the <b>comprehensive documentation</b> for KiVar, including many useful <b>examples</b>:" )
+        self.txt_info_intro.Wrap( -1 )
 
-        self.link_help = wx.adv.HyperlinkCtrl( self, wx.ID_ANY, u"...", wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, wx.adv.HL_DEFAULT_STYLE )
-        sz_main.Add( self.link_help, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL|wx.EXPAND, 5 )
+        sz_inner.Add( self.txt_info_intro, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.EXPAND, 0 )
+
+        self.link_help = wx.adv.HyperlinkCtrl( self, wx.ID_ANY, u"KiVar Usage Guide", u"...", wx.DefaultPosition, wx.DefaultSize, wx.adv.HL_DEFAULT_STYLE )
+        sz_inner.Add( self.link_help, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.EXPAND|wx.TOP, 8 )
+
+        self.txt_info_video = wx.StaticText( self, wx.ID_ANY, u"To see KiVar in action and get a quick <b>tutorial</b> on <b>how to get started</b>, as well as a <b>feature demonstration</b>,\ncheck out the following video:", wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.txt_info_video.SetLabelMarkup( u"To see KiVar in action and get a quick <b>tutorial</b> on <b>how to get started</b>, as well as a <b>feature demonstration</b>,\ncheck out the following video:" )
+        self.txt_info_video.Wrap( -1 )
+
+        sz_inner.Add( self.txt_info_video, 0, wx.TOP|wx.ALIGN_CENTER_HORIZONTAL|wx.EXPAND, 24 )
+
+        self.link_video = wx.adv.HyperlinkCtrl( self, wx.ID_ANY, u"KiVar Live Presentation (KiCon Europe 2024)", u"https://video.kivar.markh.de", wx.DefaultPosition, wx.DefaultSize, wx.adv.HL_DEFAULT_STYLE )
+        sz_inner.Add( self.link_video, 0, wx.EXPAND|wx.TOP|wx.ALIGN_CENTER_HORIZONTAL, 8 )
+
+        self.txt_info_demo = wx.StaticText( self, wx.ID_ANY, u"A demonstration of how to use all of KiVar's features can be found in the KiVar <b>demo project</b>. This can\nserve as inspiration for creating your own rule sets:", wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.txt_info_demo.SetLabelMarkup( u"A demonstration of how to use all of KiVar's features can be found in the KiVar <b>demo project</b>. This can\nserve as inspiration for creating your own rule sets:" )
+        self.txt_info_demo.Wrap( -1 )
+
+        sz_inner.Add( self.txt_info_demo, 0, wx.EXPAND|wx.TOP|wx.ALIGN_CENTER_HORIZONTAL, 24 )
+
+        self.link_demo = wx.adv.HyperlinkCtrl( self, wx.ID_ANY, u"KiVar Demo Project", u"...", wx.DefaultPosition, wx.DefaultSize, wx.adv.HL_DEFAULT_STYLE )
+        sz_inner.Add( self.link_demo, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.EXPAND|wx.TOP|wx.BOTTOM, 8 )
 
         self.btn_close = wx.Button( self, wx.ID_OK, u"Close", wx.DefaultPosition, wx.DefaultSize, 0 )
-        sz_main.Add( self.btn_close, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.ALL, 20 )
+        sz_inner.Add( self.btn_close, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.TOP, 20 )
+
+
+        sz_main.Add( sz_inner, 1, wx.EXPAND|wx.ALIGN_CENTER_HORIZONTAL|wx.ALL, 36 )
+
+
+        self.SetSizer( sz_main )
+        self.Layout()
+        sz_main.Fit( self )
+
+        self.Centre( wx.BOTH )
+
+    def __del__( self ):
+        pass
+
+
+###########################################################################
+## Class MissingRulesLegacyFoundDialog
+###########################################################################
+
+class MissingRulesLegacyFoundDialog ( wx.Dialog ):
+
+    def __init__( self, parent ):
+        wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = u"Missing Rule Definitions (Legacy Rules Found)", pos = wx.DefaultPosition, size = wx.DefaultSize, style = wx.DEFAULT_DIALOG_STYLE )
+
+        self.SetSizeHints( wx.DefaultSize, wx.DefaultSize )
+
+        sz_main = wx.BoxSizer( wx.VERTICAL )
+
+        sz_inner = wx.BoxSizer( wx.VERTICAL )
+
+        self.txt_info_intro = wx.StaticText( self, wx.ID_ANY, u"KiVar could not find any rules in the current format.\n\nHowever, there were found <b>### rule(s) in the old format</b>, which is not supported anymore.\n\nPlease consult the KiVar documentation to learn how to migrate the rules of your existing designs to\nthe current format:", wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.txt_info_intro.Wrap( -1 )
+
+        sz_inner.Add( self.txt_info_intro, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.EXPAND, 0 )
+
+        self.link_help = wx.adv.HyperlinkCtrl( self, wx.ID_ANY, u"KiVar Migration Guide", u"...", wx.DefaultPosition, wx.DefaultSize, wx.adv.HL_DEFAULT_STYLE )
+        sz_inner.Add( self.link_help, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.EXPAND|wx.TOP, 8 )
+
+        self.btn_close = wx.Button( self, wx.ID_OK, u"Close", wx.DefaultPosition, wx.DefaultSize, 0 )
+        sz_inner.Add( self.btn_close, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.TOP, 20 )
+
+
+        sz_main.Add( sz_inner, 1, wx.EXPAND|wx.ALIGN_CENTER_HORIZONTAL|wx.ALL, 36 )
 
 
         self.SetSizer( sz_main )
@@ -277,10 +342,15 @@ class ErrorListDialog ( wx.Dialog ):
         sz_bottom = wx.BoxSizer( wx.HORIZONTAL )
 
         self.link_help = wx.adv.HyperlinkCtrl( self, wx.ID_ANY, u"Usage Guide", u"...", wx.DefaultPosition, wx.DefaultSize, wx.adv.HL_DEFAULT_STYLE )
-        sz_bottom.Add( self.link_help, 0, wx.ALIGN_CENTER_VERTICAL, 5 )
+        sz_bottom.Add( self.link_help, 0, wx.ALIGN_CENTER_VERTICAL|wx.RIGHT, 8 )
 
 
         sz_bottom.Add( ( 0, 0), 1, wx.EXPAND, 5 )
+
+        self.btn_edit_vdt = wx.Button( self, ID_EDIT_VDT, u"Edit Variant Table", wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.btn_edit_vdt.SetToolTip( u"Opens the variant table file (CSV) for manual inspection and repair" )
+
+        sz_bottom.Add( self.btn_edit_vdt, 0, wx.ALIGN_CENTER_VERTICAL|wx.RIGHT, 8 )
 
         self.btn_close = wx.Button( self, wx.ID_OK, u"Close", wx.DefaultPosition, wx.DefaultSize, 0 )
         sz_bottom.Add( self.btn_close, 0, wx.ALIGN_CENTER_VERTICAL, 5 )
@@ -317,7 +387,7 @@ class CreateTableDialog ( wx.Dialog ):
 
         self.txt_intro = wx.StaticText( self, wx.ID_ANY, u"This will create a <b>Variant Definition Table</b> binding the following aspects:", wx.DefaultPosition, wx.DefaultSize, 0 )
         self.txt_intro.SetLabelMarkup( u"This will create a <b>Variant Definition Table</b> binding the following aspects:" )
-        self.txt_intro.Wrap( 1 )
+        self.txt_intro.Wrap( -1 )
 
         sz_main.Add( self.txt_intro, 0, wx.ALIGN_CENTER|wx.ALL|wx.EXPAND, 12 )
 
@@ -390,7 +460,7 @@ class AddVariantDialog ( wx.Dialog ):
 
         self.txt_intro = wx.StaticText( self, wx.ID_ANY, u"This will add a <b>Variant Definition</b> with the following assignments:", wx.DefaultPosition, wx.DefaultSize, 0 )
         self.txt_intro.SetLabelMarkup( u"This will add a <b>Variant Definition</b> with the following assignments:" )
-        self.txt_intro.Wrap( 1 )
+        self.txt_intro.Wrap( -1 )
 
         sz_main.Add( self.txt_intro, 0, wx.ALIGN_CENTER|wx.ALL|wx.EXPAND, 12 )
 
