@@ -113,8 +113,8 @@ Key concepts of KiVar are:
  * Designs may contain **multiple** independent **aspect scopes** (micro-variants).
  * Variation rules are **fully contained** in component fields of native design files (no external configuration files involved) and **portable** (i.e. copying components to another design keeps their variation specification intact).
  * Component values, fields, attributes and features are modified **in place** with immediate effect, enabling compatibility with all exporters that work on the actual component data.
- * **No external state information** is stored; currently matching variation Choices are detected automatically.
- * Optional external **variant** definition table in independent file format (CSV) enables switching of Aspect groups based on a single variant name.
+ * **No external state information** is stored; currently matching variation choices are detected automatically.
+ * Optional external **variant** definition table in independent file format (CSV) enables switching of aspect groups based on a single variant name.
 
 ## Supported KiCad Versions
 

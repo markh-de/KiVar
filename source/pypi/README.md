@@ -1,15 +1,15 @@
-# KiVar − PCB Assembly Variants for KiCad
+# KiVar − Multi-Scope PCB Assembly Variants for KiCad
 
 ## Introduction
 
-KiVar is a tool for **KiCad PCB Assembly Variant selection**, provided as platform-independent
+KiVar is a tool for **KiCad PCB Assembly Variant and Micro-Variant selection**, provided as platform-independent
 
  * **Command Line Application** (this package) and
  * **KiCad Action Plugin** (available in KiCad PCM).
 
-PCB component variation rules for multiple limited design scopes are defined in component (i.e. symbol or footprint) fields.  This allows for the complete low-level variation configuration to be contained in the schematic and board files without requiring external data outside the native KiCad design.
+PCB component variation rules for multiple independent design scopes are defined in component (i.e. symbol or footprint) fields.  This allows for the complete low-level variation configuration to be contained in the schematic and board files without requiring external data outside the native KiCad design.
 
-In addition, variant definition tables (KiCad-independent CSV format) can be used to summarize the configuration of these low-level scopes in classic flat variants, which can then be switched between.
+In addition, Variant Definition Tables (KiCad-independent CSV format) can optionally be used to summarize the configuration of these low-level scopes in classic flat variants, which can then be switched between.
 
 ## Features
 
@@ -86,7 +86,7 @@ low-level and high-level variant data and current settings of a PCB.  It can als
 
 Key concepts of KiVar are:
 
- * Designs may contain **multiple** independent variation **aspects** (i.e. scopes/dimensions/degrees of freedom).
+ * Designs may contain **multiple** independent **aspect scopes** (micro-variants).
  * Variation rules are **fully contained** in component fields of native design files (no external configuration files involved) and **portable** (i.e. copying components to another design keeps their variation specification intact).
  * Component values, fields, attributes and features are modified **in place** with immediate effect, enabling compatibility with all exporters that work on the actual component data.
  * **No external state information** is stored; currently matching variation choices are detected automatically.
