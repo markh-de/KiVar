@@ -123,7 +123,7 @@ KiCad Release Series | Compatible KiVar Releases
 7.x                  | 0.0.1 &ndash; 0.1.2
 8.x                  | 0.2.0 &ndash; _latest_
 9.x                  | 0.4.2 &ndash; _latest_
-10.x                 | 0.4.2 &ndash; _latest_
+10.x                 | 0.5.4 &ndash; _latest_
 
 > [!NOTE]
 > KiCad 10 introduces native assembly variant support.  However, KiVar's **multi-scope Aspect model** provides flexibility beyond KiCad's built-in single design-scope variant selection.
