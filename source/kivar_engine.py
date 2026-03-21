@@ -31,8 +31,8 @@ def pcbnew_compatibility_error():
 def fp_to_uuid(fp):
     return fp.m_Uuid.AsString()
 
-def uuid_to_fp(board, uuid):
-    return board.GetItem(pcbnew.KIID(uuid)).Cast()
+def uuid_to_fp(fpdict, uuid):
+    return fpdict[uuid][Key.FPOBJ]
 
 def field_accepted(field_name):
     return not field_name.lower() in ['value', 'reference', 'footprint']
@@ -111,11 +111,12 @@ def build_fpdict(board):
             for i, model in enumerate(fp.Models()): apply_indexed_prop(fpdict[uuid][Key.PROPS], PropCode.MODEL, i + 1, model.m_Show)
             fpdict[uuid][Key.RAW] = {}
             fpdict[uuid][Key.RAW][Key.PRATIO] = paste_margin_ratio
+            fpdict[uuid][Key.FPOBJ] = fp
     return fpdict
 
 def store_fpdict(board, fpdict):
     for uuid in fpdict:
-        fp = uuid_to_fp(board, uuid)
+        fp = uuid_to_fp(fpdict, uuid)
         old_fp_value = fp.GetValue()
         new_fp_value = fpdict[uuid][Key.VALUE]
         if old_fp_value != new_fp_value:
@@ -196,6 +197,7 @@ class Key:
     FIELDS  = 'F'
     RAW     = 'Raw'
     PRATIO  = 'PR'
+    FPOBJ   = 'FP'
 
 class PropCode: # all of these must be uppercase
     FIT    = 'F'
