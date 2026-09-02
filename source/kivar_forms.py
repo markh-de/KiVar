@@ -7,13 +7,313 @@
 ## PLEASE DO *NOT* EDIT THIS FILE!
 ###########################################################################
 
-from .kivar_gui_custom import MenuButton
 from .kivar_gui_custom import PcbItemListBox
+from .kivar_gui_custom import MenuButton
 import wx
 import wx.xrc
 import wx.adv
 
 ID_EDIT_VDT = 6000
+
+###########################################################################
+## Class AddVariantDialog
+###########################################################################
+
+class AddVariantDialog ( wx.Dialog ):
+
+    def __init__( self, parent ):
+        wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = u"Add Variant Definition", pos = wx.DefaultPosition, size = wx.DefaultSize, style = wx.DEFAULT_DIALOG_STYLE )
+
+        self.SetSizeHints( wx.DefaultSize, wx.DefaultSize )
+
+        sz_main = wx.BoxSizer( wx.VERTICAL )
+
+        self.txt_intro = wx.StaticText( self, wx.ID_ANY, u"This will add a <b>Variant Definition</b> with the following assignments:", wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.txt_intro.SetLabelMarkup( u"This will add a <b>Variant Definition</b> with the following assignments:" )
+        self.txt_intro.Wrap( -1 )
+
+        sz_main.Add( self.txt_intro, 0, wx.ALL|wx.EXPAND, 12 )
+
+        self.txt_aspects = wx.StaticText( self, wx.ID_ANY, u"...", wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.txt_aspects.Wrap( -1 )
+
+        sz_main.Add( self.txt_aspects, 0, wx.ALIGN_CENTER|wx.ALL, 12 )
+
+        self.txt_explain_sel = wx.StaticText( self, wx.ID_ANY, u"If you are not yet satisfied with the above assignments, go back\nto the main dialog and make the appropriate selections now.", wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.txt_explain_sel.SetLabelMarkup( u"If you are not yet satisfied with the above assignments, go back\nto the main dialog and make the appropriate selections now." )
+        self.txt_explain_sel.Wrap( -1 )
+
+        sz_main.Add( self.txt_explain_sel, 0, wx.ALL|wx.EXPAND, 12 )
+
+        sz_varid = wx.BoxSizer( wx.HORIZONTAL )
+
+        self.lbl_varid = wx.StaticText( self, wx.ID_ANY, u"New variant identifier:", wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.lbl_varid.Wrap( -1 )
+
+        sz_varid.Add( self.lbl_varid, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5 )
+
+        self.txc_varid = wx.TextCtrl( self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, wx.TE_PROCESS_ENTER )
+        sz_varid.Add( self.txc_varid, 1, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
+
+
+        sz_main.Add( sz_varid, 1, wx.EXPAND|wx.ALL, 12 )
+
+        sdbsz = wx.StdDialogButtonSizer()
+        self.sdbszOK = wx.Button( self, wx.ID_OK )
+        sdbsz.AddButton( self.sdbszOK )
+        self.sdbszCancel = wx.Button( self, wx.ID_CANCEL )
+        sdbsz.AddButton( self.sdbszCancel )
+        sdbsz.Realize()
+
+        sz_main.Add( sdbsz, 1, wx.EXPAND, 5 )
+
+
+        self.SetSizer( sz_main )
+        self.Layout()
+        sz_main.Fit( self )
+
+        self.Centre( wx.BOTH )
+
+        # Connect Events
+        self.txc_varid.Bind( wx.EVT_TEXT_ENTER, self.on_confirm )
+        self.sdbszOK.Bind( wx.EVT_BUTTON, self.on_confirm )
+
+    def __del__( self ):
+        pass
+
+
+    # Virtual event handlers, override them in your derived class
+    def on_confirm( self, event ):
+        event.Skip()
+
+
+
+###########################################################################
+## Class CreateTableDialog
+###########################################################################
+
+class CreateTableDialog ( wx.Dialog ):
+
+    def __init__( self, parent ):
+        wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = u"Create Variant Definition Table", pos = wx.DefaultPosition, size = wx.DefaultSize, style = wx.DEFAULT_DIALOG_STYLE )
+
+        self.SetSizeHints( wx.DefaultSize, wx.DefaultSize )
+
+        sz_main = wx.BoxSizer( wx.VERTICAL )
+
+        self.txt_intro = wx.StaticText( self, wx.ID_ANY, u"This will create a <b>Variant Definition Table</b> binding the following aspects:", wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.txt_intro.SetLabelMarkup( u"This will create a <b>Variant Definition Table</b> binding the following aspects:" )
+        self.txt_intro.Wrap( -1 )
+
+        sz_main.Add( self.txt_intro, 0, wx.ALL|wx.EXPAND, 12 )
+
+        self.txt_aspects = wx.StaticText( self, wx.ID_ANY, u"...", wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.txt_aspects.Wrap( -1 )
+
+        sz_main.Add( self.txt_aspects, 0, wx.ALIGN_CENTER|wx.ALL, 12 )
+
+        self.txt_explain_sel = wx.StaticText( self, wx.ID_ANY, u"<i>Aspect binding:</i>  To <b>bind</b> aspects to the variant definitions, assign the desired <i>specific choices</i>\nto them in the main dialog.  To keep aspects as <b>free</b>, select the <i>unspecified</i> choice for them.\n\nIf you are not yet satisfied with the above bindings, go back to the main dialog and make the\nappropriate selections now.\n\n<i>Tip:</i> You can customize the display order of aspects and variants by modifying their order in\nthe variants table file (use the <i>'Edit Definition Table...'</i> option).", wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.txt_explain_sel.SetLabelMarkup( u"<i>Aspect binding:</i>  To <b>bind</b> aspects to the variant definitions, assign the desired <i>specific choices</i>\nto them in the main dialog.  To keep aspects as <b>free</b>, select the <i>unspecified</i> choice for them.\n\nIf you are not yet satisfied with the above bindings, go back to the main dialog and make the\nappropriate selections now.\n\n<i>Tip:</i> You can customize the display order of aspects and variants by modifying their order in\nthe variants table file (use the <i>'Edit Definition Table...'</i> option)." )
+        self.txt_explain_sel.Wrap( -1 )
+
+        sz_main.Add( self.txt_explain_sel, 0, wx.ALL|wx.EXPAND, 12 )
+
+        sz_varid = wx.BoxSizer( wx.HORIZONTAL )
+
+        self.lbl_varid = wx.StaticText( self, wx.ID_ANY, u"Initial variant identifier:", wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.lbl_varid.Wrap( -1 )
+
+        sz_varid.Add( self.lbl_varid, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5 )
+
+        self.txc_varid = wx.TextCtrl( self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, wx.TE_PROCESS_ENTER )
+        sz_varid.Add( self.txc_varid, 1, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
+
+
+        sz_main.Add( sz_varid, 1, wx.ALL|wx.EXPAND, 12 )
+
+        sdbsz = wx.StdDialogButtonSizer()
+        self.sdbszOK = wx.Button( self, wx.ID_OK )
+        sdbsz.AddButton( self.sdbszOK )
+        self.sdbszCancel = wx.Button( self, wx.ID_CANCEL )
+        sdbsz.AddButton( self.sdbszCancel )
+        sdbsz.Realize()
+
+        sz_main.Add( sdbsz, 1, wx.EXPAND, 5 )
+
+
+        self.SetSizer( sz_main )
+        self.Layout()
+        sz_main.Fit( self )
+
+        self.Centre( wx.BOTH )
+
+        # Connect Events
+        self.txc_varid.Bind( wx.EVT_TEXT_ENTER, self.on_confirm )
+        self.sdbszOK.Bind( wx.EVT_BUTTON, self.on_confirm )
+
+    def __del__( self ):
+        pass
+
+
+    # Virtual event handlers, override them in your derived class
+    def on_confirm( self, event ):
+        event.Skip()
+
+
+
+###########################################################################
+## Class ErrorListDialog
+###########################################################################
+
+class ErrorListDialog ( wx.Dialog ):
+
+    def __init__( self, parent ):
+        wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = u"Initialization Failure", pos = wx.DefaultPosition, size = wx.DefaultSize, style = wx.DEFAULT_DIALOG_STYLE|wx.MAXIMIZE_BOX|wx.RESIZE_BORDER )
+
+        self.SetSizeHints( wx.Size( 400,200 ), wx.DefaultSize )
+
+        sz_main = wx.BoxSizer( wx.VERTICAL )
+
+        sz_errors = wx.StaticBoxSizer( wx.StaticBox( self, wx.ID_ANY, u"Errors" ), wx.VERTICAL )
+
+        lbx_errorsChoices = []
+        self.lbx_errors = PcbItemListBox( sz_errors.GetStaticBox(), wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, lbx_errorsChoices, wx.LB_HSCROLL|wx.LB_NEEDED_SB|wx.LB_SINGLE )
+        sz_errors.Add( self.lbx_errors, 1, wx.ALL|wx.EXPAND, 5 )
+
+
+        sz_main.Add( sz_errors, 1, wx.ALL|wx.EXPAND, 10 )
+
+        sz_bottom = wx.BoxSizer( wx.HORIZONTAL )
+
+        self.link_help = wx.adv.HyperlinkCtrl( self, wx.ID_ANY, u"Usage Guide", u"...", wx.DefaultPosition, wx.DefaultSize, wx.adv.HL_DEFAULT_STYLE )
+        sz_bottom.Add( self.link_help, 0, wx.ALIGN_CENTER_VERTICAL|wx.RIGHT, 8 )
+
+
+        sz_bottom.Add( ( 0, 0), 1, wx.EXPAND, 5 )
+
+        self.btn_edit_vdt = wx.Button( self, ID_EDIT_VDT, u"Edit Variant Table", wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.btn_edit_vdt.SetToolTip( u"Opens the variant table file (CSV) for manual inspection and repair" )
+
+        sz_bottom.Add( self.btn_edit_vdt, 0, wx.ALIGN_CENTER_VERTICAL|wx.RIGHT, 8 )
+
+        self.btn_close = wx.Button( self, wx.ID_OK, u"Close", wx.DefaultPosition, wx.DefaultSize, 0 )
+        sz_bottom.Add( self.btn_close, 0, wx.ALIGN_CENTER_VERTICAL, 5 )
+
+
+        sz_main.Add( sz_bottom, 0, wx.EXPAND|wx.LEFT|wx.RIGHT, 10 )
+
+
+        sz_main.Add( ( 0, 5), 0, 0, 5 )
+
+
+        self.SetSizer( sz_main )
+        self.Layout()
+        sz_main.Fit( self )
+
+        self.Centre( wx.BOTH )
+
+    def __del__( self ):
+        pass
+
+
+###########################################################################
+## Class MissingRulesDialog
+###########################################################################
+
+class MissingRulesDialog ( wx.Dialog ):
+
+    def __init__( self, parent ):
+        wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = u"Missing Rule Definitions", pos = wx.DefaultPosition, size = wx.DefaultSize, style = wx.DEFAULT_DIALOG_STYLE )
+
+        self.SetSizeHints( wx.DefaultSize, wx.DefaultSize )
+
+        sz_main = wx.BoxSizer( wx.VERTICAL )
+
+        sz_inner = wx.BoxSizer( wx.VERTICAL )
+
+        self.txt_info_intro = wx.StaticText( self, wx.ID_ANY, u"<b>Welcome to KiVar.</b>\n\nNo rule definitions could be found in your board's footprints. This probably means that you are still new\nto KiVar and have not yet added any variation rules to your design.\n\nIn KiVar, design variations are specified using <b>text-based rules</b> in the <b>footprint fields</b> of your board.\nThere is no user interface for setting up the rules, but the rule syntax is <b>easy to learn</b> and <b>very powerful</b>.\n\nYou are invited to explore the <b>comprehensive documentation</b> for KiVar, including many useful <b>examples</b>:", wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.txt_info_intro.SetLabelMarkup( u"<b>Welcome to KiVar.</b>\n\nNo rule definitions could be found in your board's footprints. This probably means that you are still new\nto KiVar and have not yet added any variation rules to your design.\n\nIn KiVar, design variations are specified using <b>text-based rules</b> in the <b>footprint fields</b> of your board.\nThere is no user interface for setting up the rules, but the rule syntax is <b>easy to learn</b> and <b>very powerful</b>.\n\nYou are invited to explore the <b>comprehensive documentation</b> for KiVar, including many useful <b>examples</b>:" )
+        self.txt_info_intro.Wrap( -1 )
+
+        sz_inner.Add( self.txt_info_intro, 0, wx.EXPAND, 0 )
+
+        self.link_help = wx.adv.HyperlinkCtrl( self, wx.ID_ANY, u"KiVar Usage Guide", u"...", wx.DefaultPosition, wx.DefaultSize, wx.adv.HL_DEFAULT_STYLE )
+        sz_inner.Add( self.link_help, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.TOP, 8 )
+
+        self.txt_info_video = wx.StaticText( self, wx.ID_ANY, u"To see KiVar in action and get a quick <b>tutorial</b> on <b>how to get started</b>, as well as a <b>feature demonstration</b>,\ncheck out the following video:", wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.txt_info_video.SetLabelMarkup( u"To see KiVar in action and get a quick <b>tutorial</b> on <b>how to get started</b>, as well as a <b>feature demonstration</b>,\ncheck out the following video:" )
+        self.txt_info_video.Wrap( -1 )
+
+        sz_inner.Add( self.txt_info_video, 0, wx.EXPAND|wx.TOP, 24 )
+
+        self.link_video = wx.adv.HyperlinkCtrl( self, wx.ID_ANY, u"KiVar Live Presentation (KiCon Europe 2024)", u"https://video.kivar.markh.de", wx.DefaultPosition, wx.DefaultSize, wx.adv.HL_DEFAULT_STYLE )
+        sz_inner.Add( self.link_video, 0, wx.TOP|wx.ALIGN_CENTER_HORIZONTAL, 8 )
+
+        self.txt_info_demo = wx.StaticText( self, wx.ID_ANY, u"A demonstration of how to use all of KiVar's features can be found in the KiVar <b>demo project</b>. This can\nserve as inspiration for creating your own rule sets:", wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.txt_info_demo.SetLabelMarkup( u"A demonstration of how to use all of KiVar's features can be found in the KiVar <b>demo project</b>. This can\nserve as inspiration for creating your own rule sets:" )
+        self.txt_info_demo.Wrap( -1 )
+
+        sz_inner.Add( self.txt_info_demo, 0, wx.EXPAND|wx.TOP, 24 )
+
+        self.link_demo = wx.adv.HyperlinkCtrl( self, wx.ID_ANY, u"KiVar Demo Project", u"...", wx.DefaultPosition, wx.DefaultSize, wx.adv.HL_DEFAULT_STYLE )
+        sz_inner.Add( self.link_demo, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.TOP|wx.BOTTOM, 8 )
+
+        self.btn_close = wx.Button( self, wx.ID_OK, u"Close", wx.DefaultPosition, wx.DefaultSize, 0 )
+        sz_inner.Add( self.btn_close, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.TOP, 20 )
+
+
+        sz_main.Add( sz_inner, 1, wx.ALL|wx.EXPAND, 36 )
+
+
+        self.SetSizer( sz_main )
+        self.Layout()
+        sz_main.Fit( self )
+
+        self.Centre( wx.BOTH )
+
+    def __del__( self ):
+        pass
+
+
+###########################################################################
+## Class MissingRulesLegacyFoundDialog
+###########################################################################
+
+class MissingRulesLegacyFoundDialog ( wx.Dialog ):
+
+    def __init__( self, parent ):
+        wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = u"Missing Rule Definitions (Legacy Rules Found)", pos = wx.DefaultPosition, size = wx.DefaultSize, style = wx.DEFAULT_DIALOG_STYLE )
+
+        self.SetSizeHints( wx.DefaultSize, wx.DefaultSize )
+
+        sz_main = wx.BoxSizer( wx.VERTICAL )
+
+        sz_inner = wx.BoxSizer( wx.VERTICAL )
+
+        self.txt_info_intro = wx.StaticText( self, wx.ID_ANY, u"KiVar could not find any rules in the current format.\n\nHowever, there were found <b>### rule(s) in the old format</b>, which is not supported anymore.\n\nPlease consult the KiVar documentation to learn how to migrate the rules of your existing designs to\nthe current format:", wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.txt_info_intro.Wrap( -1 )
+
+        sz_inner.Add( self.txt_info_intro, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.EXPAND, 0 )
+
+        self.link_help = wx.adv.HyperlinkCtrl( self, wx.ID_ANY, u"KiVar Migration Guide", u"...", wx.DefaultPosition, wx.DefaultSize, wx.adv.HL_DEFAULT_STYLE )
+        sz_inner.Add( self.link_help, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.TOP, 8 )
+
+        self.btn_close = wx.Button( self, wx.ID_OK, u"Close", wx.DefaultPosition, wx.DefaultSize, 0 )
+        sz_inner.Add( self.btn_close, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.TOP, 20 )
+
+
+        sz_main.Add( sz_inner, 1, wx.EXPAND|wx.ALIGN_CENTER_HORIZONTAL|wx.ALL, 36 )
+
+
+        self.SetSizer( sz_main )
+        self.Layout()
+        sz_main.Fit( self )
+
+        self.Centre( wx.BOTH )
+
+    def __del__( self ):
+        pass
+
 
 ###########################################################################
 ## Class VariantDialog
@@ -45,14 +345,14 @@ class VariantDialog ( wx.Dialog ):
         chc_variantChoices = []
         self.chc_variant = wx.Choice( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, chc_variantChoices, 0 )
         self.chc_variant.SetSelection( 0 )
-        sz_variant.Add( self.chc_variant, 1, wx.ALIGN_CENTER_VERTICAL|wx.EXPAND|wx.LEFT, 5 )
+        sz_variant.Add( self.chc_variant, 1, wx.EXPAND|wx.LEFT, 5 )
 
         self.bt_var_menu = MenuButton( self, wx.ID_ANY, u"︙", wx.DefaultPosition, wx.Size( 32,-1 ), wx.BU_EXACTFIT )
         self.bt_var_menu.SetToolTip( u"Manage variant definitions" )
         self.bt_var_menu.SetMinSize( wx.Size( 32,-1 ) )
         self.bt_var_menu.SetMaxSize( wx.Size( 32,-1 ) )
 
-        sz_variant.Add( self.bt_var_menu, 0, wx.ALIGN_CENTER|wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_CENTER_VERTICAL|wx.EXPAND|wx.LEFT, 5 )
+        sz_variant.Add( self.bt_var_menu, 0, wx.EXPAND|wx.LEFT, 5 )
 
 
         sz_var_left.Add( sz_variant, 0, wx.BOTTOM|wx.EXPAND|wx.TOP, 5 )
@@ -126,7 +426,7 @@ class VariantDialog ( wx.Dialog ):
         sz_var_hor.Add( sz_var_right, 1, wx.EXPAND, 6 )
 
 
-        sz_main.Add( sz_var_hor, 12, wx.LEFT|wx.RIGHT|wx.TOP|wx.EXPAND|wx.ALIGN_CENTER_HORIZONTAL, 10 )
+        sz_main.Add( sz_var_hor, 12, wx.EXPAND|wx.LEFT|wx.RIGHT|wx.TOP, 10 )
 
         sz_changes = wx.StaticBoxSizer( wx.StaticBox( self, wx.ID_ANY, u"Changes to Be Applied" ), wx.VERTICAL )
 
@@ -138,7 +438,7 @@ class VariantDialog ( wx.Dialog ):
         sz_changes.Add( self.lbx_changes, 1, wx.ALL|wx.EXPAND, 5 )
 
 
-        sz_main.Add( sz_changes, 10, wx.ALL|wx.EXPAND|wx.ALIGN_CENTER_HORIZONTAL, 10 )
+        sz_main.Add( sz_changes, 10, wx.ALL|wx.EXPAND, 10 )
 
         sz_bottom = wx.BoxSizer( wx.HORIZONTAL )
 
@@ -158,7 +458,7 @@ class VariantDialog ( wx.Dialog ):
         sz_bottom.Add( sdbsz, 0, wx.ALIGN_CENTER_VERTICAL, 5 )
 
 
-        sz_main.Add( sz_bottom, 0, wx.BOTTOM|wx.EXPAND|wx.LEFT|wx.RIGHT|wx.ALIGN_CENTER_HORIZONTAL, 5 )
+        sz_main.Add( sz_bottom, 0, wx.BOTTOM|wx.EXPAND|wx.LEFT|wx.RIGHT, 5 )
 
 
         self.SetSizer( sz_main )
@@ -216,305 +516,5 @@ class VariantDialog ( wx.Dialog ):
 
     def on_mi_reload( self, event ):
         event.Skip()
-
-
-###########################################################################
-## Class MissingRulesDialog
-###########################################################################
-
-class MissingRulesDialog ( wx.Dialog ):
-
-    def __init__( self, parent ):
-        wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = u"Missing Rule Definitions", pos = wx.DefaultPosition, size = wx.DefaultSize, style = wx.DEFAULT_DIALOG_STYLE )
-
-        self.SetSizeHints( wx.DefaultSize, wx.DefaultSize )
-
-        sz_main = wx.BoxSizer( wx.VERTICAL )
-
-        sz_inner = wx.BoxSizer( wx.VERTICAL )
-
-        self.txt_info_intro = wx.StaticText( self, wx.ID_ANY, u"<b>Welcome to KiVar.</b>\n\nNo rule definitions could be found in your board's footprints. This probably means that you are still new\nto KiVar and have not yet added any variation rules to your design.\n\nIn KiVar, design variations are specified using <b>text-based rules</b> in the <b>footprint fields</b> of your board.\nThere is no user interface for setting up the rules, but the rule syntax is <b>easy to learn</b> and <b>very powerful</b>.\n\nYou are invited to explore the <b>comprehensive documentation</b> for KiVar, including many useful <b>examples</b>:", wx.DefaultPosition, wx.DefaultSize, 0 )
-        self.txt_info_intro.SetLabelMarkup( u"<b>Welcome to KiVar.</b>\n\nNo rule definitions could be found in your board's footprints. This probably means that you are still new\nto KiVar and have not yet added any variation rules to your design.\n\nIn KiVar, design variations are specified using <b>text-based rules</b> in the <b>footprint fields</b> of your board.\nThere is no user interface for setting up the rules, but the rule syntax is <b>easy to learn</b> and <b>very powerful</b>.\n\nYou are invited to explore the <b>comprehensive documentation</b> for KiVar, including many useful <b>examples</b>:" )
-        self.txt_info_intro.Wrap( -1 )
-
-        sz_inner.Add( self.txt_info_intro, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.EXPAND, 0 )
-
-        self.link_help = wx.adv.HyperlinkCtrl( self, wx.ID_ANY, u"KiVar Usage Guide", u"...", wx.DefaultPosition, wx.DefaultSize, wx.adv.HL_DEFAULT_STYLE )
-        sz_inner.Add( self.link_help, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.EXPAND|wx.TOP, 8 )
-
-        self.txt_info_video = wx.StaticText( self, wx.ID_ANY, u"To see KiVar in action and get a quick <b>tutorial</b> on <b>how to get started</b>, as well as a <b>feature demonstration</b>,\ncheck out the following video:", wx.DefaultPosition, wx.DefaultSize, 0 )
-        self.txt_info_video.SetLabelMarkup( u"To see KiVar in action and get a quick <b>tutorial</b> on <b>how to get started</b>, as well as a <b>feature demonstration</b>,\ncheck out the following video:" )
-        self.txt_info_video.Wrap( -1 )
-
-        sz_inner.Add( self.txt_info_video, 0, wx.TOP|wx.ALIGN_CENTER_HORIZONTAL|wx.EXPAND, 24 )
-
-        self.link_video = wx.adv.HyperlinkCtrl( self, wx.ID_ANY, u"KiVar Live Presentation (KiCon Europe 2024)", u"https://video.kivar.markh.de", wx.DefaultPosition, wx.DefaultSize, wx.adv.HL_DEFAULT_STYLE )
-        sz_inner.Add( self.link_video, 0, wx.EXPAND|wx.TOP|wx.ALIGN_CENTER_HORIZONTAL, 8 )
-
-        self.txt_info_demo = wx.StaticText( self, wx.ID_ANY, u"A demonstration of how to use all of KiVar's features can be found in the KiVar <b>demo project</b>. This can\nserve as inspiration for creating your own rule sets:", wx.DefaultPosition, wx.DefaultSize, 0 )
-        self.txt_info_demo.SetLabelMarkup( u"A demonstration of how to use all of KiVar's features can be found in the KiVar <b>demo project</b>. This can\nserve as inspiration for creating your own rule sets:" )
-        self.txt_info_demo.Wrap( -1 )
-
-        sz_inner.Add( self.txt_info_demo, 0, wx.EXPAND|wx.TOP|wx.ALIGN_CENTER_HORIZONTAL, 24 )
-
-        self.link_demo = wx.adv.HyperlinkCtrl( self, wx.ID_ANY, u"KiVar Demo Project", u"...", wx.DefaultPosition, wx.DefaultSize, wx.adv.HL_DEFAULT_STYLE )
-        sz_inner.Add( self.link_demo, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.EXPAND|wx.TOP|wx.BOTTOM, 8 )
-
-        self.btn_close = wx.Button( self, wx.ID_OK, u"Close", wx.DefaultPosition, wx.DefaultSize, 0 )
-        sz_inner.Add( self.btn_close, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.TOP, 20 )
-
-
-        sz_main.Add( sz_inner, 1, wx.EXPAND|wx.ALIGN_CENTER_HORIZONTAL|wx.ALL, 36 )
-
-
-        self.SetSizer( sz_main )
-        self.Layout()
-        sz_main.Fit( self )
-
-        self.Centre( wx.BOTH )
-
-    def __del__( self ):
-        pass
-
-
-###########################################################################
-## Class MissingRulesLegacyFoundDialog
-###########################################################################
-
-class MissingRulesLegacyFoundDialog ( wx.Dialog ):
-
-    def __init__( self, parent ):
-        wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = u"Missing Rule Definitions (Legacy Rules Found)", pos = wx.DefaultPosition, size = wx.DefaultSize, style = wx.DEFAULT_DIALOG_STYLE )
-
-        self.SetSizeHints( wx.DefaultSize, wx.DefaultSize )
-
-        sz_main = wx.BoxSizer( wx.VERTICAL )
-
-        sz_inner = wx.BoxSizer( wx.VERTICAL )
-
-        self.txt_info_intro = wx.StaticText( self, wx.ID_ANY, u"KiVar could not find any rules in the current format.\n\nHowever, there were found <b>### rule(s) in the old format</b>, which is not supported anymore.\n\nPlease consult the KiVar documentation to learn how to migrate the rules of your existing designs to\nthe current format:", wx.DefaultPosition, wx.DefaultSize, 0 )
-        self.txt_info_intro.Wrap( -1 )
-
-        sz_inner.Add( self.txt_info_intro, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.EXPAND, 0 )
-
-        self.link_help = wx.adv.HyperlinkCtrl( self, wx.ID_ANY, u"KiVar Migration Guide", u"...", wx.DefaultPosition, wx.DefaultSize, wx.adv.HL_DEFAULT_STYLE )
-        sz_inner.Add( self.link_help, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.EXPAND|wx.TOP, 8 )
-
-        self.btn_close = wx.Button( self, wx.ID_OK, u"Close", wx.DefaultPosition, wx.DefaultSize, 0 )
-        sz_inner.Add( self.btn_close, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.TOP, 20 )
-
-
-        sz_main.Add( sz_inner, 1, wx.EXPAND|wx.ALIGN_CENTER_HORIZONTAL|wx.ALL, 36 )
-
-
-        self.SetSizer( sz_main )
-        self.Layout()
-        sz_main.Fit( self )
-
-        self.Centre( wx.BOTH )
-
-    def __del__( self ):
-        pass
-
-
-###########################################################################
-## Class ErrorListDialog
-###########################################################################
-
-class ErrorListDialog ( wx.Dialog ):
-
-    def __init__( self, parent ):
-        wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = u"Initialization Failure", pos = wx.DefaultPosition, size = wx.DefaultSize, style = wx.DEFAULT_DIALOG_STYLE|wx.MAXIMIZE_BOX|wx.RESIZE_BORDER )
-
-        self.SetSizeHints( wx.Size( 400,200 ), wx.DefaultSize )
-
-        sz_main = wx.BoxSizer( wx.VERTICAL )
-
-        sz_errors = wx.StaticBoxSizer( wx.StaticBox( self, wx.ID_ANY, u"Errors" ), wx.VERTICAL )
-
-        lbx_errorsChoices = []
-        self.lbx_errors = PcbItemListBox( sz_errors.GetStaticBox(), wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, lbx_errorsChoices, wx.LB_HSCROLL|wx.LB_NEEDED_SB|wx.LB_SINGLE )
-        sz_errors.Add( self.lbx_errors, 1, wx.ALL|wx.EXPAND, 5 )
-
-
-        sz_main.Add( sz_errors, 1, wx.ALL|wx.EXPAND, 10 )
-
-        sz_bottom = wx.BoxSizer( wx.HORIZONTAL )
-
-        self.link_help = wx.adv.HyperlinkCtrl( self, wx.ID_ANY, u"Usage Guide", u"...", wx.DefaultPosition, wx.DefaultSize, wx.adv.HL_DEFAULT_STYLE )
-        sz_bottom.Add( self.link_help, 0, wx.ALIGN_CENTER_VERTICAL|wx.RIGHT, 8 )
-
-
-        sz_bottom.Add( ( 0, 0), 1, wx.EXPAND, 5 )
-
-        self.btn_edit_vdt = wx.Button( self, ID_EDIT_VDT, u"Edit Variant Table", wx.DefaultPosition, wx.DefaultSize, 0 )
-        self.btn_edit_vdt.SetToolTip( u"Opens the variant table file (CSV) for manual inspection and repair" )
-
-        sz_bottom.Add( self.btn_edit_vdt, 0, wx.ALIGN_CENTER_VERTICAL|wx.RIGHT, 8 )
-
-        self.btn_close = wx.Button( self, wx.ID_OK, u"Close", wx.DefaultPosition, wx.DefaultSize, 0 )
-        sz_bottom.Add( self.btn_close, 0, wx.ALIGN_CENTER_VERTICAL, 5 )
-
-
-        sz_main.Add( sz_bottom, 0, wx.EXPAND|wx.LEFT|wx.RIGHT, 10 )
-
-
-        sz_main.Add( ( 0, 5), 0, 0, 5 )
-
-
-        self.SetSizer( sz_main )
-        self.Layout()
-        sz_main.Fit( self )
-
-        self.Centre( wx.BOTH )
-
-    def __del__( self ):
-        pass
-
-
-###########################################################################
-## Class CreateTableDialog
-###########################################################################
-
-class CreateTableDialog ( wx.Dialog ):
-
-    def __init__( self, parent ):
-        wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = u"Create Variant Definition Table", pos = wx.DefaultPosition, size = wx.DefaultSize, style = wx.DEFAULT_DIALOG_STYLE )
-
-        self.SetSizeHints( wx.DefaultSize, wx.DefaultSize )
-
-        sz_main = wx.BoxSizer( wx.VERTICAL )
-
-        self.txt_intro = wx.StaticText( self, wx.ID_ANY, u"This will create a <b>Variant Definition Table</b> binding the following aspects:", wx.DefaultPosition, wx.DefaultSize, 0 )
-        self.txt_intro.SetLabelMarkup( u"This will create a <b>Variant Definition Table</b> binding the following aspects:" )
-        self.txt_intro.Wrap( -1 )
-
-        sz_main.Add( self.txt_intro, 0, wx.ALIGN_CENTER|wx.ALL|wx.EXPAND, 12 )
-
-        self.txt_aspects = wx.StaticText( self, wx.ID_ANY, u"...", wx.DefaultPosition, wx.DefaultSize, 0 )
-        self.txt_aspects.Wrap( -1 )
-
-        sz_main.Add( self.txt_aspects, 0, wx.ALIGN_CENTER|wx.ALL, 12 )
-
-        self.txt_explain_sel = wx.StaticText( self, wx.ID_ANY, u"<i>Aspect binding:</i>  To <b>bind</b> aspects to the variant definitions, assign the desired <i>specific choices</i>\nto them in the main dialog.  To keep aspects as <b>free</b>, select the <i>unspecified</i> choice for them.\n\nIf you are not yet satisfied with the above bindings, go back to the main dialog and make the\nappropriate selections now.\n\n<i>Tip:</i> You can customize the display order of aspects and variants by modifying their order in\nthe variants table file (use the <i>'Edit Definition Table...'</i> option).", wx.DefaultPosition, wx.DefaultSize, 0 )
-        self.txt_explain_sel.SetLabelMarkup( u"<i>Aspect binding:</i>  To <b>bind</b> aspects to the variant definitions, assign the desired <i>specific choices</i>\nto them in the main dialog.  To keep aspects as <b>free</b>, select the <i>unspecified</i> choice for them.\n\nIf you are not yet satisfied with the above bindings, go back to the main dialog and make the\nappropriate selections now.\n\n<i>Tip:</i> You can customize the display order of aspects and variants by modifying their order in\nthe variants table file (use the <i>'Edit Definition Table...'</i> option)." )
-        self.txt_explain_sel.Wrap( -1 )
-
-        sz_main.Add( self.txt_explain_sel, 0, wx.ALIGN_CENTER|wx.ALL|wx.EXPAND, 12 )
-
-        sz_varid = wx.BoxSizer( wx.HORIZONTAL )
-
-        self.lbl_varid = wx.StaticText( self, wx.ID_ANY, u"Initial variant identifier:", wx.DefaultPosition, wx.DefaultSize, 0 )
-        self.lbl_varid.Wrap( -1 )
-
-        sz_varid.Add( self.lbl_varid, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALIGN_RIGHT|wx.ALL, 5 )
-
-        self.txc_varid = wx.TextCtrl( self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, wx.TE_PROCESS_ENTER )
-        sz_varid.Add( self.txc_varid, 1, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
-
-
-        sz_main.Add( sz_varid, 1, wx.ALIGN_CENTER_HORIZONTAL|wx.EXPAND|wx.ALL, 12 )
-
-        sdbsz = wx.StdDialogButtonSizer()
-        self.sdbszOK = wx.Button( self, wx.ID_OK )
-        sdbsz.AddButton( self.sdbszOK )
-        self.sdbszCancel = wx.Button( self, wx.ID_CANCEL )
-        sdbsz.AddButton( self.sdbszCancel )
-        sdbsz.Realize()
-
-        sz_main.Add( sdbsz, 1, wx.EXPAND|wx.ALIGN_CENTER_HORIZONTAL, 5 )
-
-
-        self.SetSizer( sz_main )
-        self.Layout()
-        sz_main.Fit( self )
-
-        self.Centre( wx.BOTH )
-
-        # Connect Events
-        self.txc_varid.Bind( wx.EVT_TEXT_ENTER, self.on_confirm )
-        self.sdbszOK.Bind( wx.EVT_BUTTON, self.on_confirm )
-
-    def __del__( self ):
-        pass
-
-
-    # Virtual event handlers, override them in your derived class
-    def on_confirm( self, event ):
-        event.Skip()
-
-
-
-###########################################################################
-## Class AddVariantDialog
-###########################################################################
-
-class AddVariantDialog ( wx.Dialog ):
-
-    def __init__( self, parent ):
-        wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = u"Add Variant Definition", pos = wx.DefaultPosition, size = wx.DefaultSize, style = wx.DEFAULT_DIALOG_STYLE )
-
-        self.SetSizeHints( wx.DefaultSize, wx.DefaultSize )
-
-        sz_main = wx.BoxSizer( wx.VERTICAL )
-
-        self.txt_intro = wx.StaticText( self, wx.ID_ANY, u"This will add a <b>Variant Definition</b> with the following assignments:", wx.DefaultPosition, wx.DefaultSize, 0 )
-        self.txt_intro.SetLabelMarkup( u"This will add a <b>Variant Definition</b> with the following assignments:" )
-        self.txt_intro.Wrap( -1 )
-
-        sz_main.Add( self.txt_intro, 0, wx.ALIGN_CENTER|wx.ALL|wx.EXPAND, 12 )
-
-        self.txt_aspects = wx.StaticText( self, wx.ID_ANY, u"...", wx.DefaultPosition, wx.DefaultSize, 0 )
-        self.txt_aspects.Wrap( -1 )
-
-        sz_main.Add( self.txt_aspects, 0, wx.ALIGN_CENTER|wx.ALL, 12 )
-
-        self.txt_explain_sel = wx.StaticText( self, wx.ID_ANY, u"If you are not yet satisfied with the above assignments, go back\nto the main dialog and make the appropriate selections now.", wx.DefaultPosition, wx.DefaultSize, 0 )
-        self.txt_explain_sel.SetLabelMarkup( u"If you are not yet satisfied with the above assignments, go back\nto the main dialog and make the appropriate selections now." )
-        self.txt_explain_sel.Wrap( -1 )
-
-        sz_main.Add( self.txt_explain_sel, 0, wx.ALIGN_CENTER|wx.ALL|wx.EXPAND, 12 )
-
-        sz_varid = wx.BoxSizer( wx.HORIZONTAL )
-
-        self.lbl_varid = wx.StaticText( self, wx.ID_ANY, u"New variant identifier:", wx.DefaultPosition, wx.DefaultSize, 0 )
-        self.lbl_varid.Wrap( -1 )
-
-        sz_varid.Add( self.lbl_varid, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALIGN_RIGHT|wx.ALL, 5 )
-
-        self.txc_varid = wx.TextCtrl( self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, wx.TE_PROCESS_ENTER )
-        sz_varid.Add( self.txc_varid, 1, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
-
-
-        sz_main.Add( sz_varid, 1, wx.ALIGN_CENTER_HORIZONTAL|wx.EXPAND|wx.ALL, 12 )
-
-        sdbsz = wx.StdDialogButtonSizer()
-        self.sdbszOK = wx.Button( self, wx.ID_OK )
-        sdbsz.AddButton( self.sdbszOK )
-        self.sdbszCancel = wx.Button( self, wx.ID_CANCEL )
-        sdbsz.AddButton( self.sdbszCancel )
-        sdbsz.Realize()
-
-        sz_main.Add( sdbsz, 1, wx.EXPAND|wx.ALIGN_CENTER_HORIZONTAL, 5 )
-
-
-        self.SetSizer( sz_main )
-        self.Layout()
-        sz_main.Fit( self )
-
-        self.Centre( wx.BOTH )
-
-        # Connect Events
-        self.txc_varid.Bind( wx.EVT_TEXT_ENTER, self.on_confirm )
-        self.sdbszOK.Bind( wx.EVT_BUTTON, self.on_confirm )
-
-    def __del__( self ):
-        pass
-
-
-    # Virtual event handlers, override them in your derived class
-    def on_confirm( self, event ):
-        event.Skip()
-
 
 
