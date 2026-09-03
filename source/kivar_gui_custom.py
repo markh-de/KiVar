@@ -41,5 +41,6 @@ class PcbItemListBox(wx.ListBox):
 
     def on_item_selected(self, event):
         if self.select_handler is not None:
-            self.select_handler(self.uuids[self.GetSelection()])
+            selected = self.GetSelection()
+            if selected >= 0: self.select_handler(self.uuids[selected])
         event.Skip()
