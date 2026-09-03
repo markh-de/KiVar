@@ -486,7 +486,7 @@ def finalize_vardict_branch(vardict_branch, all_aspect_choices, fp_props=None):
             vardict_branch[choice] = {}
             if Key.STANDIN in vardict_branch:
                 vardict_branch[choice][Key.VALUE] = vardict_branch[Key.STANDIN][Key.VALUE]
-                vardict_branch[choice][Key.PROPS] = vardict_branch[Key.STANDIN][Key.PROPS]
+                vardict_branch[choice][Key.PROPS] = dict(vardict_branch[Key.STANDIN][Key.PROPS])
             else:
                 vardict_branch[choice][Key.VALUE] = None
                 vardict_branch[choice][Key.PROPS] = {}
