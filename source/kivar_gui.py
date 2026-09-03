@@ -435,6 +435,7 @@ class GuiErrorListDialog(forms.ErrorListDialog):
     def __init__(self, parent, errors=None, board=None, fpdict=None, vdt=None):
         super().__init__(parent=parent)
         dialog_base_config(self)
+        self.link_help.SetURL(help_url())
         if vdt is None: self.btn_edit_vdt.Hide()
         self.board = board
         self.fpdict = fpdict
