@@ -671,7 +671,6 @@ def build_vardict(fpdict, field_ids):
             add_errors = add_choice(vardict, uuid, choice_name, choice_content)
             if add_errors:
                 for error in add_errors: errors.append([uuid, ref, f"{ref}: When adding aspect '{escape_str(aspect)}' choice list '{escape_str(choice_name)}' in component record: {error}."])
-                break
     # Handle field scope
     for uuid in fld_dict:
         ref = fpdict[uuid][Key.REF]
@@ -680,38 +679,37 @@ def build_vardict(fpdict, field_ids):
         if fld_rule_strings and aspect is None:
             errors.append([uuid, ref, f"{ref}: Combined field record(s) found, but missing an aspect identifier."])
             continue
-        valid = False
+        valid = True
         for field, rule_str in fld_rule_strings:
             if rule_str is None or rule_str == '': continue
             parse_errors, aspects, choice_sets = parse_rule_str(rule_str)
             if parse_errors:
                 for parse_error in parse_errors: errors.append([uuid, ref, f"{ref}: Combined field record parser for target field '{escape_str(field)}': {parse_error}."])
+                valid = False
                 continue
             if aspects:
                 errors.append([uuid, ref, f"{ref}: Combined field record for target field '{escape_str(field)}' contains what looks like an aspect identifier (only allowed in combined component-scope records)."])
+                valid = False
                 continue
             if field in vardict[uuid][Key.FLD]:
                 errors.append([uuid, ref, f"{ref}: Multiple assignments for target field '{escape_str(field)}'."])
+                valid = False
                 continue
             for choice_name, choice_content in choice_sets:
                 add_errors = add_choice(vardict, uuid, choice_name, choice_content, field)
                 if add_errors:
                     for error in add_errors: errors.append([uuid, ref, f"{ref}: Combined field record for aspect '{escape_str(aspect)}' choice list '{escape_str(choice_name)}' with target field '{escape_str(field)}': {error}."])
-                    break
-        else:
-            valid = True
+                    valid = False
         if not valid: continue
         if fld_choice_sets and aspect is None:
             errors.append([uuid, ref, f"{ref}: Simple field record(s) found, but missing an aspect identifier."])
             continue
-        valid = False
+        valid = True
         for field, choice_name, choice_content in fld_choice_sets:
             add_errors = add_choice(vardict, uuid, choice_name, choice_content, field)
             if add_errors:
                 for error in add_errors: errors.append([uuid, ref, f"{ref}: Simple field record for aspect '{escape_str(aspect)}' choice list '{escape_str(choice_name)}' with target field '{escape_str(field)}': {error}."])
-                break
-        else:
-            valid = True
+                valid = False
         if not valid: continue
     all_choices = get_choice_dict(vardict)
     for aspect in all_choices:
