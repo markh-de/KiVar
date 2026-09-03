@@ -90,7 +90,7 @@ def show_selection_dialog(board, fpdict, vardict, parent=pcbnew_parent_window())
         variant_info = VariantInfo(board.GetFileName())
         errors = variant_info.read_csv(get_choice_dict(vardict))
         if errors:
-            show_error_dialog([['', '', 'Variant Table: '+error] for error in errors], board=board, parent=parent, vdt=variant_info.file_path())
+            show_error_dialog([['', '', 'Variant Table: '+error] for error in errors], board=board, fpdict=fpdict, parent=parent, vdt=variant_info.file_path())
             exit_ui = True
         else:
             dialog = GuiVariantDialog(parent, board, fpdict, vardict, variant_info)
@@ -110,8 +110,8 @@ def show_selection_dialog(board, fpdict, vardict, parent=pcbnew_parent_window())
             if result != wx.ID_REFRESH:
                 exit_ui = True
 
-def show_error_dialog(errors, board=None, parent=pcbnew_parent_window(), vdt=None):
-    dialog = GuiErrorListDialog(parent, errors=sorted(errors, key=lambda x: natural_sort_key(x[1])), board=board, vdt=vdt) # sort by text
+def show_error_dialog(errors, board, fpdict, parent=pcbnew_parent_window(), vdt=None):
+    dialog = GuiErrorListDialog(parent, errors=sorted(errors, key=lambda x: natural_sort_key(x[1])), board=board, fpdict=fpdict, vdt=vdt) # sort by text
     dialog.btn_edit_vdt.Bind(wx.EVT_BUTTON, lambda e: dialog.EndModal(forms.ID_EDIT_VDT))
     dialog.SetSize(Config().get_window_size(Config.ERROR_WIN))
     dialog.CentreOnParent()
@@ -432,11 +432,12 @@ class GuiMissingRulesLegacyFoundDialog(forms.MissingRulesLegacyFoundDialog):
         self.CentreOnParent()
 
 class GuiErrorListDialog(forms.ErrorListDialog):
-    def __init__(self, parent, errors=None, board=None, vdt=None):
+    def __init__(self, parent, errors=None, board=None, fpdict=None, vdt=None):
         super().__init__(parent=parent)
         dialog_base_config(self)
         if vdt is None: self.btn_edit_vdt.Hide()
         self.board = board
+        self.fpdict = fpdict
         self.lbx_errors.set_item_list(errors)
         self.lbx_errors.set_select_handler(self.on_item_selected)
         self.btn_close.SetFocus()
@@ -444,7 +445,7 @@ class GuiErrorListDialog(forms.ErrorListDialog):
         self.CentreOnParent()
 
     def on_item_selected(self, uuid):
-        if self.board is not None and uuid is not None:
-            fp = uuid_to_fp(self.board, uuid)
+        if self.fpdict is not None and uuid is not None:
+            fp = uuid_to_fp(self.fpdict, uuid)
             if fp is not None:
                 pcbnew.FocusOnItem(fp)

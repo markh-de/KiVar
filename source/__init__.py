@@ -82,7 +82,7 @@ class KiVarPlugin(pcbnew.ActionPlugin):
         fpdict = engine.build_fpdict(board)
         vardict, errors = engine.build_vardict(fpdict, engine.field_ids(board))
         if len(errors) > 0:
-            gui.show_error_dialog(errors, board)
+            gui.show_error_dialog(errors, board, fpdict)
         elif len(vardict) == 0:
             gui.show_missing_rules_dialog(engine.legacy_expressions_found(fpdict))
         else:
