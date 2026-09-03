@@ -1025,7 +1025,7 @@ class VariantInfo:
     def write_csv(self, force=False):
         if len(self._variants) == 0 and len(self._aspects) == 0:
             # if table is empty, remove the file
-            os.remove(self._file_path)
+            if os.path.exists(self._file_path): os.remove(self._file_path)
         else:
             with open(self._file_path, mode='w', newline='', encoding='utf-8') as csvfile:
                 csv_writer = csv.writer(csvfile, quoting=csv.QUOTE_ALL)
