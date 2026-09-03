@@ -403,9 +403,9 @@ def parse_prop_str(prop_str, prop_set):
             expect_index = False
         else:
             if not c in supported_prop_codes(): raise ValueError(f"Unsupported property code '{c}'")
-    apply_indexed_prop(prop_set, current_code, current_index, state)
     if expect_code:  raise ValueError(f"End of property specifier when property code was expected")
     if expect_index: raise ValueError(f"End of property specifier when property index was expected")
+    apply_indexed_prop(prop_set, current_code, current_index, state)
 
 def add_choice(vardict, uuid, raw_choice_name, raw_choice_def, field=None):
     """ Adds a choice set (component or field rule definition) to the vardict. """
