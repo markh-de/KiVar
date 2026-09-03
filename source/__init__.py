@@ -38,9 +38,12 @@ def get_icon_size():
             config_dir = os.path.join(appdata, 'kicad')
     if config_dir is not None:
         config_file = os.path.join(config_dir, version_major_minor, 'kicad_common.json')
-        with open(config_file, 'r') as f:
-            config = json.load(f)
+        try:
+            with open(config_file, 'r') as f:
+                config = json.load(f)
             icon_size = config.get("appearance", {}).get("toolbar_icon_size", icon_size)
+        except (OSError, ValueError, AttributeError):
+            pass # fall back to the default icon_size if the config file is missing, unreadable, or malformed
     return int(icon_size * scale)
 
 class KiVarPlugin(pcbnew.ActionPlugin):
