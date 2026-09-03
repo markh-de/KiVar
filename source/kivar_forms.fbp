@@ -97,8 +97,8 @@
             <property name="gripper">0</property>
             <property name="hidden">0</property>
             <property name="id">wxID_ANY</property>
-            <property name="label">This will add a &lt;b&gt;Variant Definition&lt;/b&gt; with the following assignments:</property>
-            <property name="markup">1</property>
+            <property name="label">This will add a Variant Definition with the following assignments:</property>
+            <property name="markup">0</property>
             <property name="max_size"></property>
             <property name="maximize_button">0</property>
             <property name="maximum_size"></property>
@@ -123,7 +123,7 @@
             <property name="window_extra_style"></property>
             <property name="window_name"></property>
             <property name="window_style"></property>
-            <property name="wrap">-1</property>
+            <property name="wrap">800</property>
           </object>
         </object>
         <object class="sizeritem" expanded="false">
@@ -221,8 +221,8 @@
             <property name="gripper">0</property>
             <property name="hidden">0</property>
             <property name="id">wxID_ANY</property>
-            <property name="label">If you are not yet satisfied with the above assignments, go back&#x0A;to the main dialog and make the appropriate selections now.</property>
-            <property name="markup">1</property>
+            <property name="label">If you are not yet satisfied with the above assignments, go back to the main dialog and make the appropriate selections now.</property>
+            <property name="markup">0</property>
             <property name="max_size"></property>
             <property name="maximize_button">0</property>
             <property name="maximum_size"></property>
@@ -247,7 +247,7 @@
             <property name="window_extra_style"></property>
             <property name="window_name"></property>
             <property name="window_style"></property>
-            <property name="wrap">-1</property>
+            <property name="wrap">800</property>
           </object>
         </object>
         <object class="sizeritem" expanded="false">
@@ -476,8 +476,8 @@
             <property name="gripper">0</property>
             <property name="hidden">0</property>
             <property name="id">wxID_ANY</property>
-            <property name="label">This will create a &lt;b&gt;Variant Definition Table&lt;/b&gt; binding the following aspects:</property>
-            <property name="markup">1</property>
+            <property name="label">This will create a Variant Definition Table, binding the following aspects:</property>
+            <property name="markup">0</property>
             <property name="max_size"></property>
             <property name="maximize_button">0</property>
             <property name="maximum_size"></property>
@@ -502,7 +502,7 @@
             <property name="window_extra_style"></property>
             <property name="window_name"></property>
             <property name="window_style"></property>
-            <property name="wrap">-1</property>
+            <property name="wrap">700</property>
           </object>
         </object>
         <object class="sizeritem" expanded="false">
@@ -600,8 +600,8 @@
             <property name="gripper">0</property>
             <property name="hidden">0</property>
             <property name="id">wxID_ANY</property>
-            <property name="label">&lt;i&gt;Aspect binding:&lt;/i&gt;  To &lt;b&gt;bind&lt;/b&gt; aspects to the variant definitions, assign the desired &lt;i&gt;specific choices&lt;/i&gt;&#x0A;to them in the main dialog.  To keep aspects as &lt;b&gt;free&lt;/b&gt;, select the &lt;i&gt;unspecified&lt;/i&gt; choice for them.&#x0A;&#x0A;If you are not yet satisfied with the above bindings, go back to the main dialog and make the&#x0A;appropriate selections now.&#x0A;&#x0A;&lt;i&gt;Tip:&lt;/i&gt; You can customize the display order of aspects and variants by modifying their order in&#x0A;the variants table file (use the &lt;i&gt;&apos;Edit Definition Table...&apos;&lt;/i&gt; option).</property>
-            <property name="markup">1</property>
+            <property name="label">Aspect binding:&#x0A;To bind aspects to the variant definitions, assign the desired specific choices to them in the main dialog.&#x0A;To keep aspects as free, select the &apos;unspecified&apos; choice for them.&#x0A;&#x0A;Display order:&#x0A;You can customize the display order of aspects and variants by modifying their order in the variants table file (use the &apos;Edit Definition Table...&apos; option).&#x0A;&#x0A;If you are not yet satisfied with the above bindings, go back to the main dialog and make the appropriate selections now.</property>
+            <property name="markup">0</property>
             <property name="max_size"></property>
             <property name="maximize_button">0</property>
             <property name="maximum_size"></property>
@@ -626,7 +626,7 @@
             <property name="window_extra_style"></property>
             <property name="window_name"></property>
             <property name="window_style"></property>
-            <property name="wrap">-1</property>
+            <property name="wrap">700</property>
           </object>
         </object>
         <object class="sizeritem" expanded="false">
@@ -1179,7 +1179,7 @@
         <property name="orient">wxVERTICAL</property>
         <property name="permission">none</property>
         <object class="sizeritem" expanded="false">
-          <property name="border">36</property>
+          <property name="border">30</property>
           <property name="flag">wxALL|wxEXPAND</property>
           <property name="proportion">1</property>
           <object class="wxBoxSizer" expanded="false">
@@ -1188,7 +1188,7 @@
             <property name="orient">wxVERTICAL</property>
             <property name="permission">none</property>
             <object class="sizeritem" expanded="false">
-              <property name="border">0</property>
+              <property name="border">14</property>
               <property name="flag">wxEXPAND</property>
               <property name="proportion">0</property>
               <object class="wxStaticText" expanded="false">
@@ -1220,8 +1220,8 @@
                 <property name="gripper">0</property>
                 <property name="hidden">0</property>
                 <property name="id">wxID_ANY</property>
-                <property name="label">&lt;b&gt;Welcome to KiVar.&lt;/b&gt;&#x0A;&#x0A;No rule definitions could be found in your board&apos;s footprints. This probably means that you are still new&#x0A;to KiVar and have not yet added any variation rules to your design.&#x0A;&#x0A;In KiVar, design variations are specified using &lt;b&gt;text-based rules&lt;/b&gt; in the &lt;b&gt;footprint fields&lt;/b&gt; of your board.&#x0A;There is no user interface for setting up the rules, but the rule syntax is &lt;b&gt;easy to learn&lt;/b&gt; and &lt;b&gt;very powerful&lt;/b&gt;.&#x0A;&#x0A;You are invited to explore the &lt;b&gt;comprehensive documentation&lt;/b&gt; for KiVar, including many useful &lt;b&gt;examples&lt;/b&gt;:</property>
-                <property name="markup">1</property>
+                <property name="label">Welcome to KiVar.&#x0A;&#x0A;No rule definitions could be found in your board&apos;s footprints. This probably means that you are still new to KiVar and have not yet added any variation rules to your design.&#x0A;&#x0A;In KiVar, design variations (micro-variants) are specified using text-based rules noted in the fields of relevant footprints. There is no user interface for setting up the rules, but the rule syntax is easy to learn and very powerful.&#x0A;&#x0A;You are invited to explore the comprehensive documentation for KiVar, including many useful examples:</property>
+                <property name="markup">0</property>
                 <property name="max_size"></property>
                 <property name="maximize_button">0</property>
                 <property name="maximum_size"></property>
@@ -1246,7 +1246,7 @@
                 <property name="window_extra_style"></property>
                 <property name="window_name"></property>
                 <property name="window_style"></property>
-                <property name="wrap">-1</property>
+                <property name="wrap">800</property>
               </object>
             </object>
             <object class="sizeritem" expanded="false">
@@ -1346,8 +1346,8 @@
                 <property name="gripper">0</property>
                 <property name="hidden">0</property>
                 <property name="id">wxID_ANY</property>
-                <property name="label">To see KiVar in action and get a quick &lt;b&gt;tutorial&lt;/b&gt; on &lt;b&gt;how to get started&lt;/b&gt;, as well as a &lt;b&gt;feature demonstration&lt;/b&gt;,&#x0A;check out the following video:</property>
-                <property name="markup">1</property>
+                <property name="label">To see KiVar in action and get a quick tutorial on how to get started, as well as a feature demonstration, check out the following video:</property>
+                <property name="markup">0</property>
                 <property name="max_size"></property>
                 <property name="maximize_button">0</property>
                 <property name="maximum_size"></property>
@@ -1372,7 +1372,7 @@
                 <property name="window_extra_style"></property>
                 <property name="window_name"></property>
                 <property name="window_style"></property>
-                <property name="wrap">-1</property>
+                <property name="wrap">800</property>
               </object>
             </object>
             <object class="sizeritem" expanded="false">
@@ -1472,8 +1472,8 @@
                 <property name="gripper">0</property>
                 <property name="hidden">0</property>
                 <property name="id">wxID_ANY</property>
-                <property name="label">A demonstration of how to use all of KiVar&apos;s features can be found in the KiVar &lt;b&gt;demo project&lt;/b&gt;. This can&#x0A;serve as inspiration for creating your own rule sets:</property>
-                <property name="markup">1</property>
+                <property name="label">There is also a demo project for you to study how KiVar can be used. This can serve as inspiration for creating your own rule sets:</property>
+                <property name="markup">0</property>
                 <property name="max_size"></property>
                 <property name="maximize_button">0</property>
                 <property name="maximum_size"></property>
@@ -1498,7 +1498,7 @@
                 <property name="window_extra_style"></property>
                 <property name="window_name"></property>
                 <property name="window_style"></property>
-                <property name="wrap">-1</property>
+                <property name="wrap">800</property>
               </object>
             </object>
             <object class="sizeritem" expanded="false">
@@ -1677,7 +1677,7 @@
         <property name="orient">wxVERTICAL</property>
         <property name="permission">none</property>
         <object class="sizeritem" expanded="false">
-          <property name="border">36</property>
+          <property name="border">30</property>
           <property name="flag">wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALL</property>
           <property name="proportion">1</property>
           <object class="wxBoxSizer" expanded="false">
@@ -1718,7 +1718,7 @@
                 <property name="gripper">0</property>
                 <property name="hidden">0</property>
                 <property name="id">wxID_ANY</property>
-                <property name="label">KiVar could not find any rules in the current format.&#x0A;&#x0A;However, there were found &lt;b&gt;### rule(s) in the old format&lt;/b&gt;, which is not supported anymore.&#x0A;&#x0A;Please consult the KiVar documentation to learn how to migrate the rules of your existing designs to&#x0A;the current format:</property>
+                <property name="label">KiVar could not find any rules in the current format.&#x0A;&#x0A;However, there were found #NUM# rule(s) in the old format, which is not supported anymore.&#x0A;&#x0A;Please consult the KiVar documentation to learn how to migrate the rules of your existing designs to the current format:</property>
                 <property name="markup">0</property>
                 <property name="max_size"></property>
                 <property name="maximize_button">0</property>
@@ -1744,7 +1744,7 @@
                 <property name="window_extra_style"></property>
                 <property name="window_name"></property>
                 <property name="window_style"></property>
-                <property name="wrap">-1</property>
+                <property name="wrap">800</property>
               </object>
             </object>
             <object class="sizeritem" expanded="false">

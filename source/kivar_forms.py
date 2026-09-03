@@ -28,9 +28,8 @@ class AddVariantDialog ( wx.Dialog ):
 
         sz_main = wx.BoxSizer( wx.VERTICAL )
 
-        self.txt_intro = wx.StaticText( self, wx.ID_ANY, u"This will add a <b>Variant Definition</b> with the following assignments:", wx.DefaultPosition, wx.DefaultSize, 0 )
-        self.txt_intro.SetLabelMarkup( u"This will add a <b>Variant Definition</b> with the following assignments:" )
-        self.txt_intro.Wrap( -1 )
+        self.txt_intro = wx.StaticText( self, wx.ID_ANY, u"This will add a Variant Definition with the following assignments:", wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.txt_intro.Wrap( 800 )
 
         sz_main.Add( self.txt_intro, 0, wx.ALL|wx.EXPAND, 12 )
 
@@ -39,9 +38,8 @@ class AddVariantDialog ( wx.Dialog ):
 
         sz_main.Add( self.txt_aspects, 0, wx.ALIGN_CENTER|wx.ALL, 12 )
 
-        self.txt_explain_sel = wx.StaticText( self, wx.ID_ANY, u"If you are not yet satisfied with the above assignments, go back\nto the main dialog and make the appropriate selections now.", wx.DefaultPosition, wx.DefaultSize, 0 )
-        self.txt_explain_sel.SetLabelMarkup( u"If you are not yet satisfied with the above assignments, go back\nto the main dialog and make the appropriate selections now." )
-        self.txt_explain_sel.Wrap( -1 )
+        self.txt_explain_sel = wx.StaticText( self, wx.ID_ANY, u"If you are not yet satisfied with the above assignments, go back to the main dialog and make the appropriate selections now.", wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.txt_explain_sel.Wrap( 800 )
 
         sz_main.Add( self.txt_explain_sel, 0, wx.ALL|wx.EXPAND, 12 )
 
@@ -101,9 +99,8 @@ class CreateTableDialog ( wx.Dialog ):
 
         sz_main = wx.BoxSizer( wx.VERTICAL )
 
-        self.txt_intro = wx.StaticText( self, wx.ID_ANY, u"This will create a <b>Variant Definition Table</b> binding the following aspects:", wx.DefaultPosition, wx.DefaultSize, 0 )
-        self.txt_intro.SetLabelMarkup( u"This will create a <b>Variant Definition Table</b> binding the following aspects:" )
-        self.txt_intro.Wrap( -1 )
+        self.txt_intro = wx.StaticText( self, wx.ID_ANY, u"This will create a Variant Definition Table, binding the following aspects:", wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.txt_intro.Wrap( 700 )
 
         sz_main.Add( self.txt_intro, 0, wx.ALL|wx.EXPAND, 12 )
 
@@ -112,9 +109,8 @@ class CreateTableDialog ( wx.Dialog ):
 
         sz_main.Add( self.txt_aspects, 0, wx.ALIGN_CENTER|wx.ALL, 12 )
 
-        self.txt_explain_sel = wx.StaticText( self, wx.ID_ANY, u"<i>Aspect binding:</i>  To <b>bind</b> aspects to the variant definitions, assign the desired <i>specific choices</i>\nto them in the main dialog.  To keep aspects as <b>free</b>, select the <i>unspecified</i> choice for them.\n\nIf you are not yet satisfied with the above bindings, go back to the main dialog and make the\nappropriate selections now.\n\n<i>Tip:</i> You can customize the display order of aspects and variants by modifying their order in\nthe variants table file (use the <i>'Edit Definition Table...'</i> option).", wx.DefaultPosition, wx.DefaultSize, 0 )
-        self.txt_explain_sel.SetLabelMarkup( u"<i>Aspect binding:</i>  To <b>bind</b> aspects to the variant definitions, assign the desired <i>specific choices</i>\nto them in the main dialog.  To keep aspects as <b>free</b>, select the <i>unspecified</i> choice for them.\n\nIf you are not yet satisfied with the above bindings, go back to the main dialog and make the\nappropriate selections now.\n\n<i>Tip:</i> You can customize the display order of aspects and variants by modifying their order in\nthe variants table file (use the <i>'Edit Definition Table...'</i> option)." )
-        self.txt_explain_sel.Wrap( -1 )
+        self.txt_explain_sel = wx.StaticText( self, wx.ID_ANY, u"Aspect binding:\nTo bind aspects to the variant definitions, assign the desired specific choices to them in the main dialog.\nTo keep aspects as free, select the 'unspecified' choice for them.\n\nDisplay order:\nYou can customize the display order of aspects and variants by modifying their order in the variants table file (use the 'Edit Definition Table...' option).\n\nIf you are not yet satisfied with the above bindings, go back to the main dialog and make the appropriate selections now.", wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.txt_explain_sel.Wrap( 700 )
 
         sz_main.Add( self.txt_explain_sel, 0, wx.ALL|wx.EXPAND, 12 )
 
@@ -231,27 +227,24 @@ class MissingRulesDialog ( wx.Dialog ):
 
         sz_inner = wx.BoxSizer( wx.VERTICAL )
 
-        self.txt_info_intro = wx.StaticText( self, wx.ID_ANY, u"<b>Welcome to KiVar.</b>\n\nNo rule definitions could be found in your board's footprints. This probably means that you are still new\nto KiVar and have not yet added any variation rules to your design.\n\nIn KiVar, design variations are specified using <b>text-based rules</b> in the <b>footprint fields</b> of your board.\nThere is no user interface for setting up the rules, but the rule syntax is <b>easy to learn</b> and <b>very powerful</b>.\n\nYou are invited to explore the <b>comprehensive documentation</b> for KiVar, including many useful <b>examples</b>:", wx.DefaultPosition, wx.DefaultSize, 0 )
-        self.txt_info_intro.SetLabelMarkup( u"<b>Welcome to KiVar.</b>\n\nNo rule definitions could be found in your board's footprints. This probably means that you are still new\nto KiVar and have not yet added any variation rules to your design.\n\nIn KiVar, design variations are specified using <b>text-based rules</b> in the <b>footprint fields</b> of your board.\nThere is no user interface for setting up the rules, but the rule syntax is <b>easy to learn</b> and <b>very powerful</b>.\n\nYou are invited to explore the <b>comprehensive documentation</b> for KiVar, including many useful <b>examples</b>:" )
-        self.txt_info_intro.Wrap( -1 )
+        self.txt_info_intro = wx.StaticText( self, wx.ID_ANY, u"Welcome to KiVar.\n\nNo rule definitions could be found in your board's footprints. This probably means that you are still new to KiVar and have not yet added any variation rules to your design.\n\nIn KiVar, design variations (micro-variants) are specified using text-based rules noted in the fields of relevant footprints. There is no user interface for setting up the rules, but the rule syntax is easy to learn and very powerful.\n\nYou are invited to explore the comprehensive documentation for KiVar, including many useful examples:", wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.txt_info_intro.Wrap( 800 )
 
-        sz_inner.Add( self.txt_info_intro, 0, wx.EXPAND, 0 )
+        sz_inner.Add( self.txt_info_intro, 0, wx.EXPAND, 14 )
 
         self.link_help = wx.adv.HyperlinkCtrl( self, wx.ID_ANY, u"KiVar Usage Guide", u"...", wx.DefaultPosition, wx.DefaultSize, wx.adv.HL_DEFAULT_STYLE )
         sz_inner.Add( self.link_help, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.TOP, 8 )
 
-        self.txt_info_video = wx.StaticText( self, wx.ID_ANY, u"To see KiVar in action and get a quick <b>tutorial</b> on <b>how to get started</b>, as well as a <b>feature demonstration</b>,\ncheck out the following video:", wx.DefaultPosition, wx.DefaultSize, 0 )
-        self.txt_info_video.SetLabelMarkup( u"To see KiVar in action and get a quick <b>tutorial</b> on <b>how to get started</b>, as well as a <b>feature demonstration</b>,\ncheck out the following video:" )
-        self.txt_info_video.Wrap( -1 )
+        self.txt_info_video = wx.StaticText( self, wx.ID_ANY, u"To see KiVar in action and get a quick tutorial on how to get started, as well as a feature demonstration, check out the following video:", wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.txt_info_video.Wrap( 800 )
 
         sz_inner.Add( self.txt_info_video, 0, wx.EXPAND|wx.TOP, 24 )
 
         self.link_video = wx.adv.HyperlinkCtrl( self, wx.ID_ANY, u"KiVar Live Presentation (KiCon Europe 2024)", u"https://video.kivar.markh.de", wx.DefaultPosition, wx.DefaultSize, wx.adv.HL_DEFAULT_STYLE )
         sz_inner.Add( self.link_video, 0, wx.TOP|wx.ALIGN_CENTER_HORIZONTAL, 8 )
 
-        self.txt_info_demo = wx.StaticText( self, wx.ID_ANY, u"A demonstration of how to use all of KiVar's features can be found in the KiVar <b>demo project</b>. This can\nserve as inspiration for creating your own rule sets:", wx.DefaultPosition, wx.DefaultSize, 0 )
-        self.txt_info_demo.SetLabelMarkup( u"A demonstration of how to use all of KiVar's features can be found in the KiVar <b>demo project</b>. This can\nserve as inspiration for creating your own rule sets:" )
-        self.txt_info_demo.Wrap( -1 )
+        self.txt_info_demo = wx.StaticText( self, wx.ID_ANY, u"There is also a demo project for you to study how KiVar can be used. This can serve as inspiration for creating your own rule sets:", wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.txt_info_demo.Wrap( 800 )
 
         sz_inner.Add( self.txt_info_demo, 0, wx.EXPAND|wx.TOP, 24 )
 
@@ -262,7 +255,7 @@ class MissingRulesDialog ( wx.Dialog ):
         sz_inner.Add( self.btn_close, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.TOP, 20 )
 
 
-        sz_main.Add( sz_inner, 1, wx.ALL|wx.EXPAND, 36 )
+        sz_main.Add( sz_inner, 1, wx.ALL|wx.EXPAND, 30 )
 
 
         self.SetSizer( sz_main )
@@ -290,8 +283,8 @@ class MissingRulesLegacyFoundDialog ( wx.Dialog ):
 
         sz_inner = wx.BoxSizer( wx.VERTICAL )
 
-        self.txt_info_intro = wx.StaticText( self, wx.ID_ANY, u"KiVar could not find any rules in the current format.\n\nHowever, there were found <b>### rule(s) in the old format</b>, which is not supported anymore.\n\nPlease consult the KiVar documentation to learn how to migrate the rules of your existing designs to\nthe current format:", wx.DefaultPosition, wx.DefaultSize, 0 )
-        self.txt_info_intro.Wrap( -1 )
+        self.txt_info_intro = wx.StaticText( self, wx.ID_ANY, u"KiVar could not find any rules in the current format.\n\nHowever, there were found #NUM# rule(s) in the old format, which is not supported anymore.\n\nPlease consult the KiVar documentation to learn how to migrate the rules of your existing designs to the current format:", wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.txt_info_intro.Wrap( 800 )
 
         sz_inner.Add( self.txt_info_intro, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.EXPAND, 0 )
 
@@ -302,7 +295,7 @@ class MissingRulesLegacyFoundDialog ( wx.Dialog ):
         sz_inner.Add( self.btn_close, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.TOP, 20 )
 
 
-        sz_main.Add( sz_inner, 1, wx.EXPAND|wx.ALIGN_CENTER_HORIZONTAL|wx.ALL, 36 )
+        sz_main.Add( sz_inner, 1, wx.EXPAND|wx.ALIGN_CENTER_HORIZONTAL|wx.ALL, 30 )
 
 
         self.SetSizer( sz_main )

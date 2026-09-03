@@ -425,7 +425,7 @@ class GuiMissingRulesLegacyFoundDialog(forms.MissingRulesLegacyFoundDialog):
     def __init__(self, parent, legacy_found=0):
         super().__init__(parent=parent)
         dialog_base_config(self)
-        self.txt_info_intro.SetLabelMarkup(self.txt_info_intro.GetLabelText().replace('###', str(legacy_found)))
+        self.txt_info_intro.SetLabelText(self.txt_info_intro.GetLabelText().replace('#NUM#', str(legacy_found)))
         self.link_help.SetURL(help_migrate_url())
         self.btn_close.SetFocus()
         self.Fit()
