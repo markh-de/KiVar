@@ -122,7 +122,6 @@ def build_vardict_wrapper(fpdict, field_ids):
 def load_varinfo_wrapper(in_file, vardict):
     varinfo = VariantInfo(in_file)
     errors = varinfo.read_csv(get_choice_dict(vardict))
-    if not varinfo.is_loaded(): show_variants = False # if not loaded, disable variants altogether
     if len(errors) > 0:
         ErrMsg().c().text(f'Errors when loading variant table:').flush()
         for error in errors:
