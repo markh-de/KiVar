@@ -83,7 +83,8 @@ def dialog_base_config(dialog):
     dialog.SetIcon(wx.Icon(os.path.join(os.path.dirname(__file__), f'kivar_icon_{theme}.png'), wx.BITMAP_TYPE_PNG))
     dialog.SetTitle(dialog.GetTitle() + window_suffix())
 
-def show_selection_dialog(board, fpdict, vardict, parent=pcbnew_parent_window()):
+def show_selection_dialog(board, fpdict, vardict, parent=None):
+    if parent is None: parent = pcbnew_parent_window()
     exit_ui = False
     rect = None
     while not exit_ui:
@@ -110,7 +111,8 @@ def show_selection_dialog(board, fpdict, vardict, parent=pcbnew_parent_window())
             if result != wx.ID_REFRESH:
                 exit_ui = True
 
-def show_error_dialog(errors, board, fpdict, parent=pcbnew_parent_window(), vdt=None):
+def show_error_dialog(errors, board, fpdict, parent=None, vdt=None):
+    if parent is None: parent = pcbnew_parent_window()
     dialog = GuiErrorListDialog(parent, errors=sorted(errors, key=lambda x: natural_sort_key(x[1])), board=board, fpdict=fpdict, vdt=vdt) # sort by text
     dialog.btn_edit_vdt.Bind(wx.EVT_BUTTON, lambda e: dialog.EndModal(forms.ID_EDIT_VDT))
     dialog.SetSize(Config().get_window_size(Config.ERROR_WIN))
@@ -121,7 +123,8 @@ def show_error_dialog(errors, board, fpdict, parent=pcbnew_parent_window(), vdt=
     if result == forms.ID_EDIT_VDT and vdt is not None:
         wx.LaunchDefaultApplication(vdt)
 
-def show_missing_rules_dialog(legacy_found=0, parent=pcbnew_parent_window()):
+def show_missing_rules_dialog(legacy_found=0, parent=None):
+    if parent is None: parent = pcbnew_parent_window()
     if legacy_found:
         dialog = GuiMissingRulesLegacyFoundDialog(parent, legacy_found)
     else:
