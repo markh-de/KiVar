@@ -1,8 +1,10 @@
-import pcbnew
 import os
 import csv
 import hashlib
 import difflib
+
+try:                        import pcbnew
+except ModuleNotFoundError: pcbnew = None
 
 # Note about field case-sensitivity:
 # As long as KiCad can easily be tricked* into having multiple fields whose names only differ in casing, we

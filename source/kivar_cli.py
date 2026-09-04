@@ -6,6 +6,7 @@ import argparse
 
 try:                        from  kivar_engine  import *
 except ModuleNotFoundError: from .kivar_engine  import *
+
 try:                        from  kivar_version import version
 except ModuleNotFoundError: from .kivar_version import version
 
@@ -27,7 +28,6 @@ def doc_base_url():
     return f'https://doc.kivar.markh.de/{doc_vcs_ref()}/README.md'
 
 no_color = False
-load_errors = None
 
 class Msg:
     RESET = '\033[0m'
@@ -455,7 +455,8 @@ def main():
     no_color = args.no_color
     exitcode = 0
 
-    if load_errors is not None:
+    if pcbnew is None:
+        load_errors = ["Error: The 'pcbnew' Python module cannot be loaded.", "Please ensure that KiCad is installed and that your Python environment is configured to access KiCad's scripting modules."]
         for e in load_errors: ErrMsg().c().text(e).flush()
         exitcode = 4
     elif args.version:
@@ -506,10 +507,6 @@ def main():
                 exitcode = 2
 
     return exitcode
-
-try: import pcbnew
-except ModuleNotFoundError as e:
-    load_errors = [f"Error: The '{e.name}' Python module cannot be loaded.", "Please ensure that KiCad is installed and that your Python environment is configured to access KiCad's scripting modules."]
 
 if __name__ == "__main__":
     sys.exit(main())
