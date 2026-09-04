@@ -304,13 +304,15 @@ def check_command(in_file=None, variants=False, no_variants=False):
 
     sel = detect_current_choices(fpdict, vardict)
 
-    varinfo = load_varinfo_wrapper(in_file, vardict)
-    if varinfo is None: return False
-    if variants and not varinfo.is_loaded():
-        ErrMsg().c().text("Error: No variant definitions found (omit option '--variants' to skip check).").flush()
-        return False
-
-    check_variant_match = varinfo.is_loaded() and not no_variants
+    if no_variants:
+        check_variant_match = False
+    else:
+        varinfo = load_varinfo_wrapper(in_file, vardict)
+        if varinfo is None: return False
+        if variants and not varinfo.is_loaded():
+            ErrMsg().c().text("Error: No variant definitions found (omit option '--variants' to skip check).").flush()
+            return False
+        check_variant_match = varinfo.is_loaded()
 
     failed = []
     for aspect in sorted(sel, key=natural_sort_key):
