@@ -476,7 +476,7 @@ def main():
                     exitcode = 5
                 elif not list_command(in_file=args.pcb, long=args.long, prop_codes=args.prop_codes, detailed=args.detailed, selected=args.selection, use_variants=not args.no_variants, only_variants=args.variants, cust_asp_order=not args.std_order): exitcode = 1
             elif cmd == "state":
-                if args.all and args.query_aspect:
+                if args.all and args.query is not None:
                     ErrMsg().c().text("Error: Options '--all' and '--query' are mutually exclusive.").flush()
                     exitcode = 5
                 elif not state_command(in_file=args.pcb, all=args.all, query_aspect=args.query, use_variants=not args.no_variants, only_variants=args.variants, cust_asp_order=not args.std_order): exitcode = 1
