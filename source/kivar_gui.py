@@ -171,9 +171,9 @@ class GuiVariantDialog(forms.VariantDialog):
             sel_index = 0 if sel_choice is None else sorted_choices.index(sel_choice) + 1
             choice.SetSelection(sel_index)
             choice.Bind(wx.EVT_CHOICE, self.on_aspect_change)
-            panel.GetSizer().Add(label,   1, wx.ALIGN_CENTRE_VERTICAL | wx.ALIGN_RIGHT | wx.EXPAND)
+            panel.GetSizer().Add(label,   1, wx.ALIGN_CENTRE_VERTICAL | wx.ALIGN_RIGHT)
             panel.GetSizer().Add(marking, 1, wx.ALIGN_CENTRE_VERTICAL | wx.ALIGN_CENTRE_HORIZONTAL)
-            panel.GetSizer().Add(choice,  1, wx.ALIGN_CENTRE_VERTICAL | wx.ALIGN_LEFT  | wx.EXPAND)
+            panel.GetSizer().Add(choice,  1, wx.ALIGN_CENTRE_VERTICAL | wx.ALIGN_LEFT)
             self.aspects_gui[aspect] = (label, marking, choice, panel)
 
         self.highlight_changed_aspects()
