@@ -66,7 +66,7 @@ class KiVarPlugin(pcbnew.ActionPlugin):
 
         self.name                = 'KiVar: Switch Assembly Variants'
         self.category            = 'Assembly Variants'
-        self.description         = 'Switch between predefined assembly variant choices'
+        self.description         = 'Switch between predefined assembly variants and micro-variants'
         self.icon_file_name      = icon_scaled_light
         self.dark_icon_file_name = icon_scaled_dark
         self.show_toolbar_button = True
